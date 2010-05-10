@@ -447,10 +447,10 @@
 		913C571C0B13CBC100F14113 /* PiPL_MachO.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_MachO.rsrc; path = resources/PiPL_MachO.rsrc; sourceTree = "<group>"; };
 		913C57210B13CBF900F14113 /* PiPL_MachO_Universal.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_MachO_Universal.rsrc; path = resources/PiPL_MachO_Universal.rsrc; sourceTree = "<group>"; };
 		914569D90AF7CADF000FD468 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
-		91456A8E0AF7E8D8000FD468 /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
-		91456A8F0AF7E8D8000FD468 /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
-		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
-		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		91456A8E0AF7E8D8000FD468 /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../adobe/Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
+		91456A8F0AF7E8D8000FD468 /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../adobe/Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
+		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
+		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextItem.cpp; path = jni/com_scriptographer_ai_TextItem.cpp; sourceTree = "<group>"; };
 		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/native/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
 		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
@@ -478,20 +478,20 @@
 		9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Tracker.cpp; path = jni/com_scriptographer_ui_Tracker.cpp; sourceTree = "<group>"; };
 		9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ValueItem.cpp; path = jni/com_scriptographer_ui_ValueItem.cpp; sourceTree = "<group>"; };
 		9185E51C0E7FC0DA000BD8BA /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
-		9185E52D0E7FC1FE000BD8BA /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS4 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
-		9185E52E0E7FC1FE000BD8BA /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS4 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
-		9185E5310E7FC238000BD8BA /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../Adobe Illustrator CS4 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
-		9185E5320E7FC238000BD8BA /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS4 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
+		9185E52D0E7FC1FE000BD8BA /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
+		9185E52E0E7FC1FE000BD8BA /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		9185E5310E7FC238000BD8BA /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
+		9185E5320E7FC238000BD8BA /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
 		9185E5410E7FC2EE000BD8BA /* CS4_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS4_Debug.pch; path = prefix/CS4_Debug.pch; sourceTree = "<group>"; };
 		9185E5420E7FC2EE000BD8BA /* CS4_Release.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS4_Release.pch; path = prefix/CS4_Release.pch; sourceTree = "<group>"; };
 		919823D40A37257700D57E4C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
 		91C8B8E41049C0D3002882FE /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91C8B8FB1049C211002882FE /* CS5_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS5_Debug.pch; path = prefix/CS5_Debug.pch; sourceTree = "<group>"; };
 		91C8B8FC1049C211002882FE /* CS5_Release.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS5_Release.pch; path = prefix/CS5_Release.pch; sourceTree = "<group>"; };
-		91C8B8FF1049C255002882FE /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
-		91C8B9001049C255002882FE /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
-		91C8B9031049C27C002882FE /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS5 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
-		91C8B9041049C27C002882FE /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS5 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		91C8B8FF1049C255002882FE /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
+		91C8B9001049C255002882FE /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
+		91C8B9031049C27C002882FE /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
+		91C8B9041049C27C002882FE /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		91CA8A6F0A22703F005E0C1A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		91D4E9530A252070002888A3 /* CS_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Debug.pch; path = prefix/CS_Debug.pch; sourceTree = "<group>"; };
 		91D4E9540A252070002888A3 /* CS_Release.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Release.pch; path = prefix/CS_Release.pch; sourceTree = "<group>"; };
@@ -511,12 +511,12 @@
 		91EF0A4F0A20A2CD00F0EF9A /* stdHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = stdHeaders.h; sourceTree = "<group>"; };
 		91EF0A500A20A2CD00F0EF9A /* suites.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = suites.cpp; sourceTree = "<group>"; };
 		91EF0A510A20A2CD00F0EF9A /* suites.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = suites.h; sourceTree = "<group>"; };
-		91EF0ACA0A20A3F300F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
-		91EF0ACB0A20A3F300F0EF9A /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS SDK/IllustratorAPI/Illustrator/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
-		91EF0ACE0A20A40A00F0EF9A /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
-		91EF0ACF0A20A40A00F0EF9A /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
-		91EF0AD00A20A40A00F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
-		91EF0AD10A20A40A00F0EF9A /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0ACA0A20A3F300F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0ACB0A20A3F300F0EF9A /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS SDK/IllustratorAPI/Illustrator/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0ACE0A20A40A00F0EF9A /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0ACF0A20A40A00F0EF9A /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0AD00A20A40A00F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
+		91EF0AD10A20A40A00F0EF9A /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		91EF0ADE0A20A45900F0EF9A /* exceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = exceptions.cpp; sourceTree = "<group>"; };
 		91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_LiveEffect.cpp; path = jni/com_scriptographer_ai_LiveEffect.cpp; sourceTree = "<group>"; };
 		91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_LayerList.cpp; path = jni/com_scriptographer_ai_LayerList.cpp; sourceTree = "<group>"; };
@@ -1524,7 +1524,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1577,7 +1577,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1628,7 +1628,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1683,7 +1683,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1737,7 +1737,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1797,7 +1797,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1853,7 +1853,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS4 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS4 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1913,7 +1913,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS4 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS4 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -1969,7 +1969,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = /Users/lehni/Development/Scriptographer/Scriptographer/build/mac/resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
@@ -2029,7 +2029,7 @@
 					"$(ILLUSTRATOR_HEADERS)",
 					"$(JNI_HEADERS)",
 				);
-				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = /Users/lehni/Development/Scriptographer/Scriptographer/build/mac/resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
