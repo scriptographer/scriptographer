@@ -88,6 +88,7 @@ protected:
 	AINotifierHandle m_beforeClearNotifier;
 	bool m_loaded;
 	bool m_started;
+	bool m_active;
 	bool m_reverting; 
 	ScriptographerEngine *m_engine;
 	
@@ -138,7 +139,9 @@ public:
 
 	long getNanoTime();
 	bool isKeyDown(int keycode);
-	bool isActive();
+	bool isActive() {
+		return m_active;
+	}
 
 	ASErr onStartupPlugin(SPInterfaceMessage *message); 
 	ASErr onShutdownPlugin(SPInterfaceMessage *message); 

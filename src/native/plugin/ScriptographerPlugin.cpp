@@ -64,6 +64,7 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_engine = NULL;
 	m_loaded = false;
 	m_started = false;
+	m_active = false;
 	m_reverting = false;
 	gPlugin = this;
 #ifdef LOGFILE
@@ -145,9 +146,11 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 		int type = -1;
 		switch(GetEventKind(event)) {
 			case kEventAppActivated:
+				gPlugin->m_active = true;
 				type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
 				break;
 			case kEventAppDeactivated:
+				gPlugin->m_active = false;
 				type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
 				break;
 		}
@@ -261,11 +264,13 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARA
 	if (gEngine != NULL && uMsg == WM_ACTIVATEAPP) {
 		int type = -1;
 		switch (LOWORD(wParam)) {
-		case WA_INACTIVE:
-			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
-			break;
 		case WA_ACTIVE:
+			gPlugin->m_active = true;
 			type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
+			break;
+		case WA_INACTIVE:
+			gPlugin->m_active = false;
+			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
 			break;
 		}
 		if (type != -1)
@@ -395,7 +400,7 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 
 
 bool ScriptographerPlugin::isKeyDown(int keycode) {
-	if (isActive()) {
+	if (m_active) {
 #ifdef MAC_ENV
 		if (keycode >= 0 && keycode <= 255) {
 			keycode = s_keycodeJavaToMac[keycode];
@@ -411,17 +416,6 @@ bool ScriptographerPlugin::isKeyDown(int keycode) {
 #endif
 	}
 	return false;
-}
-
-bool ScriptographerPlugin::isActive() {
-#ifdef MAC_ENV
-	return FrontWindow() != NULL;
-#endif // MAC_ENV
-#ifdef WIN_ENV
-	HWND hWnd = NULL;
-	sAIAppContext->GetPlatformAppWindow((AIWindowRef *) &hWnd);
-	return hWnd == ::GetActiveWindow();
-#endif // WIN_ENV
 }
 
 long ScriptographerPlugin::getNanoTime() {
