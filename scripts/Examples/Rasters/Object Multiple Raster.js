@@ -12,12 +12,13 @@ function createDot(x, y, dots, radius) {
 }
 
 if (initRaster()) {
-	var values = Dialog.prompt('Enter Raster Values:', {
-		size: { value: 10, description: 'Grid Size'} ,
-		scale: { value: 100, description: 'Object Scale (%)'},
-		gradiation: { value: 0.5, description: 'Gradiation'},
-		rotation: { value: 360.0, description: 'Rotation'}
-	});
+	var components = {
+		size: { value: 10, label: 'Grid Size'} ,
+		scale: { value: 100, label: 'Object Scale (%)'},
+		gradiation: { value: 0.5, label: 'Gradiation'},
+		rotation: { value: 360.0, label: 'Rotation'}
+	};
+	var values = Dialog.prompt('Enter Raster Values:', components);
 	if (values) {
 		values.scale /= 100;
 		executeRaster(createDot, true);

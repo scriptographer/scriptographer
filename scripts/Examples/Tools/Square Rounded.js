@@ -1,23 +1,31 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	radius: 10,
 	tolerance: 5
 };
 
+var components = {
+	radius: { description: 'Radius'},
+	tolerance: { description: 'Tolerance' }
+};
+
+var palette = new Palette('Square Radius', components, values);
+palette.onChange = function(component) {
+	checkValues();
+};
+
 checkValues();
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 var handle;
 function checkValues() {
 	var min = values.radius * 2;
 	if (values.tolerance < min) values.tolerance = min;
 	handle = values.radius * 0.5522847498; // kappa
-}
-
-function onOptions() {
-	values = Dialog.prompt('Square Radius:', {
-		radius: { description: 'Radius'},
-		tolerance: { description: 'Tolerance' }
-	}, values);
-	checkValues();
 }
 
 var path;
@@ -54,11 +62,11 @@ function onMouseDrag(event) {
 	var minDiff = Math.min(diff.x, diff.y);
 	if (minDiff > values.tolerance) {
 		var seg = path.segments.removeLast();
-		path.segments.add(new Segment(curPoint - (normal * values.radius), null, normal * handle));
-		path.segments.add(seg);
+		path.add(new Segment(curPoint - (normal * values.radius), null, normal * handle));
+		path.add(seg);
 		curHandleSeg = path.segments.last;
 		prevPoint = curHandleSeg.point.clone(); // clone as we want the unmodified one!
-		path.segments.add(seg);
+		path.add(seg);
 		curPoint = path.segments.last.point;
 	}
 }

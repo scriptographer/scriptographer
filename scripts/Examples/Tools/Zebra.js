@@ -1,3 +1,6 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	offset: 10,
 	distance: 10,
@@ -5,19 +8,31 @@ var values = {
 	speedScale: 1.5
 };
 
-function onOptions() {
-	values = Dialog.prompt('Zebra:', {
-		distance: { description: 'Distance threshold' },
-		offset: { description: 'Size' },
-		mouseOffset: { description: 'Define size by mouse speed', type: 'checkbox'},
-		speedScale: { description: 'Mouse speed scaling factor'}
-	}, values);
-	tool.distanceThreshold = values.distance;
-}
+var components = {
+	distance: {
+		label: 'Distance threshold',
+		onChange: function(value) {
+			tool.distanceThreshold = value;
+		}
+	},
+	mouseOffset: {
+		label: 'Dynamic size', type: 'checkbox',
+		onChange: function(checked) {
+			palette.components.offset.enabled = !checked;
+			palette.components.speedScale.enabled = checked;
+		}
+	},
+	speedScale: { label: 'Scale factor', enabled: false },
+	offset: { label: 'Size', type: 'number' }
+};
+
+var palette = new Palette('Zebra', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 function onMouseDrag(event) {
-
-	// the vector in the direction that the mouse moved
+	// the vector in the direction that the mouse moved:
 	var step = event.delta.clone();
 	
 	if (values.mouseOffset) {

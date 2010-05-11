@@ -1,38 +1,32 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	accel: 10,
 	accelFriction: 0.8,
 	friction: 0.65
 };
 
+var components = {
+	friction: { label: 'Friction' },
+	accel: { label: 'Acceleration' },
+	accelFriction: { label: 'Acceleration Friction' }
+};
+
+var palette = new Palette('Friction', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
+
 tool.eventInterval = 1000 / 100; // 100 times a second
 
-function onOptions() {
-	values = Dialog.prompt('Friction:', {
-		friction: { description: 'friction' },
-		accel: { description: 'acceleration' },
-		accelFriction: { description: 'acceleration friction' }
-	}, values);
-}
-
-var point, velocity, acceleration, path, paths;
+var point, velocity, acceleration, path;
 function onMouseDown(event) {
 	point = event.point;
 	velocity = new Point();
 	acceleration = new Point();
 	path = new Path();
-	path.moveTo(event.point);
-	paths = [];
-	paths.push(path);
-}
-
-function onMouseUp(event) {
-	path.pointsToCurves();
-	path = new Path();
-	// concatenate smoothed paths
-	for(var i = 0; i < paths.length; i++) {
-		path.segments.addAll(paths[i].segments);
-		paths[i].remove();
-	}
+	path.add(event.point);
 }
 
 function onMouseDrag(event) {
@@ -41,11 +35,6 @@ function onMouseDrag(event) {
 	acceleration = (acceleration + (norm * values.accel)) * values.accelFriction;
 	velocity = (velocity + acceleration) * values.friction;
 	point += velocity;
-	path.lineTo(point);
-	if (path.length > 400) {
-		path.pointsToCurves();
-		path = new Path();
-		path.segments.add(point);
-		paths.push(path);
-	}
+	path.add(point);
+	path.smooth();
 }

@@ -1,10 +1,16 @@
-if(document.selectedItems.length) {
-	var values = Dialog.prompt('Grow:', {
-		scale: { description: 'Scale', value: 0.95 }
-	});
+var paths = document.getItems({
+	type: Path,
+	selected: true
+});
+
+if(paths.length) {
+	var components = {
+		scale: { label: 'Scale', value: 0.95 }
+	};
+	var values = Dialog.prompt('Grow:', components);
 
 	if (values) {
-		var path = document.selectedItems.first;
+		var path = paths[0];
 		var group = new Group([path]);
 		var count = 0;
 		while (count++ < 100) {
@@ -13,7 +19,7 @@ if(document.selectedItems.length) {
 			var a2 = lastB.getTangent(1).angle;
 			var obj = path.clone();
 			obj.scale(values.scale);
-			group.appendChild(obj);
+			group.appendTop(obj);
 			if (obj.bounds.width < 1 && obj.bounds.height < 1)
 				break;
 			var firstB = obj.curves.first;
@@ -25,5 +31,5 @@ if(document.selectedItems.length) {
 		}
 	}
 } else {
-	Dialog.alert('Please select a path first.')
+	Dialog.alert('Please select a path first.');
 }

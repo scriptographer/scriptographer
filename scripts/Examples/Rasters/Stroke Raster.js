@@ -10,10 +10,11 @@ function createDot(x, y, dot, radius) {
 }
 
 if (initRaster()) {
-	var values = Dialog.prompt('Enter Raster Values:', {
-		size: { value: 10, description: 'Grid Size'},
-		scale: { value: 10, description: 'Stroke Scale'}
-	});
+	var components = {
+		size: { value: 10, label: 'Grid Size'},
+		scale: { value: 10, label: 'Stroke Scale'}
+	};
+	var values = Dialog.prompt('Enter Raster Values:', components);
 	if (values) {
 		executeRaster(createDot);
 	}

@@ -1,6 +1,9 @@
 var raster, dot;
 
-var rasters = document.getSelectedItems([Raster, PlacedFile]);
+var rasters = document.getItems({
+	type: [Raster, PlacedFile],
+	selected: true
+});
 
 if(rasters.length) {
 	for (var i = 0, l = rasters.length; i < l; i++) {
@@ -13,7 +16,7 @@ if(rasters.length) {
 		raster = raster.embed(false);
 	}
 
-	var sel = activeDocument.selectedItems;
+	var sel = document.selectedItems;
 
 	for (var i = 0; i < sel.length; i++) {
 		var obj = sel[i];
@@ -55,12 +58,13 @@ if (!raster || !dot) {
 	}
 	
 	if (sure) {
-		var values = Dialog.prompt('Enter Raster Values:', {
-			size: { value: 10, description: 'Grid Size', width: 100 }
-		});
+		var components = {
+			size: { value: 10, label: 'Grid Size', width: 100 }
+		};
+		var values = Dialog.prompt('Enter Raster Values:', components);
 
 		if (values) {
-			activeDocument.deselectAll();
+			document.deselectAll();
 
 			var group = new Group();
 			var white = new GrayColor(0);
@@ -70,10 +74,10 @@ if (!raster || !dot) {
 					app.updateProgress(y * raster.width + x + 1, pixelCount);
 					var col = raster.getPixel(x, y);
 					if (white != col) {
-						group.appendChild(createDot(x, raster.height - y, dot, col));
+						group.appendTop(createDot(x, raster.height - y, dot, col));
 					}
 				}
-				activeDocument.redraw();
+				document.redraw();
 			}
 		}
 	}

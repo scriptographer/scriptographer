@@ -1,15 +1,21 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = { scale: 0.9 };
 
-function onOptions() {
-	values = Dialog.prompt('Grow:', {
-		scale: { description: 'Scale' }
-	}, values);
-}
+var components = {
+	scale: { label: 'Scale', increment: 0.1 }
+};
+
+var palette = new Palette('Grow:', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 var path;
 function onMouseDown(event) {
 	path = new Path();
-	path.moveTo(event.point);
+	path.add(event.point);
 }
 
 function onMouseUp(event) {
@@ -22,7 +28,7 @@ function onMouseUp(event) {
 		var a2 = lastB.getTangent(1).angle;
 		var obj = path.clone();
 		obj.scale(values.scale);
-		group.appendChild(obj);
+		group.appendTop(obj);
 		if (obj.bounds.width < 1 && obj.bounds.height < 1)
 			break;
 		var firstB = obj.curves[0];
@@ -35,5 +41,5 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-	path.lineTo(event.point);
+	path.add(event.point);
 }

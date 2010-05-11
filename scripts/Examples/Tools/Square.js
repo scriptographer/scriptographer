@@ -1,10 +1,16 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = { tolerance: 5 };
 
-function onOptions() {
-	values = Dialog.prompt('Square:', {
-		tolerance: { description: 'Tolerance' }
-	}, values);
-}
+var components = {
+	tolerance: { label: 'Tolerance' }
+};
+
+var palette = new Palette('Square', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 var prevSeg, curSeg, path;
 function onMouseDown(event) {
@@ -21,7 +27,7 @@ function onMouseUp(event) {
 
 function onMouseDrag(event) {
 	if (Key.isDown('space')) {
-		path.segments.add(event.point);
+		path.add(event.point);
 		curSeg = path.segments.last;
 	} else {
 		var diff = (event.point - prevSeg.point).abs();
@@ -33,7 +39,7 @@ function onMouseDrag(event) {
 		}
 		if (minDiff > values.tolerance) {
 			prevSeg = curSeg;
-			path.segments.add(curSeg);
+			path.add(curSeg);
 			curSeg = path.segments.last;
 		}
 	}

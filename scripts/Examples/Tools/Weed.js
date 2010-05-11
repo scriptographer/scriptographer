@@ -1,16 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	size: 20,
 	max: 10
 };
 
-tool.eventInterval = 1000 / 100; // 100 times a second
+var components = {
+	size: { label: 'Size'},
+	max: { label: 'Max'}
+};
 
-function onOptions() {
-	values = Dialog.prompt('Random Radius:', {
-		size: { description: 'Size'},
-		max: { description: 'Max'}
-	}, values);
-}
+var palette = new Palette('Random Radius', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
+
+tool.eventInterval = 1000 / 100; // 100 times a second
 
 var branches;
 function onMouseDown(event) {
@@ -32,19 +38,18 @@ function onMouseDrag(event) {
 }
 
 // Branch:
-
 function Branch(point, group) {
 	this.point = point;
 	this.vector = new Point(Math.random() * values.size, 0).rotate(Math.random() * 2 * Math.PI);
 	this.path = new Path();
-	this.path.moveTo(point);
-	group.appendChild(this.path);
+	this.path.add(point);
+	group.appendTop(this.path);
 }
 
 Branch.prototype.grow = function() {
 	this.vector = this.vector.transform(new Matrix().rotate(Math.random() - 0.5));
 	this.point += this.vector;
-	this.path.lineTo(this.point);
+	this.path.add(this.point);
 };
 
 Branch.prototype.finish = function() {

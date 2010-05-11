@@ -1,3 +1,6 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	minScale: 0.2,
 	maxScale: 0.8,
@@ -6,29 +9,54 @@ var values = {
 	maxBranch: 6
 };
 
-function onOptions() {
-	values = Dialog.prompt('Tree:', {
-		minScale: { description: 'Minimal Scale' },
-		maxScale: { description: 'Maximal Scale' },
-		rotation: { description: 'Rotation' },
-		minBranch: { description: 'Minimal Branch Number' },
-		maxBranch: { description: 'Maximal Branch Number' }
-	}, values);
+var components = {
+	minScale: {
+		label: 'Minimal Scale',
+		onChange: function(value) {
+			if(value > values.maxScale)
+				values.maxScale = value;
+		}
+	},
+	maxScale: {
+		label: 'Maximal Scale',
+		onChange: function(value) {
+			if(value < values.minScale)
+				values.minScale = value;
+		}
+	},
+	rotation: { label: 'Rotation' },
+	minBranch: {
+		label: 'Minimal Branch Number',
+		onChange: function(value) {
+			if(value > values.maxBranch)
+				values.maxBranch = value;
+		}
+	},
+	maxBranch: { label: 'Maximal Branch Number',
+		onChange: function(value) {
+			if(value < values.minBranch)
+				values.minBranch = value;
+		}
+	}
+};
 
-	if (values.minScale > values.maxScale)
-		values.maxScale = values.minScale;
-	if (values.minBranch > values.maxBranch)
-		values.maxBranch = values.minBranch;
-}
+var palette = new Palette('Tree', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 var path;
 function onMouseDown(event) {
 	path = new Path();
-	path.moveTo(event.point);
+	path.add(event.point);
+}
+
+function onMouseDrag(event) {
+	path.add(event.point);
 }
 
 function onMouseUp(event) {
-	if (path.segments.length > 0) {
+	if (path.segments.length > 1) {
 		path.pointsToCurves();
 		var group = new Group([path]);
 		var branches = [{
@@ -49,12 +77,14 @@ function onMouseUp(event) {
 						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * values.rotation;
 						newPath.scale(scale);
 						var curStartPoint = newPath.segments.first.point;
-						newPath.translate(prevEndPoint - curStartPoint);
+						newPath.position += prevEndPoint - curStartPoint;
 						newPath.rotate(rotation, curStartPoint);
 
-						group.appendChild(newPath);
+						group.appendTop(newPath);
 						newBranches.push({
-							path: newPath, scale: scale, rotation: rotation
+							path: newPath,
+							scale: scale,
+							rotation: rotation
 						});
 
 						count++;
@@ -65,11 +95,9 @@ function onMouseUp(event) {
 					}
 				}
 			}
-			branches  = newBranches;
+			branches = newBranches;
 		}
+	} else {
+		path.remove();
 	}
-}
-
-function onMouseDrag(event) {
-	path.lineTo(event.point);
 }

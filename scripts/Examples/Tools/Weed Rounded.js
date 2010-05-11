@@ -1,3 +1,6 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	size: 10,
 	minAmount: 5,
@@ -6,17 +9,20 @@ var values = {
 	maxWidth: 5
 };
 
-tool.eventInterval = 1000 / 100; // 100 times a second
+var components = {
+	size: { label: 'Radius' },
+	minAmount: { label: 'Minimal Amount' },
+	maxAmount: { label: 'Maximal Amount' },
+	minWidth: { label: 'Minimal Stroke Width' },
+	maxWidth: { label: 'Maximal Stroke Width' }
+};
 
-function onOptions() {
-	values = Dialog.prompt('Weed Rounded:', {
-		size: { description: 'Radius' },
-		minAmount: { description: 'Minimal Amount' },
-		maxAmount: { description: 'Maximal Amount' },
-		minWidth: { description: 'Minimal Stroke Width' },
-		maxWidth: { description: 'Maximal Stroke Width' }
-	}, values);
-}
+var palette = new Palette('Weed Rounded', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
+
+tool.eventInterval = 1000 / 100; // 100 times a second
 
 var branches;
 
@@ -39,14 +45,13 @@ function onMouseDrag(event) {
 }
 
 // Branch:
-
 function Branch(point, group) {
 	this.point = point;
 	this.vector = new Point(1, 0).rotate(Math.random() * 2 * Math.PI);
 	this.path = new Path();
-	this.path.moveTo(point);
+	this.path.add(point);
 	this.path.strokeWidth = values.minWidth + Math.random() * (values.maxWidth - values.minWidth);
-	group.appendChild(this.path);
+	group.appendTop(this.path);
 	this.rotate = 0.2;
 	this.count = 0;
 	this.max = 0;
@@ -62,7 +67,7 @@ Branch.prototype.grow = function() {
 		this.count = 0;
 	}
 	this.point += this.vector;
-	this.path.lineTo(this.point);
+	this.path.add(this.point);
 };
 
 Branch.prototype.finish = function() {

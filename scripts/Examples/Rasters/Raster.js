@@ -26,7 +26,10 @@ function initRaster() {
 		return false;
 	}
 	
-	var rasters = document.getSelectedItems([Raster, PlacedFile]);
+	var rasters = document.getItems({
+		type: [Raster, PlacedFile],
+		selected: true
+	});
 	for (var i = 0, l = rasters.length; i < l; i++) {
 		rasters[i].selected = false;
 	}
@@ -83,7 +86,7 @@ function executeRaster(createDot, multiple) {
 			var obj = createDot(x, raster.height - y, multiple ? dots : dots[0], radius);
 			if (obj) {
 				obj.position += origin;
-				group.appendChild(obj);
+				group.appendTop(obj);
 			}
 		}
 		document.redraw();

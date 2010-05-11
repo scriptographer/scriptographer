@@ -1,25 +1,31 @@
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var values = {
 	distance: 3,
 	size: 10
 };
 
-function onOptions() {
-	values = Dialog.prompt('Stitch:', {
-		distance: { description: 'Distance' },
-		size: { description: 'Size' }
-	}, values);
-}
+var components = {
+	distance: { label: 'Distance' },
+	size: { label: 'Size' }
+};
+
+var palette = new Palette('Stitch', components, values);
+
+//////////////////////////////////////////////////////////////////////////////
+// Mouse handling:
 
 var mul, path, res;
 function onMouseDown(event) {
 	mul = 1;
 	path = new Path();
-	path.moveTo(event.point);
+	path.add(event.point);
 	res = new Path();
 }
 
 function onMouseDrag(event) {
-	path.lineTo(event.point);
+	path.add(event.point);
 	if (path.length > 10) {
 		path.pointsToCurves();
 		path.curvesToPoints(values.distance, 10000);
@@ -29,12 +35,12 @@ function onMouseDrag(event) {
 			var n = bezier.getNormal(1);
 			if (n.x != 0 || n.y != 0) {
 				n = n.normalize(values.size);
-				res.segments.add(pt + (n * mul));
+				res.add(pt + (n * mul));
 				mul *= -1;
 			}
 		}
 		path.remove();
 		path = new Path();
-		path.lineTo(event.point);
+		path.add(event.point);
 	}
 }
