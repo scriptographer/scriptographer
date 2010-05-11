@@ -123,6 +123,7 @@ public class ListWrapper extends ExtendedJavaObject {
 					Object result = Context.javaToJS(obj, getParentScope());
 					if (javaObject instanceof ChangeReceiver)
 						handleChangeEmitter(result, Integer.toString(index));
+					return result;
 				}
 			} catch (IndexOutOfBoundsException e) {
 				// Don't report
