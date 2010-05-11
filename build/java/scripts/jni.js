@@ -1,14 +1,13 @@
 var printDetails = true;
 
-if (!this.print) {
-	// if print is not defined, we're running within the Ant environment, let's define it here:
-	this.print = function(str) {
+if (this.echo) {
+	this.print = function() {
 		// replace white spaces with non breaking spaces so that they don't get trimmed away.
 		// also replace empty with a non breaking space, otherwise it won't be printed
-		echo.setMessage(str ? str.toString().replace(/\s/gi, '\xa0') : '\xa0');
+		echo.setMessage(Array.prototype.slice.call(arguments).join('\xa0').replace(/\s/gi, '\xa0'));
 		echo.execute();
 	}
-	// under Ant, we're not printing details:
+	// Under Ant, we're not printing details:
 	printDetails = false;
 }
 
