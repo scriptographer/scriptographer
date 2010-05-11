@@ -135,8 +135,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
-		// Is escape pressed?
-		if (gPlugin != NULL && gPlugin->isKeyDown('\e'))
+		// Is the escape key pressed? 
+		// Unfortunately Visual C++ does not recognize '/e'
+		if (gPlugin != NULL && gPlugin->isKeyDown('\x1b'))
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);
