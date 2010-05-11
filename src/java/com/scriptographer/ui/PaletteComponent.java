@@ -37,8 +37,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.ChangeEmitter;
+import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.script.MapArgumentReader;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
@@ -48,7 +51,7 @@ import com.scriptographer.ai.FontWeight;
 /**
  * @author lehni
  */
-public class PaletteComponent {
+public class PaletteComponent implements ChangeReceiver {
 
 	private String label;
 	private String name; // for preferences
@@ -655,8 +658,20 @@ public class PaletteComponent {
 			item.setEnabled(enabled);
 	}
 
-	public Object[] getOptions() {
-		return options;
+	private static class OptionList extends ExtendedArrayList<Object> implements
+			ChangeEmitter {
+
+		public OptionList(Object[] options) {
+			super(options);
+		}
+	}
+
+	public com.scratchdisk.list.ExtendedList<Object> getOptions() {
+		return new OptionList(options);
+	}
+
+	public void setOptions(com.scratchdisk.list.ExtendedList<Object> options) {
+		setOptions(options != null ? options.toArray() : new Object[0]);
 	}
 
 	public void setOptions(Object[] options) {
