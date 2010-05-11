@@ -152,7 +152,7 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		this.onChange = onChange;
 	}
 
-	protected void onChange(PaletteComponent item, String name, Object value,
+	protected void onChange(PaletteComponent component, String name, Object value,
 			boolean callback) {
 		if (!values.containsKey(name)) {
 			// Make sure we observe new fields too. This has to do with the
@@ -168,7 +168,7 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		values.put(name, value);
 		isChanging = false;
 		if (callback && onChange != null)
-			ScriptographerEngine.invoke(onChange, this, item);
+			ScriptographerEngine.invoke(onChange, this, component);
 	}
 
 	public void onChange(Map object, Object key, Object value) {
