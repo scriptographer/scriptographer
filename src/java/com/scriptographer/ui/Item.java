@@ -437,6 +437,7 @@ public abstract class Item extends Component {
 			size = new Size(160, 8);
 			break;
 		case POPUP_LIST:
+		case SCROLLING_POPUP_LIST:
 			// 38 is a mac specific value, defined by the size
 			// of pulldown menu interface elements.
 			// TODO: Check on windows!
