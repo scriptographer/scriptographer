@@ -136,8 +136,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
 		// Is escape pressed?
-		// TODO: What's the escaped character for escape?
-		if (gPlugin->isKeyDown('\x27'))
+		if (gPlugin->isKeyDown('\e'))
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);
