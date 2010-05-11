@@ -38,6 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.ChangeEmitter;
@@ -86,10 +88,9 @@ public class PaletteComponent implements ChangeReceiver {
 		if (reader.isMap()) {
 			type = reader.readEnum("type", PaletteComponentType.class);
 			defaultValue = reader.readObject("value");
-			options = reader.readObject("options", Object[].class);
 			if (type == null) {
 				// Determine type form options and value
-				if (options != null)
+				if (reader.has("options"))
 					type = PaletteComponentType.LIST;
 				else if (defaultValue instanceof Number)
 					type = PaletteComponentType.NUMBER;
@@ -105,9 +106,9 @@ public class PaletteComponent implements ChangeReceiver {
 				// on the object after creating through ArgumentReader.
 				reader.setProperties(this);
 			}
-		} else {
-			throw new IllegalArgumentException();
 		}
+		if (type == null)
+			throw new IllegalArgumentException();
 	}
 
 	/**
@@ -297,13 +298,13 @@ public class PaletteComponent implements ChangeReceiver {
 			item.setVisible(false);
 		if (!enabled)
 			item.setEnabled(false);
-		setOptions(options);
-		setValue(defaultValue);
 		setRange(min, max);
 		setIncrement(increment);
 		setUnits(units);
 		setFractionDigits(fractionDigits);
 		setMaxLength(maxLength);
+		setOptions(options);
+		setValue(defaultValue);
 		
 		// Margin needs to be defined before setting size, since getBestSize is
 		// affected by margin
@@ -536,6 +537,13 @@ public class PaletteComponent implements ChangeReceiver {
 		} : null;
 	}
 
+	public void setRange(float[] range) {
+		if (range == null)
+			setRange(null, null);
+		else
+			setRange(range[0], range[1]);
+	}
+
 	/**
 	 * @jshide
 	 */
@@ -545,17 +553,11 @@ public class PaletteComponent implements ChangeReceiver {
 			this.min = min;
 			this.max = max;
 			if (item != null) {
-				((ValueItem) item).setRange(min != null ? min : Float.MIN_VALUE, 
-						max != null ? max : Float.MAX_VALUE);
+				((ValueItem) item).setRange(
+						min != null ? min : Integer.MIN_VALUE, 
+						max != null ? max : Integer.MAX_VALUE);
 			}
 		}
-	}
-
-	public void setRange(float[] range) {
-		if (range == null)
-			setRange(null, null);
-		else
-			setRange(range[0], range[1]);
 	}
 
 	public boolean hasRange() {
@@ -666,12 +668,12 @@ public class PaletteComponent implements ChangeReceiver {
 		}
 	}
 
-	public com.scratchdisk.list.ExtendedList<Object> getOptions() {
+	public com.scratchdisk.list.List<Object> getOptions() {
 		return new OptionList(options);
 	}
 
-	public void setOptions(com.scratchdisk.list.ExtendedList<Object> options) {
-		setOptions(options != null ? options.toArray() : new Object[0]);
+	public void setOptions(ReadOnlyList<Object> options) {
+		setOptions(options != null ? Lists.toArray(options) : new Object[0]);
 	}
 
 	public void setOptions(Object[] options) {

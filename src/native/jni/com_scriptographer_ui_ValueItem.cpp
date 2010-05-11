@@ -58,6 +58,11 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ui_ValueItem_getRange(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_ValueItem_setRange(JNIEnv *env, jobject obj, jfloat min, jfloat max) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
+		// ADM seems to have 25 bit resolution... Weird!
+		if (min < -16777215)
+			min = -16777215;
+		if (max > 16777216)
+			max = 16777216;
 		sADMItem->SetMinFloatValue(item, min);
 		sADMItem->SetMaxFloatValue(item, max);
 	} EXCEPTION_CONVERT(env);
