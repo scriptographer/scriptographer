@@ -69,6 +69,7 @@ abstract class NativeObject {
 	}
 
 	public String toString() {
-		return getClass().getSimpleName() + " (" + getId() + ")";
+		return getClass().getSimpleName() + " "
+				+ (isValid() ? getId() : "<invalid>");
 	}
 }

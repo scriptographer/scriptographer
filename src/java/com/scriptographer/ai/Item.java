@@ -626,7 +626,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * Sample code:
 	 * <code>
 	 * var layer = new Layer(); // a layer is an item
-	 * print(layer.name); // '<Layer 2>'
+	 * print(layer.name); // null
 	 * layer.name = 'A nice name';
 	 * print(layer.name); // 'A nice name'
 	 * </code>
@@ -634,7 +634,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	public native String getName();
 
 	public native void setName(String name);
-	
+
 	/**
 	 * The item's position within the art board. This is the
 	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
@@ -1536,23 +1536,6 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	public boolean hasChildren() {
 		return getFirstChild() != null;
 	}
-	
-	/**
-	 * Checks if the name of the item as it appears in the layers palette is a
-	 * default descriptive name, rather then a user-assigned name.
-	 * 
-	 * Sample code: <code>
-	 * var path = new Path();
-	 * print(path.name); // <Path>
-	 * print(path.isDefaultName()); // true
-	 * 
-	 * path.name = 'a nice name';
-	 * print(path.isDefaultName()); // false
-	 * </code>
-	 * 
-	 * @return {@true if the item has a default name}
-	 */
-	public native boolean isDefaultName();
 
 	/**
 	 * Checks whether the item is editable.
@@ -1944,11 +1927,12 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	public static native int getItemType(Class cls);
 
 	public String toString() {
-		return getClass().getSimpleName() + (isValid()
-				? isDefaultName()
-						? " (" + getId() + ")"
-						: " <" + getName() + "> (" + getId() + ")"
-				: " <invalid>");
+		if (isValid()) {
+			String name = getName();
+			if (name != null)
+				return getClass().getSimpleName() + " '" + name + "'";
+		}
+		return super.toString();
 	}
 
 	private static ItemList newItems = null;

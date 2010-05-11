@@ -901,14 +901,16 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Item_getName(JNIEnv *env, j
 		// Handle pseudo HANDLE_CURRENT_STYLE item which returns NULL, but
 		// getName will get called in toString().
 		if (art != NULL) {
+			ASBoolean isDefaultName = true;
 #if kPluginInterfaceVersion < kAI12
 			char name[1024];
-			if (!sAIArt->GetArtName(art, name, 1024, NULL)) {
+			if (!sAIArt->GetArtName(art, name, 1024, &isDefaultName)) {
 #else
 			ai::UnicodeString name;
-			if (!sAIArt->GetArtName(art, name, NULL)) {
+			if (!sAIArt->GetArtName(art, name, &isDefaultName)) {
 #endif
-				return gEngine->convertString(env, name);
+				if (!isDefaultName)
+					return gEngine->convertString(env, name);
 			}
 		}
 	} EXCEPTION_CONVERT(env);
@@ -931,30 +933,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setName(JNIEnv *env, jobj
 		sAIArt->SetArtName(art, str);
 #endif
 	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * boolean isDefaultName()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isDefaultName(JNIEnv *env, jobject obj) {
-	ASBoolean isDefaultName = true;
-	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		// Handle pseudo HANDLE_CURRENT_STYLE item which returns NULL, but
-		// isDefaultName will get called in toString().
-		if (art == NULL)
-			return true;
-#if kPluginInterfaceVersion < kAI12
-		// At least one byte for the name needs to be specified, otherwise this
-		// doesn't work:
-		char name;
-		sAIArt->GetArtName(art, &name, 1, &isDefaultName);
-#else
-		ai::UnicodeString name;
-		sAIArt->GetArtName(art, name, &isDefaultName);
-#endif
-	} EXCEPTION_CONVERT(env);
-	return isDefaultName;
 }
 
 /*

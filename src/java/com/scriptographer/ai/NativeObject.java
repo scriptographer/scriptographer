@@ -120,7 +120,8 @@ abstract class NativeObject implements ValidationObject {
 	}
 
 	public String toString() {
-		return getClass().getSimpleName() + " (" + getId() + ")";
+		return getClass().getSimpleName() + " "
+				+ (isValid() ? getId() : "<invalid>");
 	}
 
 	// Cache the factories for the various wrapper classes which use this base class
