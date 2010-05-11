@@ -697,7 +697,10 @@ public class PaletteComponent implements ChangeReceiver {
 							entry = list.add(entry);
 						} else {
 							entry = new ListEntry(list);
-							entry.setText(option.toString());
+							String name = option instanceof com.scriptographer.ai.Item
+									? ((com.scriptographer.ai.Item) option).getName()
+									: null;
+							entry.setText(name != null ? name : option.toString());
 						}
 					}
 					if (index < 0)
