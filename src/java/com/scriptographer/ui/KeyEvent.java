@@ -31,6 +31,7 @@
 
 package com.scriptographer.ui;
 
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.script.EnumUtils;
 import com.scriptographer.sg.Event;
@@ -53,7 +54,7 @@ import com.scriptographer.sg.Event;
  */
 public class KeyEvent extends Event {
 
-	private int keyCode;
+	private KeyCode keyCode;
 	private char character;
 	private KeyEventType type;
 
@@ -64,7 +65,7 @@ public class KeyEvent extends Event {
 		super(modifiers);
 		this.type = type == ScriptographerEngine.EVENT_KEY_DOWN
 			? KeyEventType.KEY_DOWN : KeyEventType.KEY_UP;
-		this.keyCode = keyCode;
+		this.keyCode = IntegerEnumUtils.get(KeyCode.class, keyCode);
 		this.character = character;
 	}
 
@@ -82,7 +83,7 @@ public class KeyEvent extends Event {
 	 * 
 	 * @return the virtual key code.
 	 */
-	public int getKeyCode() {
+	public KeyCode getKeyCode() {
 		return keyCode;
 	}
 
