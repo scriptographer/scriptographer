@@ -418,7 +418,8 @@ bool ScriptographerPlugin::isActive() {
 	return FrontWindow() != NULL;
 #endif // MAC_ENV
 #ifdef WIN_ENV
-	HWND hWnd = (HWND) sAIAppContext->GetPlatformAppWindow();
+	HWND hWnd = NULL;
+	sAIAppContext->GetPlatformAppWindow((AIWindowRef *) &hWnd);
 	return hWnd == ::GetActiveWindow();
 #endif // WIN_ENV
 }
