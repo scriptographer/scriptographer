@@ -68,10 +68,44 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				: prototype;
 	}
 
-	protected ExtendedJavaObject changeListener = null;
-	protected String changeName = null;
+	protected ExtendedJavaObject changeReceiver = null;
+	protected String changeProperty = null;
 	protected int currentChangeVersion = -1;
 	public static int changeVersion = -1;
+
+	protected void fetchChangeReceiver() {
+		// If there is a change receiver, fetch the new value of this object
+		// from it before calling anything on it. We are doing this by
+		// replacing the underlying native object each time.
+		if (currentChangeVersion != changeVersion) {
+			Object result = changeReceiver.get(changeProperty, this);
+			if (result != this && result instanceof ExtendedJavaObject) {
+				ExtendedJavaObject update = (ExtendedJavaObject) result;
+				javaObject = update.javaObject;
+				// Help the garbage collector
+				update.javaObject = null;
+			}
+			currentChangeVersion = changeVersion;
+		}
+	}
+
+	protected void updateChangeReceiver() {
+		// If there is a modification listener, update this field in it
+		// right away now.
+		changeReceiver.put(changeProperty, changeReceiver, this);
+	}
+
+	protected void handleChangeEmitter(Object object, String property) {
+		// Now see if the result is a change emitter for this listener.
+		// If so, create the links between the two.
+		if (object instanceof ExtendedJavaObject) {
+			ExtendedJavaObject other = (ExtendedJavaObject) object;
+			if (other.javaObject instanceof ChangeEmitter) {
+				other.changeReceiver = this;
+				other.changeProperty = property;
+			}
+		}
+	}
 
 	public Object get(String name, Scriptable start) {
 		// Properties need to come first, as they might override something
@@ -80,35 +114,16 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
-			// If there is a modification listener, fetch the new value of this object
-			// from it before calling anything on it. We are doing this by replacing
-			// the underlying native object each time.
-			if (changeListener != null && currentChangeVersion != changeVersion) {
-				Object result = changeListener.get(changeName, this);
-				if (result != this && result instanceof ExtendedJavaObject) {
-					ExtendedJavaObject update = (ExtendedJavaObject) result;
-					javaObject = update.javaObject;
-					// Help the garbage collector
-					update.javaObject = null;
-				}
-				currentChangeVersion = changeVersion;
-			}
+			if (changeReceiver != null)
+				fetchChangeReceiver();
 			Scriptable prototype = getPrototype();
 			Object result = prototype.get(name, this);
 			if (result != Scriptable.NOT_FOUND)
 				return result;
 			result = members.get(this, name, javaObject, false);
 			if (result != Scriptable.NOT_FOUND) {
-				// Now see if the result is a modification dispatcher for this listener.
-				// If so, create the links between the two.
-				if (javaObject instanceof ChangeReceiver
-						&& result instanceof ExtendedJavaObject) {
-					ExtendedJavaObject other = (ExtendedJavaObject) result;
-					if (other.javaObject instanceof ChangeEmitter) {
-						other.changeListener = this;
-						other.changeName = name;
-					}
-				}
+				if (javaObject instanceof ChangeReceiver)
+					handleChangeEmitter(result, name);
 				return result;
 			}
 			if (name.equals("prototype"))
@@ -123,9 +138,8 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			try {
 				// Try setting the value on member first
 				members.put(this, name, javaObject, value, false);
-				// If there is a modification listener, update this field in it right away now.
-				if (changeListener != null)
-					changeListener.put(changeName, changeListener, this);
+				if (changeReceiver != null)
+					updateChangeReceiver();
 				return; // done
 			} catch (EvaluatorException e) {
 				// Rethrow errors that have another cause (a real Java exception from the

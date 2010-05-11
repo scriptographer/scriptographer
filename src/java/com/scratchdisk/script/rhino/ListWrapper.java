@@ -42,6 +42,7 @@ import com.scratchdisk.list.List;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.list.StringIndexList;
+import com.scratchdisk.script.ChangeReceiver;
 
 /**
  * Wrapper class for com.scriptographer.util.List objects to make them behave
@@ -107,15 +108,22 @@ public class ListWrapper extends ExtendedJavaObject {
 			} else {
 				list.set(index, value);
 			}
+			if (changeReceiver != null)
+				updateChangeReceiver();
 		}
 	}
 
 	public Object get(int index, Scriptable start) {
 		if (javaObject != null) {
+			if (changeReceiver != null)
+				fetchChangeReceiver();
 			try {
 				Object obj = ((ReadOnlyList) javaObject).get(index);
-				if (obj != null)
-					return Context.javaToJS(obj, getParentScope());
+				if (obj != null) {
+					Object result = Context.javaToJS(obj, getParentScope());
+					if (javaObject instanceof ChangeReceiver)
+						handleChangeEmitter(result, Integer.toString(index));
+				}
 			} catch (IndexOutOfBoundsException e) {
 				// Don't report
 			}
