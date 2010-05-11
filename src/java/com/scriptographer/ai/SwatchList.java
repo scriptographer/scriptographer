@@ -76,4 +76,8 @@ public class SwatchList extends AbstractReadOnlyList<Swatch> implements ReadOnly
 	public Swatch get(String name) {
 		return Swatch.wrapHandle(nativeGet(document.handle, name), document);
 	}
+
+	public Class<?> getComponentType() {
+		return Swatch.class;
+	}
 }

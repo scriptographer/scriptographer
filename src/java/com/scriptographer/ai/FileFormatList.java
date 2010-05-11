@@ -79,4 +79,8 @@ public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements 
 	public String[] getExtensions() {
 		return lookup.keySet().toArray(new String[lookup.size()]);
 	}
+
+	public Class<?> getComponentType() {
+		return FileFormat.class;
+	}
 }

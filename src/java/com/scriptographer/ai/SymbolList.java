@@ -64,4 +64,8 @@ public class SymbolList extends AbstractReadOnlyList<Symbol> implements
 	public Symbol get(String name) {
 		return Symbol.wrapHandle(nativeGet(document.handle, name), document);
 	}
+
+	public Class<?> getComponentType() {
+		return Symbol.class;
+	}
 }

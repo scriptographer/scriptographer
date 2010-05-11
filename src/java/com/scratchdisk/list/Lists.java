@@ -31,6 +31,8 @@
 
 package com.scratchdisk.list;
 
+import java.lang.reflect.Array;
+
 
 /**
  * @author lehni 
@@ -40,6 +42,15 @@ public class Lists {
 		return new ExtendedArrayList<T>(array);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T[] toArray(ReadOnlyList<T> list) {
+		int size = list.size();
+		Object array = Array.newInstance(list.getComponentType(), size);
+		for (int i = 0; i < size; i++)
+			Array.set(array, i, list.get(i));
+		return (T[]) array;
+	}
+	
 	public static <T> ExtendedList<T> createSubList(ReadOnlyList<T> list, int fromIndex, int toIndex) {
 		if (fromIndex < 0)
 			throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);

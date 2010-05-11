@@ -126,4 +126,8 @@ public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>
 		int size = size();
 		return size > 0 ? get(size - 1) : null;
 	}
+
+	public Class<?> getComponentType() {
+		return FontWeight.class;
+	}
 }

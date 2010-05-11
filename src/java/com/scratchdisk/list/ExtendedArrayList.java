@@ -95,4 +95,8 @@ public class ExtendedArrayList<E> extends AbstractExtendedList<E> {
 	public boolean addAll(int index, Collection<? extends E> c) {
 		return list.addAll(index, c);
 	}
+
+	public Class<?> getComponentType() {
+		return Object.class;
+	}
 }

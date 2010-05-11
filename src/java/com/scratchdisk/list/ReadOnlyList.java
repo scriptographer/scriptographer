@@ -67,4 +67,9 @@ public interface ReadOnlyList<E> extends Iterable<E> {
 	 * @jshide
 	 */
 	E getLast();
+
+	/**
+	 * @jshide
+	 */
+	Class<?> getComponentType();
 }

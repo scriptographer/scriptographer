@@ -62,4 +62,8 @@ public class DocumentList extends AbstractReadOnlyList<Document> {
 
 		return documents;
 	}
+
+	public Class<?> getComponentType() {
+		return DocumentList.class;
+	}
 }

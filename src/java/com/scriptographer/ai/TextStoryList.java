@@ -119,4 +119,8 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 		int size = size();
 		return size > 0 ? get(size - 1) : null;
 	}
+
+	public Class<?> getComponentType() {
+		return TextStory.class;
+	}
 }

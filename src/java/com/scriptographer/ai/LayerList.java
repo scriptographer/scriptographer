@@ -75,4 +75,8 @@ public class LayerList extends AbstractReadOnlyList<Layer> implements ReadOnlySt
 	public Layer get(String name) {
 		return nativeGet(document.handle, name);
 	}
+
+	public Class<?> getComponentType() {
+		return Layer.class;
+	}
 }

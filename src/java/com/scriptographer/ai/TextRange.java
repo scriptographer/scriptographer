@@ -613,6 +613,10 @@ public class TextRange extends DocumentObject implements Committable {
 			int size = size();
 			return size > 0 ? get(size - 1) : null;
 		}
+
+		public Class<?> getComponentType() {
+			return TextRange.class;
+		}
 	}
 
 	/**

@@ -171,9 +171,12 @@ public abstract class ArgumentReader {
 		return converters.get(type);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T readObject(String name, Class<T> type) {
 		Object obj = readNext(name);
 		if (obj != null) {
+			if (type.isInstance(obj))
+				return (T) obj;
 			ArgumentConverter<T> converter = getConverter(type);
 			T res;
 			if (converter != null) {
