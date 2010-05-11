@@ -138,6 +138,7 @@ public:
 
 	long getNanoTime();
 	bool isKeyDown(int keycode);
+	bool isActive();
 
 	ASErr onStartupPlugin(SPInterfaceMessage *message); 
 	ASErr onShutdownPlugin(SPInterfaceMessage *message); 

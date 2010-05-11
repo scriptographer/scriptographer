@@ -136,7 +136,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
 		// Is escape pressed?
-		if (gPlugin->isKeyDown('\e'))
+		if (gPlugin != NULL && gPlugin->isKeyDown('\e'))
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);
@@ -213,4 +213,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicati
 #endif
 	} EXCEPTION_CONVERT(env);
 	return 0;
+}
+
+/*
+ * boolean isActive()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_isActive(JNIEnv *env, jclass cls) {
+	try {
+		return gPlugin != NULL && gPlugin->isActive();
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

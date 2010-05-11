@@ -110,6 +110,14 @@ public class Application {
 	}
 
 	/**
+	 * Returns {@true if the Illustrator application is in front and ready to
+	 * receive user input}.
+	 */
+	public boolean isActive() {
+		return ScriptographerEngine.isActive();
+	}
+
+	/**
 	 * {@grouptitle File Launching}
 	 * 
 	 * Launches the given filename or URL through the operating system.

@@ -82,7 +82,9 @@ ScriptographerPlugin::~ScriptographerPlugin() {
 #ifdef MAC_ENV
 
 // Table that converts Java keycodes to Mac keycodes:
-// TODO: Check Open JDK about how it translates this
+// This table was compiled by hand:
+// http://wiki.github.com/lehni/scriptographer/java-to-mac-keycodes
+
 unsigned char ScriptographerPlugin::s_keycodeJavaToMac[256] = {
 	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x33,0x30,0x4c,0xff,0x47,0x24,0xff,0xff,
 	0x38,0x3b,0x3a,0xff,0x39,0x68,0xff,0xff,0xff,0xff,0xff,0x35,0xff,0xff,0xff,0xff,
@@ -393,38 +395,49 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 
 
 bool ScriptographerPlugin::isKeyDown(int keycode) {
+	if (isActive()) {
 #ifdef MAC_ENV
-	if (keycode >= 0 && keycode <= 255) {
-		keycode = s_keycodeJavaToMac[keycode];
-		if (keycode != 0xff) {
-			KeyMap keys;
-			GetKeys(keys);
-			// return BitTst(&keys, keycode) != 0;
-			return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
+		if (keycode >= 0 && keycode <= 255) {
+			keycode = s_keycodeJavaToMac[keycode];
+			if (keycode != 0xff) {
+				KeyMap keys;
+				GetKeys(keys);
+				return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
+			}
 		}
-	}
-	return false;
 #endif
 #ifdef WIN_ENV
-	return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
+		return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
 #endif
+	}
+	return false;
+}
+
+bool ScriptographerPlugin::isActive() {
+#ifdef MAC_ENV
+	return FrontWindow() != NULL;
+#endif // MAC_ENV
+#ifdef WIN_ENV
+	HWND hWnd = (HWND) sAIAppContext->GetPlatformAppWindow();
+	return hWnd == ::GetActiveWindow();
+#endif // WIN_ENV
 }
 
 long ScriptographerPlugin::getNanoTime() {
 #ifdef MAC_ENV
-		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
-		return UnsignedWideToUInt64(nano);
+	Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
+	return UnsignedWideToUInt64(nano);
 #endif
 #ifdef WIN_ENV
-		static int scaleFactor = 0;
-		if (scaleFactor == 0) {
-			LARGE_INTEGER frequency;
-			QueryPerformanceFrequency (&frequency);
-			scaleFactor = frequency.QuadPart;
-		}
-		LARGE_INTEGER counter;
-		QueryPerformanceCounter (& counter);
-		return counter.QuadPart * 1000000 / scaleFactor;
+	static int scaleFactor = 0;
+	if (scaleFactor == 0) {
+		LARGE_INTEGER frequency;
+		QueryPerformanceFrequency (&frequency);
+		scaleFactor = frequency.QuadPart;
+	}
+	LARGE_INTEGER counter;
+	QueryPerformanceCounter (& counter);
+	return counter.QuadPart * 1000000 / scaleFactor;
 #endif
 }
 
