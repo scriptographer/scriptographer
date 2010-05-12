@@ -442,7 +442,7 @@ public class PaletteComponent implements ChangeReceiver {
 					if (ConversionUtils.equals(value, option))
 						index = i;
 				}
-				setSelectedIndex(index);
+				setSelectedIndex(index, false);
 				// No need to call onChange, as setSelectionIndex already does so.
 				return;
 			case COLOR:
@@ -707,7 +707,9 @@ public class PaletteComponent implements ChangeReceiver {
 						index = 0;
 					else if (index >= options.length)
 						index = options.length - 1;
-					setSelectedIndex(index);
+					// We're changing options, not value, so cause onChange
+					// callback for value
+					setSelectedIndex(index, true);
 				}
 			}
 		}
@@ -718,13 +720,18 @@ public class PaletteComponent implements ChangeReceiver {
 	}
 
 	public void setSelectedIndex(Integer index) {
+		// We're changing index, not value, so cause onChange callback for value
+		setSelectedIndex(index, true);
+	}
+
+	protected void setSelectedIndex(Integer index, boolean callback) {
 		if (type == PaletteComponentType.LIST && index != null && index >= 0
 				&& (options == null || index < options.length)) {
 			selectedIndex = index;
 			if (item != null) {
 				PopupList list = (PopupList) item;
 				list.setSelectedEntry(list.get(index));
-				onChange(false);
+				onChange(callback);
 			}
 		}
 	}
