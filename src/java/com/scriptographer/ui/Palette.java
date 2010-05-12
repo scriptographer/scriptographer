@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.script.ChangeObserver;
+import com.scratchdisk.script.PropertyObserver;
 import com.scratchdisk.script.ScriptEngine;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ui.layout.TableLayout;
@@ -44,7 +44,7 @@ import com.scriptographer.ui.layout.TableLayout;
  * @author lehni
  * 
  */
-public class Palette extends FloatingDialog implements ChangeObserver {
+public class Palette extends FloatingDialog implements PropertyObserver {
 	private Map<String, Object> values;
 	private Map<String, Object> components;
 	private boolean hasLabels;
@@ -171,7 +171,10 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 			ScriptographerEngine.invoke(onChange, this, component);
 	}
 
-	public void onChange(Map object, Object key, Object value) {
+	/**
+	 * @jshide
+	 */
+	public void onChangeProperty(Map object, Object key, Object value) {
 		if (!isChanging) {
 			// System.out.println("Changed " + key + " = " + value);
 			PaletteComponent component = getComponent(key.toString());

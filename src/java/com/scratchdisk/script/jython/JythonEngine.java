@@ -45,7 +45,7 @@ import org.python.core.PyObject;
 import org.python.core.PySystemState;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeObserver;
+import com.scratchdisk.script.PropertyObserver;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -111,7 +111,7 @@ public class JythonEngine extends ScriptEngine {
 	}
 
 	@Override
-	public boolean observe(Map object, Object key, ChangeObserver observer) {
+	public boolean observe(Map object, Object key, PropertyObserver observer) {
 		return false;
 	}
 }

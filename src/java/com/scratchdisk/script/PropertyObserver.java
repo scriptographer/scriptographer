@@ -37,6 +37,6 @@ import java.util.Map;
  * @author lehni
  *
  */
-public interface ChangeObserver {
-	public void onChange(Map object, Object key, Object value);
+public interface PropertyObserver {
+	public void onChangeProperty(Map object, Object key, Object value);
 }

@@ -105,7 +105,7 @@ public abstract class ScriptEngine {
 
 	public abstract ArgumentReader getArgumentReader(Object object);
 
-	public abstract boolean observe(Map object, Object key, ChangeObserver observer);
+	public abstract boolean observe(Map object, Object key, PropertyObserver observer);
 
 	@SuppressWarnings("unchecked")
 	public static <T> T convertToJava(Object object, Class<T> type) {
@@ -128,7 +128,7 @@ public abstract class ScriptEngine {
 		return null;
 	}
 
-	public static boolean observeChanges(Map object, Object key, ChangeObserver observer) {
+	public static boolean observeChanges(Map object, Object key, PropertyObserver observer) {
 		for (ScriptEngine engine : enginesByName.values()) {
 			if (engine.observe(object, key, observer))
 				return true;

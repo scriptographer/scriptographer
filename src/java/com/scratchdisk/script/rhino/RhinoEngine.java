@@ -48,7 +48,7 @@ import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeObserver;
+import com.scratchdisk.script.PropertyObserver;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -211,7 +211,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	}
 
 	@Override
-	public boolean observe(Map object, Object key, ChangeObserver observer) {
+	public boolean observe(Map object, Object key, PropertyObserver observer) {
 		if (object instanceof ScriptableObject) {
 			ScriptableObject obj = (ScriptableObject) object;
 			Context cx = Context.getCurrentContext();
@@ -248,10 +248,10 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		private ScriptableObject object;
 		private Object id;
 		private PropertyDescriptor descriptor;
-		private ChangeObserver observer;
+		private PropertyObserver observer;
 
 		ObserverSetter(ScriptableObject object, Object id,
-				PropertyDescriptor descriptor, ChangeObserver observer) {
+				PropertyDescriptor descriptor, PropertyObserver observer) {
 			this.object = object;
 			this.id = id;
 			this.descriptor = descriptor;
@@ -262,7 +262,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 				Object[] args) {
 			Object value = args[0];
 			descriptor.setValue(value);
-			observer.onChange(object, id, value);
+			observer.onChangeProperty(object, id, value);
 			return Undefined.instance;
 		}
 	}
