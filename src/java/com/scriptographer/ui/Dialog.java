@@ -855,7 +855,8 @@ public abstract class Dialog extends Component {
 	}
 
 	public void setSize(Size size) {
-		setSize(size.width, size.height);
+		if (size != null)
+			setSize(size.width, size.height);
 	}
 	
 	/**

@@ -80,6 +80,7 @@ public class PaletteComponent implements ChangeReceiver {
 
 	// Used for scaling slider values
 	private double factor = 1;
+	private boolean updateDialogSize = false;
 	
 	/**
 	 * @jshide
@@ -299,10 +300,12 @@ public class PaletteComponent implements ChangeReceiver {
 			item.setMargin(margin);
 		updateSize();
 
+		// Any subsequent changes to size should also update dialog size
+		updateDialogSize = true;
 		return item;
 	}
 
-	protected void updateSize() {
+	protected Size getSize() {
 		if (item != null) {
 			Size size;
 			if (multiline != null && multiline && columns != null && rows != null) {
@@ -313,10 +316,11 @@ public class PaletteComponent implements ChangeReceiver {
 						size.height * rows + 8
 				);
 			} else {
-				// Use preferred size instead of best size, as we want to take
-				// into account items of which the size was already set before,
-				// e.g. rulers.
-				size = item.getPreferredSize();
+				// Use preferred size instead of best size for ruler, as we want
+				// to take into account items of which the size was already set.
+				size = type == PaletteComponentType.RULER
+						? item.getPreferredSize()
+						: item.getBestSize();
 				if (length != null)
 					size.width = item.getTextSize("H").width * length;
 			}
@@ -324,7 +328,21 @@ public class PaletteComponent implements ChangeReceiver {
 				size.width = width;
 			if (height != null)
 				size.height = height;
-			item.setSize(size);
+			return size;
+		}
+		return null;
+	}
+
+	protected void updateSize() {
+		if (item != null) {
+			Size size = getSize();
+			if (size != null && !size.equals(item.getSize())) {
+				item.setSize(size);
+				if (updateDialogSize) {
+					Dialog dialog = item.getDialog();
+					dialog.setSize(dialog.getPreferredSize());
+				}
+			}
 		}
 	}
 
@@ -415,15 +433,15 @@ public class PaletteComponent implements ChangeReceiver {
 		if (item == null) {
 			defaultValue = value;
 		} else {
-			boolean resize = false;
 			switch (type) {
 			case STRING:
 			case TEXT:
 				((TextValueItem) item).setText(ConversionUtils.toString(value));
-				resize = type == PaletteComponentType.TEXT;
+				updateSize();;
 				break;
 			case BUTTON:
 				((Button) item).setText(ConversionUtils.toString(value));
+				updateSize();;
 				break;
 			case NUMBER:
 			case SLIDER:
@@ -457,13 +475,6 @@ public class PaletteComponent implements ChangeReceiver {
 				if (weight != null)
 					((FontPopupList) item).setFontWeight(weight);
 				break;
-			}
-			if (resize) {
-				// TODO: Make this work!
-				Size size = item.getBestSize();
-				item.setMinimumSize(size);
-				item.setSize(size);
-				item.getDialog().doLayout();
 			}
 			// Update palette's value object too
 			onChange(false);
@@ -699,6 +710,7 @@ public class PaletteComponent implements ChangeReceiver {
 					// We're changing options, not value, so cause onChange
 					// callback for value
 					setSelectedIndex(index, true);
+					updateSize();;
 				}
 			}
 		}
@@ -748,7 +760,7 @@ public class PaletteComponent implements ChangeReceiver {
 		fullSize = false;
 		columns = null;
 		length = null;
-		updateSize();
+		updateSize();;
 	}
 
 	public Integer getHeight() {
@@ -759,7 +771,7 @@ public class PaletteComponent implements ChangeReceiver {
 		this.height = height;
 		// Clear rows when setting height and vice versa.
 		rows = null;
-		updateSize();
+		updateSize();;
 	}
 
 	public Integer getLength() {
@@ -775,7 +787,7 @@ public class PaletteComponent implements ChangeReceiver {
 			fullSize = false;
 			width = null;
 			columns = null;
-			updateSize();
+			updateSize();;
 		}
 	}
 
@@ -830,7 +842,7 @@ public class PaletteComponent implements ChangeReceiver {
 			fullSize = false;
 			width = null;
 			length = null;
-			updateSize();
+			updateSize();;
 		}
 	}
 

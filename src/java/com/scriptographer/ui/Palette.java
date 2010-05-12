@@ -72,12 +72,10 @@ public class Palette extends FloatingDialog implements PropertyObserver {
 		double version = ScriptographerEngine.getApplicationVersion();
 		boolean upperCase = false;
 		int extraWidth = 32;
-		double factor = 1;
 		if (version >= 14) { // CS4 and above
 			upperCase = true;
 			extraWidth = 64;
 		} else if (version >= 13) { // CS3
-			factor = 1;
 			extraWidth = 82;
 		} else {
 			// TODO: Test / Implement
@@ -85,7 +83,7 @@ public class Palette extends FloatingDialog implements PropertyObserver {
 		// Calculate title size. Temporarily set bold font
 		setFont(DialogFont.PALETTE_BOLD);
 		int width = (int) Math.round(getTextSize(upperCase 
-				? title.toUpperCase() : title).width * factor);
+				? title.toUpperCase() : title).width);
 		setFont(DialogFont.PALETTE);
 		// UI Requires 64px more to show title fully in palette windows.
 		setMinimumSize(width + extraWidth, -1);
