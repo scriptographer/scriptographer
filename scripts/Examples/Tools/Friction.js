@@ -1,16 +1,31 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	accel: 10,
 	accelFriction: 0.8,
-	friction: 0.65
+	friction: 0.35
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
-	friction: { label: 'Friction' },
-	accel: { label: 'Acceleration' },
-	accelFriction: { label: 'Acceleration Friction' }
+	accel: {
+		label: 'Acceleration',
+		type: 'slider',
+		range: [0.5, 20]
+	},
+	friction: {
+		label: 'Friction',
+		type: 'slider',
+		range: [0, 0.99]
+	},
+	accelFriction: {
+		label: 'Acceleration Friction',
+		type: 'slider',
+		range: [0.4, 1]
+	}
 };
 
 var palette = new Palette('Friction', components, values);
@@ -30,10 +45,10 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	var diff = event.point - point;
-	var norm = diff.normalize();
-	acceleration = (acceleration + (norm * values.accel)) * values.accelFriction;
-	velocity = (velocity + acceleration) * values.friction;
+	var vector = event.point - point;
+	vector.length = values.accel;
+	acceleration = (acceleration + vector) * values.accelFriction;
+	velocity = (velocity + acceleration) * (1 - values.friction);
 	point += velocity;
 	path.add(point);
 	path.smooth();

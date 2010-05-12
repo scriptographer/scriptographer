@@ -1,10 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////
+// Values:
+
+var values = {
+	tolerance: 5
+};
+
+//////////////////////////////////////////////////////////////////////////////
 // Interface:
 
-var values = { tolerance: 5 };
-
 var components = {
-	tolerance: { label: 'Tolerance' }
+	tolerance: {
+		label: 'Tolerance',
+		min: 0
+	}
 };
 
 var palette = new Palette('Square', components, values);
@@ -14,9 +22,7 @@ var palette = new Palette('Square', components, values);
 
 var prevSeg, curSeg, path;
 function onMouseDown(event) {
-	path = new Path() {
-		segments: [event.point, event.point]
-	};
+	path = new Path([event.point, event.point]);
 	prevSeg = path.segments.first;
 	curSeg = path.segments.last;
 }

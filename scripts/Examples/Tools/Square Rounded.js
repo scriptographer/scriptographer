@@ -1,22 +1,31 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	radius: 10,
 	tolerance: 5
 };
 
+checkValues();
+
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
-	radius: { description: 'Radius'},
-	tolerance: { description: 'Tolerance' }
+	radius: {
+		description: 'Radius',
+		min: 0
+	},
+	tolerance: {
+		description: 'Tolerance',
+		min: 0
+	}
 };
 
 var palette = new Palette('Square Radius', components, values);
 palette.onChange = function(component) {
 	checkValues();
 };
-
-checkValues();
 
 //////////////////////////////////////////////////////////////////////////////
 // Mouse handling:
@@ -41,8 +50,6 @@ function onMouseUp(event) {
 //	path.pointsToCurves(0, 0, 1, 0.001);
 }
 
-var c = 0;
-
 var curPoint, prevPoint, curHandleSeg;
 function onMouseDrag(event) {
 	var point = event.point;
@@ -54,19 +61,19 @@ function onMouseDrag(event) {
 		curPoint.x = point.x;
 		curPoint.y = prevPoint.y;
 	}
-	var normal = (curPoint - prevPoint).normalize();
-	if (curHandleSeg != null) {
+	var normal = (curPoint - prevPoint);
+	normal.length = 1;
+	if (curHandleSeg) {
 		curHandleSeg.point = prevPoint + (normal * values.radius);
 		curHandleSeg.handleIn = normal * -handle;
 	}
 	var minDiff = Math.min(diff.x, diff.y);
 	if (minDiff > values.tolerance) {
-		var seg = path.segments.removeLast();
-		path.add(new Segment(curPoint - (normal * values.radius), null, normal * handle));
-		path.add(seg);
+		var segment = new Segment(curPoint - (normal * values.radius), null, normal * handle);
+		path.insert(path.segments.length - 1, segment);
 		curHandleSeg = path.segments.last;
 		prevPoint = curHandleSeg.point.clone(); // clone as we want the unmodified one!
-		path.add(seg);
+		path.add(curHandleSeg);
 		curPoint = path.segments.last.point;
 	}
 }

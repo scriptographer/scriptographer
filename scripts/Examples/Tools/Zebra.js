@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	offset: 10,
@@ -8,22 +8,26 @@ var values = {
 	speedScale: 1.5
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
 	distance: {
-		label: 'Distance threshold',
+		label: 'Spacing',
 		onChange: function(value) {
-			tool.distanceThreshold = value;
+			tool.minDistance = value;
 		}
+	},
+	offset: {
+		label: 'Size', type: 'number',
+		range: [0, 500]
 	},
 	mouseOffset: {
 		label: 'Dynamic size', type: 'checkbox',
 		onChange: function(checked) {
 			palette.components.offset.enabled = !checked;
-			palette.components.speedScale.enabled = checked;
 		}
-	},
-	speedScale: { label: 'Scale factor', enabled: false },
-	offset: { label: 'Size', type: 'number' }
+	}
 };
 
 var palette = new Palette('Zebra', components, values);
@@ -35,9 +39,7 @@ function onMouseDrag(event) {
 	// the vector in the direction that the mouse moved:
 	var step = event.delta.clone();
 	
-	if (values.mouseOffset) {
-		step *= values.speedScale;
-	} else {
+	if (!values.mouseOffset) {
 		// normalize step to a specific length
 		step.length = values.offset;
 	}

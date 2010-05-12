@@ -5,13 +5,13 @@ var rasters = document.getItems({
 	selected: true
 });
 
-if(rasters.length) {
+if (rasters.length) {
 	for (var i = 0, l = rasters.length; i < l; i++) {
 		rasters[i].selected = false;
 	}
 
 	raster = rasters.first;
-	if(raster instanceof PlacedFile && !raster.eps) {
+	if (raster instanceof PlacedFile && !raster.eps) {
 		// Embed placed images so the raster script can access pixels
 		raster = raster.embed(false);
 	}
@@ -20,7 +20,7 @@ if(rasters.length) {
 
 	for (var i = 0; i < sel.length; i++) {
 		var obj = sel[i];
-		if(!obj.isAncestor(raster)) {
+		if (!obj.isAncestor(raster)) {
 			dot = obj;
 			i = sel.length;
 		}
@@ -51,7 +51,7 @@ if (!raster || !dot) {
 } else {
 	var pixelCount = raster.height * raster.width;
 	var sure = true;
-	if(pixelCount > 20000) {
+	if (pixelCount > 20000) {
 		script.showProgress = false;
 		sure = Dialog.confirm('The image you\'re about to rasterize contains ' + pixelCount + ' pixels.\nRasterizing could take a long time.\nAre you sure you want to proceed?');
 		script.showProgress = true;

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	size: 10,
@@ -9,12 +9,27 @@ var values = {
 	maxWidth: 5
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
 	size: { label: 'Radius' },
-	minAmount: { label: 'Minimal Amount' },
-	maxAmount: { label: 'Maximal Amount' },
-	minWidth: { label: 'Minimal Stroke Width' },
-	maxWidth: { label: 'Maximal Stroke Width' }
+	minAmount: {
+		label: 'Minimal Amount',
+		min: 0
+	},
+	maxAmount: {
+		label: 'Maximal Amount',
+		min: 0
+	},
+	minWidth: {
+		label: 'Minimal Stroke Width',
+		min: 0
+	},
+	maxWidth: {
+		label: 'Maximal Stroke Width',
+		min: 0
+	}
 };
 
 var palette = new Palette('Weed Rounded', components, values);
@@ -61,7 +76,7 @@ Branch.prototype.grow = function() {
 	if (this.count++ < this.max) {
 		this.vector = this.vector.rotate(this.rotate);
 	} else {
-		this.vector = this.vector.normalize() * ((1.0 - Math.random() * 0.5) * values.size);
+		this.vector.length = (1.0 - Math.random() * 0.5) * values.size;
 		this.max = Math.round(Math.random() * Math.PI * 2.0 / Math.abs(this.rotate));
 		this.rotate *= -1;
 		this.count = 0;

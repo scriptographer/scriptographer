@@ -1,14 +1,24 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	spacing: 20,
-	scale: 'none',
-}
+	scale: 'none'
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
 
 var components = {
-	spacing: { label: 'Spacing', units: 'percent', steppers: true },
-	scale: { label: 'Scale', options: ['none', 'both', 'horizontal']}
+	spacing: {
+		label: 'Spacing',
+		units: 'percent',
+		steppers: true
+	},
+	scale: {
+		label: 'Scale',
+		options: ['none', 'both', 'horizontal']
+	}
 };
 
 var palette = new Palette('Clone Brush', components, values);
@@ -19,7 +29,7 @@ var palette = new Palette('Clone Brush', components, values);
 var items, nextItem, group;
 function onMouseDown(event) {
 	items = document.selectedItems.reverse();
-	if(items.length) {
+	if (items.length) {
 		prepareNextItem(0);
 		group = new Group();
 	} else {
@@ -28,16 +38,28 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	if(items.length) {
+	if (items.length) {
 		var item = nextItem.clone();
 		item.selected = false;
 		item.position = event.middlePoint;
 
 		group.appendTop(item);
 
-		if(values.scale == 'both' || values.scale == 'horizontal') {
+		if (values.scale == 'both' || values.scale == 'horizontal') {
 			var scale = event.delta.length / tool.minDistance;
-			item.scale(values.scale == 'both' || values.scale == 'horizontal' ? scale : 1, values.scale == 'both' ? scale : 1);
+			var xScale, yScale;
+			if (values.scale != 'none') {
+				xScale = scale;
+			} else {
+				xScale = 1;
+			}
+			
+			if (values.scale == 'both') {
+				yScale = scale;
+			} else {
+				yScale = 1;
+			}
+			item.scale(xScale, yScale);
 		}
 
 		// rotate the item by the angle of the vector that the mouse moved
@@ -49,7 +71,7 @@ function onMouseDrag(event) {
 }
 
 function onMouseUp(event) {
-	if(group && group.children.length == 0)
+	if (group && group.children.length == 0)
 		group.remove();
 }
 
@@ -59,5 +81,9 @@ function prepareNextItem(count) {
 	// is equal to the width of the selected item plus the spacing
 	var distance = nextItem.bounds.width * (1 + values.spacing / 100);
 	tool.minDistance = distance;
-	tool.maxDistance = values.scale == 'none' ? distance : null;
+	if(values.scale == 'none') {
+		tool.maxDistance = distance;
+	} else {
+		tool.maxDistance = null;
+	}
 }

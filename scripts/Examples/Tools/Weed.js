@@ -1,14 +1,23 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	size: 20,
 	max: 10
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
-	size: { label: 'Size'},
-	max: { label: 'Max'}
+	size: {
+		label: 'Size',
+		range: [0, 100]
+	},
+	max: {
+		label: 'Max',
+		range: [1, 500]
+	}
 };
 
 var palette = new Palette('Random Radius', components, values);
