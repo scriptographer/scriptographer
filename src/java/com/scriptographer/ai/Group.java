@@ -108,9 +108,9 @@ public class Group extends Item {
 	}
 
 	/*
-	 * Setting selected attribute on groups only works when also explicitly
-	 * applying the same attributes to all the children, even when using setFully
-	 * selected. So override both here.
+	 * Setting selected attribute on Groups and CompoundPaths only works when
+	 * also explicitly applying the same attributes to all the children, even
+	 * when using setFully selected. So override both here.
 	 */
 	public void setSelected(boolean selected) {
 		Item child = getFirstChild();

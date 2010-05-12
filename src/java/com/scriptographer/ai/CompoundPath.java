@@ -93,6 +93,29 @@ public class CompoundPath extends PathItem {
 			((Path) item).setGuide(guide);
 	}
 
+	/*
+	 * Setting selected attribute on Groups and CompoundPaths only works when
+	 * also explicitly applying the same attributes to all the children, even
+	 * when using setFully selected. So override both here.
+	 */
+	public void setSelected(boolean selected) {
+		Item child = getFirstChild();
+		while (child != null) {
+			child.setSelected(selected);
+			child = child.getNextSibling();
+		}
+		super.setSelected(selected);
+	}
+
+	public void setFullySelected(boolean selected) {
+		Item child = getFirstChild();
+		while (child != null) {
+			child.setFullySelected(selected);
+			child = child.getNextSibling();
+		}
+		super.setFullySelected(selected);
+	}
+
 	private Path getPreviousPath() {
 		Path prevPath = (Path) getFirstChild();
 		if (prevPath == null)
