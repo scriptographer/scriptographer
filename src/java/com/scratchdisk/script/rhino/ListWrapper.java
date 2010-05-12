@@ -151,10 +151,28 @@ public class ListWrapper extends ExtendedJavaObject {
 						start.getParentScope(), this, new Object[] { value });
 				return;
 			}
-		} else if (javaObject instanceof StringIndexList
-				&& !members.has(name, false)) {
-			((StringIndexList) javaObject).put(name, coerceComponentType(value));
-			return;
+		} else if (javaObject != null) {
+			if (javaObject instanceof List && name.equals("length")) {
+				// from NativeArray#setLength(Object value)
+		        double d = ScriptRuntime.toNumber(value);
+		        int length = ScriptRuntime.toInt32(d);
+		        if (length != d) {
+		            String msg = ScriptRuntime.getMessage0("msg.arraylength.bad");
+		            throw ScriptRuntime.constructError("RangeError", msg);
+		        }
+				List list = ((List) javaObject);
+				int size = list.size();
+				if (length < size) {
+					list.remove(length, size);
+				} else {
+					for (int i = size; i < length; i++)
+						list.add(null);
+				}
+			} else if (javaObject instanceof StringIndexList
+					&& !members.has(name, false)) {
+				((StringIndexList) javaObject).put(name, coerceComponentType(value));
+				return;
+			}
 		}
 		super.put(name, start, value);
 	}
@@ -166,8 +184,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			if (obj instanceof Callable)
 				return ((Callable) obj).call(Context.getCurrentContext(),
 						start.getParentScope(), this, new Object[] {});
-		}
-		if (javaObject != null) {
+		} else if (javaObject != null) {
 			if (name.equals("length")) {
 				return new Integer(((ReadOnlyList) javaObject).size());
 			} else if (javaObject instanceof ReadOnlyStringIndexList
