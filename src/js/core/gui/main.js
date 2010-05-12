@@ -681,7 +681,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		image: getImage('stop.png'),
 		size: buttonSize,
 		onClick: function() {
-			ScriptographerEngine.stopAll();
+			ScriptographerEngine.stopAll(true);
 		}
 	};
 

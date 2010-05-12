@@ -27,13 +27,14 @@
  * $Id$
  */
 
+script.keepAlive = true;
+script.showProgress = false;
+
 mapJavaClass(java.io.File, File);
 
 importPackage(Packages.com.scriptographer);
 importPackage(Packages.com.scratchdisk.script);
 importPackage(Packages.com.scriptographer.script);
-
-script.showProgress = false;
 
 var buttonSize = new Size(27, 17);
 var lineHeight = 17;

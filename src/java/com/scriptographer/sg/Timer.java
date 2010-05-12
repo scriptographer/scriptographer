@@ -32,12 +32,11 @@
 package com.scriptographer.sg;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -51,10 +50,12 @@ public class Timer {
 
 	private double period;
 
+	private Script script = null;
+
 	private static IntMap<Timer> timers = new IntMap<Timer>();
 	private static ArrayList<Timer> unusedTimers = null;
 	private static int counter = 0;
-	
+
 	/**
 	 * Creates a timer object.
 	 * 
@@ -62,6 +63,7 @@ public class Timer {
 	 * @param periodic Controls whether the timer is one-shop or periodic. 
 	 */
 	public Timer(double period, boolean periodic) {
+		script = ScriptographerEngine.getCurrentScript();
 		// now see first whether there is an unusedEffect already:
 		ArrayList unusedTimers = getUnusedTimers();
 		
@@ -159,24 +161,35 @@ public class Timer {
 		this.periodic = periodic;
 	}
 
-	public static void stopAll() {
+	protected boolean canRemove(boolean ignoreKeepAlive) {
+		return script == null || script.canRemove(ignoreKeepAlive);
+	}
+
+	public static void stopAll(boolean ignoreKeepAlive, boolean force) {
 		// Stop both used and unused timers:
-		for (Iterator it = timers.values().iterator(); it.hasNext();)
-			((Timer) it.next()).stop();
-		ArrayList unused = getUnusedTimers();
-		if (unused != null)
-			for (Iterator it = unused.iterator(); it.hasNext();)
-				((Timer) it.next()).stop();
+		for (Timer timer : timers.values()) {
+			if (force || timer.canRemove(ignoreKeepAlive))
+				timer.stop();
+		}
+		ArrayList<Timer> unused = getUnusedTimers();
+		if (unused != null) {
+			for (Timer timer : unused)
+				timer.stop();
+		}
 	}
 
 	/**
+	 * @param  
 	 * @jshide
 	 */
-	public static void disposeAll() {
+	public static void disposeAll(boolean ignoreKeepAlive, boolean force) {
 		// As remove() modifies the map, using an iterator is not possible here:
 		Object[] timers = Timer.timers.values().toArray();
-		for (int i = 0; i < timers.length; i++)
-			((Timer) timers[i]).dispose();
+		for (int i = 0; i < timers.length; i++) {
+			Timer timer = (Timer) timers[i];
+			if (force || timer.canRemove(ignoreKeepAlive))
+				timer.dispose();
+		}
 	}
 	
 	private native boolean nativeSetActive(int handle, boolean active);

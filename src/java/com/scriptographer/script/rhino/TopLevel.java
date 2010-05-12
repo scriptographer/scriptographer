@@ -321,10 +321,11 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		if (script != null) {
 			// Temporarily override script with the new one, so includes in
 			// other directories work
-			Object prevScript = scope.get("script");
+			com.scriptographer.sg.Script prevScript =
+					(com.scriptographer.sg.Script) scope.get("script");
 			try {
 				scope.put("script", new com.scriptographer.sg.Script(
-						script.getFile()), true);
+						script.getFile(), prevScript), true);
 				script.execute(scope);
 			} finally {
 				scope.put("script", prevScript, true);

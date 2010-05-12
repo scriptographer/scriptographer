@@ -38,6 +38,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Stack;
 import java.util.prefs.Preferences;
 
 import org.mozilla.javascript.Undefined;
@@ -140,17 +141,17 @@ public class ScriptographerEngine {
 		// We're shutting down, so do not display console stuff any more
 		ConsoleOutputStream.enableOutput(false);
 		ConsoleOutputStream.enableRedirection(false);
-		stopAll();
-		Dialog.destroyAll();
+		stopAll(true);
+		Dialog.destroyAll(true, true);
+		Timer.disposeAll(true, true);
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
-		Timer.disposeAll();
 		Annotator.disposeAll();
 		try {
 			// This is needed on some versions on Mac CS (CFM?)
 			// as the JVM seems to not shoot down properly, and the
 			// preferences would then not be flushed to file otherwise.
-			getPreferences(false).flush();
+			getPreferences(null).flush();
 		} catch (java.util.prefs.BackingStoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -169,7 +170,7 @@ public class ScriptographerEngine {
 		// init scripts here
 		scriptDir = dir;
 		// First reset callbackScopes
-		removeCallbacks();
+		removeCallbacks(true);
 		// Now compile all __init__ scripts in the Script folder:
 		if (scriptDir != null)
 			compileInitScripts(scriptDir);
@@ -230,23 +231,20 @@ public class ScriptographerEngine {
 		}
 	}
 
-	public static Preferences getPreferences(boolean fromScript) {
-		if (fromScript && currentScriptFile != null)
-			return getPreferences(currentScriptFile);
-		// the base preferences for Scriptographer are:
+	public static Preferences getPreferences(Script script) {
+		// The base preferences for Scriptographer are:
 		// com.scriptographer.preferences on Mac, three nodes seem
 		// to be necessary, otherwise things get mixed up...
-		return Preferences.userNodeForPackage(
+		Preferences prefs = Preferences.userNodeForPackage(
 				ScriptographerEngine.class).node("preferences");
-	}
-
-	public static Preferences getPreferences(File file) {
+		if (script == null)
+			return prefs;
 		// determine preferences for the current executing script
 		// by walking up the file path to the script directory and 
 		// using each folder as a preference node.
 		ArrayList<String> parts = new ArrayList<String>();
-		Preferences prefs = getPreferences(false);
 		// Collect the directory parts up to either scriptDir or pluginDir
+		File file = script.getFile();
 		while (true) {
 			parts.add(file.getName());
 			file = file.getParentFile();
@@ -263,10 +261,6 @@ public class ScriptographerEngine {
 		for (int i = parts.size() - 1; i >= 0; i--)
 			prefs = prefs.node(parts.get(i));
 		return prefs;
-	}
-
-	public File getCurrentScriptFile() {
-		return currentScriptFile;
 	}
 
 	private static PrintStream getLogger(String name) {
@@ -351,7 +345,7 @@ public class ScriptographerEngine {
 	}
 
 	public static String reload() {
-		stopAll();
+		stopAll(true);
 		reloadCount++;
 		return nativeReload();
 	}
@@ -362,32 +356,40 @@ public class ScriptographerEngine {
 		ConsoleOutputStream.setCallback(cb);
 	}
 	
-	private static boolean executing = false;
-	private static File currentScriptFile = null;
+	private static Stack<Script> scriptStack = new Stack<Script>();
 	private static boolean allowScriptCancelation = true;
+
+	public static Script getCurrentScript() {
+		// There can be 'holes' in the script stack, so find the first non-null
+		// entry and return it.
+		for (int i = scriptStack.size() - 1; i >= 0; i--) {
+			Script last = scriptStack.get(i);
+			if (last != null)
+				return last;
+		}
+		return null;
+	}
 
 	/**
 	 * To be called before AI functions are executed
 	 */
-	public static boolean beginExecution() {
+	public static void beginExecution() {
 		// Only call Document.beginExecution if it has not already
 		// been called through the UI notification callback.
-		if (!executing) {
+		if (scriptStack.empty()) {
 			Document.beginExecution();
 			// Disable output to the console while the script is
 			// executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
-			executing = true;
-			return true;
 		}
-		return false;
 	}
 
 	/**
 	 * To be called after AI functions were executed
 	 */
 	public static void endExecution() {
-		if (executing) {
+		scriptStack.pop();
+		if (scriptStack.empty()) {
 			try {
 				CommitManager.commit();
 			} catch(Throwable t) {
@@ -396,43 +398,41 @@ public class ScriptographerEngine {
 			Dictionary.releaseInvalid();
 			Document.endExecution();
 			closeProgress();
-			currentScriptFile = null;
-			executing = false;
 		}
 	}
 
 	/**
 	 * To be called before AI functions are executed as scripts
 	 */
-	public static boolean beginExecution(File file, Scope scope) {
+	public static void beginExecution(File file, Scope scope) {
 		// Since the interface is done in scripts too and we receive being /
 		// endExecution events for all UI notifications as well, we need to
 		// cheat a bit here.
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
-		if (!executing || file != null) {
-			boolean started = beginExecution();
-
-			Script script = scope != null ? (Script) scope.get("script") : null;
-			if (file != null) {
-				currentScriptFile = file;
-				// Put a script object in the scope to offer the user
-				// access to information about it.
-				if (script == null) {
-					script = new Script(file);
-					scope.put("script", script, true);
-				}
+		Script script = scope != null ? (Script) scope.get("script") : null;
+		beginExecution();
+		if (file != null) {
+			Dialog.destroyAll(false, false);
+			Timer.disposeAll(false, false);
+			// Put a script object in the scope to offer the user
+			// access to information about it.
+			if (script == null) {
+				script = new Script(file, file.getPath().startsWith(coreDir.getPath()));
+				scope.put("script", script, true);
 			}
+		}
+		if (scriptStack.empty() || file != null) {
 			if (script != null && !script.getShowProgress()) {
 				closeProgress();
 			} else if (file == null || !file.getName().startsWith("__")) {
 				showProgress(file != null ? "Executing " + file.getName()
 						+ "..." : "Executing...");
 			}
-			// Only return true if we were really beginning execution.
-			return started;
 		}
-		return false;
+		// Push script even if it is null, as we're always popping again in
+		// endExecution.
+		scriptStack.push(script);
 	}
 
 	/**
@@ -441,7 +441,7 @@ public class ScriptographerEngine {
 	 * changes after execution.
 	 */
 	public static Object invoke(Callable callable, Object obj, Object... args) {
-		boolean started = beginExecution(null, null);
+		beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and
 		// call the function on it.
 		Throwable throwable = null;
@@ -450,10 +450,9 @@ public class ScriptographerEngine {
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
-			// commit all changed objects after a scripting function
+			// Commit all changed objects after a scripting function
 			// has been called!
-			if (started)
-				endExecution();
+			endExecution();
 		}
 		if (throwable != null)
 			handleException(throwable, null);
@@ -501,13 +500,12 @@ public class ScriptographerEngine {
 	 */
 	public static Object execute(com.scratchdisk.script.Script script,
 			File file, Scope scope) throws ScriptException, IOException {
-		boolean started = false;
 		Object ret = null;
 		Throwable throwable = null;
 		try {
 			if (scope == null)
 				scope = script.getEngine().createScope();
-			started = beginExecution(file, scope);
+			beginExecution(file, scope);
 			ret = script.execute(scope);
 			addCallbacks(scope, file);
 		} catch (Throwable t) {
@@ -515,8 +513,7 @@ public class ScriptographerEngine {
 		} finally {
 			// Commit all the changes, even when script has caused an error, to
 			// sync with direct changes such as creation of paths, etc.
-			if (started)
-				endExecution();
+			endExecution();
 		}
 		if (throwable != null)
 			handleException(throwable, file);
@@ -540,9 +537,8 @@ public class ScriptographerEngine {
 		allowScriptCancelation = true;
 	}
 
-	private static File getScriptFile(Scope scope) {
-		Script scriptObj = (Script) scope.get("script");
-		return scriptObj != null ? scriptObj.getFile() : null;
+	private static Script getScript(Scope scope) {
+		return (Script) scope.get("script");
 	}
 
 	private static void addCallbacks(Scope scope, File file) {
@@ -558,7 +554,7 @@ public class ScriptographerEngine {
 				} else {
 					// Remove old scope for this script before adding new one
 					for (int i = list.size() - 1; i >= 0; i--) {
-						if (getScriptFile(list.get(i)).equals(file)) {
+						if (getScript(list.get(i)).getFile().equals(file)) {
 							list.remove(i);
 							break;
 						}
@@ -569,22 +565,19 @@ public class ScriptographerEngine {
 		}
 	}
 
-	private static void removeCallbacks(String name) {
-		// Remove specified scopes from callbackScopes, but keep core stuff in,
-		// by looking through the scopes and analyzing each "script" object's
-		// file value.
-		String corePath = coreDir.getPath();
+	private static void removeCallbacks(String name, boolean ignoreKeepAlive) {
 		ArrayList<Scope> list = callbackScopes.get(name);
 		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--)
-				if (!getScriptFile(list.get(i)).getPath().startsWith(corePath))
+			for (int i = list.size() - 1; i >= 0; i--) {
+				if (getScript(list.get(i)).canRemove(ignoreKeepAlive))
 					list.remove(i);
+			}
 		}
 	}
 
-	private static void removeCallbacks() {
+	private static void removeCallbacks(boolean ignoreKeepAlive) {
 		for (String name : callbackScopes.keySet())
-			removeCallbacks(name);
+			removeCallbacks(name, ignoreKeepAlive);
 	}
 	
 	private static boolean callCallbacks(String name, Object[] args) {
@@ -609,10 +602,10 @@ public class ScriptographerEngine {
 		callCallbacks(name, new Object[0]);
 	}
 
-	public static void stopAll() {
-		Timer.stopAll();
+	public static void stopAll(boolean ignoreKeepAlive) {
+		Timer.stopAll(ignoreKeepAlive, false);
 		callCallbacks("onStop");
-		removeCallbacks();
+		removeCallbacks(ignoreKeepAlive);
 	}
 
 	/**

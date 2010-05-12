@@ -47,6 +47,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.script.RunnableCallable;
+import com.scriptographer.sg.Script;
 
 /**
  * @author lehni
@@ -130,11 +131,14 @@ public abstract class Dialog extends Component {
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
 
+	private Script script = null;
+
 	private static ArrayList<Dialog> dialogs = new ArrayList<Dialog>();
 	private static HashMap<String, Dialog> dialogsByName = new HashMap<String, Dialog>();
 
 	protected Dialog(int style, EnumSet<DialogOption> options) {
-		preferences = ScriptographerEngine.getPreferences(true);
+		script = ScriptographerEngine.getCurrentScript();
+		preferences = ScriptographerEngine.getPreferences(script);
 		items = new ArrayList<Item>();
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
 		size = nativeGetSize();
@@ -163,7 +167,8 @@ public abstract class Dialog extends Component {
 	 */
 	protected static Image getImage(String filename) {
 		try {
-			return new Image(PromptDialog.class.getClassLoader().getResource("com/scriptographer/ui/resources/" + filename));
+			return new Image(PromptDialog.class.getClassLoader().getResource(
+					"com/scriptographer/ui/resources/" + filename));
 		} catch (IOException e) {
 			System.err.println(e);
 			return new Image(1, 1, ImageType.RGB);
@@ -270,15 +275,20 @@ public abstract class Dialog extends Component {
 		if (handle != 0)
 			this.destroy();
 	}
+
+	protected boolean canRemove(boolean ignoreKeepAlive) {
+		return script == null || script.canRemove(ignoreKeepAlive);
+	}
 	
 	/**
 	 * @jshide
 	 */
-	public static void destroyAll() {
+	public static void destroyAll(boolean ignoreKeepAlive, boolean force) {
 		// Loop backwards since destroy removes from the list
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
 			Dialog dialog = (Dialog) dialogs.get(i);
-			dialog.destroy();
+			if (force || dialog.canRemove(ignoreKeepAlive))
+				dialog.destroy();
 		}
 	}
 

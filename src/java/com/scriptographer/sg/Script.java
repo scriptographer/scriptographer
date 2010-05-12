@@ -42,13 +42,23 @@ import com.scriptographer.ScriptographerEngine;
 public class Script {
 	private File file;
 	private Preferences prefs = null;
+	private boolean keepAlive = false;
 	private boolean showProgress = true;
+	protected boolean coreScript = false;
 
 	/**
 	 * @jshide
 	 */
-	public Script(File file) {
+	public Script(File file, boolean coreScript) {
 		this.file = file;
+		this.coreScript = coreScript;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Script(File file, Script previous) {
+		this(file, previous.coreScript);
 	}
 
 	/**
@@ -60,7 +70,7 @@ public class Script {
 	 */
 	public Preferences getPreferences() {
 		if (prefs == null)
-			prefs = new Preferences(ScriptographerEngine.getPreferences(file));
+			prefs = new Preferences(ScriptographerEngine.getPreferences(this));
 		return prefs;
 	}
 
@@ -92,5 +102,17 @@ public class Script {
 			ScriptographerEngine.showProgress();
 		else
 			ScriptographerEngine.closeProgress();
+	}
+
+	public boolean getKeepAlive() {
+		return keepAlive;
+	}
+
+	public void setKeepAlive(boolean keepAlive) {
+		this.keepAlive  = keepAlive;
+	}
+
+	public boolean canRemove(boolean ignoreKeepAlive) {
+		return !coreScript && (ignoreKeepAlive || !keepAlive);
 	}
 }
