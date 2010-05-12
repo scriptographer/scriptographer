@@ -3,14 +3,12 @@
 
 var values = {
 	spacing: 20,
-	verScale: true,
-	horScale: true
+	scale: 'none',
 }
 
 var components = {
 	spacing: { label: 'Spacing', units: 'percent', steppers: true },
-	horScale:   { label: 'Scale Horizontal' },
-	verScale: { label: 'Scale Vertical' }
+	scale: { label: 'Scale', options: ['none', 'both', 'horizontal']}
 };
 
 var palette = new Palette('Clone Brush', components, values);
@@ -30,22 +28,24 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	var item = nextItem.clone();
-	item.selected = false;
-	item.position = event.middlePoint;
-	
-	group.appendTop(item);
-	
-	if(values.verScale || values.horScale) {
-		var scale = event.delta.length / tool.distanceThreshold;
-		item.scale(values.horScale ? scale : 1, values.verScale ? scale : 1);
-	}
+	if(items.length) {
+		var item = nextItem.clone();
+		item.selected = false;
+		item.position = event.middlePoint;
 
-	// rotate the item by the angle of the vector that the mouse moved
-	item.rotate(event.delta.angle);
-	
-	// setup distance threshold to be the width of the next item
-	prepareNextItem(event.count);
+		group.appendTop(item);
+
+		if(values.scale == 'both' || values.scale == 'horizontal') {
+			var scale = event.delta.length / tool.minDistance;
+			item.scale(values.scale == 'both' || values.scale == 'horizontal' ? scale : 1, values.scale == 'both' ? scale : 1);
+		}
+
+		// rotate the item by the angle of the vector that the mouse moved
+		item.rotate(event.delta.angle);
+
+		// setup distance threshold to be the width of the next item
+		prepareNextItem(event.count);
+	}
 }
 
 function onMouseUp(event) {
@@ -57,5 +57,7 @@ function prepareNextItem(count) {
 	nextItem = items[count % (items.length)];
 	// the amount of distance the mouse has to move
 	// is equal to the width of the selected item plus the spacing
-	tool.distanceThreshold = nextItem.bounds.width * (1 + values.spacing / 100);
+	var distance = nextItem.bounds.width * (1 + values.spacing / 100);
+	tool.minDistance = distance;
+	tool.maxDistance = values.scale == 'none' ? distance : null;
 }
