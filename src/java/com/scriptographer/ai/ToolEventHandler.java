@@ -41,7 +41,8 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class ToolEventHandler extends NativeObject {
 
-	private float distanceThreshold;
+	private Double minDistance;
+	private Double maxDistance;
 	private boolean firstMove;
 	protected Point point;
 	protected Point downPoint;
@@ -64,6 +65,13 @@ public class ToolEventHandler extends NativeObject {
 	 * @jshide
 	 */
 	public void initialize() {
+		minDistance = null;
+		maxDistance = null;
+		firstMove = true;
+		downPoint = null;
+		lastPoint = null;
+		count = 0;
+		downCount = 0;
 		onEditOptions = null;
 		onSelect = null;
 		onDeselect = null;
@@ -72,12 +80,6 @@ public class ToolEventHandler extends NativeObject {
 		onMouseUp = null;
 		onMouseDrag = null;
 		onMouseMove = null;
-		firstMove = true;
-		downPoint = null;
-		lastPoint = null;
-		count = 0;
-		downCount = 0;
-		setDistanceThreshold(0);
 	}
 
 	/**
@@ -93,12 +95,34 @@ public class ToolEventHandler extends NativeObject {
 	 * 
 	 * @param threshold
 	 */
-	public float getDistanceThreshold() {
-		return distanceThreshold;
+	public Double getMinDistance() {
+		return minDistance;
 	}
 
-	public void setDistanceThreshold(float threshold) {
-		distanceThreshold = threshold;
+	public void setMinDistance(Double threshold) {
+		minDistance = threshold;
+	}
+
+	public Double getMaxDistance() {
+		return maxDistance;
+	}
+
+	public void setMaxDistance(Double maxDistance) {
+		this.maxDistance = maxDistance;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public double getDistanceThreshold() {
+		return minDistance != null ? minDistance : 0;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setDistanceThreshold(double threshold) {
+		minDistance = threshold;
 	}
 
 	private Callable onMouseDown;
@@ -300,71 +324,90 @@ public class ToolEventHandler extends NativeObject {
 	}
 
 	private boolean updateEvent(ToolEventType type, Point pt, int pressure,
-			float threshold, boolean start) {
-		if (start || threshold == 0 || point.getDistance(pt) >= threshold) {
-			lastPoint = point;
-			point = pt;
-			switch (type) {
-			case MOUSE_DOWN:
-				lastPoint = downPoint;
-				downPoint = point;
-				downCount++;
-				break;
-			case MOUSE_UP:
-				// Mouse up events return the down point for last point,
-				// so delta is spanning over the whole drag.
-				lastPoint = downPoint;
-				break;
-			}
-			if (start) {
-				count = 0;
-			} else {
-				count++;
-			}
-			this.pressure = pressure / 255.0;
-			return true;
+			Double minDistance, Double maxDistance, boolean start) {
+		if (!start && (minDistance != null || maxDistance != null)) {
+			double minDist = minDistance != null ? minDistance : 0;
+			Point vector = pt.subtract(point);
+			double distance = vector.getLength();
+			if (distance < minDist)
+				return false;
+			// Produce a new point on the way to pt if pt is further away
+			// than macDistance
+			double maxDist = maxDistance != null ? maxDistance : 0;
+			if (maxDist != 0 && distance > maxDist)
+				pt = point.add(vector.normalize(maxDist));
 		}
-		return false;
+		lastPoint = point;
+		point = pt;
+		switch (type) {
+		case MOUSE_DOWN:
+			lastPoint = downPoint;
+			downPoint = point;
+			downCount++;
+			break;
+		case MOUSE_UP:
+			// Mouse up events return the down point for last point,
+			// so delta is spanning over the whole drag.
+			lastPoint = downPoint;
+			break;
+		}
+		if (start) {
+			count = 0;
+		} else {
+			count++;
+		}
+		this.pressure = pressure / 255.0;
+		return true;
 	}
 
-	public void onHandleEvent(ToolEventType type, Point pt, int pressure, int modifiers) {
+	public void onHandleEvent(ToolEventType type, Point pt, int pressure,
+			int modifiers) {
 		try {
 			switch (type) {
 			case MOUSE_DOWN:
-				updateEvent(type, pt, pressure, 0, true);
+				updateEvent(type, pt, pressure, null, null, true);
 				onMouseDown(new ToolEvent(this, type, modifiers));
 				break;
 			case MOUSE_DRAG:
-				if (updateEvent(type, pt, pressure, distanceThreshold, false))
-					onMouseDrag(new ToolEvent(this, type, modifiers));
-				break;
-			case MOUSE_UP:
-				// If the last mouse drag happened in a different place, call
-				// mouse drag first, then mouse up.
-				if ((point.x != pt.x || point.y != pt.y)
-						&& updateEvent(ToolEventType.MOUSE_DRAG, pt, pressure,
-								distanceThreshold, false)) {
+				while (updateEvent(type, pt, pressure, minDistance,
+						maxDistance, false)) {
 					try {
 						onMouseDrag(new ToolEvent(this, type, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
 				}
-				updateEvent(type, pt, pressure, 0, false);
+				break;
+			case MOUSE_UP:
+				// If the last mouse drag happened in a different place, call
+				// mouse drag first, then mouse up.
+				if ((point.x != pt.x || point.y != pt.y)
+						&& updateEvent(ToolEventType.MOUSE_DRAG, pt, pressure,
+								minDistance, maxDistance, false)) {
+					try {
+						onMouseDrag(new ToolEvent(this, type, modifiers));
+					} catch (Exception e) {
+						ScriptographerEngine.reportError(e);
+					}
+				}
+				updateEvent(type, pt, pressure, null, maxDistance, false);
 				try {
 					onMouseUp(new ToolEvent(this, type, modifiers));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
 				}
 				// Start with new values for TRACK_CURSOR
-				updateEvent(type, pt, pressure, 0, true);
+				updateEvent(type, pt, pressure, null, null, true);
 				firstMove = true;
 				break;
 			case MOUSE_MOVE:
-				try {
-					if (updateEvent(type, pt, pressure, distanceThreshold, firstMove))
+				while (updateEvent(type, pt, pressure, minDistance,
+						maxDistance, firstMove)) {
+					try {
 						onMouseMove(new ToolEvent(this, type, modifiers));
-				} finally {
+					} catch (Exception e) {
+						ScriptographerEngine.reportError(e);
+					}
 					firstMove = false;
 				}
 				break;
