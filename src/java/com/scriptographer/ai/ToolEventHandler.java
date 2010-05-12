@@ -99,8 +99,11 @@ public class ToolEventHandler extends NativeObject {
 		return minDistance;
 	}
 
-	public void setMinDistance(Double threshold) {
-		minDistance = threshold;
+	public void setMinDistance(Double minDistance) {
+		this.minDistance = minDistance;
+		if (minDistance != null && maxDistance != null
+				&& minDistance > maxDistance)
+			maxDistance = minDistance;
 	}
 
 	public Double getMaxDistance() {
@@ -109,6 +112,9 @@ public class ToolEventHandler extends NativeObject {
 
 	public void setMaxDistance(Double maxDistance) {
 		this.maxDistance = maxDistance;
+		if (minDistance != null && maxDistance != null
+				&& maxDistance < minDistance)
+			minDistance = maxDistance;
 	}
 
 	/**
@@ -324,18 +330,22 @@ public class ToolEventHandler extends NativeObject {
 	}
 
 	private boolean updateEvent(ToolEventType type, Point pt, int pressure,
-			Double minDistance, Double maxDistance, boolean start) {
-		if (!start && (minDistance != null || maxDistance != null)) {
-			double minDist = minDistance != null ? minDistance : 0;
-			Point vector = pt.subtract(point);
-			double distance = vector.getLength();
-			if (distance < minDist)
+			Double minDistance, Double maxDistance, boolean start, boolean needsChange) {
+		if (!start) {
+			if (minDistance != null || maxDistance != null) {
+				double minDist = minDistance != null ? minDistance : 0;
+				Point vector = pt.subtract(point);
+				double distance = vector.getLength();
+				if (distance < minDist)
+					return false;
+				// Produce a new point on the way to pt if pt is further away
+				// than maxDistance
+				double maxDist = maxDistance != null ? maxDistance : 0;
+				if (maxDist != 0 && distance > maxDist)
+					pt = point.add(vector.normalize(maxDist));
+			}
+			if (needsChange && pt.equals(point))
 				return false;
-			// Produce a new point on the way to pt if pt is further away
-			// than macDistance
-			double maxDist = maxDistance != null ? maxDistance : 0;
-			if (maxDist != 0 && distance > maxDist)
-				pt = point.add(vector.normalize(maxDist));
 		}
 		lastPoint = point;
 		point = pt;
@@ -365,17 +375,23 @@ public class ToolEventHandler extends NativeObject {
 		try {
 			switch (type) {
 			case MOUSE_DOWN:
-				updateEvent(type, pt, pressure, null, null, true);
+				updateEvent(type, pt, pressure, null, null, true, false);
 				onMouseDown(new ToolEvent(this, type, modifiers));
 				break;
 			case MOUSE_DRAG:
+				// In order for idleInterval drag events to work, we need to
+				// not check the first call for a change of position. 
+				// Subsequent calls required by min/maxDistance functionality
+				// will require it, otherwise this might loop endlessly.
+				boolean needsChange = false;
 				while (updateEvent(type, pt, pressure, minDistance,
-						maxDistance, false)) {
+						maxDistance, false, needsChange)) {
 					try {
 						onMouseDrag(new ToolEvent(this, type, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
+					needsChange = true;
 				}
 				break;
 			case MOUSE_UP:
@@ -383,26 +399,26 @@ public class ToolEventHandler extends NativeObject {
 				// mouse drag first, then mouse up.
 				if ((point.x != pt.x || point.y != pt.y)
 						&& updateEvent(ToolEventType.MOUSE_DRAG, pt, pressure,
-								minDistance, maxDistance, false)) {
+								minDistance, maxDistance, false, false)) {
 					try {
 						onMouseDrag(new ToolEvent(this, type, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
 				}
-				updateEvent(type, pt, pressure, null, maxDistance, false);
+				updateEvent(type, pt, pressure, null, maxDistance, false, false);
 				try {
 					onMouseUp(new ToolEvent(this, type, modifiers));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
 				}
 				// Start with new values for TRACK_CURSOR
-				updateEvent(type, pt, pressure, null, null, true);
+				updateEvent(type, pt, pressure, null, null, true, false);
 				firstMove = true;
 				break;
 			case MOUSE_MOVE:
 				while (updateEvent(type, pt, pressure, minDistance,
-						maxDistance, firstMove)) {
+						maxDistance, firstMove, true)) {
 					try {
 						onMouseMove(new ToolEvent(this, type, modifiers));
 					} catch (Exception e) {
