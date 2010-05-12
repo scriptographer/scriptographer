@@ -1006,13 +1006,19 @@ public abstract class Dialog extends Component {
 		// See if there was a dialog with this name already, and if so
 		// destroy it first. This allows script to easily replace their
 		// own dialogs.
-		// TODO: Shall scripts prepend their names with their script name and path,
-		// so they cannot do harm???
 		if (!this.name.equals("")) {
 			Dialog other = dialogsByName.get(this.name);
 			if (other != null) {
-				other.setVisible(false);
-				other.destroy();
+				if (other.canRemove(false)) {
+					other.setVisible(false);
+					other.destroy();
+				} else {
+					// Renaming the other dialog, so they don't collide by name
+					// natively. This even works when there are more than two
+					// dialogs, as other.setName keeps calling setName
+					// recursively with appended names too.
+					other.setName(this.name + "_");
+				}
 			}
 			dialogsByName.put(this.name, this);
 		}
