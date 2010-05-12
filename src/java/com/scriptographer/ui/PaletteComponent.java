@@ -74,7 +74,6 @@ public class PaletteComponent implements ChangeReceiver {
 	private Float min;
 	private Float max;
 	private Float increment;
-	private Integer fractionDigits;
 	private Item item;
 	private TextUnits units;
 	private Boolean steppers;
@@ -99,6 +98,9 @@ public class PaletteComponent implements ChangeReceiver {
 					type = PaletteComponentType.STRING;
 			}
 			if (type != null) {
+				// Turn on steppers for number components by default
+				if (type == PaletteComponentType.NUMBER)
+					setSteppers(true);
 				// Call setMultiline to set default value for length
 				setMultiline(false);
 				// Tell the framework to set the properties from the map
@@ -294,8 +296,8 @@ public class PaletteComponent implements ChangeReceiver {
 		if (!enabled)
 			item.setEnabled(false);
 		setRange(min, max);
-		setIncrement(increment);
-		setFractionDigits(fractionDigits);
+		// Setting range internally updates increments, so no need to set it
+		// again here.
 		setMaxLength(maxLength);
 		setOptions(options);
 		setValue(defaultValue);
@@ -551,6 +553,10 @@ public class PaletteComponent implements ChangeReceiver {
 				((ValueItem) item).setRange(
 						min != null ? min : Integer.MIN_VALUE, 
 						max != null ? max : Integer.MAX_VALUE);
+				// Setting range sets increment again as well, as it will
+				// be dynamically calculated based on range in case it was
+				// not set on a fixed value.
+				setIncrement(increment);
 			}
 		}
 	}
@@ -559,49 +565,48 @@ public class PaletteComponent implements ChangeReceiver {
 		return min != null && max != null;
 	}
 
-
 	public Float getIncrement() {
-		return increment;
-		
+		if (type == PaletteComponentType.NUMBER
+				|| type == PaletteComponentType.SLIDER) {
+			// If no increment is defined, calculate a default value, based on
+			// the defined range.
+			if (increment == null) {
+				if (min != null && max != null) {
+					float range = max - min;
+					if (range == 0)
+						range = 1;
+					int numDigits = Math.max(0, 2 - (int) Math.ceil(Math.log10(range)));
+					float inc = 1f / (float) Math.pow(10, numDigits);
+					return inc > 1f ? 1f : inc;
+				} else {
+					return 1f;
+				}
+			}
+			return increment;
+		}
+		return null;
 	}
 
 	public void setIncrement(Float increment) {
 		if (type == PaletteComponentType.NUMBER
 				|| type == PaletteComponentType.SLIDER) {
-			if (increment == null)
-				increment = 0f;
 			this.increment = increment;
-			if (item != null)
-				((ValueItem) item).setIncrements(increment);
+			if (item != null) {
+				// If no increment is defined, use a default value,
+				// as calculated by getIncrement.
+				float inc = getIncrement();
+				((ValueItem) item).setIncrements(inc);
+				if (type == PaletteComponentType.NUMBER) {
+					// Figure out amount of fraction digits from increment value
+					int fractionDigits = 0;
+					while (inc < 1) {
+						inc *= 10;
+						fractionDigits++;
+					}
+					((TextEditItem) item).setFractionDigits(fractionDigits);
+				}
+			}
 		}
-	}
-
-	public Integer getFractionDigits() {
-		return fractionDigits;
-	}
-
-	public void setFractionDigits(Integer fractionDigits) {
-		if (type == PaletteComponentType.NUMBER) {
-			if (fractionDigits == null)
-				fractionDigits = 3;
-			this.fractionDigits = fractionDigits;
-			if (item != null)
-				((TextEditItem) item).setFractionDigits(fractionDigits);
-		}
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public Integer getPrecision() {
-		return getFractionDigits();
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void setPrecision(Integer precision) {
-		setFractionDigits(precision);
 	}
 
 	public Object getDefaultValue() {
