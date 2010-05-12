@@ -226,8 +226,8 @@ public class ListWrapper extends ExtendedJavaObject {
 			unwrapped = ((Wrapper) unwrapped).unwrap();
 		Class type = ((List) javaObject).getComponentType();
 		// Use WrapFactory to coerce type if not compatible
-		return type.isInstance(value)
-				? value
+		return type.isInstance(unwrapped)
+				? unwrapped
 				: Context.getCurrentContext().getWrapFactory().coerceType(
 						type, value, unwrapped);
 	}
