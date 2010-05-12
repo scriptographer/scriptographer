@@ -71,13 +71,16 @@ public class PaletteComponent implements ChangeReceiver {
 	private Boolean multiline;
 	private Integer rows;
 	private Integer columns;
-	private Float min;
-	private Float max;
-	private Float increment;
+	private Double min;
+	private Double max;
+	private Double increment;
 	private Item item;
 	private TextUnits units;
 	private Boolean steppers;
 
+	// Used for scaling slider values
+	private double factor = 1;
+	
 	/**
 	 * @jshide
 	 */
@@ -101,6 +104,8 @@ public class PaletteComponent implements ChangeReceiver {
 				// Turn on steppers for number components by default
 				if (type == PaletteComponentType.NUMBER)
 					setSteppers(true);
+				if (type == PaletteComponentType.SLIDER)
+					factor = 1000;
 				// Call setMultiline to set default value for length
 				setMultiline(false);
 				// Tell the framework to set the properties from the map
@@ -136,15 +141,8 @@ public class PaletteComponent implements ChangeReceiver {
 	 * 
 	 * @jshide
 	 */
-	public PaletteComponent(String description, Number value) {
+	public PaletteComponent(String description, double value) {
 		this(PaletteComponentType.NUMBER, description, value);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public PaletteComponent(String description, float value) {
-		this(PaletteComponentType.NUMBER, description, new Float(value));
 	}
 
 	/**
@@ -152,15 +150,8 @@ public class PaletteComponent implements ChangeReceiver {
 	 * 
 	 * @jshide
 	 */
-	public PaletteComponent(String description, Boolean value) {
-		this(PaletteComponentType.CHECKBOX, description, value);
-	}
-
-	/**
-	 * @jshide
-	 */
 	public PaletteComponent(String description, boolean value) {
-		this(description, new Boolean(value));
+		this(PaletteComponentType.CHECKBOX, description, value);
 	}
 
 	/**
@@ -168,8 +159,8 @@ public class PaletteComponent implements ChangeReceiver {
 	 * 
 	 * @jshide
 	 */
-	public PaletteComponent(String description, Number value, float min,
-			float max, float step) {
+	public PaletteComponent(String description, Number value, double min,
+			double max, double step) {
 		this(PaletteComponentType.SLIDER, description, value);
 		this.setRange(min, max);
 		this.increment = step;
@@ -390,10 +381,19 @@ public class PaletteComponent implements ChangeReceiver {
 			case BUTTON:
 				return ((Button) item).getText();
 			case NUMBER:
+				return ((ValueItem) item).getValue();
 			case SLIDER:
-				return new Float(((ValueItem) item).getValue());
+				double value = (double) ((ValueItem) item).getValue() / factor;
+				Double inc = getIncrement();
+				if (inc != null) {
+					double pre = value;
+					value = Math.round(value / inc) * inc;
+					if (pre != value)
+						((ValueItem) item).setValue((float) (value * factor));
+				}
+				return value;
 			case CHECKBOX:
-				return new Boolean(((ToggleItem) item).isChecked());
+				return ((ToggleItem) item).isChecked();
 			case LIST:
 				ListEntry selected = ((PopupList) item).getSelectedEntry();
 				if (selected != null)
@@ -425,7 +425,7 @@ public class PaletteComponent implements ChangeReceiver {
 			case NUMBER:
 			case SLIDER:
 				((ValueItem) item).setValue(
-						(float) ConversionUtils.toDouble(value));
+						(float) (ConversionUtils.toDouble(value) * factor));
 				break;
 			case CHECKBOX:
 				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
@@ -503,38 +503,38 @@ public class PaletteComponent implements ChangeReceiver {
 	/**
 	 * @deprecated
 	 */
-	public Float getMin() {
+	public Double getMin() {
 		return min;
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public void setMin(Float min) {
+	public void setMin(Double min) {
 		setRange(min, max);
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public Float getMax() {
+	public Double getMax() {
 		return max;
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public void setMax(Float max) {
+	public void setMax(Double max) {
 		setRange(min, max);
 	}
 
-	public float[] getRange() {
-		return hasRange() ? new float[] {
+	public double[] getRange() {
+		return hasRange() ? new double[] {
 			min, max
 		} : null;
 	}
 
-	public void setRange(float[] range) {
+	public void setRange(double[] range) {
 		if (range == null)
 			setRange(null, null);
 		else
@@ -544,15 +544,15 @@ public class PaletteComponent implements ChangeReceiver {
 	/**
 	 * @jshide
 	 */
-	public void setRange(Float min, Float max) {
+	public void setRange(Double min, Double max) {
 		if (type == PaletteComponentType.NUMBER
 				|| type == PaletteComponentType.SLIDER) {
 			this.min = min;
 			this.max = max;
 			if (item != null) {
 				((ValueItem) item).setRange(
-						min != null ? min : Integer.MIN_VALUE, 
-						max != null ? max : Integer.MAX_VALUE);
+						(float) (min != null ? min * factor : Integer.MIN_VALUE), 
+						(float) (max != null ? max * factor : Integer.MAX_VALUE));
 				// Setting range sets increment again as well, as it will
 				// be dynamically calculated based on range in case it was
 				// not set on a fixed value.
@@ -565,21 +565,21 @@ public class PaletteComponent implements ChangeReceiver {
 		return min != null && max != null;
 	}
 
-	public Float getIncrement() {
+	public Double getIncrement() {
 		if (type == PaletteComponentType.NUMBER
 				|| type == PaletteComponentType.SLIDER) {
 			// If no increment is defined, calculate a default value, based on
 			// the defined range.
 			if (increment == null) {
 				if (min != null && max != null) {
-					float range = max - min;
+					double range = max - min;
 					if (range == 0)
-						range = 1;
+						range = 1.0;
 					int numDigits = Math.max(0, 2 - (int) Math.ceil(Math.log10(range)));
-					float inc = 1f / (float) Math.pow(10, numDigits);
-					return inc > 1f ? 1f : inc;
+					double inc = 1.0 / Math.pow(10, numDigits);
+					return inc > 1.0 ? 1.0 : inc;
 				} else {
-					return 1f;
+					return 1.0;
 				}
 			}
 			return increment;
@@ -587,15 +587,16 @@ public class PaletteComponent implements ChangeReceiver {
 		return null;
 	}
 
-	public void setIncrement(Float increment) {
+	public void setIncrement(Double increment) {
 		if (type == PaletteComponentType.NUMBER
 				|| type == PaletteComponentType.SLIDER) {
 			this.increment = increment;
 			if (item != null) {
 				// If no increment is defined, use a default value,
 				// as calculated by getIncrement.
-				float inc = getIncrement();
-				((ValueItem) item).setIncrements(inc);
+				double inc = getIncrement() * factor;
+				System.out.println(inc);
+				((ValueItem) item).setIncrements((float) inc);
 				if (type == PaletteComponentType.NUMBER) {
 					// Figure out amount of fraction digits from increment value
 					int fractionDigits = 0;
