@@ -141,9 +141,7 @@ public class ScriptographerEngine {
 		// We're shutting down, so do not display console stuff any more
 		ConsoleOutputStream.enableOutput(false);
 		ConsoleOutputStream.enableRedirection(false);
-		stopAll(true);
-		Dialog.destroyAll(true, true);
-		Timer.disposeAll(true, true);
+		stopAll(true, true);
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
 		Annotator.disposeAll();
@@ -345,7 +343,7 @@ public class ScriptographerEngine {
 	}
 
 	public static String reload() {
-		stopAll(true);
+		stopAll(true, true);
 		reloadCount++;
 		return nativeReload();
 	}
@@ -370,36 +368,6 @@ public class ScriptographerEngine {
 		return null;
 	}
 
-	/**
-	 * To be called before AI functions are executed
-	 */
-	public static void beginExecution() {
-		// Only call Document.beginExecution if it has not already
-		// been called through the UI notification callback.
-		if (scriptStack.empty()) {
-			Document.beginExecution();
-			// Disable output to the console while the script is
-			// executed as it won't get updated anyway
-			// ConsoleOutputStream.enableOutput(false);
-		}
-	}
-
-	/**
-	 * To be called after AI functions were executed
-	 */
-	public static void endExecution() {
-		scriptStack.pop();
-		if (scriptStack.empty()) {
-			try {
-				CommitManager.commit();
-			} catch(Throwable t) {
-				ScriptographerEngine.reportError(t);
-			}
-			Dictionary.releaseInvalid();
-			Document.endExecution();
-			closeProgress();
-		}
-	}
 
 	/**
 	 * To be called before AI functions are executed as scripts
@@ -411,7 +379,14 @@ public class ScriptographerEngine {
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
 		Script script = scope != null ? (Script) scope.get("script") : null;
-		beginExecution();
+		// Only call Document.beginExecution if it has not already
+		// been called through the UI notification callback.
+		if (scriptStack.empty()) {
+			Document.beginExecution();
+			// Disable output to the console while the script is
+			// executed as it won't get updated anyway
+			// ConsoleOutputStream.enableOutput(false);
+		}
 		if (file != null) {
 			Dialog.destroyAll(false, false);
 			Timer.disposeAll(false, false);
@@ -433,6 +408,28 @@ public class ScriptographerEngine {
 		// Push script even if it is null, as we're always popping again in
 		// endExecution.
 		scriptStack.push(script);
+	}
+
+	public static void beginExecution() {
+		beginExecution(null, null);
+	}
+
+	/**
+	 * To be called after AI functions were executed
+	 */
+	public static void endExecution() {
+		if (!scriptStack.empty())
+			scriptStack.pop();
+		if (scriptStack.empty()) {
+			try {
+				CommitManager.commit();
+			} catch(Throwable t) {
+				ScriptographerEngine.reportError(t);
+			}
+			Dictionary.releaseInvalid();
+			Document.endExecution();
+			closeProgress();
+		}
 	}
 
 	/**
@@ -598,13 +595,13 @@ public class ScriptographerEngine {
 	}
 
 	private static void callCallbacks(String name) {
-		// TODO: emptyArgs?
 		callCallbacks(name, new Object[0]);
 	}
 
-	public static void stopAll(boolean ignoreKeepAlive) {
-		Timer.stopAll(ignoreKeepAlive, false);
+	public static void stopAll(boolean ignoreKeepAlive, boolean force) {
+		Timer.disposeAll(ignoreKeepAlive, force);
 		callCallbacks("onStop");
+		Dialog.destroyAll(ignoreKeepAlive, force);
 		removeCallbacks(ignoreKeepAlive);
 	}
 
