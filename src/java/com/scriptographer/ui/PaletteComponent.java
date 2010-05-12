@@ -76,7 +76,6 @@ public class PaletteComponent implements ChangeReceiver {
 	private Float increment;
 	private Integer fractionDigits;
 	private Item item;
-	private Callable onChange;
 	private TextUnits units;
 	private Boolean steppers;
 
@@ -243,7 +242,6 @@ public class PaletteComponent implements ChangeReceiver {
 		case SLIDER:
 			item = new Slider(dialog) {
 				protected void onChange() {
-					super.onChange();
 					PaletteComponent.this.onChange(true);
 				}
 			};
@@ -251,7 +249,6 @@ public class PaletteComponent implements ChangeReceiver {
 		case CHECKBOX:
 			item = new CheckBox(dialog) {
 				protected void onClick() {
-					super.onClick();
 					PaletteComponent.this.onChange(true);
 				}
 			};
@@ -259,7 +256,6 @@ public class PaletteComponent implements ChangeReceiver {
 		case LIST:
 			item = new PopupList(dialog, true) {
 				protected void onChange() {
-					super.onChange();
 					selectedIndex = this.getSelectedEntry().getIndex();
 					PaletteComponent.this.onChange(true);
 				}
@@ -269,14 +265,13 @@ public class PaletteComponent implements ChangeReceiver {
 			item = new Button(dialog) {
 				protected void onClick() {
 					super.onClick();
-					PaletteComponent.this.onChange(true);
+					PaletteComponent.this.onClick();
 				}
 			};
 			break;
 		case COLOR:
 			item = new ColorButton(dialog) {
 				protected void onClick() {
-					super.onClick();
 					PaletteComponent.this.onChange(true);
 				}
 			};
@@ -859,20 +854,14 @@ public class PaletteComponent implements ChangeReceiver {
 		}
 	}
 
+	private Callable onChange;
+
 	public Callable getOnChange() {
 		return onChange;
 	}
 
 	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
-	}
-
-	public Callable getOnClick() {
-		return onChange;
-	}
-
-	public void setOnClick(Callable onClick) {
-		this.onChange = onClick;
 	}
 
 	protected void onChange(boolean callback) {
@@ -888,6 +877,21 @@ public class PaletteComponent implements ChangeReceiver {
 		// new value now too.
 		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, value);
+	}
+
+	private Callable onClick;
+
+	public Callable getOnClick() {
+		return onClick;
+	}
+
+	public void setOnClick(Callable onClick) {
+		this.onClick = onClick;
+	}
+
+	protected void onClick() {
+		if (onClick != null)
+			ScriptographerEngine.invoke(onClick, this);
 	}
 
 	@SuppressWarnings("unchecked")
