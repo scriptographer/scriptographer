@@ -295,11 +295,11 @@ public class PaletteComponent implements ChangeReceiver {
 			item.setEnabled(false);
 		setRange(min, max);
 		setIncrement(increment);
-		setUnits(units);
 		setFractionDigits(fractionDigits);
 		setMaxLength(maxLength);
 		setOptions(options);
 		setValue(defaultValue);
+		setUnits(units);
 		
 		// Margin needs to be defined before setting size, since getBestSize is
 		// affected by margin
