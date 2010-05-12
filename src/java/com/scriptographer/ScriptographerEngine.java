@@ -424,11 +424,12 @@ public class ScriptographerEngine {
 					scope.put("script", script, true);
 				}
 			}
-			if (file == null || script.getShowProgress()
-					&& !file.getName().startsWith("__"))
+			if (script != null && !script.getShowProgress()) {
+				closeProgress();
+			} else if (file == null || !file.getName().startsWith("__")) {
 				showProgress(file != null ? "Executing " + file.getName()
 						+ "..." : "Executing...");
-
+			}
 			// Only return true if we were really beginning execution.
 			return started;
 		}
