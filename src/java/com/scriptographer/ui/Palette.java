@@ -227,9 +227,9 @@ public class Palette extends FloatingDialog implements PropertyObserver {
 
 		double[][] sizes = {
 			hasLogo
-				? new double[] { TableLayout.PREFERRED, TableLayout.FILL,
-					TableLayout.PREFERRED }
-				: new double[] { TableLayout.FILL, TableLayout.PREFERRED },
+				? new double[] { TableLayout.PREFERRED, TableLayout.PREFERRED,
+					TableLayout.FILL }
+				: new double[] { TableLayout.PREFERRED, TableLayout.FILL },
 			rows
 		};
 		TableLayout layout = new TableLayout(sizes);

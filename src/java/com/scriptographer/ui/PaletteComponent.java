@@ -598,7 +598,6 @@ public class PaletteComponent implements ChangeReceiver {
 				// If no increment is defined, use a default value,
 				// as calculated by getIncrement.
 				double inc = getIncrement() * factor;
-				System.out.println(inc);
 				((ValueItem) item).setIncrements((float) inc);
 				if (type == PaletteComponentType.NUMBER) {
 					// Figure out amount of fraction digits from increment value
