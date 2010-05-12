@@ -36,16 +36,16 @@ function initRaster() {
 	
 	var sel = document.selectedItems;
 	
-	if(rasters.length) {
+	if (rasters.length) {
 		raster = rasters.first;
-		if(raster instanceof PlacedFile && !raster.eps) {
+		if (raster instanceof PlacedFile && !raster.eps) {
 			// Embed placed images so the raster script can access pixels
 			raster = raster.embed(false);
 		}
 		
 		for (var i = 0; i < sel.length; i++) {
 			var obj = sel[i];
-			if(!obj.isAncestor(raster))
+			if (!obj.isAncestor(raster))
 				dots.push(obj);
 		}
 	}
@@ -56,7 +56,7 @@ function initRaster() {
 	} else {
 		pixelCount = raster.height * raster.width;
 		var sure = true;
-		if(pixelCount > 20000) {
+		if (pixelCount > 20000) {
 			script.showProgress = false;
 			sure = Dialog.confirm('The image you\'re about to rasterize contains ' + pixelCount + ' pixels.\nRasterizing could take a long time.\nAre you sure you want to proceed?');
 			script.showProgress = true;

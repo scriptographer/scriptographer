@@ -1,30 +1,34 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values  = {
-	threshold: 10,
-	varyThickness: false
+	minDistance: 10,
+	varyThickness: true
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = { 
-	threshold: {
-		type: 'number', label: 'Distance Threshold',
+	minDistance: {
+		type: 'number', label: 'Size',
 		units: 'point',
+		range: [0, 1000],
 		onChange: function(value) {
-			tool.distanceThreshold = value; 
+			tool.minDistance = value;
 		} 
 	},
 	varyThickness: {
-		type: 'checkbox', label: 'Vary Worm Thickness'
+		type: 'checkbox', label: 'Vary Thickness'
 	}
 };
 
-var palette = new Palette('Worm Farm', dialogItems, values);
+var palette = new Palette('Worm Farm', components, values);
 
 //////////////////////////////////////////////////////////////////////////////
 // Mouse handling:
 
-tool.distanceThreshold = values.threshold;
+tool.minDistance = values.minDistance;
 
 var worm;
 var angle = (90).toRadians();
@@ -44,10 +48,10 @@ function onMouseDrag(event) {
 
 	// if the vary thickness checkbox is marked
 	// divide the length of the step vector by two:
-	if(values.varyThickness) {
+	if (values.varyThickness) {
 		step.length = step.length / 2;
 	} else {
-		// otherwise set the length of the step vector to half of distanceThreshold
+		// otherwise set the length of the step vector to half of minDistance
 		step.length = values.threshold / 2;
 	}
 	

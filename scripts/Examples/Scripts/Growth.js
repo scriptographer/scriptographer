@@ -3,7 +3,7 @@ var paths = document.getItems({
 	selected: true
 });
 
-if(paths.length) {
+if (paths.length) {
 	var components = {
 		scale: { label: 'Scale', value: 0.95 }
 	};
@@ -12,22 +12,23 @@ if(paths.length) {
 	if (values) {
 		var path = paths[0];
 		var group = new Group([path]);
-		var count = 0;
-		while (count++ < 100) {
-			var lastB = path.curves.last;
-			var p2 = lastB.getPoint(1);
-			var a2 = lastB.getTangent(1).angle;
-			var obj = path.clone();
-			obj.scale(values.scale);
-			group.appendTop(obj);
-			if (obj.bounds.width < 1 && obj.bounds.height < 1)
+		for (var i = 0; i < 100; i++) {
+			var lastCurve = path.curves.last;
+			var p2 = lastCurve.getPoint(1);
+			var a2 = lastCurve.getTangent(1).angle;
+			var clone = path.clone();
+			group.appendTop(clone);
+			clone.scale(values.scale);
+			var firstCurve = clone.curves.first;
+			var p1 = firstCurve.getPoint(0);
+			var a1 = firstCurve.getTangent(0).angle;
+			clone.rotate(a2 - a1, p1);
+			clone.position += p2 - p1;
+			path = clone;
+			if (clone.length < 1) {
+				clone.remove();
 				break;
-			var firstB = obj.curves.first;
-			var p1 = firstB.getPoint(0);
-			var a1 = firstB.getTangent(0).angle;
-			obj.rotate(a2 - a1, p1);
-			obj.position += p2 - p1;
-			path = obj;
+			}
 		}
 	}
 } else {

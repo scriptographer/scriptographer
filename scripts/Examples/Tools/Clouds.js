@@ -1,17 +1,41 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
+
+tool.minDistance = 20;
 
 var values = {
-	flip: false
+	flip: false,
+	fixed: false
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
-	size: {
-		label: 'Minium Size', value: tool.distanceThreshold,
+	minSize: {
+		label: 'Minimum Size', value: tool.minDistance,
+		min: 0,
 		onChange: function(value) {
-			tool.distanceThreshold = value;
+			tool.minDistance = value;
+			if (values.fixed) {
+				tool.maxDistance = value;
+			} else {
+				tool.maxDistance = null;
+			}
 		}
 	},
+	
+	fixed: {
+		label: 'Fixed Size',
+		onChange: function(value) {
+			if (value) {
+				tool.maxDistance = tool.minDistance;
+			} else {
+				tool.maxDistance = null;
+			}
+		}
+	},
+
 	flip: {
 		label: 'Flip',
 		type: 'checkbox'
@@ -22,8 +46,6 @@ new Palette('Clouds', components, values);
 
 //////////////////////////////////////////////////////////////////////////////
 // Mouse handling:
-
-tool.distanceThreshold = 20;
 
 var path;
 function onMouseDown(event) {
@@ -37,7 +59,7 @@ function onMouseDown(event) {
 function onMouseDrag(event) {
 	var vector = (event.delta / 2).rotate((90).toRadians());
 	
-	if(values.flip && event.count.isEven())
+	if (values.flip && event.count.isEven())
 		vector = vector * -1;
 	
 	var circlePoint = event.middlePoint + vector;

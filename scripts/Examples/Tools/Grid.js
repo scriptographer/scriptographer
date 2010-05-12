@@ -1,13 +1,20 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = { size: 10 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
-	size: { label: 'Size', type: 'number', steppers: true }
+	size: {
+		label: 'Size', type: 'number',
+		steppers: true,
+		min: 0.01
+	}
 };
 
-var palette = new Palette('Gridder', components, values);
+var palette = new Palette('Grid', components, values);
 
 //////////////////////////////////////////////////////////////////////////////
 // Mouse handling:

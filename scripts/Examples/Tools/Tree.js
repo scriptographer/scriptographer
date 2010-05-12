@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Interface:
+// Values:
 
 var values = {
 	minScale: 0.2,
@@ -9,32 +9,46 @@ var values = {
 	maxBranch: 6
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Interface:
+
 var components = {
 	minScale: {
-		label: 'Minimal Scale',
+		label: 'Min Scale',
+		type: 'slider',
+		range: [0, 1],
 		onChange: function(value) {
-			if(value > values.maxScale)
+			if (value > values.maxScale)
 				values.maxScale = value;
 		}
 	},
 	maxScale: {
-		label: 'Maximal Scale',
+		label: 'Max Scale',
+		type: 'slider',
+		range: [0, 1],
 		onChange: function(value) {
-			if(value < values.minScale)
+			if (value < values.minScale)
 				values.minScale = value;
 		}
 	},
-	rotation: { label: 'Rotation' },
+	rotation: {
+		label: 'Rotation',
+		type: 'slider',
+		range: [0, 1]
+	},
 	minBranch: {
-		label: 'Minimal Branch Number',
+		label: 'Min Branches',
+		min: 0,
 		onChange: function(value) {
-			if(value > values.maxBranch)
+			if (value > values.maxBranch)
 				values.maxBranch = value;
 		}
 	},
-	maxBranch: { label: 'Maximal Branch Number',
+	maxBranch: {
+		label: 'Max Branches',
+		min: 0,
 		onChange: function(value) {
-			if(value < values.minBranch)
+			if (value < values.minBranch)
 				values.minBranch = value;
 		}
 	}

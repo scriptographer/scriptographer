@@ -1,11 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////
+// Values:
+
+var values = {
+	size: 50
+};
+
+//////////////////////////////////////////////////////////////////////////////
 // Interface:
 
-var values = { size: 50 };
 var components = {
 	size: {
-		label: 'Radius', type: 'range',
-		min: 0, max: 1000, step: 0.5
+		label: 'Radius',
+		type: 'range',
+		range: [0, 1000]
 	}
 };
 
