@@ -1,7 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////
 // Values:
 
-var values = { size: 10 };
+tool.fixedDistance = 10;
+
+var values = { size: tool.fixedDistance };
 
 //////////////////////////////////////////////////////////////////////////////
 // Interface:
@@ -10,7 +12,10 @@ var components = {
 	size: {
 		label: 'Size', type: 'number',
 		steppers: true,
-		min: 0.01
+		range: [0.01, 500],
+		onChange: function(value) {
+			tool.fixedDistance = value;
+		}
 	}
 };
 
