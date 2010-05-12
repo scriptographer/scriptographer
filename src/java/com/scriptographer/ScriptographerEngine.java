@@ -413,12 +413,11 @@ public class ScriptographerEngine {
 		if (!executing || file != null) {
 			boolean started = beginExecution();
 
-			Script script = null;
+			Script script = scope != null ? (Script) scope.get("script") : null;
 			if (file != null) {
 				currentScriptFile = file;
 				// Put a script object in the scope to offer the user
 				// access to information about it.
-				script = (Script) scope.get("script");
 				if (script == null) {
 					script = new Script(file);
 					scope.put("script", script, true);
