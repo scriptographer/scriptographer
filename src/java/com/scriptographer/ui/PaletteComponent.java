@@ -178,7 +178,6 @@ public class PaletteComponent implements ChangeReceiver {
 	
 	// TODO: make constructors for other types
 
-
 	protected Item createItem(Dialog dialog, Border margin) {
 		// Item:
 		item = null;
@@ -366,6 +365,10 @@ public class PaletteComponent implements ChangeReceiver {
 		return row + 1;
 	}
 
+	public void reset() {
+		setValue(defaultValue);
+	}
+
 	/*
 	 * Beans
 	 */
@@ -467,9 +470,10 @@ public class PaletteComponent implements ChangeReceiver {
 		}
 	}
 
-	/**
-	 * @jshide
-	 */
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -498,34 +502,6 @@ public class PaletteComponent implements ChangeReceiver {
 	 */
 	public void setDescription(String description) {
 		setLabel(description);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public Double getMin() {
-		return min;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void setMin(Double min) {
-		setRange(min, max);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public Double getMax() {
-		return max;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void setMax(Double max) {
-		setRange(min, max);
 	}
 
 	public double[] getRange() {
@@ -563,6 +539,22 @@ public class PaletteComponent implements ChangeReceiver {
 
 	public boolean hasRange() {
 		return min != null && max != null;
+	}
+
+	public Double getMin() {
+		return min;
+	}
+
+	public void setMin(Double min) {
+		setRange(min, max);
+	}
+
+	public Double getMax() {
+		return max;
+	}
+
+	public void setMax(Double max) {
+		setRange(min, max);
 	}
 
 	public Double getIncrement() {
@@ -608,10 +600,6 @@ public class PaletteComponent implements ChangeReceiver {
 				}
 			}
 		}
-	}
-
-	public Object getDefaultValue() {
-		return defaultValue;
 	}
 
 	public TextUnits getUnits() {

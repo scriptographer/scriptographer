@@ -128,6 +128,13 @@ public class Palette extends FloatingDialog implements PropertyObserver {
 		return components;
 	}
 
+	public void reset() {
+		for (Object component : components.values()) {
+			if (component instanceof PaletteComponent)
+				((PaletteComponent) component).reset();
+		}
+	}
+
 	/**
 	 * @jshide
 	 */
