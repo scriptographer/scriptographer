@@ -434,7 +434,7 @@ public abstract class Item extends Component {
 				size = new Size(32, 24).multiply(factor);
 			break;
 		case SLIDER: // Default size for slider
-			size = new Size(160, 8);
+			size = new Size(isSmall() ? 120 : 160, 8);
 			break;
 		case POPUP_LIST:
 		case SCROLLING_POPUP_LIST:
