@@ -90,7 +90,7 @@ public class ToolEventHandler extends NativeObject {
 	 * <code>
 	 * // Fire the onMouseDrag event after the user has dragged
 	 * // more then 5 points from the last onMouseDrag event:
-	 * tool.distanceThreshold = 5;
+	 * tool.minDistance = 5;
 	 * </code>
 	 * 
 	 * @param threshold
@@ -115,6 +115,17 @@ public class ToolEventHandler extends NativeObject {
 		if (minDistance != null && maxDistance != null
 				&& maxDistance < minDistance)
 			minDistance = maxDistance;
+	}
+
+	public Double getFixedDistance() {
+		if (minDistance != null && minDistance.equals(maxDistance))
+			return minDistance;
+		return null;
+	}
+
+	public void setFixedDistance(Double distance) {
+		minDistance = distance;
+		maxDistance = distance;
 	}
 
 	/**
