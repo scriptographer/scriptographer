@@ -290,8 +290,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 				// Update the current historyEntry's future to the new level
 				// This is the maximum possible level for a branch
 				historyBranch.end = undoLevel;
-				// Update newly created and modified items, after new historyVersion
-				// is set.
+				// Update newly created and modified items, after new
+				// historyVersion is set.
 				updateItems = true;
 			}
 			// Set new history version, to be used by items for setting of
@@ -305,8 +305,10 @@ public class Document extends NativeObject implements ChangeReceiver {
 				// the new version would break isValid and needsUpdate calls
 				// during that cycle.
 				if (!createdItems.isEmpty()) {
-					for (Item item : createdItems)
-						item.creationVersion = item.modificationVersion = historyVersion;
+					for (Item item : createdItems) {
+						item.creationVersion = historyVersion;
+						item.modificationVersion = historyVersion;
+					}
 					createdItems.clear();
 				}
 				if (!modifiedItems.isEmpty()) {
@@ -381,7 +383,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	/**
 	 * Called from the native environment.
 	 */
-	protected void onSelectionChanged(int[] artHandles, int undoLevel, int redoLevel) {
+	protected void onSelectionChanged(int[] artHandles, int undoLevel,
+			int redoLevel) {
 		if (artHandles != null)
 			Item.updateIfWrapped(artHandles);
 		// TODO: Look into making CommitManager.version document dependent?
@@ -516,10 +519,11 @@ public class Document extends NativeObject implements ChangeReceiver {
 	
 	private Item getCurrentStyleItem() {
 		// This is a bit of a hack: We use a special handle HANDLE_CURRENT_STYLE
-		// to tell the native side that this is in fact the current style, not an
-		// item handle...
+		// to tell the native side that this is in fact the current style, not
+		// an item handle...
 		if (currentStyleItem == null)
-			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this, false, true);
+			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this, false,
+					true);
 		// Update version so style gets refetched from native side.
 		currentStyleItem.version = CommitManager.version;
 		return currentStyleItem;
@@ -879,7 +883,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * next opportunity.
 	 */
 	public void invalidate(Rectangle rect) {
-		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
+		invalidate((float) rect.x, (float) rect.y, (float) rect.width, 
+				(float) rect.height);
 	}
 
 	private native boolean nativeWrite(File file, int formatHandle, boolean ask);
@@ -971,15 +976,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	/**
 	 * Returns the selected text as a text range.
 	 */
-	public TextRange getSelectedText() {
-		ItemList items = getSelectedItems(TextItem.class);
-		if (items.size() > 0) {
-			TextItem item = (TextItem) items.get(0);
-			if (item != null)
-				return item.getSelectedRange();
-		}
-		return null;
-	}
+	public native TextRange getSelectedText();
 
 	private native void nativeSelectAll();
 
@@ -1034,7 +1031,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 			} else {
 				ItemList list = getMatchingItems(type, converted);
 				// Filter out TextItems that do not match the given type.
-				// This is needed since nativeGetMatchingItems returns all TextItems...
+				// This is needed since nativeGetMatchingItems returns all
+				// TextItems...
 				// TODO: Move this to the native side maybe?
 				if (TextItem.class.isAssignableFrom(type))
 					for (Item item : list)
@@ -1462,7 +1460,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * var decayPercent = 90;
 	 * var numQuarterTurns = 25;
 	 * 
-	 * var path = new Path.Spiral(firstArcCenter, start, decayPercent, numQuarterTurns, true);
+	 * var path = new Path.Spiral(firstArcCenter, start, decayPercent,
+	 *         numQuarterTurns, true);
 	 * </code>
 	 * 
 	 * @param firstArcCenter the center point of the first arc

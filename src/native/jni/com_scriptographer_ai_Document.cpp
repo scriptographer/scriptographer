@@ -686,6 +686,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(JNIEn
 }
 
 /*
+ * com.scriptographer.ai.TextRange getSelectedText()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedText(JNIEnv *env, jobject obj) {
+	try {
+		using namespace ATE;
+		TextRangesRef rangesRef;
+		if (!sAIDocument->GetTextSelection(&rangesRef) && rangesRef != NULL) {
+			ITextRanges ranges(rangesRef);
+			if (ranges.GetSize() > 0) {
+				ITextRange first = ranges.GetFirst();
+				TextRangeRef rangeRef = first.GetRef();
+				// Add one ref since ITextRange will release at the end.
+				sTextRange->AddRef(rangeRef);
+				return gEngine->wrapTextRangeRef(env, rangeRef);
+			}
+		}
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
  * void nativeDeselectAll()
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNIEnv *env, jobject obj) {
