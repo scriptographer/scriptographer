@@ -74,13 +74,13 @@ public class PaletteComponent implements ChangeReceiver {
 	private Double min;
 	private Double max;
 	private Double increment;
+	private Integer fractionDigits;
 	private Item item;
 	private TextUnits units;
 	private Boolean steppers;
 
 	// Used for scaling slider values
 	private double factor = 1;
-	private boolean updateDialogSize = false;
 	
 	/**
 	 * @jshide
@@ -287,6 +287,7 @@ public class PaletteComponent implements ChangeReceiver {
 		if (!enabled)
 			item.setEnabled(false);
 		setRange(min, max);
+		setFractionDigits(fractionDigits);
 		// Setting range internally updates increments, so no need to set it
 		// again here.
 		setMaxLength(maxLength);
@@ -299,9 +300,6 @@ public class PaletteComponent implements ChangeReceiver {
 		if (margin != null)
 			item.setMargin(margin);
 		updateSize();
-
-		// Any subsequent changes to size should also update dialog size
-		updateDialogSize = true;
 		return item;
 	}
 
@@ -338,10 +336,8 @@ public class PaletteComponent implements ChangeReceiver {
 			Size size = getSize();
 			if (size != null && !size.equals(item.getSize())) {
 				item.setSize(size);
-				if (updateDialogSize) {
-					Dialog dialog = item.getDialog();
-					dialog.setSize(dialog.getPreferredSize());
-				}
+				// Tell palette to resize in next commit
+				((Palette) item.getDialog()).sizeChanged = true;
 			}
 		}
 	}
@@ -597,21 +593,26 @@ public class PaletteComponent implements ChangeReceiver {
 			if (item != null) {
 				// If no increment is defined, use a default value,
 				// as calculated by getIncrement.
-				double inc = getIncrement() * factor;
-				((ValueItem) item).setIncrements((float) inc);
-				if (type == PaletteComponentType.NUMBER) {
-					// Figure out amount of fraction digits from increment value
-					int fractionDigits = 0;
-					while (inc < 1) {
-						inc *= 10;
-						fractionDigits++;
-					}
-					((TextEditItem) item).setFractionDigits(fractionDigits);
-				}
+				((ValueItem) item).setIncrements(
+						(float) (getIncrement() * factor));
 			}
 		}
 	}
 
+	public Integer getFractionDigits() {
+		return fractionDigits;
+	}
+
+	public void setFractionDigits(Integer fractionDigits) {
+		if (type == PaletteComponentType.NUMBER) {
+			if (fractionDigits == null)
+				fractionDigits = 3;
+			this.fractionDigits = fractionDigits;
+			if (item != null)
+				((TextEditItem) item).setFractionDigits(fractionDigits);
+		}
+	}
+	
 	public TextUnits getUnits() {
 		return units;
 	}
