@@ -616,6 +616,8 @@ public abstract class Dialog extends Component {
 				initialize(true, false);
 				break;
 			case DESTROY:
+				if (options.contains(DialogOption.REMEMBER_PLACING))
+					savePreferences(title);
 				onDestroy();
 				break;
 			case WINDOW_ACTIVATE:
@@ -636,8 +638,6 @@ public abstract class Dialog extends Component {
 				onShow();
 				break;
 			case WINDOW_HIDE:
-				if (options.contains(DialogOption.REMEMBER_PLACING))
-					savePreferences(title);
 				if (fireOnClose) {
 					// Workaround for missing onClose on CS3. This bug was 
 					// reported to Adobe too late, hopefully it will be back
