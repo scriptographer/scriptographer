@@ -205,12 +205,7 @@ public abstract class Dialog extends Component {
 					// If no bounds where specified yet, set the preferred size
 					// as defined by the layout
 					if (!sizeSet) {
-						Dimension preferred = container.getPreferredSize();
-						if (preferred.width < minSize.width)
-							preferred.width = minSize.width;
-						if (preferred.height < minSize.height)
-							preferred.height = minSize.height;
-						setSize(new Size(preferred));
+						setSize(getPreferredSize());
 					} else {
 						// If a container was created, the layout needs to be
 						// recalculated now, even if the size has not changed.
@@ -1095,8 +1090,17 @@ public abstract class Dialog extends Component {
 	}
 
 	public Size getPreferredSize() {
-		if (container != null)
-			return new Size(container.getPreferredSize());
+		if (container != null) {
+			Dimension preferred = container.getPreferredSize();
+			// Make sure preferred size does not go bellow minSize
+			if (minSize != null) {
+				if (preferred.width < minSize.width)
+					preferred.width = minSize.width;
+				if (preferred.height < minSize.height)
+					preferred.height = minSize.height;
+			}
+			return new Size(preferred);
+		}
 		return null;
 	}
 
