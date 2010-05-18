@@ -61,6 +61,8 @@ public class SegmentPoint extends Point {
 		segment.update();
 		this.x = x;
 		this.y = y;
+		// Reset angle
+		angle = null;
 		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 

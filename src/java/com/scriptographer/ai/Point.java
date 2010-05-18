@@ -49,7 +49,9 @@ public class Point implements ChangeEmitter {
 
 	protected double x;
 	protected double y;
-	
+	// Caching of angle if used
+	protected Double angle;
+
 	public Point() {
 		x = y = 0;
 	}
@@ -102,14 +104,15 @@ public class Point implements ChangeEmitter {
 	 * @param point
 	 */
 	public Point(Point point) {
-		this(point != null ? point.x : 0, point != null ? point.y : 0);
+		set(point);
 	}
 
 	/**
 	 * @jshide
 	 */
 	public Point(Point2D point) {
-		this(point != null ? point.getX() : 0, point != null ? point.getY() : 0);
+		if (point != null)
+			set(point.getX(), point.getY());
 	}
 
 	/**
@@ -126,16 +129,21 @@ public class Point implements ChangeEmitter {
 	public void set(double x, double y) {
 		this.x = x;
 		this.y = y;
+		// Reset angle
+		angle = null;
 	}
 
 	/**
 	 * @jshide
 	 */
-	public void set(Point point) {
-		if (point != null)
+	public final void set(Point point) {
+		if (point != null) {
 			set(point.x, point.y);
-		else
+			// Copy over angle, in case of length == 0
+			angle = point.angle;
+		} else {
 			set(0, 0);
+		}
 	}
 
 	/**
@@ -147,6 +155,8 @@ public class Point implements ChangeEmitter {
 
 	public void setX(double x) {
 		this.x = x;
+		// Reset angle
+		angle = null;
 	}
 
 	/**
@@ -158,6 +168,8 @@ public class Point implements ChangeEmitter {
 
 	public void setY(double y) {
 		this.y = y;
+		// Reset angle
+		angle = null;
 	}
 
 	/**
@@ -350,7 +362,10 @@ public class Point implements ChangeEmitter {
 	 *         point
 	 */
 	public Point multiply(double value) {
-		return multiply(value, value);
+		Point res = new Point(x * value, y * value);
+		// Preserve angle
+		res.angle = angle;
+		return res;
 	}
 
 	/**
@@ -396,7 +411,10 @@ public class Point implements ChangeEmitter {
 	 * @return the division of the point by the supplied value as a new point
 	 */
 	public Point divide(double value) {
-		return divide(value, value);
+		Point res = new Point(x / value, y / value);
+		// Preserve angle
+		res.angle = angle;
+		return res;
 	}
 
 	/**
@@ -447,7 +465,7 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Checks wether the coordinates of the point are equal to that of the
+	 * Checks whether the coordinates of the point are equal to that of the
 	 * supplied point.
 	 * 
 	 * Sample code:
@@ -589,10 +607,23 @@ public class Point implements ChangeEmitter {
 
 	public void setLength(double length) {
 		if (isZero()) {
-			// Assume angle = 0
-			x = length;
+			// Use angle now to set x and y
+			if (angle != null) {
+				double a = angle;
+				x = Math.cos(a) * length;
+				y = Math.sin(a) * length;
+			} else {
+				// Assume angle = 0
+				x = length;
+				// y is already 0
+			}
 		} else {
 			double scale = length / getLength();
+			if (scale == 0.0) {
+				// Calculate angle now, so it will be preserved even when
+				// x and y are 0.
+				getAngle();
+			}
 			x *= scale;
 			y *= scale;
 		}
@@ -603,13 +634,16 @@ public class Point implements ChangeEmitter {
 	 * measured in counter clockwise direction.
 	 */
 	public double getAngle() {
-		return Math.atan2(y, x);
+		// Cache the angle in the internal angle field, so we can return
+		// that next time and also preserve the angle if length is set to 0.
+		if (angle == null)
+			angle = Math.atan2(y, x);
+		return angle;
 	}
 
 	public void setAngle(double angle) {
-		if (isZero()) {
-			// TOOD: Solve!
-		} else {
+		this.angle = angle;
+		if (!isZero()) {
 			double length = getLength();
 			x = Math.cos(angle) * length;
 			y = Math.sin(angle) * length;
@@ -664,12 +698,12 @@ public class Point implements ChangeEmitter {
 
 	public Point normalize(double length) {
 		double len = getLength();
-		if (len != 0) {
-			double scale = length / len;
-			return new Point(x * scale, y * scale);
-		} else {
-			return new Point(this);
-		}
+		// Prevent division by 0
+		double scale = len != 0 ? length / len : 0;
+		Point res = new Point(x * scale, y * scale);
+		// Preserve angle.
+		res.angle = angle;
+		return res;
 	}
 
 	public Point normalize() {
