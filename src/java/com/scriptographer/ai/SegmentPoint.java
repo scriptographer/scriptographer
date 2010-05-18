@@ -58,7 +58,7 @@ public class SegmentPoint extends Point {
 	}
 
 	public void set(double x, double y) {
-		segment.update();
+		segment.update(false);
 		this.x = x;
 		this.y = y;
 		// Reset angle
@@ -75,12 +75,12 @@ public class SegmentPoint extends Point {
 	}
 	
 	public double getX() {
-		segment.update();
+		segment.update(false);
 		return x;
 	}
 	
 	public double getY() {
-		segment.update();
+		segment.update(false);
 		return y;
 	}
 

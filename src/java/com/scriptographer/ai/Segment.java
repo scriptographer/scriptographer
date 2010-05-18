@@ -66,7 +66,7 @@ public class Segment implements Committable, ChangeReceiver {
 		DIRTY_POINTS = 1,
 		DIRTY_SELECTION = 2;
 
-	// For selectionState
+	// For selectionState, based on AIPathSegementSelectionState
 	protected final static short
 		SELECTION_FETCH = -1,
 		SELECTION_NONE = 0,
@@ -314,24 +314,37 @@ public class Segment implements Committable, ChangeReceiver {
 	}
 
 	protected void markDirty(int dirty) {
-		// only mark it as dirty if it's attached to a path already and
-		// if the given dirty flag is not already set
-		if ((this.dirty & dirty) != dirty &&
-			segments != null && segments.path != null) {
+		// Only mark it as dirty if it's attached to a path already and
+		// if the given dirty flags are not already set
+		if ((this.dirty & dirty) != dirty && segments != null
+				&& segments.path != null) {
 			CommitManager.markDirty(segments.path, this);
 			this.dirty |= dirty;
 		}
 	}
 	
-	protected void update() {
+	protected void update(boolean updateSelection) {
 		if ((dirty & DIRTY_POINTS) == 0 && segments != null
 				&& segments.path != null && segments.path.needsUpdate(version)) {
-			// this handles all the updating automatically:
+			// This handles all the updating automatically:
 			segments.get(index);
-			// Version has changed, force regetting of selection state:
+			// Version has changed, force getting of selection state:
 			selectionState = SELECTION_FETCH;
-		} else if (selectionVersion != CommitManager.version) {
+		} else if ((dirty & DIRTY_SELECTION) == 0 // Only fetch if not dirty
+				&& selectionVersion != CommitManager.version) {
 			selectionState = SELECTION_FETCH;
+		}
+		if (updateSelection && selectionState == SELECTION_FETCH) {
+			if (segments != null && segments.path != null) {
+				segments.path.checkValid();
+				selectionState = SegmentList.nativeGetSelectionState(
+						segments.path.handle, index);
+			} else {
+				selectionState = SELECTION_NONE;
+			}
+			// Selection uses its own version number as it might change
+			// regardless of whether the path itself changes or not.
+			selectionVersion = CommitManager.version;
 		}
 	}
 
@@ -350,7 +363,7 @@ public class Segment implements Committable, ChangeReceiver {
 	 * The anchor point of the segment.
 	 */
 	public SegmentPoint getPoint() {
-		update();
+		update(false);
 		return point;
 	}
 
@@ -370,7 +383,7 @@ public class Segment implements Committable, ChangeReceiver {
 	 * describes the in tangent of the segment.
 	 */
 	public SegmentPoint getHandleIn() {
-		update();
+		update(false);
 		return handleIn;
 	}
 
@@ -392,7 +405,7 @@ public class Segment implements Committable, ChangeReceiver {
 	 * describes the out tangent of the segment.
 	 */
 	public SegmentPoint getHandleOut() {
-		update();
+		update(false);
 		return handleOut;
 	}
 
@@ -447,7 +460,8 @@ public class Segment implements Committable, ChangeReceiver {
 	 * belongs to.
 	 */
 	public Segment getNext() {
-		return index < segments.size() - 1 ? segments.get(index + 1) : null;
+		return segments != null && index < segments.size() - 1
+				? segments.get(index + 1) : null;
 	}
 	
 	/**
@@ -455,23 +469,11 @@ public class Segment implements Committable, ChangeReceiver {
 	 * segment belongs to.
 	 */
 	public Segment getPrevious() {
-		return index > 0 ? segments.get(index - 1) : null;
+		return segments != null && index > 0 ? segments.get(index - 1) : null;
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {
-		update();
-		if (selectionState == SELECTION_FETCH) {
-			if (segments != null && segments.path != null) {
-				segments.path.checkValid();
-				selectionState = SegmentList.nativeGetSelectionState(
-						segments.path.handle, index);
-			} else {
-				selectionState = SELECTION_NONE;
-			}
-			// Selection uses its own version number as it might change regardless
-			// of whether the path itself changes or not.
-			selectionVersion = CommitManager.version;
-		}
+		update(true);
 		if (pt == point) {
 			return selectionState == SELECTION_POINT;
 		} else if (pt == handleIn) {
@@ -485,45 +487,82 @@ public class Segment implements Committable, ChangeReceiver {
 	}
 
 	protected void setSelected(SegmentPoint pt, boolean selected) {
-		update();
-		// find the right combination of selection states (SELECTION_*)
+		if (segments == null || segments.path == null)
+			return;
+		update(true);
+		// Find the right combination of selection states (SELECTION_*)
 		boolean pointSelected = selectionState == SELECTION_POINT;
-		boolean handleInSelected = selectionState == SELECTION_HANDLE_IN || 
-			selectionState == SELECTION_HANDLE_BOTH;
-		boolean handleOutSelected = selectionState == SELECTION_HANDLE_OUT || 
-			selectionState == SELECTION_HANDLE_BOTH;
+		boolean handleInSelected = selectionState == SELECTION_HANDLE_IN
+						|| selectionState == SELECTION_HANDLE_BOTH;
+		boolean handleOutSelected = selectionState == SELECTION_HANDLE_OUT
+						|| selectionState == SELECTION_HANDLE_BOTH;
+		boolean changed = false;
+		Segment previous = getPrevious();
+		if (previous == null && segments.path.isClosed())
+			previous = segments.getLast();
+		Segment next = getNext();
+		if (next == null && segments.path.isClosed())
+			next = segments.getFirst();
 		if (pt == point) {
-			pointSelected = selected;
-		} else if (pt == handleIn) {
-			pointSelected = false;
-			handleInSelected = selected;
-		} else if (pt == handleOut) {
-			pointSelected = false;
-			handleOutSelected = selected;
-		}
-		short state;
-		if (pointSelected) {
-			state = SELECTION_POINT;
-		} else if (handleInSelected) {
-			if (handleOutSelected) {
-				state = SELECTION_HANDLE_BOTH;
-			} else {
-				state = SELECTION_HANDLE_IN;
+			if (pointSelected != selected) {
+				if (selected) {
+					handleInSelected = false;
+					handleOutSelected = false;
+				} else {
+					// When deselecting a point, the handles get selected instead
+					// depending on the selection state of their neighbors.
+					handleInSelected = previous != null
+							&& (previous.getPoint().isSelected()
+									|| previous.getHandleOut().isSelected());
+					handleOutSelected = next != null
+							&& (next.getPoint().isSelected()
+									|| next.getHandleIn().isSelected());
+				}
+				pointSelected = selected;
+				changed = true;
 			}
-		} else if (handleOutSelected) {
-			state = SELECTION_HANDLE_OUT;
-		} else {
-			state = SELECTION_NONE;
+		} else if (pt == handleIn) {
+			if (handleInSelected != selected) {
+				// When selecting handles, the point get deselected.
+				if (selected)
+					pointSelected = false;
+				handleInSelected = selected;
+				changed = true;
+			}
+		} else if (pt == handleOut) {
+			if (handleOutSelected != selected) {
+				// When selecting handles, the point get deselected.
+				if (selected)
+					pointSelected = false;
+				handleOutSelected = selected;
+				changed = true;
+			}
 		}
-		// only update if it changed
-		if (selectionState != state) {
-			selectionState = state;
-			markDirty(DIRTY_SELECTION);
+		if (changed) {
+			short state;
+			if (pointSelected) {
+				state = SELECTION_POINT;
+			} else if (handleInSelected) {
+				if (handleOutSelected) {
+					state = SELECTION_HANDLE_BOTH;
+				} else {
+					state = SELECTION_HANDLE_IN;
+				}
+			} else if (handleOutSelected) {
+				state = SELECTION_HANDLE_OUT;
+			} else {
+				state = SELECTION_NONE;
+			}
+			// Only update if it changed
+			if (selectionState != state) {
+				selectionState = state;
+				markDirty(DIRTY_SELECTION);
+			}
 		}
 	}
 
 	public Object clone() {
-		update();
+		update(false);
 		return new Segment(this);
 	}
 
