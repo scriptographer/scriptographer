@@ -572,7 +572,19 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public native void setSize(double width, double height);
 	
 	public void setSize(Size size) {
-		setSize(size.width, size.height);
+		if (size != null)
+			setSize(size.width, size.height);
+	}
+
+	public Rectangle getBounds() {
+		return new Rectangle(getRulerOrigin().negate(), getSize());
+	}
+
+	public void setBounds(Rectangle bounds) {
+		if (bounds != null) {
+			setRulerOrigin(bounds.getPoint().negate());
+			setSize(bounds.getSize());
+		}
 	}
 
 	private native int nativeGetColormodel();
