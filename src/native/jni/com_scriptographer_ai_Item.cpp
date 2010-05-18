@@ -126,9 +126,21 @@ AIArtSet Item_getSelected(bool filter) {
 	return set;
 }
 
-void Item_restoreSelected(AIArtSet set, bool dispose) {
-	Document_deselectAll(true);
-	// Select the previously selected objects:
+void Item_setSelected(AIArtHandle art, bool children) {
+	sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
+	if (children) {
+		AIArtHandle child = NULL;
+		sAIArt->GetArtFirstChild(art, &child);
+		while (child != NULL) {
+			Item_setSelected(child, true);
+			// Catch errors
+			if (sAIArt->GetArtSibling(child, &child))
+				child = NULL;
+		}
+	}
+}
+
+void Item_setSelected(AIArtSet set) {
 	long count;
 	if (set != NULL) {
 		sAIArtSet->CountArtSet(set, &count);
@@ -137,18 +149,22 @@ void Item_restoreSelected(AIArtSet set, bool dispose) {
 			if (!sAIArtSet->IndexArtSet(set, i, &art))
 				sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
 		}
-		// Clean up
-		if (dispose)
-			sAIArtSet->DisposeArtSet(&set);
 	}
 }
 
-AIArtSet Item_getSelected() {
-	AIArtSet selected = NULL;
-	if (!sAIArtSet->NewArtSet(&selected))
-		sAIArtSet->SelectedArtSet(selected);
-	return selected;
-}	
+void Item_deselectAll() {
+	// sAIMatchingArt->DeselectAll(); is not used for multiple reasons:
+	// In some cases (e.g. after Pathfinder / expand) it does not seem to do the 
+	// trick. Also, calling it seems to cause a screen refresh, something we 
+	// don't want to happen in Sg.
+	AIArtHandle **matches;
+	long numMatches;
+	if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
+		for (int i = 0; i < numMatches; i++)
+			sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
+		sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+	}
+}
 
 void Item_activateDocument(JNIEnv *env, AIArtSet set) {
 	long count = 0;
@@ -1131,7 +1147,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 		AIArtHandle **selected = NULL;
 		long numSelected = 0;
 		sAIMatchingArt->GetSelectedArt(&selected, &numSelected);
-		Document_deselectAll();
+		Item_deselectAll();
 		// now selected the art to be expanded, so the result is selected too:
 		sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
 		// expand
@@ -1146,7 +1162,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 			sAIArt->SetArtUserAttr(res, kArtSelected, 0);
 		}
 		// deselect again
-		Document_deselectAll(true);
+		Item_deselectAll();
 		// select the previously selected objects:
 		for (long i = 0; i < numSelected; i++)
 			sAIArt->SetArtUserAttr((*selected)[i], kArtSelected, kArtSelected);

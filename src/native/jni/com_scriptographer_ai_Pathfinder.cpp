@@ -67,7 +67,7 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 	// Get the previously selected objects:
 	// Because the result is selected after execution of pathfinder...
 	*prevSelected = Item_getSelected(false);
-	Document_deselectAll();
+	Item_deselectAll();
 	return true;
 }
 
@@ -77,7 +77,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	AIArtHandle art;
 	// Get the selected results in a set:
 	jobject result = NULL;
-	AIArtSet selected = Item_getSelected();
+	AIArtSet selected = Item_getSelected(true);
 	if (selected != NULL) {
 		long count = 0;
 		sAIArtSet->CountArtSet(selected, &count);
@@ -90,9 +90,10 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 			result = gEngine->wrapArtHandle(env, art, NULL, true);
 		sAIArtSet->DisposeArtSet(&selected);
 	}
-	Item_restoreSelected(*prevSelected);
+	Item_deselectAll();
+	Item_setSelected(*prevSelected);
+	sAIArtSet->DisposeArtSet(prevSelected);
 	delete data->fSelectedArt;
-	
 	return result;
 }
 

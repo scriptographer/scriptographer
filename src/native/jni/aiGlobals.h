@@ -36,7 +36,9 @@ short Item_getType(JNIEnv *env, jclass cls);
 jboolean Item_isLayer(AIArtHandle handle);
 void Item_filter(AIArtSet set, bool layerOnly = false);
 AIArtSet Item_getSelected(bool filter = true);
-void Item_restoreSelected(AIArtSet set, bool dispose = true);
+void Item_setSelected(AIArtHandle art, bool children);
+void Item_setSelected(AIArtSet set);
+void Item_deselectAll();
 void Item_activateDocument(JNIEnv *env, AIArtSet set);
 AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_rasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
@@ -46,7 +48,6 @@ void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool chi
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 
 void Document_activate(AIDocumentHandle doc = NULL);
-void Document_deselectAll(bool force = false);
 
 short Path_getBezierCount(AIArtHandle art);
 

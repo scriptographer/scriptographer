@@ -70,23 +70,6 @@ void Document_activate(AIDocumentHandle doc) {
 	gCreationDoc = NULL;
 }
 
-void Document_deselectAll(bool force) {
-	// in some cases (after Pathfinder / expand)
-	// sAIMatchingArt->DeselectAll does not seem to do the trick
-	// In these cases, the pre AI11 version is still needed
-	if (!force) {
-		sAIMatchingArt->DeselectAll();
-	} else {
-		AIArtHandle **matches;
-		long numMatches;
-		if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
-			for (int i = 0; i < numMatches; i++)
-				sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
-			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
-		}
-	}
-}
-
 /*
  * void nativeBeginExecution(int[] values)
  */
@@ -671,7 +654,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		AIArtSet selected = Item_getSelected(env);
+		AIArtSet selected = Item_getSelected(true);
 		if (selected != NULL) {
 			itemSet = gEngine->convertItemSet(env, selected);
 			sAIArtSet->DisposeArtSet(&selected);
@@ -709,7 +692,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNI
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		Document_deselectAll();
+		Item_deselectAll();
 	} EXCEPTION_CONVERT(env);
 }
 
