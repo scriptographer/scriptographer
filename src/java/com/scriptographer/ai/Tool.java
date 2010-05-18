@@ -80,10 +80,12 @@ public class Tool extends ToolEventHandler {
 	private static IntMap<Tool> tools = new IntMap<Tool>();
 	private static ArrayList<Tool> unusedTools = null;
 
-	private Image image = null;
-	private Image rolloverImage = null;
+	private Image image;
+	private Image rolloverImage;
+	private Image defaultImage;
 
 	private String name;
+
 
 	/**
 	 * @jshide
@@ -91,6 +93,7 @@ public class Tool extends ToolEventHandler {
 	public Tool(String name, Image image, EnumSet<ToolOption> options, Tool groupTool,
 			Tool toolsetTool) {
 		this.name = name;
+		defaultImage = image;
 
 		ArrayList<Tool> unusedTools = getUnusedTools();
 
@@ -104,7 +107,6 @@ public class Tool extends ToolEventHandler {
 			handle = tool.handle;
 			tool.handle = 0;
 			unusedTools.remove(index);
-			setImage(image);
 		} else {
 			// No previously existing effect found, create a new one:
 			handle = nativeCreate(name,
@@ -112,13 +114,12 @@ public class Tool extends ToolEventHandler {
 					IntegerEnumUtils.getFlags(options),
 					groupTool != null ? groupTool.handle : 0,
 					toolsetTool != null ? toolsetTool.handle : 0);
-			this.image = image;
 		}
 
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create Tool.");
 
-		initialize();
+		reset();
 
 		tools.put(handle, this);
 	}
@@ -151,6 +152,12 @@ public class Tool extends ToolEventHandler {
 	public void initialize() {
 		super.initialize();
 		setEventInterval(-1);
+	}
+
+	public void reset() {
+		initialize();
+		if (defaultImage != null)
+			setImage(defaultImage);
 	}
 
 	/**
@@ -242,6 +249,8 @@ public class Tool extends ToolEventHandler {
 	public void setImage(Image image) {
 		nativeSetImage(image != null ? image.createIconHandle() : 0);
 		this.image = image;
+		if (defaultImage == null)
+			defaultImage = image;
 	}
 
 	public Image getRolloverImage() {

@@ -682,6 +682,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		size: buttonSize,
 		onClick: function() {
 			ScriptographerEngine.stopAll(true, false);
+			tool.reset();
 		}
 	};
 
