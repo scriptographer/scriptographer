@@ -88,9 +88,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getRange(JNIEnv *
 }
 
 /*
- * com.scriptographer.ai.TextRange getSelection()
+ * com.scriptographer.ai.TextRange getSelectedRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelectedRange(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = gEngine->getStoryHandle(env, obj);
 		TextRangesRef ranges;

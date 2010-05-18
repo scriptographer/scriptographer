@@ -68,7 +68,7 @@ public class TextStory extends DocumentObject {
 	
 	public native TextRange getRange(int start, int end);
 
-	public native TextRange getSelection();
+	public native TextRange getSelectedRange();
 	
 	public native int getIndex();
 	

@@ -950,7 +950,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 			return getItems(types, map);
 		}
 	}
-	
+
 	/**
 	 * Returns the selected items that are an instance of the passed class.
 	 * 
@@ -967,7 +967,20 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public ItemList getSelectedItems(Class type) {
 		return getSelectedItems(new Class[] { type });
 	}
-	
+
+	/**
+	 * Returns the selected text as a text range.
+	 */
+	public TextRange getSelectedText() {
+		ItemList items = getSelectedItems(TextItem.class);
+		if (items.size() > 0) {
+			TextItem item = (TextItem) items.get(0);
+			if (item != null)
+				return item.getSelectedRange();
+		}
+		return null;
+	}
+
 	private native void nativeSelectAll();
 
 	/**

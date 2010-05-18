@@ -151,9 +151,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getIndex(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.TextRange getSelection()
+ * com.scriptographer.ai.TextRange getSelectedRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_getSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_getSelectedRange(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		TextRangesRef ranges;

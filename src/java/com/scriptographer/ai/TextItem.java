@@ -273,8 +273,10 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * Returns the selected text of the text item as a text range.
+	 * 
+	 * @jshide
 	 */
-	public native TextRange getSelection();
+	public native TextRange getSelectedRange();
 	
 	/**
 	 * Returns the index of the first visible character of the text item. (this
