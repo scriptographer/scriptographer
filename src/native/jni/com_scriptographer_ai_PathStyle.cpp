@@ -255,25 +255,48 @@ int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyl
  * void nativeGet(int handle, int docHandle)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *env, jobject obj, jint handle, jint docHandle) {
+	AIArtSet prevSelected = NULL;
 	try {
 		if (docHandle)
 			Document_activate((AIDocumentHandle) docHandle);
 		// Don't use PathStyle_init here as there's no map:
 		AIPathStyle style;
-		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE) {
+		bool useCurrent = handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE;
+		if (!useCurrent && Item_getType((AIArtHandle) handle) == kGroupArt) {
+			// Groups act differently than other objects, so handle seperately,
+			// by using Illustrator's capability to merge styles of selected
+			// items to one. We need to backup current selection state, select
+			// the group, then get current path style, then restore selction...
+			// TODO: This is slow, is there no better way?
+			prevSelected = Item_getSelected(false);
+			Item_deselectAll();
+			Item_setSelected((AIArtHandle) handle, true);
+			useCurrent = true;
+		}
+		if (useCurrent) {
 			AIPathStyleMap map;
 #if kPluginInterfaceVersion >= kAI15
-			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
-			sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL);
+			// TODO: See what advanced stroke parameters are doing in CS5 and
+			// decide how to deal with them
+			if (sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL))
 #else // kPluginInterfaceVersion < kAI15
-			sAIPathStyle->GetCurrentPathStyle(&style, &map);
+			if (sAIPathStyle->GetCurrentPathStyle(&style, &map))
 #endif // kPluginInterfaceVersion < kAI15
+				throw new StringException("Unable to get item style.");
 			PathStyle_init(env, obj, &style, &map);
 		} else {
-			sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
+			if (sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style))
+				throw new StringException("Unable to get item style.");
 			PathStyle_init(env, obj, &style, NULL);
 		}
 	} EXCEPTION_CONVERT(env);
+	if (prevSelected != NULL) {
+		// Restore previous selection and clean up before bailing out in
+		// case of an error.
+		Item_deselectAll();
+		Item_setSelected(prevSelected);
+		sAIArtSet->DisposeArtSet(&prevSelected);
+	}
 }
 
 /*
@@ -285,23 +308,40 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *en
 			short clip, short lockClip, int windingRule, float resolution)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jint strokeCap, jint strokeJoin, jfloat miterLimit, jfloat dashOffset, jfloatArray dashArray, jshort clip, jshort lockClip, jint windingRule, jfloat resolution) {
+	AIArtSet prevSelected = NULL;
 	try {
 		if (docHandle)
 			Document_activate((AIDocumentHandle) docHandle);
 		AIPathStyle style;
-		AIPathStyleMap map; // Is not needed here but we need to pass it
+		AIPathStyleMap map;
 		// Fill with current values as not everything might be set
 		// TODO: instead of the path's style, this should be the current default style?
 		// because if the user sets a value to undefined, this should fall back to the default value...
-		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE)
+		bool useCurrent = handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE;
+		if (!useCurrent && Item_getType((AIArtHandle) handle) == kGroupArt) {
+			// Groups act differently than other objects, so handle seperately,
+			// by using Illustrator's capability to merge styles of selected
+			// items to one. We need to backup current selection state, select
+			// the group, then get current path style, then restore selction...
+			// TODO: This is slow, is there no better way?
+			prevSelected = Item_getSelected(false);
+			Item_deselectAll();
+			Item_setSelected((AIArtHandle) handle, true);
+			useCurrent = true;
+		}
+		if (useCurrent) {
 #if kPluginInterfaceVersion >= kAI15
-			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
-			sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL);
+			// TODO: See what advanced stroke parameters are doing in CS5 and
+			// decide how to deal with them
+			if (sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL))
 #else // kPluginInterfaceVersion < kAI15
-			sAIPathStyle->GetCurrentPathStyle(&style, &map);
+			if (sAIPathStyle->GetCurrentPathStyle(&style, &map))
 #endif // kPluginInterfaceVersion < kAI15
-		else
-			sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
+				throw new StringException("Unable to get item style.");
+		} else {
+			if (sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style))
+				throw new StringException("Unable to get item style.");
+		}
 		PathStyle_convertPathStyle(env, &style, &map,
 				fillColor, hasFillColor, fillOverprint,
 				strokeColor, hasStrokeColor, strokeOverprint, strokeWidth,
@@ -309,16 +349,26 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *en
 				dashOffset, dashArray,
 				clip, lockClip, windingRule, resolution);
 		// Now set again
-		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE)
+		if (useCurrent) {
 #if kPluginInterfaceVersion >= kAI15
 			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
-			sAIPathStyle->SetCurrentPathStyle(&style, &map, NULL);
+			if (sAIPathStyle->SetCurrentPathStyle(&style, &map, NULL))
 #else // kPluginInterfaceVersion < kAI15
-			sAIPathStyle->SetCurrentPathStyle(&style, &map);
+			if (sAIPathStyle->SetCurrentPathStyle(&style, &map))
 #endif // kPluginInterfaceVersion < kAI15
-		else
-			sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style);
+				throw new StringException("Unable to set item style.");
+		} else {
+			if (sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style))
+				throw new StringException("Unable to set item style.");
+		}
 	} EXCEPTION_CONVERT(env);
+	if (prevSelected != NULL) {
+		// Restore previous selection and clean up before bailing out in
+		// case of an error.
+		Item_deselectAll();
+		Item_setSelected(prevSelected);
+		sAIArtSet->DisposeArtSet(&prevSelected);
+	}
 }
 
 /*
