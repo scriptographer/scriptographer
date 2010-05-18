@@ -37,6 +37,8 @@ import java.util.Map;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.PropertyObserver;
 import com.scratchdisk.script.ScriptEngine;
+import com.scriptographer.CommitManager;
+import com.scriptographer.Committable;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ui.layout.TableLayout;
 
@@ -44,10 +46,12 @@ import com.scriptographer.ui.layout.TableLayout;
  * @author lehni
  * 
  */
-public class Palette extends FloatingDialog implements PropertyObserver {
+public class Palette extends FloatingDialog implements PropertyObserver,
+		Committable {
 	private Map<String, Object> values;
 	private Map<String, Object> components;
 	private boolean hasLabels;
+	public boolean sizeChanged;
 
 	public Palette(String title, Map<String, Object> components,
 			Map<String, Object> values) {
@@ -172,8 +176,21 @@ public class Palette extends FloatingDialog implements PropertyObserver {
 		isChanging  = true;
 		values.put(name, value);
 		isChanging = false;
+		// Use CommitManager functionality to update this dialog once
+		// after all value changes.
+		CommitManager.markDirty(this, this);
 		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, component);
+	}
+
+	public void commit() {
+		if (sizeChanged) {
+			// Make sure size changes are taken into account and palette is
+			// resized accordingly.
+			setSize(getPreferredSize());
+			sizeChanged = false;
+		}
+		update();
 	}
 
 	/**
