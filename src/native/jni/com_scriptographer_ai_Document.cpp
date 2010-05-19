@@ -986,6 +986,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(JNIEnv *en
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		sAIDocument->ResumeTextReflow();
+		sAIUser->AppIdle();
 		sAIDocument->SuspendTextReflow();
 	} EXCEPTION_CONVERT(env);
 }
