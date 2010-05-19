@@ -58,12 +58,16 @@ public class SegmentPoint extends Point {
 	}
 
 	public void set(double x, double y) {
-		segment.update(false);
-		this.x = x;
-		this.y = y;
-		// Reset angle
-		angle = null;
-		segment.markDirty(Segment.DIRTY_POINTS);
+		if (segment != null) {
+			segment.update(false);
+			this.x = x;
+			this.y = y;
+			// Reset angle
+			angle = null;
+			segment.markDirty(Segment.DIRTY_POINTS);
+		} else {
+			super.set(x, y);
+		}
 	}
 
 	public void setX(double x) {
