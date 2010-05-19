@@ -286,6 +286,12 @@ public class PaletteComponent implements ChangeReceiver {
 			item.setVisible(false);
 		if (!enabled)
 			item.setEnabled(false);
+		// Calculate a default range for sliders of none was defined
+		if (min == null && max == null && type == PaletteComponentType.SLIDER) {
+			min = 0d;
+			max = defaultValue == null ? 1d
+					: ConversionUtils.toDouble(defaultValue); 
+		}
 		setRange(min, max);
 		setFractionDigits(fractionDigits);
 		// Setting range internally updates increments, so no need to set it
