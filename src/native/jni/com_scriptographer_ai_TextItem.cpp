@@ -179,30 +179,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_nativeGetRange(JNIEnv
 }
 
 /*
- * float getPadding()
- */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextItem_getPadding(JNIEnv *env, jobject obj) {
-	ASReal spacing = 0;
-	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
-		sTextFrame->GetSpacing(frame, &spacing);
-		sTextFrame->Release(frame);
-	} EXCEPTION_CONVERT(env);
-	return spacing;
-}
-
-/*
- * void setPadding(float spacing)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_setPadding(JNIEnv *env, jobject obj, jfloat spacing) {
-	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
-		sTextFrame->SetSpacing(frame, spacing);
-		sTextFrame->Release(frame);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * boolean getOpticalAlignment()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_getOpticalAlignment(JNIEnv *env, jobject obj) {

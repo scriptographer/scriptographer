@@ -85,13 +85,6 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * The padding within the text area.
-	 */
-	public native float getPadding();
-
-	public native void setPadding(float spacing);
-
-	/**
 	 * Specifies whether to use optical alignment within the text item. Optical
 	 * alignment hangs punctuation outside the edges of a text item.
 	 * 

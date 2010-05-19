@@ -53,6 +53,30 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *
 }
 
 /*
+ * float getPadding()
+ */
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getPadding(JNIEnv *env, jobject obj) {
+	ASReal spacing = 0;
+	try {
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
+		sTextFrame->GetSpacing(frame, &spacing);
+		sTextFrame->Release(frame);
+	} EXCEPTION_CONVERT(env);
+	return spacing;
+}
+
+/*
+ * void setPadding(float padding)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setPadding(JNIEnv *env, jobject obj, jfloat padding) {
+	try {
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
+		sTextFrame->SetSpacing(frame, padding);
+		sTextFrame->Release(frame);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * int getRowCount()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getRowCount(JNIEnv *env, jobject obj) {

@@ -119,7 +119,14 @@ public class AreaText extends TextItem {
 	public Path getTextPath() {
 		return (Path) getFirstChild();
 	}
-	
+
+	/**
+	 * The padding within the text area.
+	 */
+	public native float getPadding();
+
+	public native void setPadding(float padding);
+
 	/**
  	 * {@grouptitle Rows and Columns}
 	 * 
