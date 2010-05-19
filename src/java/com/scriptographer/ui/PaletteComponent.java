@@ -373,7 +373,8 @@ public class PaletteComponent implements ChangeReceiver {
 		Item valueItem = createItem(dialog, new Border(1, 0, 1, 0));
 		String label = getLabel();
 		boolean isRuler = type == PaletteComponentType.RULER;
-		if (!isRuler && label != null && !"".equals(label)) {
+		boolean hasLabel = !isRuler && label != null && !"".equals(label);
+		if (hasLabel) {
 			TextPane labelItem = new TextPane(dialog);
 			labelItem.setText(label + ":");
 			// Adjust top margin of label to reflect the native margin
@@ -388,7 +389,7 @@ public class PaletteComponent implements ChangeReceiver {
 		}
 		String justification = isRuler || fullSize 
 				? "full, center" : "left, center";
-		content.put(isRuler
+		content.put(isRuler || !hasLabel && fullSize
 				? column + ", " + row  + ", " + (column + 1) + ", " + row + ", "
 						+ justification
 				: (column + 1) + ", " + row + ", " + justification,
