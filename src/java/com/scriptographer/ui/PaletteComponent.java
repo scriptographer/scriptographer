@@ -102,9 +102,6 @@ public class PaletteComponent implements ChangeReceiver {
 					type = PaletteComponentType.STRING;
 			}
 			if (type != null) {
-				// Turn on steppers for number components by default
-				if (type == PaletteComponentType.NUMBER)
-					setSteppers(true);
 				if (type == PaletteComponentType.SLIDER)
 					factor = 1000;
 				// Call setMultiline to set default value for length
@@ -112,6 +109,10 @@ public class PaletteComponent implements ChangeReceiver {
 				// Tell the framework to set the properties from the map
 				// on the object after creating through ArgumentReader.
 				reader.setProperties(this);
+				// Turn on steppers for number components with units by default
+				if (type == PaletteComponentType.NUMBER
+						&& units != null && units != TextUnits.NONE)
+					setSteppers(true);
 			}
 		}
 		if (type == null)
