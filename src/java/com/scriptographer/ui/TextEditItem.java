@@ -496,8 +496,9 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		super.updateBounds(x, y, width, height, sizeChanged);
 	}
 
-	protected static final Border MARGIN_POPUP = ScriptographerEngine.isMacintosh() ?
-			new Border(2, 0, 2, 0) : new Border(1, 0, 1, 0);
+	protected static final Border MARGIN_POPUP =
+			ScriptographerEngine.isMacintosh() ? new Border(2, 0, 2, 0)
+					: new Border(1, 0, 1, 0);
 
 	protected Border getNativeMargin() {
 		return hasPopupList() ? MARGIN_POPUP : MARGIN_NONE;
