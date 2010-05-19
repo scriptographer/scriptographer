@@ -5,6 +5,7 @@ var values = {
 };
 
 var components = {
+	ruler0: { label: 'Vector', type: 'ruler' },
 	length: {
 		label: 'Length', type: 'number', units: 'point', length: 10
 	},
@@ -18,12 +19,17 @@ var components = {
 	fixAngle: {
 		label: 'Fix', type: 'checkbox'
 	},
-	ruler: { type: 'ruler' },
+	ruler1: { label: 'Point', type: 'ruler' },
 	x: {
 		label: 'X', type: 'number', units: 'point', length: 10
 	},
 	y: {
 		label: 'Y', type: 'number', units: 'point', length: 10
+	},
+	ruler2: { label: 'Instructions', type: 'ruler' },
+	instructions: {
+		type: 'text', fullSize: true,
+		value: 'SHIFT = Add Vector\nALT = Modify Vector'
 	}
 }
 
@@ -35,16 +41,13 @@ palette.onChange = function(component) {
 		value = value.toRadians(0);
 	// Update Vector
 	vector[name] = value;
-	drawVector(true);
+	drawVector();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vector
 
-var vectorStart = document.bounds.center;
-var vector = new Point(100, 0);
-
-var vectorItem = null;
+var vectorStart, vector, vectorItem;
 
 function processVector(end) {
 	var previous = vector;
@@ -53,11 +56,11 @@ function processVector(end) {
 		vector.length = previous.length;
 	if (values.fixAngle)
 		vector.angle = previous.angle;
-	drawVector(true);
+	drawVector();
 }
 
-function drawVector(remove) {
-	if (vectorItem && remove)
+function drawVector() {
+	if (vectorItem)
 		vectorItem.remove();
 	var arrowStep = vector.normalize(10);
 	var end = vectorStart + vector;
@@ -69,6 +72,12 @@ function drawVector(remove) {
 			end + arrowStep.rotate((-135).toRadians())
 		])
 	]);
+	vectorItem.style = {
+		strokeWidth: 0.75,
+		strokeColor: '#e4141b',
+		dashArray: [],
+		fillColor: null
+	};
 	// Update palette
 	values.x = vector.x;
 	values.y = vector.y;
@@ -77,39 +86,37 @@ function drawVector(remove) {
 //	palette.update();
 }
 
-
-document.currentStyle = {
-	strokeWidth: 0.75,
-	strokeColor: '#e4141b',
-	dashArray: [],
-	fillColor: null
-};
-
-drawVector(false);
-
 ////////////////////////////////////////////////////////////////////////////////
 // Mouse Handling
 
-var dashItem = null;
+var dashItem;
 
 function onMouseDown(event) {
 	var end = vectorStart + vector;
-	if (end.getDistance(event.point) > 10) {
+	var create = true;
+	if (event.modifiers.shift && vectorItem) {
 		vectorStart = end;
+	} else if (event.modifiers.option || end && end.getDistance(event.point) < 10) {
+		create = false;
+	} else {
+		vectorStart = event.point;
+	}
+	if (create) {
 		dashItem = vectorItem;
 		vectorItem = null;
 	}
 	processVector(event.point);
+	document.redraw();
 }
 
 function onMouseDrag(event) {
+	if (values.fixLength && values.fixAngle)
+		vectorStart = event.point;
 	processVector(event.point);
 }
 
 function onMouseUp(event) {
-	print(dashItem);
 	if (dashItem) {
-		dashItem.strokeWidth = 2;
 		dashItem.dashArray = [1, 2];
 		dashItem = null;
 	}
