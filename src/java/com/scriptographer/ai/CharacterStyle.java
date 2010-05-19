@@ -85,8 +85,7 @@ public class CharacterStyle extends PathStyle {
 	protected CharacterStyle(int handle, TextRange range) {
 		this(handle);
 		this.range = range;
-		this.commitKey = range != null ?
-				(Object) range.getStory() : (Object) this;
+		this.commitKey = range != null ? range.getStory() : this;
 	}
 	
 	protected void changeHandle(int newHandle) {
@@ -148,6 +147,7 @@ public class CharacterStyle extends PathStyle {
 				nativeSetStyle(handle, range.document.handle, range.handle);
 			}
 			dirty = false;
+			version = CommitManager.version;
 		}
 	}
 
@@ -273,13 +273,38 @@ public class CharacterStyle extends PathStyle {
 	 * @return {@true if the character style uses auto leading}
 	 */
 	public native Boolean getAutoLeading();
-	public native void setAutoLeading(Boolean leading);
+
+	public void setAutoLeading(Boolean leading) {
+		Boolean previous = getAutoLeading();
+		if (previous == null && leading != null
+				|| previous != null && !previous.equals(leading)) {
+			nativeSetAutoLeading(leading);
+			if (range != null)
+				range.updateStyle();
+		}
+	}
+
+	public native void nativeSetAutoLeading(Boolean leading);
 
 	/**
 	 * The leading (vertical spacing) of the character style.
 	 */
 	public native Float getLeading();
-	public native void setLeading(Float leading);
+
+	public void setLeading(Float leading) {
+		Float previous = getLeading();
+		if (previous == null && leading != null
+				|| previous != null && !previous.equals(leading)) {
+			if (leading != null)
+				setAutoLeading(false);
+			nativeSetLeading(leading);
+			if (range != null)
+				range.updateStyle();
+		}
+	}
+
+	private native void nativeSetLeading(Float leading);
+
 
 	/**
 	 * The tracking (horizontal character spacing) of the character style.

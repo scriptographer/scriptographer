@@ -270,9 +270,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getAutoLeadi
 }
 
 /*
- * void setAutoLeading(java.lang.Boolean value)
+ * void nativeSetAutoLeading(java.lang.Boolean value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setAutoLeading(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetAutoLeading(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_BOOLEAN(AutoLeading)
 }
 
@@ -284,9 +284,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getLeading(J
 }
 
 /*
- * void setLeading(java.lang.Float value)
+ * void nativeSetLeading(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setLeading(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetLeading(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_FLOAT(Leading)
 }
 

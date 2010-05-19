@@ -819,4 +819,24 @@ public class TextRange extends DocumentObject implements Committable {
 			return range;
 		}
 	}
+
+	/**
+	 * Whenever a style changes happens that affects other styles, the style
+	 * objects need to get replaces with new references, as otherwise the
+	 * updates only seem reflected in the next execution cycle. This method
+	 * takes care of this for us. Currently this is only in use in 
+	 * CharacterStyle#setLeading / #setAutoLeading.
+	 */
+	protected void updateStyle() {
+		if (characterStyle != null) {
+			characterStyle.commit();
+			// Swap with new instance, so changes do get reflected.
+			characterStyle.changeHandle(nativeGetCharacterStyle(handle));
+		}
+		if (paragraphStyle != null) {
+			paragraphStyle.commit();
+			// Swap with new instance, so changes do get reflected.
+			paragraphStyle.changeHandle(nativeGetParagraphStyle(handle));
+		}
+	}
 }
