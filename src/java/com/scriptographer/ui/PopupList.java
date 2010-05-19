@@ -60,4 +60,16 @@ public class PopupList extends ListItem<ListEntry> {
 	protected Border getNativeMargin() {
 		return MARGIN_POPUPLIST;
 	}
+
+	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+		// When resizing PopupLists on Mac, weird artifacts of previous popup
+		// lists stay around if they are not made invisible first.
+		boolean fixRedraw = ScriptographerEngine.isMacintosh() && isVisible();
+		if (fixRedraw)
+			setVisible(false);
+		super.updateBounds(x, y, width, height, sizeChanged);
+		if (fixRedraw)
+			setVisible(true);
+	}
 }
+
