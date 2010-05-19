@@ -333,6 +333,44 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setRotation(JNI
 }
 
 /*
+ * java.lang.Integer nativeGetKerning(int rangeHandle)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetKerning(JNIEnv *env, jobject obj, jint rangeHandle) {
+	ASInt32 kerning = 0;
+	try {
+		TextRangeRef range = (TextRangeRef) rangeHandle;
+		StoryRef story;
+		if (!sTextRange->GetStory(range, &story)) {
+			ASInt32 start;
+			if (!sTextRange->GetStart(range, &start)) {
+				AutoKernType type;
+				sStory->GetModelKernAtChar(story, start, &kerning, &type);
+			}
+			sStory->Release(story);
+		}
+	} EXCEPTION_CONVERT(env);
+	return kerning;
+}
+
+/*
+ * void nativeSetKerning(int rangeHandle, int kerning)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetKerning(JNIEnv *env, jobject obj, jint rangeHandle, jint kerning) {
+	try {
+		TextRangeRef range = (TextRangeRef) rangeHandle;
+		StoryRef story;
+		if (!sTextRange->GetStory(range, &story)) {
+			ASInt32 start, end;
+			if (!sTextRange->GetStart(range, &start) && !sTextRange->GetEnd(range, &end)) {
+				for (int i = start; i < end; i++)
+					sStory->SetKernAtChar(story, i, kerning);
+			}
+			sStory->Release(story);
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * java.lang.Integer nativeGetKerningType()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetKerningType(JNIEnv *env, jobject obj) {

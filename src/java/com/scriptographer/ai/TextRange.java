@@ -358,22 +358,6 @@ public class TextRange extends DocumentObject implements Committable,
 	/**
 	 * {@grouptitle Character Range Properties}
 	 * 
-	 * The kerning between two characters in thousands of em.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var text = new PointText(new Point(100, 100));
-	 * text.content = 'abc';
-	 * var range = text.range.characters[1];
-	 * print(range.content); // 'b'
-	 * range.kerning = 400;
-	 * </code>
-	 */
-	public native int getKerning();
-	
-	public native void setKerning(int kerning);
-
-	/**
 	 * The origin points of the characters in the text range.
 	 */
 	public native Point[] getOrigins();

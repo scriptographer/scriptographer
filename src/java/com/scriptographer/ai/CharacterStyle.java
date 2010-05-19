@@ -337,8 +337,29 @@ public class CharacterStyle extends PathStyle {
 	public native Float getRotation();
 	public native void setRotation(Float rotation);
 
-	private native Integer nativeGetKerningType();
-	private native void nativeSetKerningType(Integer method);
+	/**
+	 * The kerning between two characters in thousands of em.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(100, 100));
+	 * text.content = 'abc';
+	 * var range = text.range.characters[1];
+	 * print(range.content); // 'b'
+	 * range.characterStyle.kerning = 400;
+	 * </code>
+	 */
+	public Integer getKerning() {
+		return range != null ? nativeGetKerning(range.handle) : null;
+	}
+
+	public void setKerning(Integer kerning) {
+		if (kerning != null && range != null)
+			nativeSetKerning(range.handle, kerning);
+	}
+	
+	private native int nativeGetKerning(int rangeHandle);
+	private native void nativeSetKerning(int rangeHandle, int kerning);
 
 	/**
 	 * The character style's kerning method.
@@ -360,9 +381,9 @@ public class CharacterStyle extends PathStyle {
 	public void setKerningType(KerningType type) {
 		nativeSetKerningType(type != null ? type.value : null);
 	}
-	
-	private native Integer nativeGetCapitalization();
-	private native void nativeSetCapitalization(Integer caps);
+
+	private native Integer nativeGetKerningType();
+	private native void nativeSetKerningType(Integer method);
 
 	/**
 	 * The character style's capitalization.
@@ -384,9 +405,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetCapitalization(type != null ? type.value : null);
 	}
 
-	private native Integer nativeGetBaselineOption();
-	private native void nativeSetBaselineOption(Integer option);
-	
+	private native Integer nativeGetCapitalization();
+	private native void nativeSetCapitalization(Integer caps);
+
 	/**
 	 * The character style's baseline option which is used to set the text to
 	 * either subscript or superscript. Superscript and subscript text is
@@ -410,9 +431,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetBaselineOption(type != null ? type.value : null);
 	}
 
-	private native Integer nativeGetOpenTypePosition();
-	private native void nativeSetOpenTypePosition(Integer position);
-
+	private native Integer nativeGetBaselineOption();
+	private native void nativeSetBaselineOption(Integer option);
+	
 	public OpenTypePosition getOpenTypePosition() {
 		return IntegerEnumUtils.get(OpenTypePosition.class, nativeGetOpenTypePosition());
 	}
@@ -421,9 +442,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetOpenTypePosition(type != null ? type.value : null);
 	}
 
-	private native Integer nativeGetStrikethroughPosition();
-	private native void nativeSetStrikethroughPosition(Integer position);
-	
+	private native Integer nativeGetOpenTypePosition();
+	private native void nativeSetOpenTypePosition(Integer position);
+
 	public StrikethroughPosition getStrikethroughPosition() {
 		return (StrikethroughPosition) IntegerEnumUtils.get(StrikethroughPosition.class,
 				nativeGetStrikethroughPosition());
@@ -433,9 +454,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetStrikethroughPosition(type != null ? type.value : null);
 	}
 
-	private native Integer nativeGetUnderlinePosition();
-	private native void nativeSetUnderlinePosition(Integer position);
-
+	private native Integer nativeGetStrikethroughPosition();
+	private native void nativeSetStrikethroughPosition(Integer position);
+	
 	public UnderlinePosition getUnderlinePosition() {
 		return (UnderlinePosition) IntegerEnumUtils.get(UnderlinePosition.class,
 				nativeGetUnderlinePosition());
@@ -445,6 +466,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetUnderlinePosition(type != null ? type.value : null);
 	}
 	
+	private native Integer nativeGetUnderlinePosition();
+	private native void nativeSetUnderlinePosition(Integer position);
+
 	/**
 	 * Sets the offset of the underline relative to the baseline.
 	 */
