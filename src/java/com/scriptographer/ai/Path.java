@@ -563,6 +563,20 @@ public class Path extends PathItem {
 		}
 	}
 
+	public double getLengthOfPosition(HitResult position) {
+		int index = position.getIndex();
+		if (index != -1) {
+			double length = 0;
+			CurveList curves = getCurves();
+			for (int i = 0; i < index; i++)
+				length += curves.get(i).getLength();
+			Curve curve = (Curve) curves.get(index).clone();
+			curve.divide(position.getParameter());
+			return length + curve.getLength();
+		}
+		return -1;
+	}
+
 	/**
 	 * Returns the point of the path at the given length.
 	 */

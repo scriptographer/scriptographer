@@ -72,12 +72,55 @@ public class PathText extends TextItem {
 	public Path getTextPath() {
 		return (Path) getFirstChild();
 	}
-	
-	public native float[] getPathRange();
-	
-	public native void setPathRange(float start, float end);
-	
-	public void setPathRange(float[] range) {
-		setPathRange(range[0], range[1]);
+
+	private double getOffset(int index) {
+		double[] offsets = nativeGetPathOffsets();
+		double param = offsets[index];
+		int segment = (int) param;
+		param -= segment;
+		Path path = getTextPath();
+		CurveList curves = path.getCurves();
+		if (segment == curves.size() && param == 0.0) {
+			segment--;
+			param = 1;
+		}
+		return path.getLengthOfPosition(new HitResult(path, segment, param));
 	}
+
+	private void setOffset(int index, double offset) {
+		double[] offsets = nativeGetPathOffsets();
+		// Convert offset length to index.parameter value, as required by
+		// native path offset code.
+		Path path = getTextPath();
+		HitResult pos = path.getPositionWithLength(offset);
+		double param;
+		if (pos != null) {
+			param = pos.getIndex() + pos.getParameter();
+		} else {
+			param = index == 0 ? 0 : path.getLength();
+		}
+		offsets[index] = param;
+		nativeSetPathOffsets(offsets[0], offsets[1]);
+	}
+
+	public double getStartOffset() {
+		return getOffset(0);
+	}
+
+	public void setStartOffset(double offset) {
+		setOffset(0, offset);
+	}
+
+	public double getEndOffset() {
+		return getOffset(1);
+	}
+
+	public void setEndOffset(double offset) {
+		setOffset(1, offset);
+	}
+
+	
+	private native double[] nativeGetPathOffsets();
+	
+	private native void nativeSetPathOffsets(double start, double end);
 }

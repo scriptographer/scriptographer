@@ -69,19 +69,19 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JN
 */
 
 /*
- * float[] getPathRange()
+ * double[] nativeGetPathOffsets()
  */
-JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jdoubleArray JNICALL Java_com_scriptographer_ai_PathText_nativeGetPathOffsets(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIReal start, end;
 		if (!sAITextFrame->GetOnPathTextTRange(art, &start, &end)) {
-			// create a float array with these values:
-			jfloatArray res = env->NewFloatArray(2);
-			jfloat range[] = {
+			// Create a float array with these values:
+			jdoubleArray res = env->NewDoubleArray(2);
+			jdouble range[] = {
 				start, end
 			};
-			env->SetFloatArrayRegion(res, 0, 2, range);
+			env->SetDoubleArrayRegion(res, 0, 2, range);
 			return res;
 		}
 	} EXCEPTION_CONVERT(env);
@@ -89,11 +89,11 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(J
 }
 
 /*
- * void setPathRange(float start, float end)
+ * void nativeSetPathOffsets(double start, double end)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathText_setPathRange(JNIEnv *env, jobject obj, jfloat start, jfloat end) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathText_nativeSetPathOffsets(JNIEnv *env, jobject obj, jdouble start, jdouble end) {
 	try {
-		// suspend reflow by passing true here
+		// Suspend reflow by passing true here
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOnPathTextTRange(art, start, end);
 	} EXCEPTION_CONVERT(env);

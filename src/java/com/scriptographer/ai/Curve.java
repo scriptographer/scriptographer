@@ -146,12 +146,12 @@ public class Curve implements ChangeReceiver {
 		buf.append(" }");
 		return buf.toString();
 	}
-	
+
 	public Object clone() {
 		updateSegments();
 		return new Curve(segment1, segment2);
 	}
-	
+
 	/**
 	 * The path that the curve belongs to.
 	 */
