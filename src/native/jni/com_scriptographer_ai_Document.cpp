@@ -954,26 +954,20 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 }
 
 /*
- * int nativeGetStories(int artHandle)
+ * int nativeGetStories(int storyHandle, boolean release)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj, jint storyHandle, jboolean release) {
 	using namespace ATE;
 	jint ret = 0;
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		TextFrameRef frame;
-		if (!sAITextFrame->GetATETextFrame((AIArtHandle) artHandle, &frame)) {
-			StoryRef story;
-			if (!sTextFrame->GetStory(frame, &story)) {
-				StoriesRef stories;
-				if (!sStory->GetStories(story, &stories)) {
-					ret = (jint) stories;
-				}
-				sStory->Release(story);
-			}
-			sTextFrame->Release(frame);
+		StoriesRef stories;
+		if (!sStory->GetStories((StoryRef) storyHandle, &stories)) {
+			ret = (jint) stories;
 		}
+		if (release)
+			sStory->Release((StoryRef) storyHandle);
 	} EXCEPTION_CONVERT(env);
 	return ret;
 }

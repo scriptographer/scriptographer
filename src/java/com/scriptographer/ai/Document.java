@@ -782,23 +782,23 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 	
 	// TODO: getActiveSwatch, getActiveGradient
-	
-	protected native int nativeGetStories(int artHandle);
-	
+
 	private TextStoryList stories = null;
 	
 	/**
 	 * The stories contained within the document.
 	 */
 	public TextStoryList getStories() {
-		// See getStories(TextItem item) for explanations:
+		// See getStories(int storyHandle, boolean dispose) for explanations:
 		ItemList items = getItems(new Class[] { TextItem.class });
-		return getStories((TextItem) items.getFirst());
+		TextItem item = items.size() > 0 ? (TextItem) items.getFirst() : null;
+		return getStories(item, true);
 	}
 
-	protected TextStoryList getStories(TextItem item) {
-		// We need to have a textItem to fetch the document's stories from.
-		// We could use document.getItems() to do so, but there are situations
+	protected TextStoryList getStories(TextStoryProvider storyProvider,
+			boolean release) {
+		// We need to have a storyHandle to fetch the document's stories from.
+		// We could use document.getItems() to get one, but there are situations
 		// where this code seems to not work, e.g. when a text item was just
 		// removed from the document (but is still valid during the cycle and
 		// could be introduced in the DOM again)
@@ -810,7 +810,9 @@ public class Document extends NativeObject implements ChangeReceiver {
 		// results in the same document handle. Versioning seems the only way to
 		// keep story lists updated.
 		if (stories == null || stories.version != CommitManager.version) {
-			int handle = item != null ? nativeGetStories(item.handle) : 0;
+			int handle = storyProvider != null
+					? nativeGetStories(storyProvider.getStoryHandle(), release)
+					: 0;
 			if (stories == null)
 				stories = new TextStoryList(handle, this);
 			else
@@ -819,7 +821,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 		return stories;
 	}
 
-	private native void nativePrint(int status);
+	private native int nativeGetStories(int storyHandle, boolean release);
 
 	/**
 	 * Prints the document.
@@ -833,6 +835,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public void print() {
 		print(DialogStatus.OFF);
 	}
+
+	private native void nativePrint(int status);
 
 	/**
 	 * Saves the document.

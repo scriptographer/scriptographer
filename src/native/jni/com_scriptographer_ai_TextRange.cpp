@@ -464,9 +464,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCount(JNIEnv *env
 */
 
 /*
- * int nativeGetStoryIndex()
+ * int getStoryIndex()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetStoryIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStoryIndex(JNIEnv *env, jobject obj) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
@@ -477,6 +477,19 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetStoryIndex(
 			return index;
 	} EXCEPTION_CONVERT(env);
 	return -1;
+}
+
+/*
+ * int getStoryHandle()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStoryHandle(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
+		StoryRef story = NULL;
+		sTextRange->GetStory(range, &story);
+		return (jint) story;
+	} EXCEPTION_CONVERT(env);
+	return 0;
 }
 
 /*
@@ -640,7 +653,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastTextItem(J
 		if (!sTextRange->GetTextFramesIterator(range, &framesRef)) {
 			ITextFramesIterator frames(framesRef);
 			if (!frames.IsEmpty()) {
-				// walk to the last item
+				// Walk to the last item
 				while(frames.IsNotDone())
 					frames.Next();
 				AIArtHandle art;
@@ -769,15 +782,20 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_equals(JNIEnv *e
  * int getKerning()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getKerning(JNIEnv *env, jobject obj) {
+	ASInt32 kerning = 0;
 	try {
 		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
-		ASInt32 kerning;
-		AutoKernType type;
-		if (!sTextRange->GetStory(range, &story) && !sStory->GetKern(story, range, &type, &kerning))
-			return (jint) kerning;
+		if (!sTextRange->GetStory(range, &story)) {
+			ASInt32 start;
+			if (!sTextRange->GetStart(range, &start)) {
+				AutoKernType type;
+				sStory->GetModelKernAtChar(story, start, &kerning, &type);
+			}
+			sStory->Release(story);
+		}
 	} EXCEPTION_CONVERT(env);
-	return 0;
+	return kerning;
 }
 
 /*
@@ -787,9 +805,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setKerning(JNIEnv *e
 	try {
 		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
-		ASInt32 start;
-		if (!sTextRange->GetStory(range, &story) && !sTextRange->GetStart(range, &start))
-			sStory->SetKernAtChar(story, start, kerning);
+		if (!sTextRange->GetStory(range, &story)) {
+			ASInt32 start, end;
+			if (!sTextRange->GetStart(range, &start) && !sTextRange->GetEnd(range, &end)) {
+				for (int i = start; i < end; i++)
+					sStory->SetKernAtChar(story, i, kerning);
+			}
+			sStory->Release(story);
+		}
 	} EXCEPTION_CONVERT(env);
 }
 

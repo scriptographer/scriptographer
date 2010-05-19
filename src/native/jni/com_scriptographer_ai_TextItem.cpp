@@ -137,6 +137,20 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getStoryIndex(JNIEnv 
 }
 
 /*
+ * int getStoryHandle()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getStoryHandle(JNIEnv *env, jobject obj) {
+	try {
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
+		StoryRef story = NULL;
+		sTextFrame->GetStory(frame, &story);
+		sTextFrame->Release(frame);
+		return (jint) story;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
  * int getIndex()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getIndex(JNIEnv *env, jobject obj) {
@@ -168,7 +182,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_getSelectedRange(J
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
 	try {
-		// activate document so that text flow gets suspended as soon as the first range is accessed
+		// Activate document so that text flow gets suspended as soon as the first range is accessed
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		TextRangeRef range = NULL;
 		sTextFrame->GetTextRange(frame, bIncludeOverflow, &range);

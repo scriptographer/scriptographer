@@ -40,7 +40,7 @@ import com.scratchdisk.list.ReadOnlyList;
 /**
  * @author lehni
  */
-public class TextStory extends DocumentObject {
+public class TextStory extends DocumentObject implements TextStoryProvider {
 	
 	private TextRange range = null;
 	
@@ -73,7 +73,14 @@ public class TextStory extends DocumentObject {
 	public native int getIndex();
 	
 	public TextStoryList getStories() {
-		return document.getStories(getTextItems().getFirst());
+		return document.getStories(this, false);
+	}
+
+	/*
+	 * @see TextStoryProvider.
+	 */
+	public int getStoryHandle() {
+		return handle;
 	}
 
 	public String getContent() {

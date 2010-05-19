@@ -37,6 +37,7 @@ import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.Committable;
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
@@ -48,7 +49,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class TextRange extends DocumentObject implements Committable {
+public class TextRange extends DocumentObject implements Committable,
+		TextStoryProvider {
 	
 	// values for the native environment,
 	// to cash glyph run references, once their
@@ -87,10 +89,10 @@ public class TextRange extends DocumentObject implements Committable {
 		// Story needs to be updated too, otherwise the old TextItem
 		// (e.g. before moving) keeps being referenced...
 		if (story != null)
-			document.getStories(getFirstTextItem()).changeStoryHandle(story,
-					nativeGetStoryIndex());
+			document.getStories(this, true).changeStoryHandle(story,
+					getStoryIndex());
 	}
-	
+
 	/**
 	 * markDirty is called when content is changed
 	 */
@@ -137,7 +139,12 @@ public class TextRange extends DocumentObject implements Committable {
 	 */
 	public native int getLength();
 
-	private native int nativeGetStoryIndex();
+	private native int getStoryIndex();
+
+	/*
+	 * @see TextStoryProvider.
+	 */
+	public native int getStoryHandle();
 	
 	/**
 	 * {@grouptitle Hierarchy}
@@ -154,9 +161,13 @@ public class TextRange extends DocumentObject implements Committable {
 	 * The story that the text range belongs to.
 	 */
 	public TextStory getStory() {
-		if (story == null)
-			story = (TextStory) document.getStories(getFirstTextItem()).get(
-					nativeGetStoryIndex());
+		if (story == null) {
+			TextStoryList stories = document.getStories(this, true);
+			int index = getStoryIndex();
+			if (index >= stories.size())
+				throw new ScriptographerException("Cannot get text stories from document");
+			story = stories.get(index);
+		}
 		return story;
 	}
 	
@@ -177,19 +188,18 @@ public class TextRange extends DocumentObject implements Committable {
 	 * within.
 	 */
 	public ReadOnlyList<TextItem> getTextItems() {
-		TextItem frame = getFirstTextItem();
-		TextItem lastItem = getLastTextItem();
-		if (frame != null) {
-			if (lastItem == null)
-				lastItem = frame;
-			ExtendedArrayList<TextItem> list = new ExtendedArrayList<TextItem>();
+		ExtendedArrayList<TextItem> list = new ExtendedArrayList<TextItem>();
+		TextItem item = getFirstTextItem();
+		TextItem last = getLastTextItem();
+		if (item != null) {
+			if (last == null)
+				last = item;
 			do {
-				list.add(frame);
-				frame = frame.getNextTextItem();
-			} while (frame != null && frame != lastItem);
-			return list;
+				list.add(item);
+				item = item.getNextTextItem();
+			} while (item != null && item != last);
 		}
-		return null;
+		return list;
 	}
 
 	protected native void setRange(int start, int end);

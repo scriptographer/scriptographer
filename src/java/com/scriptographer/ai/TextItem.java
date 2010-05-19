@@ -44,7 +44,7 @@ import com.scriptographer.CommitManager;
  * 
  * @author lehni
  */
-public abstract class TextItem extends Item {
+public abstract class TextItem extends Item implements TextStoryProvider {
 
 	// AITextType
 	protected static final short
@@ -175,6 +175,11 @@ public abstract class TextItem extends Item {
 	 */
 	private native int getStoryIndex();
 
+	/*
+	 * @see TextStoryProvider.
+	 */
+	public native int getStoryHandle();
+
 	/**
 	 * Returns the story that the text item belongs to.
 	 */
@@ -183,7 +188,7 @@ public abstract class TextItem extends Item {
 		// to make sure we're not getting more than one reference
 		// to the same Story, so things can be cached there:
 		int index = getStoryIndex();
-		TextStoryList list = document.getStories(this);
+		TextStoryList list = document.getStories(this, true);
 		if (index >= 0 && index < list.size())
 			return list.get(index);
 		return null;
