@@ -179,9 +179,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_nativeGetRange(JNIEnv
 }
 
 /*
- * float getSpacing()
+ * float getPadding()
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextItem_getSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextItem_getPadding(JNIEnv *env, jobject obj) {
 	ASReal spacing = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
@@ -192,9 +192,9 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextItem_getSpacing(JNIEnv *
 }
 
 /*
- * void setSpacing(float spacing)
+ * void setPadding(float spacing)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_setPadding(JNIEnv *env, jobject obj, jfloat spacing) {
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetSpacing(frame, spacing);

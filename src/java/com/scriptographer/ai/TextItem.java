@@ -87,9 +87,9 @@ public abstract class TextItem extends Item {
 	/**
 	 * The padding within the text area.
 	 */
-	public native float getSpacing();
+	public native float getPadding();
 
-	public native void setSpacing(float spacing);
+	public native void setPadding(float spacing);
 
 	/**
 	 * Specifies whether to use optical alignment within the text item. Optical
