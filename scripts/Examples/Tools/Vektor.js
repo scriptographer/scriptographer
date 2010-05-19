@@ -47,15 +47,16 @@ palette.onChange = function(component) {
 ////////////////////////////////////////////////////////////////////////////////
 // Vector
 
-var vectorStart, vector, vectorItem;
+var vectorStart, vector, vectorPrevious, vectorItem;
 
-function processVector(end) {
-	var previous = vector;
-	vector = end - vectorStart;
-	if (values.fixLength)
-		vector.length = previous.length;
-	if (values.fixAngle)
-		vector.angle = previous.angle;
+function processVector(event) {
+	vector = event.point - vectorStart;
+	if (vectorPrevious) {
+		if (values.fixAngle)
+			vector = vector.project(vectorPrevious);
+		if (values.fixLength)
+			vector.length = vectorPrevious.length;
+	}
 	drawVector();
 }
 
@@ -105,14 +106,14 @@ function onMouseDown(event) {
 		dashItem = vectorItem;
 		vectorItem = null;
 	}
-	processVector(event.point);
+	processVector(event);
 	document.redraw();
 }
 
 function onMouseDrag(event) {
 	if (values.fixLength && values.fixAngle)
 		vectorStart = event.point;
-	processVector(event.point);
+	processVector(event);
 }
 
 function onMouseUp(event) {
@@ -120,4 +121,5 @@ function onMouseUp(event) {
 		dashItem.dashArray = [1, 2];
 		dashItem = null;
 	}
+	vectorPrevious = vector;
 }
