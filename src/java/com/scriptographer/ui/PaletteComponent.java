@@ -49,6 +49,7 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ai.FontWeight;
+import com.scriptographer.ui.layout.TableLayout;
 
 /**
  * @author lehni
@@ -231,7 +232,25 @@ public class PaletteComponent implements ChangeReceiver {
 			// to how things works with CSS...
 			// TODO: Fix this in UI package?
 			frame.setHeight(2 + top + bottom);
-			item = frame;
+			// If the ruler has a label, add it to the left of it, using an
+			// ItemGroup and a TableLayout.
+			if (label != null && !label.equals("")) {
+				ItemGroup group = new ItemGroup(dialog);
+				// Use 3 rows, so the center one with the ruler gets centered,
+				// then span the label across all three.
+				double[][] sizes = {
+					new double[] { TableLayout.PREFERRED, TableLayout.FILL },
+					new double[] { TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL }
+				};
+				group.setLayout(new TableLayout(sizes));
+				TextPane labelItem = new TextPane(dialog);
+				labelItem.setText(label );
+				group.add(labelItem, "0, 0, 0, 2");
+				group.add(frame, "1, 1, full, center");
+				item = group;
+			} else {
+				item = frame;
+			}
 			break;
 		case SLIDER:
 			item = new Slider(dialog) {
@@ -354,27 +373,18 @@ public class PaletteComponent implements ChangeReceiver {
 		Item valueItem = createItem(dialog, new Border(1, 0, 1, 0));
 		String label = getLabel();
 		boolean isRuler = type == PaletteComponentType.RULER;
-		if (label != null && !"".equals(label)) {
+		if (!isRuler && label != null && !"".equals(label)) {
 			TextPane labelItem = new TextPane(dialog);
-			if (isRuler) {
-				// Add label above ruler in its own row.
-				labelItem.setText(label);
-				labelItem.setMargin(4, 0, 0, 4);
-				content.put(column + ", " + row + ", " + (column + 1) + ", "
-						+ row + ", left, top", labelItem);
-				row++;
-			} else {
-				labelItem.setText(label + ":");
-				// Adjust top margin of label to reflect the native margin
-				// in the value item.
-				Item marginItem = valueItem;
-				// If this is an item group, use the first item in it instead
-				// This is only needed for FontPopupList so far.
-				if (marginItem instanceof ItemGroup)
-					marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
-				labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
-				content.put(column + ", " + row + ", right, top", labelItem);
-			}
+			labelItem.setText(label + ":");
+			// Adjust top margin of label to reflect the native margin
+			// in the value item.
+			Item marginItem = valueItem;
+			// If this is an item group, use the first item in it instead
+			// This is only needed for FontPopupList so far.
+			if (marginItem instanceof ItemGroup)
+				marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
+			labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
+			content.put(column + ", " + row + ", right, top", labelItem);
 		}
 		String justification = isRuler || fullSize 
 				? "full, center" : "left, center";
