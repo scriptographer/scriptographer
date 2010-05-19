@@ -52,10 +52,13 @@ var vectorStart, vector, vectorPrevious, vectorItem;
 function processVector(event) {
 	vector = event.point - vectorStart;
 	if (vectorPrevious) {
-		if (values.fixAngle)
-			vector = vector.project(vectorPrevious);
-		if (values.fixLength)
+		if (values.fixLength && values.fixAngle) {
+			vector = vectorPrevious;
+		} else if (values.fixLength) {
 			vector.length = vectorPrevious.length;
+		} else if (values.fixAngle) {
+			vector = vector.project(vectorPrevious);
+		}
 	}
 	drawVector();
 }
