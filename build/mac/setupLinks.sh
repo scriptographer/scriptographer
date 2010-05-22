@@ -33,8 +33,8 @@ makeLinks() {
 	makeTargetLinks $1 Release
 }
 
-makeLinks "CS5"
-makeLinks "CS4"
-makeLinks "CS3"
-makeLinks "CS2"
 makeLinks "CS"
+makeLinks "CS2"
+makeLinks "CS3"
+makeLinks "CS4"
+makeLinks "CS5"
