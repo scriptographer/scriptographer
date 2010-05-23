@@ -98,7 +98,6 @@ public class JythonEngine extends ScriptEngine {
 		return getScope(globals);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T toJava(Object object, Class<T> type) {
 		if (object instanceof PyObject)
 			return (T) Py.tojava((PyObject) object, type);
