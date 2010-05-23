@@ -41,10 +41,17 @@
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_FontFamily_nativeGetName(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		AIFontKey font;
-		ASUnicode name[256];
+		ASUnicode unicodeName[256];
 		if (!sAIFont->IndexTypefaceStyleList((AITypefaceKey) handle, 0, &font) &&
-			!sAIFont->GetFontFamilyUINameUnicode(font, name, 256)) {
-			return gEngine->convertString(env, name);
+				!sAIFont->GetFontFamilyUINameUnicode(font, unicodeName, 256)) {
+			// In some cases GetFontFamilyUINameUnicode does seem to return an empty
+			// string, e.g on CS2 Windows. If so, fall back to non-unicode version.
+			if (unicodeName[0] == 0) {
+				char name[256];
+				if (!sAIFont->GetFontFamilyUIName(font, name, 256))
+					return gEngine->convertString(env, name);
+			}
+			return gEngine->convertString(env, unicodeName);
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
