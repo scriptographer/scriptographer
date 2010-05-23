@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import com.scriptographer.ScriptographerEngine;
+
 /**
  * A container that groups items logically, so that they can be
  * enabled or disabled together. The group object does not have a
@@ -80,5 +82,46 @@ public class ItemGroup extends Item implements ComponentGroup {
 			getContent().remove(item);
 		else
 			removeComponent(item);
+	}
+
+	/*
+	 * Override bounds handling so that ItemGroups always have a native size of
+	 * 0. This is required on Windows where ItemGroups otherwise sometimes seem
+	 * to intersect mouse events.
+	 */
+	protected Rectangle nativeGetBounds() {
+		if (ScriptographerEngine.isWindows()) {
+			// If nativeGetBounds returns bounds with a size != 0, we have not
+			// set its size to 0 yet and need to report the real native size
+			// back so initBounds() forces a call of nativeSetBounds, in which
+			// size is then set to 0.
+			Rectangle bounds = super.nativeGetBounds();
+			if (nativeBounds == null || bounds.width > 0 || bounds.height > 0)
+				return bounds;
+			// In any other case, do not use the native bounds but the
+			// internally reflected value.
+			return (Rectangle) nativeBounds.clone();
+		} else {
+			return super.nativeGetBounds();
+		}
+	}
+
+	protected void nativeSetBounds(int x, int y, int width, int height) {
+		if (ScriptographerEngine.isWindows()) {
+			super.nativeSetBounds(x, y, 0, 0);
+			// It seems that on CS2 we need to call setSize to really force it
+			// to 0. Always use both to be on the safe side.
+			super.nativeSetSize(0, 0);
+		} else {
+			super.nativeSetBounds(x, y, width, height);
+		}
+	}
+
+	protected void nativeSetSize(int width, int height) {
+		if (ScriptographerEngine.isWindows()) {
+			super.nativeSetSize(0, 0);
+		} else {
+			super.nativeSetSize(width, height);
+		}
 	}
 }

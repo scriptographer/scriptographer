@@ -273,9 +273,9 @@ public abstract class Item extends Component {
 	 * 
 	 */
 
-	private native Rectangle nativeGetBounds();
+	protected native Rectangle nativeGetBounds();
 	protected native void nativeSetBounds(int x, int y, int width, int height);
-	private native void nativeSetSize(int width, int height);
+	protected native void nativeSetSize(int width, int height);
 
 	public Rectangle getBounds() {
 		return new Rectangle(bounds);
