@@ -220,6 +220,27 @@ public class PaletteComponent implements ChangeReceiver {
 			margin = margin.add(new Border(1, 0, 0, 0));
 			break;
 		case RULER:
+			// If the ruler has a label, add it to the left of it, using an
+			// ItemGroup and a TableLayout. The ItemGroup needs to be created
+			// before the frame, otherwise layouting issues arise...
+			// Ideally this should be resolved, but as ADM is on its way out,
+			// just work around it for now.
+			ItemGroup group;
+			if (label != null && !label.equals("")) {
+				group = new ItemGroup(dialog);
+				TextPane labelItem = new TextPane(dialog);
+				labelItem.setText(label);
+				// Use 3 rows, so the center one with the ruler gets centered,
+				// then span the label across all three.
+				double[][] sizes = {
+					new double[] { TableLayout.PREFERRED, TableLayout.FILL },
+					new double[] { TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL }
+				};
+				group.setLayout(new TableLayout(sizes));
+				group.add(labelItem, "0, 0, 0, 2");
+			} else {
+				group = null;
+			}
 			Frame frame = new Frame(dialog);
 			frame.setStyle(FrameStyle.SUNKEN);
 			// Margin needs to be set before changing size...
@@ -232,20 +253,8 @@ public class PaletteComponent implements ChangeReceiver {
 			// to how things works with CSS...
 			// TODO: Fix this in UI package?
 			frame.setHeight(2 + top + bottom);
-			// If the ruler has a label, add it to the left of it, using an
-			// ItemGroup and a TableLayout.
-			if (label != null && !label.equals("")) {
-				ItemGroup group = new ItemGroup(dialog);
-				// Use 3 rows, so the center one with the ruler gets centered,
-				// then span the label across all three.
-				double[][] sizes = {
-					new double[] { TableLayout.PREFERRED, TableLayout.FILL },
-					new double[] { TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL }
-				};
-				group.setLayout(new TableLayout(sizes));
-				TextPane labelItem = new TextPane(dialog);
-				labelItem.setText(label );
-				group.add(labelItem, "0, 0, 0, 2");
+			// Now finish setting up the layout group and label
+			if (group != null) {
 				group.add(frame, "1, 1, full, center");
 				item = group;
 			} else {
@@ -363,7 +372,7 @@ public class PaletteComponent implements ChangeReceiver {
 			if (size != null && !size.equals(item.getSize())) {
 				item.setSize(size);
 				// Tell palette to resize in next commit
-				((Palette) item.getDialog()).layoutChanged = true;
+				((Palette) item.getDialog()).onLayoutChanged();
 			}
 		}
 	}
@@ -778,7 +787,7 @@ public class PaletteComponent implements ChangeReceiver {
 		fullSize = false;
 		columns = null;
 		length = null;
-		updateSize();;
+		updateSize();
 	}
 
 	public Integer getHeight() {
@@ -789,7 +798,7 @@ public class PaletteComponent implements ChangeReceiver {
 		this.height = height;
 		// Clear rows when setting height and vice versa.
 		rows = null;
-		updateSize();;
+		updateSize();
 	}
 
 	public Integer getLength() {
@@ -805,7 +814,7 @@ public class PaletteComponent implements ChangeReceiver {
 			fullSize = false;
 			width = null;
 			columns = null;
-			updateSize();;
+			updateSize();
 		}
 	}
 
@@ -860,7 +869,7 @@ public class PaletteComponent implements ChangeReceiver {
 			fullSize = false;
 			width = null;
 			length = null;
-			updateSize();;
+			updateSize();
 		}
 	}
 

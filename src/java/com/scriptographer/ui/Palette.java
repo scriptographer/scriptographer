@@ -51,7 +51,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 	private Map<String, Object> values;
 	private Map<String, Object> components;
 	private boolean hasLabels;
-	public boolean layoutChanged;
+	private boolean layoutChanged;
 
 	public Palette(String title, Map<String, Object> components,
 			Map<String, Object> values) {
@@ -181,6 +181,13 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 		CommitManager.markDirty(this, this);
 		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, component);
+	}
+
+	protected void onLayoutChanged() {
+		layoutChanged = true;
+		// Use CommitManager functionality to update this dialog once
+		// after all value changes.
+		CommitManager.markDirty(this, this);
 	}
 
 	public void commit() {

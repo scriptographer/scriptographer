@@ -60,7 +60,6 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 	return kNoErr;
 }
 
-
 void ASAPI Item_onDestroy(ADMItemRef item) {
 	if (gEngine != NULL) {
 		JNIEnv *env = gEngine->getEnv();

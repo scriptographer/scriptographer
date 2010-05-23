@@ -437,7 +437,8 @@ abstract class Component extends NotificationHandler {
 	 * @author lehni
 	 *
 	 */
-	abstract class AWTContainer extends java.awt.Container implements ComponentWrapper {
+	abstract class AWTContainer extends java.awt.Container implements
+			ComponentWrapper {
 		Insets insets;
 
 		public void setInsets(int top, int left, int bottom, int right) {
@@ -450,10 +451,9 @@ abstract class Component extends NotificationHandler {
 
 		public void doLayout() {
 			super.doLayout();
-			// now walk through all the items do their layout as well:
-			java.awt.Component[] components = getComponents();
-			for (int i = 0; i < components.length; i++)
-				components[i].doLayout();
+			// Walk through all the items do their layout as well:
+			for (java.awt.Component component : getComponents())
+				component.doLayout();
 		}
 	}
 }

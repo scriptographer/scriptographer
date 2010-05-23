@@ -1384,9 +1384,9 @@ public abstract class Dialog extends Component {
 		}
 
 		public void updateSize(Size size) {
-			// call setBounds instead of setSize
-			// otherwise the call would loop back to the overridden
-			// setBounds here, as internally, setSize calls setBounds anyway
+			// Call setBounds instead of setSize, otherwise the call would loop
+			// back to the overridden setBounds here, as internally, setSize
+			// calls setBounds anyway
 			super.setBounds(0, 0, size.width, size.height);
 			doLayout();
 		}

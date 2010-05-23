@@ -316,7 +316,7 @@ public abstract class Item extends Component {
 	}
 
 	protected void updateNativeBounds(int x, int y, int width, int height) {
-		// calculate native values
+		// Calculate native values
 		int nativeX = x + margin.left;
 		int nativeY = y + margin.top;
 		int nativeWidth = width - margin.left - margin.right;
@@ -350,8 +350,8 @@ public abstract class Item extends Component {
 		if (component != null) {
 			if (component instanceof AWTItemComponent)
 				((AWTItemComponent) component).updateBounds(bounds);
-			else if (component instanceof AWTItemContainer)
-				((AWTItemContainer) component).updateBounds(bounds);
+			else if (component instanceof AWTComponentGroupContainer)
+				((AWTComponentGroupContainer) component).updateBounds(bounds);
 		}
 	}
 
@@ -714,7 +714,7 @@ public abstract class Item extends Component {
 	protected java.awt.Component getAWTComponent() {
 		if (component == null) {
 			if (this instanceof ComponentGroup) {
-				component = new AWTItemContainer();
+				component = new AWTComponentGroupContainer();
 			} else {
 				component = new AWTItemComponent();
 			}
@@ -756,11 +756,11 @@ public abstract class Item extends Component {
 		}
 
 		public void doLayout() {
-			// do nothing here...
+			// Do nothing here...
 		}
 
 		public void updateBounds(Rectangle bounds) {
-			// call the setBounds version in super that directly sets the
+			// Call the setBounds version in super that directly sets the
 			// internal values. setBounds(Rectangle) would call the
 			// overridden setBounds(int, int, int, int) which would change the
 			// underlying Item.
@@ -817,20 +817,20 @@ public abstract class Item extends Component {
 	}
 
 	/**
-	 * The actually AWT class for ItemContainer that does the work of collecting
-	 * wrap items or other ItemContainers and redirecting doLayout calls to its
+	 * The actual AWT class for ComponentGroup sthat does the work of collecting
+	 * wrap items or other ComponentGroups and redirecting doLayout calls to its
 	 * children.
 	 * 
 	 * @author lehni
 	 */
-	class AWTItemContainer extends AWTContainer {
+	class AWTComponentGroupContainer extends AWTContainer {
 
 		public Component getComponent() {
 			return Item.this;
 		}
 
 		public void updateBounds(Rectangle bounds) {
-			// call the setBounds version in super that directly sets the
+			// Call the setBounds version in super that directly sets the
 			// internal values. setBounds(Rectangle) would call the
 			// overridden setBounds(int, int, int, int) which would change the
 			// underlying Item.
