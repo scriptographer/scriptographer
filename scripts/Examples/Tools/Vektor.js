@@ -39,9 +39,11 @@ palette.onChange = function(component) {
 	var name = component.name, value = component.value;
 	if (name == 'angle')
 		value = value.toRadians(0);
-	// Update Vector
-	vector[name] = value;
-	drawVector();
+	if (vector) {
+		// Update Vector
+		vector[name] = value;
+		drawVector();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +116,7 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	if (values.fixLength && values.fixAngle)
+	if (!event.modifiers.shift && values.fixLength && values.fixAngle)
 		vectorStart = event.point;
 	processVector(event);
 }
