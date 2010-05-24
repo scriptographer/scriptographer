@@ -441,7 +441,7 @@ public abstract class Item extends Component {
 			// 38 is a mac specific value, defined by the size
 			// of pulldown menu interface elements.
 			// TODO: Check on windows!
-			Size textSize = getTextSize(" ", -1);
+			Size textSize = getTextSize(" ", -1, true);
 			int addWidth = isSmall() ? 32 : 38;
 			int addHeight = 8;
 			PopupList list = (PopupList) this;
@@ -451,7 +451,7 @@ public abstract class Item extends Component {
 					ListEntry entry = (ListEntry) list.get(i);
 					String text = entry.getText();
 					Size entrySize = getTextSize(text,
-							maxWidth != -1 ? maxWidth - addWidth : -1);
+							maxWidth != -1 ? maxWidth - addWidth : -1, true);
 					size.width = Math.max(size.width, entrySize.width);
 					size.height = Math.max(size.height, entrySize.height);
 				}
@@ -465,14 +465,17 @@ public abstract class Item extends Component {
 			break;
 		default:
 			String text = null;
-			if (this instanceof TextValueItem)
+			boolean multiline = false;
+			if (this instanceof TextValueItem) {
 				text = ((TextValueItem) this).getText();
-			else if (this instanceof TextItem)
+				multiline = ((TextValueItem) this).isMultiline();
+			} else if (this instanceof TextItem) {
 				text = ((TextItem) this).getText();
+			}
 			if (text != null) {
 				if (text.equals(""))
 					text = " ";
-				size = getTextSize(text, maxWidth);
+				size = getTextSize(text, maxWidth, !multiline);
 				if (size != null) {
 					if (this instanceof Button) {
 						size.width += size.height * 2;
@@ -526,8 +529,7 @@ public abstract class Item extends Component {
 	}
 
 	public void setPreferredSize(Size size) {
-		/*if (size == null) prefSize = null;
-		else*/ setPreferredSize(size.width, size.height);
+		setPreferredSize(size.width, size.height);
 	}
 
 	public Size getPreferredSize() {
@@ -542,8 +544,7 @@ public abstract class Item extends Component {
 	}
 
 	public void setMinimumSize(Size size) {
-		/*if (size == null) minSize = null;
-		else*/ setMinimumSize(size.width, size.height);
+		setMinimumSize(size.width, size.height);
 	}
 
 	public Size getMinimumSize() {
@@ -558,8 +559,7 @@ public abstract class Item extends Component {
 	}
 
 	public void setMaximumSize(Size size) {
-		/*if (size == null) maxSize = null;
-		else*/ setMaximumSize(size.width, size.height);
+		setMaximumSize(size.width, size.height);
 	}
 
 	public Size getMaximumSize() {

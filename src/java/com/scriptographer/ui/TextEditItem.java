@@ -473,7 +473,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 
 	public boolean hasPopupList() {
 		return type == ItemType.TEXT_EDIT_SCROLLING_POPUP
-		|| type == ItemType.TEXT_EDIT_POPUP;
+				|| type == ItemType.TEXT_EDIT_POPUP;
 	}
 
 	protected void nativeSetBounds(int x, int y, int width, int height) {

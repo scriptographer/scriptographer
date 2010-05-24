@@ -87,4 +87,15 @@ public abstract class TextValueItem extends ValueItem {
 	public native void setShowUnits(boolean showUnits);
 	public native boolean getShowUnits();
 
+	public boolean isMultiline() {
+		return type == ItemType.TEXT_EDIT_MULTILINE
+				|| type == ItemType.TEXT_EDIT_MULTILINE_READONLY
+				// TODO: TEXT_STATIC appears to support multiline as well,
+				// and TEXT_STATIC_MULTILINE is actually a disabled edit field
+				// with scrollbars, so TextPane might need different options
+				// or handling.
+				|| type == ItemType.TEXT_STATIC
+				|| type == ItemType.TEXT_STATIC_MULTILINE;
+	}
+
 }
