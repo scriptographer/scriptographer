@@ -456,12 +456,16 @@ public class PaletteComponent implements ChangeReceiver {
 			switch (type) {
 			case STRING:
 			case TEXT:
-				((TextValueItem) item).setText(ConversionUtils.toString(value));
-				updateSize();;
+				String text = ConversionUtils.toString(value);
+				if (maxLength != null && text != null
+						&& text.length() > maxLength)
+					text = text.substring(0, maxLength);
+				((TextValueItem) item).setText(text);
+				updateSize();
 				break;
 			case BUTTON:
 				((Button) item).setText(ConversionUtils.toString(value));
-				updateSize();;
+				updateSize();
 				break;
 			case NUMBER:
 			case SLIDER:
@@ -734,7 +738,7 @@ public class PaletteComponent implements ChangeReceiver {
 					// We're changing options, not value, so cause onChange
 					// callback for value
 					setSelectedIndex(index, true);
-					updateSize();;
+					updateSize();
 				}
 			}
 		}
