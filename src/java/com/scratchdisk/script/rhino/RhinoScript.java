@@ -64,7 +64,7 @@ public class RhinoScript extends Script {
 		try {
 			Context cx = Context.getCurrentContext();
 			Object result;
-			// TODO: typecast to JsContext can be wrong, e.g. when calling
+			// TODO: Typecast to RhinoScope can be wrong, e.g. when calling
 			// from another language
 			result = script.exec(cx, ((RhinoScope) scope).getScope());
 			if (result instanceof Wrapper)

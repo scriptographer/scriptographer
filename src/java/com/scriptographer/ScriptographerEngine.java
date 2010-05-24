@@ -438,7 +438,14 @@ public class ScriptographerEngine {
 	 * changes after execution.
 	 */
 	public static Object invoke(Callable callable, Object obj, Object... args) {
-		beginExecution(null, null);
+		Scope scope;
+		if (obj instanceof Scope) {
+			scope = (Scope) obj;
+			obj = scope.getScope();
+		} else {
+			scope = null;
+		}
+		beginExecution(null, scope);
 		// Retrieve wrapper object for the native java object, and
 		// call the function on it.
 		Throwable throwable = null;
