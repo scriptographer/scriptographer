@@ -87,6 +87,10 @@ public class HorizontalLayout extends java.awt.FlowLayout {
 		super(getAlignment(align), hgap, vgap);
 	}
 
+	public HorizontalLayout(int align, int hgap, int vgap) {
+		super(align, hgap, vgap);
+	}
+
 	public void setAlignement(String align) {
 		setAlignment(getAlignment(align));
 	}

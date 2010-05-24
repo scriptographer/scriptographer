@@ -91,10 +91,14 @@ public class FontPopupList extends ItemGroup {
 				}
 			};
 		}
+		// Add a margin of two above and below, as this is half of how much
+		// Palette also uses internally for margins.
+		setMargin(2, 0, 2, 0);
+		// For the same reason add margins of 4 in between the components.
 		if (options != null && options.contains(FontPopupListOption.VERTICAL)) {
-			setLayout(new GridLayout(0, 1, 0, 0));
+			setLayout(new GridLayout(0, 1, 0, 4));
 		} else {
-			setLayout(new HorizontalLayout());
+			setLayout(new HorizontalLayout(HorizontalLayout.LEFT, 4, 0));
 		}
 		int width = familyItem.getTextSize(" ").width;
 		familyItem.setWidth(width * 48);

@@ -496,19 +496,11 @@ public abstract class TextEditItem<S> extends TextValueItem {
 				} else if (ScriptographerEngine.isWindows()) {
 					// On Windows, the width of popup list items are set
 					// wrongly and need to be corrected here.
-					size.width = width + 4;
+					size.width = width;
 				}
 				list.setSize(size);
 			}
 		}
 		super.updateBounds(x, y, width, height, sizeChanged);
-	}
-
-	protected static final Border MARGIN_POPUP =
-			ScriptographerEngine.isMacintosh() ? new Border(2, 0, 2, 0)
-					: new Border(1, 0, 1, 0);
-
-	protected Border getNativeMargin() {
-		return hasPopupList() ? MARGIN_POPUP : MARGIN_NONE;
 	}
 }

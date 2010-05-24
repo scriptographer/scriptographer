@@ -333,7 +333,7 @@ public class PaletteComponent implements ChangeReceiver {
 		// Margin needs to be defined before setting size, since getBestSize is
 		// affected by margin
 		if (margin != null)
-			item.setMargin(margin);
+			item.setMargin(item.getMargin().add(margin));
 		updateSize();
 		return item;
 	}
@@ -386,14 +386,11 @@ public class PaletteComponent implements ChangeReceiver {
 		if (hasLabel) {
 			TextPane labelItem = new TextPane(dialog);
 			labelItem.setText(label + ":");
-			// Adjust top margin of label to reflect the native margin
-			// in the value item.
-			Item marginItem = valueItem;
-			// If this is an item group, use the first item in it instead
-			// This is only needed for FontPopupList so far.
-			if (marginItem instanceof ItemGroup)
-				marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
-			labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
+			// Adjust top margin of label to reflect the native margin in the
+			// value item. Take into account both native margins and margins
+			// defined for the item, as both affect position of actual text.
+			Border margin = valueItem.getMargin().add(valueItem.getNativeMargin());
+			labelItem.setMargin(margin.top + 3, 4, 0, 0);
 			content.put(column + ", " + row + ", right, top", labelItem);
 		}
 		String justification = isRuler || fullSize 

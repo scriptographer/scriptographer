@@ -43,7 +43,8 @@ public class PopupList extends ListItem<ListEntry> {
 	}
 
 	public PopupList(Dialog dialog, boolean scrolling) {
-		super(dialog, scrolling ? ItemType.SCROLLING_POPUP_LIST : ItemType.POPUP_LIST);
+		super(dialog, scrolling ? ItemType.SCROLLING_POPUP_LIST
+				: ItemType.POPUP_LIST);
 	}
 
 	public PopupList(Dialog dialog) {
@@ -54,14 +55,8 @@ public class PopupList extends ListItem<ListEntry> {
 		return new ListEntry(this, index);
 	}
 
-	protected static final Border MARGIN_POPUPLIST = ScriptographerEngine.isMacintosh() ?
-			new Border(4, 4, 0, 4) : new Border(1, 2, 1, 2);
-
-	protected Border getNativeMargin() {
-		return MARGIN_POPUPLIST;
-	}
-
-	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+	protected void updateBounds(int x, int y, int width, int height,
+			boolean sizeChanged) {
 		// When resizing PopupLists on Mac, weird artifacts of previous popup
 		// lists stay around if they are not made invisible first.
 		boolean fixRedraw = ScriptographerEngine.isMacintosh() && isVisible();

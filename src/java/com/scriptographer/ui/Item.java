@@ -581,7 +581,7 @@ public abstract class Item extends Component {
 		margin = new Border(top, right, bottom, left).add(getNativeMargin());
 		if (nativeBounds != null)
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height, false);
-		// Update the margins int he AWT proxy as well
+		// Update the margins in the AWT proxy as well
 		updateAWTMargin(margin);
 	}
 
