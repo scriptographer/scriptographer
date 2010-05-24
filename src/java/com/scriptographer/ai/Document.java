@@ -980,7 +980,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	/**
 	 * Returns the selected text as a text range.
 	 */
-	public native TextRange getSelectedText();
+	public native TextRange getSelectedTextRange();
 
 	private native void nativeSelectAll();
 

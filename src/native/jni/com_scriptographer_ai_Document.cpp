@@ -686,13 +686,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(JNIEn
 }
 
 /*
- * com.scriptographer.ai.TextRange getSelectedText()
+ * com.scriptographer.ai.TextRange getSelectedTextRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedText(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedTextRange(JNIEnv *env, jobject obj) {
 	try {
 		using namespace ATE;
+		AIBoolean value;
 		TextRangesRef rangesRef;
-		if (!sAIDocument->GetTextSelection(&rangesRef) && rangesRef != NULL) {
+		if (!sAIDocument->HasTextFocus(&value) && value
+				&& !sAIDocument->HasTextCaret(&value) && !value
+				&& !sAIDocument->GetTextSelection(&rangesRef) && rangesRef != NULL) {
 			ITextRanges ranges(rangesRef);
 			if (ranges.GetSize() > 0) {
 				ITextRange first = ranges.GetFirst();
