@@ -325,8 +325,9 @@ public class ScriptographerEngine {
 			// TODO: find out why this regular expression does not work and make
 			// it work instead:
 			// if (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
-			if (!error.endsWith(System.getProperty("line.separator")))
-				error +=  System.getProperty("line.separator");
+			String lineBreak = System.getProperty("line.separator");
+			if (!error.endsWith(lineBreak))
+				error +=  lineBreak;
 			System.err.print(error);
 			logError(t);
 		} catch (Throwable e) {
