@@ -265,7 +265,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 				: new double[] { TableLayout.PREFERRED, TableLayout.FILL },
 			rows
 		};
-		TableLayout layout = new TableLayout(sizes, 0, 2);
+		TableLayout layout = new TableLayout(sizes, 0, 0);
 		dialog.setLayout(layout);
 		dialog.setContent(content);
 

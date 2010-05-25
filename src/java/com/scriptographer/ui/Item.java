@@ -440,18 +440,18 @@ public abstract class Item extends Component {
 		case SCROLLING_POPUP_LIST:
 			// 38 is a mac specific value, defined by the size
 			// of pulldown menu interface elements.
-			// TODO: Check on windows!
 			Size textSize = getTextSize(" ", -1, true);
-			int addWidth = isSmall() ? 32 : 38;
-			int addHeight = 8;
+			Size addSize = ScriptographerEngine.isMacintosh()
+					? new Size(isSmall() ? 32 : 38, 8)
+					: new Size(26, 6);
 			PopupList list = (PopupList) this;
 			if (list.size() > 0) {
 				size = new Size(0, 0);
 				for (int i = 0, l = list.size(); i < l; i++) {
 					ListEntry entry = (ListEntry) list.get(i);
 					String text = entry.getText();
-					Size entrySize = getTextSize(text,
-							maxWidth != -1 ? maxWidth - addWidth : -1, true);
+					Size entrySize = getTextSize(text, maxWidth != -1
+							? maxWidth - addSize.width : -1, true);
 					size.width = Math.max(size.width, entrySize.width);
 					size.height = Math.max(size.height, entrySize.height);
 				}
@@ -460,8 +460,7 @@ public abstract class Item extends Component {
 				// and it has some width for future content (32 * space)
 				size = textSize.multiply(32, 1);
 			}
-			size.width += addWidth;
-			size.height += addHeight;
+			size = size.add(addSize);
 			break;
 		default:
 			String text = null;
@@ -485,9 +484,9 @@ public abstract class Item extends Component {
 						// text height and use a default width across
 						// Scriptographer for text edits, based on the height.
 						size.width = size.height * 5;
-						// Small Spin Edits on Mac need 2px more...
-						size.height += isSmall() && this instanceof SpinEdit
-							? 8 : 6;
+						// Small Spin Edits seem to need 1px more...
+						size.height += this instanceof SpinEdit && isSmall()
+							? 7 : 6;
 					} else if (this instanceof TextPane) {
 						size.width += 4;
 						size.height += 4;

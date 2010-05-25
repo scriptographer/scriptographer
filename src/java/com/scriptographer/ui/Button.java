@@ -164,7 +164,7 @@ public class Button extends TextItem {
 	}
 
 	protected static final Border MARGIN_BUTTON = ScriptographerEngine.isMacintosh() ?
-			new Border(4, 4, 4, 4) : new Border(1, 2, 1, 2);
+			new Border(4, 4, 4, 4) : new Border(1, 0, 1, 0);
 
 	protected Border getNativeMargin() {
 		return MARGIN_BUTTON;

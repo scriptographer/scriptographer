@@ -476,16 +476,29 @@ public abstract class TextEditItem<S> extends TextValueItem {
 				|| type == ItemType.TEXT_EDIT_POPUP;
 	}
 
+	protected Border getNativeMargin() {
+		// Popup-lists on Windows appear to need a 1px margin at the bottom
+		// as they would overlap otherwise.
+		if (ScriptographerEngine.isWindows() && (hasPopupList() || isMultiline()))
+			return new Border(0, 0, 1, 0);
+		return MARGIN_NONE;
+	}
+
 	protected void nativeSetBounds(int x, int y, int width, int height) {
 		// This seems needed on Mac, as all TextEditItems appear 2px smaller
 		// than they are told to. Also if it has a popup list, the popup button
 		// gets cropped on the 2nd time bounds are set otherwise. 
-		if (ScriptographerEngine.isMacintosh())
-			height += 2;
+		if (!hasPopupList() && !(this instanceof SpinEdit)) {
+			if (ScriptographerEngine.isMacintosh())
+				height += 2;
+			else if (ScriptographerEngine.isWindows())
+				height += 1;
+		}
 		super.nativeSetBounds(x, y, width, height);
 	}
 
-	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+	protected void updateBounds(int x, int y, int width, int height,
+			boolean sizeChanged) {
 		if (hasPopupList()) {
 			PopupList list = getPopupList();
 			if (list != null) {

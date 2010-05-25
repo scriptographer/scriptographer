@@ -93,7 +93,7 @@ public class FontPopupList extends ItemGroup {
 		}
 		// Add a gap between the components.
 		if (options != null && options.contains(FontPopupListOption.VERTICAL)) {
-			setLayout(new GridLayout(0, 1, 0, 2));
+			setLayout(new GridLayout(0, 1, 0, 0));
 		} else {
 			setLayout(new HorizontalLayout(HorizontalLayout.LEFT, 2, 0));
 		}
