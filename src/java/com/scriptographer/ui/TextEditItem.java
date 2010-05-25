@@ -477,9 +477,10 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	}
 
 	protected void nativeSetBounds(int x, int y, int width, int height) {
-		// This seems needed on Mac, as otherwise the popup button
-		// gets cropped on the 2nd time bounds are set. 
-		if (ScriptographerEngine.isMacintosh() && hasPopupList())
+		// This seems needed on Mac, as all TextEditItems appear 2px smaller
+		// than they are told to. Also if it has a popup list, the popup button
+		// gets cropped on the 2nd time bounds are set otherwise. 
+		if (ScriptographerEngine.isMacintosh())
 			height += 2;
 		super.nativeSetBounds(x, y, width, height);
 	}
