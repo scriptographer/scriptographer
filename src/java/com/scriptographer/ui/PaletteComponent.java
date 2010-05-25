@@ -111,7 +111,7 @@ public class PaletteComponent implements ChangeReceiver {
 				// on the object after creating through ArgumentReader.
 				reader.setProperties(this);
 				// Turn on steppers for number components with units by default
-				if (type == PaletteComponentType.NUMBER
+				if (steppers == null && type == PaletteComponentType.NUMBER
 						&& units != null && units != TextUnits.NONE)
 					setSteppers(true);
 			}
@@ -181,7 +181,7 @@ public class PaletteComponent implements ChangeReceiver {
 	
 	// TODO: make constructors for other types
 
-	protected Item createItem(Dialog dialog, Border margin) {
+	protected Item createItem(Dialog dialog) {
 		// Item:
 		item = null;
 		switch (type) {
@@ -217,7 +217,7 @@ public class PaletteComponent implements ChangeReceiver {
 		case TEXT:
 			item = new TextPane(dialog);
 			// Space a bit more to the top, to compensate the descender space.
-			margin = margin.add(new Border(1, 0, 0, 0));
+			item.setMargin(new Border(1, 0, 0, 0));
 			break;
 		case RULER:
 			// If the ruler has a label, add it to the left of it, using an
@@ -247,8 +247,6 @@ public class PaletteComponent implements ChangeReceiver {
 			// TODO: Fix this in UI package?
 			int top = label != null ? 2 : 4, bottom = 4;
 			frame.setMargin(top, 0, bottom, 0);
-			// Make sure we're not setting default margin later on.
-			margin = null;
 			// Margin is included inside size, not added. This is different
 			// to how things works with CSS...
 			// TODO: Fix this in UI package?
@@ -330,10 +328,6 @@ public class PaletteComponent implements ChangeReceiver {
 		setValue(defaultValue);
 		setUnits(units);
 		
-		// Margin needs to be defined before setting size, since getBestSize is
-		// affected by margin
-		if (margin != null)
-			item.setMargin(item.getMargin().add(margin));
 		updateSize();
 		return item;
 	}
@@ -379,7 +373,7 @@ public class PaletteComponent implements ChangeReceiver {
 
 	protected int addToContent(Dialog dialog,
 			LinkedHashMap<String, Component> content, int column, int row) {
-		Item valueItem = createItem(dialog, new Border(1, 0, 1, 0));
+		Item valueItem = createItem(dialog);
 		String label = getLabel();
 		boolean isRuler = type == PaletteComponentType.RULER;
 		boolean hasLabel = !isRuler && label != null && !"".equals(label);
