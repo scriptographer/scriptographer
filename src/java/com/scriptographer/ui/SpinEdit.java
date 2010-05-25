@@ -120,6 +120,14 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 		return editItem;
 	}
 
+	protected void nativeSetBounds(int x, int y, int width, int height) {
+		// Fix weird issues with SpinEdit sizes on Mac. They seem to require
+		// 2px more to appear correctly.
+		if (ScriptographerEngine.isMacintosh() && isSmall())
+			height += 2;
+		super.nativeSetBounds(x, y, width, height);
+	}
+
 	private int xDiff = -1;
 
 	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
@@ -128,6 +136,9 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 			if (xDiff == -1)
 				xDiff = edit.getPosition().x + getPosition().x;
 			super.updateBounds(x, y, width, height, sizeChanged);
+			// See above in nativeSetBounds()
+			if (ScriptographerEngine.isMacintosh() && isSmall())
+				height += 2;
 			edit.setSize(width - xDiff, height);
 		} else {
 			super.updateBounds(x, y, width, height, sizeChanged);

@@ -438,9 +438,9 @@ public abstract class Item extends Component {
 			break;
 		case POPUP_LIST:
 		case SCROLLING_POPUP_LIST:
-			// 38 is a mac specific value, defined by the size
-			// of pulldown menu interface elements.
 			Size textSize = getTextSize(" ", -1, true);
+			// Calculate the required size of the popup list based on the
+			// space required by the native UI element around the selected text.
 			Size addSize = ScriptographerEngine.isMacintosh()
 					? new Size(isSmall() ? 32 : 38, 8)
 					: new Size(26, 6);
@@ -484,10 +484,12 @@ public abstract class Item extends Component {
 						// text height and use a default width across
 						// Scriptographer for text edits, based on the height.
 						size.width = size.height * 5;
-						// Small Spin Edits seem to need 1px more...
-						size.height += this instanceof SpinEdit && isSmall()
-							? 7 : 6;
-					} else if (this instanceof TextPane) {
+						size.height += 6;
+						// Spin Edits seem to need 1px more on Windows...
+						if (ScriptographerEngine.isWindows()
+								&& this instanceof SpinEdit)
+							size.height += 1;
+				} else if (this instanceof TextPane) {
 						size.width += 4;
 						size.height += 4;
 					}

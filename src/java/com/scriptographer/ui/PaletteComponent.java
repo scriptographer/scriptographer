@@ -380,10 +380,17 @@ public class PaletteComponent implements ChangeReceiver {
 		if (hasLabel) {
 			TextPane labelItem = new TextPane(dialog);
 			labelItem.setText(label + ":");
-			// Adjust top margin of label to reflect the native margin in the
-			// value item. Take into account both native margins and margins
-			// defined for the item, as both affect position of actual text.
-			Border margin = valueItem.getMargin().add(valueItem.getNativeMargin());
+			// Adjust top margin of label to reflect the native margin
+			// in the value item.
+			Item marginItem = valueItem;
+			// If this is an item group, use the first item in it instead
+			// This is only needed for FontPopupList so far.
+			if (marginItem instanceof ItemGroup)
+				marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
+			Border margin = marginItem.getMargin().add(marginItem.getNativeMargin());
+			// Also take into account any margins the component might have set
+			if (valueItem != marginItem)
+				margin = margin.add(valueItem.getMargin());
 			labelItem.setMargin(margin.top + 3, 4, 0, 0);
 			content.put(column + ", " + row + ", right, top", labelItem);
 		}

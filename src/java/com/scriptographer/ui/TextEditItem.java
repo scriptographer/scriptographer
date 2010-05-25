@@ -477,10 +477,16 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	}
 
 	protected Border getNativeMargin() {
-		// Popup-lists on Windows appear to need a 1px margin at the bottom
-		// as they would overlap otherwise.
-		if (ScriptographerEngine.isWindows() && (hasPopupList() || isMultiline()))
-			return new Border(0, 0, 1, 0);
+		if (ScriptographerEngine.isMacintosh()) {
+			// On Mac, edit fields appear to be vertically offset by 1px.
+			// Correct using margins
+			return new Border(-1, 0, 1, 0);
+		} else if (ScriptographerEngine.isWindows()) {
+			// Popup-lists on Windows appear to need a 1px margin at the bottom
+			// as they would overlap otherwise.
+			if (hasPopupList() || isMultiline())
+				return new Border(0, 0, 1, 0);
+		} 
 		return MARGIN_NONE;
 	}
 
