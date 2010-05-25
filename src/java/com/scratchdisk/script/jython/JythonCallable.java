@@ -68,7 +68,12 @@ public class JythonCallable extends Callable {
 		}
 	}
 
-	public PyObject getFunction() {
+	public PyObject getCallable() {
 		return function;
+	}
+
+	public JythonScope getScope() {
+		// TODO: Implement
+		return null;
 	}
 }

@@ -46,12 +46,12 @@ import com.scratchdisk.script.Callable;
 public class RhinoCallable extends Callable {
 	Function function;
 	RhinoEngine engine;
-	
+
 	RhinoCallable(RhinoEngine engine, Function function) {
 		this.engine = engine;
 		this.function = function;
 	}
-	
+
 	public Object call(Object obj, Object[] args) throws RhinoScriptException {
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
@@ -76,6 +76,11 @@ public class RhinoCallable extends Callable {
 
 	public Function getCallable() {
 		return function;
+	}
+
+	public RhinoScope getScope() {
+		return new RhinoScope(engine,
+				ScriptableObject.getTopLevelScope(function));
 	}
 }
 

@@ -444,7 +444,7 @@ public class ScriptographerEngine {
 			scope = (Scope) obj;
 			obj = scope.getScope();
 		} else {
-			scope = null;
+			scope = callable.getScope();
 		}
 		beginExecution(null, scope);
 		// Retrieve wrapper object for the native java object, and

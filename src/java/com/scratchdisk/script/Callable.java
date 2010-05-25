@@ -47,4 +47,8 @@ public abstract class Callable {
 	public Object call(Object obj) throws ScriptException {
 		return this.call(obj, emptyArgs);
 	}
+
+	public abstract Object getCallable();
+
+	public abstract Scope getScope();
 }
