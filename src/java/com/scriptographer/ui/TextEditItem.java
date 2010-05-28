@@ -491,20 +491,18 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	}
 
 	protected void nativeSetBounds(int x, int y, int width, int height) {
-		// This seems needed on Mac, as all TextEditItems appear 2px smaller
-		// than they are told to. Also if it has a popup list, the popup button
-		// gets cropped on the 2nd time bounds are set otherwise. 
-		if (!hasPopupList() && !(this instanceof SpinEdit)) {
-			if (ScriptographerEngine.isMacintosh())
+		if (ScriptographerEngine.isMacintosh()) {
+			// This seems needed on Mac, as all TextEditItems appear 2px smaller
+			// than they are told to, except for SpinEdits. Also if it has a 
+			// popup list, the popup button gets cropped on the 2nd time bounds
+			// are set otherwise. 
+			if (!(this instanceof SpinEdit))
 				height += 2;
-			else if (ScriptographerEngine.isWindows())
+		} else if (ScriptographerEngine.isWindows()) {
+			if (!hasPopupList() && !(this instanceof SpinEdit))
 				height += 1;
 		}
 		super.nativeSetBounds(x, y, width, height);
-	}
-
-	protected void updateBounds(int x, int y, int width, int height,
-			boolean sizeChanged) {
 		if (hasPopupList()) {
 			PopupList list = getPopupList();
 			if (list != null) {
@@ -521,6 +519,5 @@ public abstract class TextEditItem<S> extends TextValueItem {
 				list.setSize(size);
 			}
 		}
-		super.updateBounds(x, y, width, height, sizeChanged);
 	}
 }

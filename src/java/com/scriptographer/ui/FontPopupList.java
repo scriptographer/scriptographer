@@ -93,9 +93,9 @@ public class FontPopupList extends ItemGroup {
 		}
 		// Add a gap between the components.
 		if (options != null && options.contains(FontPopupListOption.VERTICAL)) {
-			setLayout(new GridLayout(0, 1, 0, 0));
+			setLayout(new GridLayout(0, 1, 0, 3));
 		} else {
-			setLayout(new HorizontalLayout(HorizontalLayout.LEFT, 2, 0));
+			setLayout(new HorizontalLayout(HorizontalLayout.LEFT, 3, 0));
 		}
 		int width = familyItem.getTextSize(" ").width;
 		familyItem.setWidth(width * 48);
