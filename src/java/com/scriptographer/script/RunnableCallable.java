@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Jul 23, 2009.
- *
- * $Id$
  */
 
 package com.scriptographer.script;

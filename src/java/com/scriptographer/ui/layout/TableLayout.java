@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 08.03.2005.
- *
- * $Id:TableLayout.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ui.layout;

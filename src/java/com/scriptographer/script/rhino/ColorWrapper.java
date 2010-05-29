@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Mar 1, 2009.
- *
- * $Id$
  */
 
 package com.scriptographer.script.rhino;

@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Apr 11, 2008.
- *
- * $Id$
  */
 
 package com.scriptographer.ai;

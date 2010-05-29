@@ -23,8 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * $Id$
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:

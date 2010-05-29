@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 11.02.2005.
- *
- * $Id$
  */
 
 package com.scratchdisk.script.rhino;

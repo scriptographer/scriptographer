@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Apr 22, 2007.
- *
- * $Id$
  */
 
 package com.scriptographer.sg;

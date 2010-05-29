@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Mar 7, 2007.
- *
- * $Id$
  */
 
 package com.scratchdisk.script.jython;

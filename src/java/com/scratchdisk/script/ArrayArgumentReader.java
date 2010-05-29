@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Mar 23, 2008.
- *
- * $Id$
  */
 
 package com.scratchdisk.script;

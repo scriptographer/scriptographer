@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 22.08.2007.
- *
- * $Id$
  */
 
 if (app.isMacintosh()) {

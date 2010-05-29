@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 07.12.2004.
- *
- * $Id:ConsoleOutputStream.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer;

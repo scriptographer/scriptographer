@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  * 
  * File created on Feb 9, 2010.
- *
- * $Id$
  */
 
 package com.scriptographer.ui;

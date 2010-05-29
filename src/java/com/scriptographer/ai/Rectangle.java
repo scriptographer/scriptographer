@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 19.12.2004.
- *
- * $Id:Rectangle.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;

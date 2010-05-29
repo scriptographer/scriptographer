@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 20.12.2004.
- *
- * $Id:Point.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;

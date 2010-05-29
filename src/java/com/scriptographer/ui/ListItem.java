@@ -25,8 +25,6 @@
  * -- GPL LICENSE NOTICE --
  *
  * File created on 31.12.2004.
- *
- * $Id: ListItem.java 1427 2010-05-04 07:40:12Z lehni $
  */
 
 package com.scriptographer.ui;

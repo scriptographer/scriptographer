@@ -23,8 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * $Id:com_scriptographer_ui_Dialog.cpp 402 2007-08-22 23:24:49Z lehni $
  */
 
 #include "stdHeaders.h"
