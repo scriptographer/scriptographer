@@ -239,6 +239,7 @@ public class PaletteComponent implements ChangeReceiver {
 				};
 				group.setLayout(new TableLayout(sizes));
 				group.add(labelItem, "0, 0, 0, 2");
+				group.setTopMargin(2);
 			} else {
 				group = null;
 			}
