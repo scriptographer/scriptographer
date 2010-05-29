@@ -47,21 +47,26 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	
 	// Attach the dialog-level callbacks
 	DEFINE_CALLBACK_PROC(Dialog_onDestroy);
-	sADMDialog->SetDestroyProc(dialog, (ADMDialogDestroyProc) CALLBACK_PROC(Dialog_onDestroy));
+	sADMDialog->SetDestroyProc(dialog,
+			(ADMDialogDestroyProc) CALLBACK_PROC(Dialog_onDestroy));
 	
 	DEFINE_CALLBACK_PROC(Dialog_onNotify);
-	sADMDialog->SetNotifyProc(dialog, (ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
+	sADMDialog->SetNotifyProc(dialog,
+			(ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
 	
 	// Resize handler:
 	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
 	if (resizeItemRef) {
 		DEFINE_CALLBACK_PROC(Dialog_onSizeChanged);
-		sADMItem->SetNotifyProc(resizeItemRef, (ADMItemNotifyProc) CALLBACK_PROC(Dialog_onSizeChanged));
+		sADMItem->SetNotifyProc(resizeItemRef,
+				(ADMItemNotifyProc) CALLBACK_PROC(Dialog_onSizeChanged));
 	}
 	
-	// Execute a one-shot timer right after creation of the dialog, to run initialize()
+	// Execute a one-shot timer right after creation of the dialog,
+	// to run initialize()
 	DEFINE_CALLBACK_PROC(Dialog_onInitialize);
-	sADMDialog->CreateTimer(dialog, 0, 0, (ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInitialize), NULL, 0);
+	sADMDialog->CreateTimer(dialog, 0, 0,
+			(ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInitialize), NULL, 0);
 	return kNoErr;
 }
 
@@ -86,7 +91,8 @@ void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 			jobject obj = gEngine->getDialogObject(dialog);
 			gEngine->callOnDestroy(obj);
 			// Clear the handle:
-			gEngine->setIntField(env, obj, gEngine->fid_ui_NativeObject_handle, 0);
+			gEngine->setIntField(env, obj,
+					gEngine->fid_ui_NativeObject_handle, 0);
 			env->DeleteGlobalRef(obj);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
@@ -102,7 +108,9 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 			jobject obj = gEngine->getDialogObject(dialog);
 			ADMRect size;
 			sADMDialog->GetLocalRect(dialog, &size);
-			gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Dialog_onSizeChanged, size.right, size.bottom, true);
+			gEngine->callVoidMethod(env, obj,
+					gEngine->mid_ui_Dialog_onSizeChanged,
+					size.right, size.bottom, true);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
@@ -136,11 +144,15 @@ void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
 /*
  * int nativeCreate(java.lang.String name, int style, int options)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint style, jint options) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreate(
+		JNIEnv *env, jobject obj, jstring name, jint style, jint options) {
 	try {
 		char *str = gEngine->convertString(env, name);
 		DEFINE_CALLBACK_PROC(Dialog_onInit);
-		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, (ADMDialogInitProc) CALLBACK_PROC(Dialog_onInit), env->NewGlobalRef(obj), options);
+		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str,
+				kEmptyDialogID, (ADMDialogStyle) style,
+				(ADMDialogInitProc) CALLBACK_PROC(Dialog_onInit),
+				env->NewGlobalRef(obj), options);
 		sADMDialog->Size(dialog, 200, 200);
 		delete str;
 		if (dialog == NULL)
@@ -153,7 +165,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreate(JNIEnv *en
 /*
  * void nativeDestroy(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeDestroy(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeDestroy(
+		JNIEnv *env, jobject obj, jint handle) {
 	try {
 		sADMDialog->Destroy((ADMDialogRef) handle);
 	} EXCEPTION_CONVERT(env);
@@ -162,21 +175,25 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeDestroy(JNIEnv *e
 /*
  * void nativeSetTrackCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTrackCallback(
+		JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_CALLBACK_PROC(Dialog_onTrack);
-		sADMDialog->SetTrackProc(dialog, enabled ? (ADMDialogTrackProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
+		sADMDialog->SetTrackProc(dialog, enabled
+				? (ADMDialogTrackProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
  * boolean defaultTrack(com.scriptographer.ui.Tracker tracker)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_defaultTrack(JNIEnv *env, jobject obj, jobject tracker) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_defaultTrack(
+		JNIEnv *env, jobject obj, jobject tracker) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		return sADMDialog->DefaultTrack(dialog, gEngine->getTrackerHandle(env, tracker));
+		return sADMDialog->DefaultTrack(dialog,
+				gEngine->getTrackerHandle(env, tracker));
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -184,7 +201,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_defaultTrack(JNIEnv
 /*
  * void defaultDraw(com.scriptographer.ui.Drawer drawer)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_defaultDraw(JNIEnv *env, jobject obj, jobject drawer) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_defaultDraw(
+		JNIEnv *env, jobject obj, jobject drawer) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->DefaultDraw(dialog, gEngine->getDrawerHandle(env, drawer));
@@ -194,7 +212,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_defaultDraw(JNIEnv *env
 /*
  * int getTrackMask()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getTrackMask(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getTrackMask(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->GetMask(dialog);
@@ -205,7 +224,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getTrackMask(JNIEnv *en
 /*
  * void setTrackMask(int mask)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setTrackMask(
+		JNIEnv *env, jobject obj, jint mask) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->SetMask(dialog, mask);
@@ -215,18 +235,21 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setTrackMask(JNIEnv *en
 /*
  * void nativeSetDrawCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetDrawCallback(
+		JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_CALLBACK_PROC(Dialog_onDraw);
-		sADMDialog->SetDrawProc(dialog, enabled ? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onDraw) : NULL);
+		sADMDialog->SetDrawProc(dialog, enabled
+				? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onDraw) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
  * com.scriptographer.ui.Size nativeGetSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetSize(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMRect size;
@@ -239,7 +262,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetSize(JNIEnv
 /*
  * void nativeSetSize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetSize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetSize(
+		JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Size(dialog, width, height);
@@ -249,7 +273,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetSize(JNIEnv *e
 /*
  * java.awt.Rectangle nativeGetBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetBounds(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetBounds(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMRect rect;
@@ -262,7 +287,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetBounds(JNIE
 /*
  * void nativeSetBounds(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetBounds(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetBounds(
+		JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_RECT(rect, x, y, width, height);
@@ -273,7 +299,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetBounds(JNIEnv 
 /*
  * com.scriptographer.ui.Point getPosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPosition(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPosition(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMRect rect;
@@ -286,7 +313,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPosition(JNIEnv *
 /*
  * void setPosition(int x, int y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setPosition(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setPosition(
+		JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Move(dialog, x, y);
@@ -296,7 +324,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setPosition(JNIEnv *env
 /*
  * com.scriptographer.ui.Size nativeGetimumMinSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMinimumSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMinimumSize(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMPoint pt;
@@ -310,7 +339,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMinimumSize
 /*
  * void nativeSetMinimumSize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMinimumSize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMinimumSize(
+		JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->SetMinWidth(dialog, width);
@@ -321,10 +351,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMinimumSize(JN
 /*
  * com.scriptographer.ui.Size nativeGetMaximumSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMaximumSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMaximumSize(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		DEFINE_ADM_POINT(pt, sADMDialog->GetMaxWidth(dialog), sADMDialog->GetMaxHeight(dialog));
+		DEFINE_ADM_POINT(pt, sADMDialog->GetMaxWidth(dialog),
+				sADMDialog->GetMaxHeight(dialog));
 		return gEngine->convertSize(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -333,7 +365,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetMaximumSize
 /*
  * void nativeSetMaximumSize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMaximumSize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMaximumSize(
+		JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->SetMaxWidth(dialog, width);
@@ -344,7 +377,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetMaximumSize(JN
 /*
  * com.scriptographer.ui.Size getIncrement()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getIncrement(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getIncrement(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMPoint pt;
@@ -358,7 +392,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getIncrement(JNIEnv 
 /*
  * void setIncrement(int hor, int ver)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setIncrement(JNIEnv *env, jobject obj, jint hor, jint ver) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setIncrement(
+		JNIEnv *env, jobject obj, jint hor, jint ver) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->SetHorizontalIncrement(dialog, hor);
@@ -369,7 +404,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setIncrement(JNIEnv *en
 /*
  * int getItemHandle(int itemID)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getItemHandle(JNIEnv *env, jobject obj, jint itemID) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getItemHandle(
+		JNIEnv *env, jobject obj, jint itemID) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMItemRef item = sADMDialog->GetItem(dialog, itemID);
@@ -379,7 +415,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getItemHandle(JNIEnv *e
 		if (itemID == kADMMenuItemID) {
 			ADMListRef list = sADMItem->GetList(item);
 			if (list) {
-				sADMList->SetMenuID(list, gPlugin->getPluginRef(), kEmptyMenuID, NULL);
+				sADMList->SetMenuID(list, gPlugin->getPluginRef(),
+						kEmptyMenuID, NULL);
 				sADMList->RemoveEntry(list, 0);
 			}
 		}
@@ -391,7 +428,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getItemHandle(JNIEnv *e
 /*
  * com.scriptographer.ui.Point localToScreen(int x, int y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__II(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__II(
+		JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
@@ -404,7 +442,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__II(JN
 /*
  * com.scriptographer.ui.Point screenToLocal(int x, int y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__II(
+		JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
@@ -417,7 +456,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__II(JN
 /*
  * java.awt.Rectangle localToScreen(int x, int y, int width, int height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__IIII(
+		JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
@@ -430,7 +470,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_localToScreen__IIII(
 /*
  * java.awt.Rectangle screenToLocal(int x, int y, int width, int height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__IIII(
+		JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
@@ -443,7 +484,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_screenToLocal__IIII(
 /*
  * void invalidate()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Invalidate(dialog);
@@ -453,7 +495,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__(JNIEnv *en
 /*
  * void invalidate(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__IIII(
+		JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
@@ -464,7 +507,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_invalidate__IIII(JNIEnv
 /*
  * void update()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_update(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_update(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Update(dialog);
@@ -474,7 +518,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_update(JNIEnv *env, job
 /*
  * boolean nativeIsVisible()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_nativeIsVisible(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_nativeIsVisible(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->IsVisible(dialog);
@@ -485,7 +530,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_nativeIsVisible(JNI
 /*
  * void nativeSetVisible(boolean visible)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetVisible(JNIEnv *env, jobject obj, jboolean visible) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetVisible(
+		JNIEnv *env, jobject obj, jboolean visible) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Show(dialog, visible);
@@ -495,7 +541,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetVisible(JNIEnv
 /*
  * void nativeSetActive(boolean active)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetActive(JNIEnv *env, jobject obj, jboolean active) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetActive(
+		JNIEnv *env, jobject obj, jboolean active) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Activate(dialog, active);
@@ -505,7 +552,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetActive(JNIEnv 
 /*
  * boolean isEnabled()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isEnabled(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isEnabled(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->IsEnabled(dialog);
@@ -516,7 +564,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isEnabled(JNIEnv *e
 /*
  * void setEnabled(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setEnabled(
+		JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Enable(dialog, enabled);
@@ -526,7 +575,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setEnabled(JNIEnv *env,
 /*
  * boolean isUpdateEnabled()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isUpdateEnabled(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isUpdateEnabled(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->IsUpdateEnabled(dialog);
@@ -537,7 +587,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isUpdateEnabled(JNI
 /*
  * void seUpdateEnabled(boolean updateEnabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setUpdateEnabled(JNIEnv *env, jobject obj, jboolean updateEnabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setUpdateEnabled(
+		JNIEnv *env, jobject obj, jboolean updateEnabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->Enable(dialog, updateEnabled);
@@ -547,7 +598,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setUpdateEnabled(JNIEnv
 /*
  * boolean isCollapsed()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isCollapsed(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isCollapsed(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->IsCollapsed(dialog);
@@ -558,7 +610,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isCollapsed(JNIEnv 
 /*
  * int nativeGetCursor()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetCursor(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetCursor(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		long cursor;
@@ -572,7 +625,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetCursor(JNIEnv 
 /*
  * void nativeSetCursor(int cursor)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetCursor(JNIEnv *env, jobject obj, jint cursor) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetCursor(
+		JNIEnv *env, jobject obj, jint cursor) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		if (cursor >= 0) {
@@ -585,7 +639,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetCursor(JNIEnv 
 /*
  * void nativeSetTitle(java.lang.String title)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTitle(JNIEnv *env, jobject obj, jstring title) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTitle(
+		JNIEnv *env, jobject obj, jstring title) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		if (title != NULL) {
@@ -601,7 +656,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTitle(JNIEnv *
 /*
  * void nativeSetName(java.lang.String name)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetName(JNIEnv *env, jobject obj, jstring name) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetName(
+		JNIEnv *env, jobject obj, jstring name) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		if (name != NULL) {
@@ -617,7 +673,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetName(JNIEnv *e
 /*
  * int nativeGetFont()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetFont(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetFont(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->GetFont(dialog);
@@ -628,7 +685,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetFont(JNIEnv *e
 /*
  * void nativeSetFont(int font)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetFont(
+		JNIEnv *env, jobject obj, jint font) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		if (font >= 0) sADMDialog->SetFont(dialog, (ADMFont)font);
@@ -638,10 +696,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetFont(JNIEnv *e
 /*
  * com.scriptographer.ui.DialogItem getDefaultItem()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getDefaultItem(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getDefaultItem(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		ADMItemRef itm = sADMDialog->GetItem(dialog, sADMDialog->GetDefaultItemID(dialog));
+		ADMItemRef itm = sADMDialog->GetItem(dialog,
+				sADMDialog->GetDefaultItemID(dialog));
 		if (itm != NULL)
 			return gEngine->getItemObject(itm);
 	} EXCEPTION_CONVERT(env);
@@ -651,7 +711,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getDefaultItem(JNIEn
 /*
  * void setDefaultItem(com.scriptographer.ui.DialogItem item)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setDefaultItem(JNIEnv *env, jobject obj, jobject item) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setDefaultItem(
+		JNIEnv *env, jobject obj, jobject item) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMItemRef itm = gEngine->getItemHandle(env, item);
@@ -663,10 +724,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setDefaultItem(JNIEnv *
 /*
  * com.scriptographer.ui.DialogItem getCancelItem()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getCancelItem(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getCancelItem(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		ADMItemRef itm = sADMDialog->GetItem(dialog, sADMDialog->GetCancelItemID(dialog));
+		ADMItemRef itm = sADMDialog->GetItem(dialog,
+				sADMDialog->GetCancelItemID(dialog));
 		if (itm != NULL)
 			return gEngine->getItemObject(itm);
 	} EXCEPTION_CONVERT(env);
@@ -676,7 +739,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getCancelItem(JNIEnv
 /*
  * void setCancelItem(com.scriptographer.ui.DialogItem item)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setCancelItem(JNIEnv *env, jobject obj, jobject item) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setCancelItem(
+		JNIEnv *env, jobject obj, jobject item) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMItemRef itm = gEngine->getItemHandle(env, item);
@@ -688,7 +752,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setCancelItem(JNIEnv *e
 /*
  * boolean isForcedOnScreen()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isForcedOnScreen(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isForcedOnScreen(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		return sADMDialog->IsForcedOnScreen(dialog);
@@ -699,7 +764,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_isForcedOnScreen(JN
 /*
  * void setForcedOnScreen(boolean forcedOnScreen)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setForcedOnScreen(JNIEnv *env, jobject obj, jboolean forcedOnScreen) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setForcedOnScreen(
+		JNIEnv *env, jobject obj, jboolean forcedOnScreen) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->SetForcedOnScreen(dialog, forcedOnScreen);
@@ -709,7 +775,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setForcedOnScreen(JNIEn
 /*
  * com.scriptographer.ui.DialogGroupInfo getGroupInfo()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		const char *group;
@@ -721,7 +788,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(JNIEnv 
 		ADMInt32 positionCode = 0;
 		sADMDialogGroup->GetDialogGroupInfo(dialog, &group, &positionCode);
 #endif
-		return gEngine->newObject(env, gEngine->cls_ui_DialogGroupInfo, gEngine->cid_ui_DialogGroupInfo, env->NewStringUTF(group), (jint) positionCode);
+		return gEngine->newObject(env, gEngine->cls_ui_DialogGroupInfo,
+				gEngine->cid_ui_DialogGroupInfo,
+				env->NewStringUTF(group), (jint) positionCode);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -729,7 +798,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(JNIEnv 
 /*
  * void nativeSetGroupInfo(java.lang.String group, int positionCode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetGroupInfo(JNIEnv *env, jobject obj, jstring group, jint positionCode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetGroupInfo(
+		JNIEnv *env, jobject obj, jstring group, jint positionCode) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		char *groupStr = gEngine->convertString(env, group);
@@ -755,7 +825,8 @@ private:
 public:
 	NavigationFilter(CFStringRef filterName, CFStringRef filter) {
 		name = CFStringCreateCopy(NULL, filterName);
-		CFArrayRef parts = CFStringCreateArrayBySeparatingStrings(NULL, filter, CFSTR(";"));
+		CFArrayRef parts = CFStringCreateArrayBySeparatingStrings(NULL, filter,
+				CFSTR(";"));
 		int count = CFArrayGetCount(parts);
 		for (int i = 0; i < count; i++) {
 			CFStringRef part = (CFStringRef) CFArrayGetValueAtIndex(parts, i);
@@ -843,7 +914,8 @@ class NavigationService {
 	NavObjectFilterUPP filterCallbackUPP;
 
 public:
-	NavigationService(JNIEnv *env, NavigationType navigationType, jstring message, jstring filename, jstring filter) {
+	NavigationService(JNIEnv *env, NavigationType navigationType,
+			jstring message, jstring filename, jstring filter) {
 		type = navigationType;
 		dialog = NULL;
 		eventCallbackUPP = NULL;
@@ -855,13 +927,16 @@ public:
 			eventCallbackUPP = NewNavEventUPP(eventCallback);
 			if (type == FileOpen && filter != NULL) {
 				CFStringRef str = gEngine->convertString_CFString(env, filter);
-				CFStringRef seperator = CFStringCreateWithBytes(NULL, (const UInt8*) "\0", 1, kCFStringEncodingUTF8, false);
-				CFArrayRef parts = CFStringCreateArrayBySeparatingStrings(NULL, str, seperator);
+				CFStringRef seperator = CFStringCreateWithBytes(NULL,
+						(const UInt8*) "\0", 1, kCFStringEncodingUTF8, false);
+				CFArrayRef parts = CFStringCreateArrayBySeparatingStrings(NULL,
+						str, seperator);
 				if (parts != NULL) {
 					CFIndex count = CFArrayGetCount(parts);
 					CFStringRef name = NULL;
 					for (int i = 0; i < count; i++) {
-						CFStringRef part = (CFStringRef) CFArrayGetValueAtIndex(parts, i);
+						CFStringRef part =
+								(CFStringRef) CFArrayGetValueAtIndex(parts, i);
 						if (CFStringGetLength(part) == 0)
 							break;
 						if (i % 2 == 0) {
@@ -885,11 +960,14 @@ public:
 				}
 			}
 			if (type == FileOpen) {
-				NavCreateGetFileDialog(&options, NULL, eventCallbackUPP, NULL, filterCallbackUPP, this, &dialog);
+				NavCreateGetFileDialog(&options, NULL, eventCallbackUPP, NULL,
+						filterCallbackUPP, this, &dialog);
 			} else if (type == FileSave) {
-				NavCreatePutFileDialog(&options, 0, 0, eventCallbackUPP, this, &dialog);
+				NavCreatePutFileDialog(&options, 0, 0, eventCallbackUPP, this,
+						&dialog);
 			} else if (type == FolderChoose) {
-				NavCreateChooseFolderDialog(&options, eventCallbackUPP, filterCallbackUPP, this, &dialog);
+				NavCreateChooseFolderDialog(&options, eventCallbackUPP,
+						filterCallbackUPP, this, &dialog);
 			}
 		}
 	}
@@ -915,18 +993,21 @@ public:
 			NavDialogDispose(dialog);
 	}
 
-	jobject execute(JNIEnv *env, jobject initialDir = NULL, jobject selectedFile = NULL) {
+	jobject execute(JNIEnv *env, jobject initialDir = NULL,
+			jobject selectedFile = NULL) {
 		jobject res = NULL;
 		if (dialog != NULL) {
 			SPPlatformFileSpecification spec;
 			if (initialDir != NULL) {
 				AEDesc location = { typeNull, NULL };
-				AECreateDesc(typeFSS, (FSSpec *) gEngine->convertFile(env, initialDir, &spec), sizeof(FSSpec), &location);
+				AECreateDesc(typeFSS, (FSSpec *) gEngine->convertFile(env,
+						initialDir, &spec), sizeof(FSSpec), &location);
 				NavCustomControl(dialog, kNavCtlSetLocation, &location);
 			}
 			if (selectedFile != NULL) {
 				AEDesc location = { typeNull, NULL };
-				AECreateDesc(typeFSS, (FSSpec *) gEngine->convertFile(env, selectedFile, &spec), sizeof(FSSpec), &location);
+				AECreateDesc(typeFSS, (FSSpec *) gEngine->convertFile(env,
+						selectedFile, &spec), sizeof(FSSpec), &location);
 				NavCustomControl(dialog, kNavCtlSetSelection, &location);
 			}
 			if (!NavDialogRun(dialog)) {
@@ -947,8 +1028,8 @@ public:
 										CFStringRef saveName = NULL;
 										char name[1024];
 										if ((saveName = NavDialogGetSaveFileName(dialog))
-											&& CFStringGetCString(saveName, name, 1024, kCFStringEncodingUTF8)
-											&& strlen(path) + strlen(name) + strlen(PATH_SEP_STR) < 1024) {
+												&& CFStringGetCString(saveName, name, 1024, kCFStringEncodingUTF8)
+												&& strlen(path) + strlen(name) + strlen(PATH_SEP_STR) < 1024) {
 											strcat(path, PATH_SEP_STR);
 											strcat(path, name);
 											res = gEngine->convertFile(env, path);
@@ -968,8 +1049,11 @@ public:
 		return res;
 	}
 
-	static jobject execute(JNIEnv *env, NavigationType type, jstring message, jstring filename, jstring filter, jobject initialDir = NULL, jobject selectedFile = NULL) {
-		return NavigationService(env, type, message, filename, filter).execute(env, initialDir, selectedFile);
+	static jobject execute(JNIEnv *env, NavigationType type, jstring message,
+			jstring filename, jstring filter, jobject initialDir = NULL,
+			jobject selectedFile = NULL) {
+		NavigationService service(env, type, message, filename, filter);
+		service.execute(env, initialDir, selectedFile);
 	}
 	
 private:
@@ -980,14 +1064,17 @@ private:
 		return array;
 	}
 
-	static pascal void eventCallback(NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParams, NavCallBackUserData callBackData) {
+	static pascal void eventCallback(NavEventCallbackMessage callBackSelector,
+			NavCBRecPtr callBackParams, NavCallBackUserData callBackData) {
 		if (callBackSelector ==  kNavCBPopupMenuSelect) {
-			NavMenuItemSpec *chosenItem = (NavMenuItemSpec *) callBackParams->eventData.eventDataParms.param;
+			NavMenuItemSpec *chosenItem = (NavMenuItemSpec *)
+					callBackParams->eventData.eventDataParms.param;
 			((NavigationService *) callBackData)->currentIndex = chosenItem->menuType;
 		}
 	}
 	
-	static pascal Boolean filterCallback(AEDesc* item, void* info, NavCallBackUserData callBackData, NavFilterModes filterMode) {
+	static pascal Boolean filterCallback(AEDesc* item, void* info,
+			NavCallBackUserData callBackData, NavFilterModes filterMode) {
 		NavigationService *service = (NavigationService *) callBackData;
 		if (service == NULL) {
 			return true;
@@ -999,11 +1086,14 @@ private:
 					CFStringRef filename;
 					// OSType fileType = folderInfo->fileAndFolder.fileInfo.finderInfo.fdType;
 					if (item->descriptorType == typeFSS) {
-						filename = CFStringCreateWithPascalString(NULL, ((FSSpec *) *item->dataHandle)->name, kCFStringEncodingUTF8);
+						filename = CFStringCreateWithPascalString(NULL,
+								((FSSpec *) *item->dataHandle)->name, kCFStringEncodingUTF8);
 					} else if ((item->descriptorType = typeFSRef)) {
 						HFSUniStr255 uname;
-						if (!FSGetCatalogInfo((FSRef *) *item->dataHandle, kFSCatInfoNone, NULL, &uname, NULL, NULL)) {
-							filename = CFStringCreateWithCharacters(NULL, uname.unicode, uname.length);
+						if (!FSGetCatalogInfo((FSRef *) *item->dataHandle,
+								kFSCatInfoNone, NULL, &uname, NULL, NULL)) {
+							filename = CFStringCreateWithCharacters(NULL,
+									uname.unicode, uname.length);
 						}
 					}
 					if (filename != NULL) {
@@ -1023,13 +1113,17 @@ private:
 #endif
 
 /*
- * java.io.File nativeFileDialog(java.lang.String message, java.lang.String filter, java.io.File directory, java.lang.String filename, boolean open)
+ * java.io.File nativeFileDialog(java.lang.String message, java.lang.String filter,
+ *		java.io.File directory, java.lang.String filename, boolean open)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeFileDialog(JNIEnv *env, jclass cls, jstring message, jstring filter, jobject directory, jstring filename, jboolean open) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeFileDialog(
+		JNIEnv *env, jclass cls, jstring message, jstring filter,
+		jobject directory, jstring filename, jboolean open) {
 	jobject ret = NULL;
 	try {
 #ifdef MAC_ENV
-		ret = NavigationService::execute(env, open ? FileOpen : FileSave, message, filename, filter, directory, NULL);
+		ret = NavigationService::execute(env, open ? FileOpen : FileSave,
+				message, filename, filter, directory, NULL);
 #else
 		// Unicode seems to not work (at least not on Windows?)
 		// So use normal string instead...
@@ -1062,24 +1156,23 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeFileDialog(JNI
 /*
  * java.io.File chooseDirectory(java.lang.String message, java.io.File directory)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIEnv *env, jclass cls, jstring message, jobject directory) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(
+		JNIEnv *env, jclass cls, jstring message, jobject directory) {
 	jobject ret = NULL;
 	try {
 #ifdef MAC_ENV
-		ret = NavigationService::execute(env, FolderChoose, message, NULL, NULL, directory, NULL);
-#else
-		// Unicode seems to not work (at least not on Windows?)
-		// So use normal string instead...
+		ret = NavigationService::execute(env, FolderChoose, message, NULL, NULL,
+				directory, NULL);
+#else // !MAC_ENV
+		// Unicode version seems to not work (StandardGetDirectoryDialogW,
+		// at least not on Windows) So use normal string instead...
 		char *msg = gEngine->convertString(env, message);
 		SPPlatformFileSpecification result, dir;
-		if (sADMBasic->StandardGetDirectoryDialog(msg, gEngine->convertFile(env, directory, &dir), &result))
+		if (sADMBasic->StandardGetDirectoryDialog(msg,
+				gEngine->convertFile(env, directory, &dir), &result))
 			ret = gEngine->convertFile(env, &result);
-		
-//		ASUnicode *msg = gEngine->convertString_ASUnicode(env, message);
-//		if (sADMBasic->StandardGetDirectoryDialogW(msg, gEngine->convertFile(env, directory, &dir), &result))
-//			ret = gEngine->convertFile(env, &result);
 		delete msg;
-#endif
+#endif // !MAC_ENV
 	} EXCEPTION_CONVERT(env);
 	return ret;
 }
@@ -1087,7 +1180,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 /*
  * java.awt.Color chooseColor(com.criptographer.ai.Color color)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *env, jclass cls, jobject color) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(
+		JNIEnv *env, jclass cls, jobject color) {
 	try {
 		AIColor col, result;
 		if (color != NULL) {
@@ -1108,7 +1202,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *
 /*
  * java.awt.Rectangle getPaletteLayoutBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPaletteLayoutBounds(JNIEnv *env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPaletteLayoutBounds(
+		JNIEnv *env, jclass cls) {
 	try {
 		ADMRect bounds;
 		if (sADMBasic->GetPaletteLayoutBounds(&bounds))
@@ -1120,7 +1215,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPaletteLayoutBoun
 /*
  * void alert(java.lang.String message)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_alert(JNIEnv *env, jclass cls, jstring message) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_alert(
+		JNIEnv *env, jclass cls, jstring message) {
 	try {
 		ASUnicode *text = gEngine->convertString_ASUnicode(env, message);
 		sADMBasic->MessageAlertW(text);
@@ -1131,7 +1227,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_alert(JNIEnv *env, jcla
 /*
  * boolean confirm(java.lang.String message)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_confirm(JNIEnv *env, jclass cls, jstring message) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_confirm(
+		JNIEnv *env, jclass cls, jstring message) {
 	try {
 		ASUnicode *text = gEngine->convertString_ASUnicode(env, message);
 		ADMAnswer ret = sADMBasic->YesNoAlertW(text);
@@ -1144,18 +1241,21 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_confirm(JNIEnv *env
 /*
  * com.scriptographer.ui.Size getScreenSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getScreenSize(JNIEnv *env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getScreenSize(
+		JNIEnv *env, jclass cls) {
 	try {
 		// TODO: add multi screen support and place where Illustrator resides?
 #ifdef MAC_ENV
 		GDHandle screen = DMGetFirstScreenDevice(true);  
 		Rect rect = (*screen)->gdRect;
-		return gEngine->convertSize(env, rect.right - rect.left, rect.bottom - rect.top);
+		return gEngine->convertSize(env, rect.right - rect.left,
+				rect.bottom - rect.top);
 #endif
 #ifdef WIN_ENV
 		RECT rect;
 		GetWindowRect(GetDesktopWindow(), &rect);
-		return gEngine->convertSize(env, rect.right - rect.left, rect.bottom - rect.top);
+		return gEngine->convertSize(env, rect.right - rect.left,
+				rect.bottom - rect.top);
 #endif
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -1164,13 +1264,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getScreenSize(JNIEnv
 /*
  * int getWindowHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getWindowHandle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getWindowHandle(
+		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
 #ifdef MAC_ENV
-		// As new items will be created in the root control (as returned by HIViewGetRoot too),
-		// make sure a root exists. This is required by SWT.
+		// As new items will be created in the root control (as returned by
+		// HIViewGetRoot too), make sure a root exists. This is required by SWT.
 		ControlRef root;
 		GetRootControl(window, &root);
 		if (root == NULL)
@@ -1184,7 +1285,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getWindowHandle(JNIEnv 
 /*
  * void dumpControlHierarchy(java.io.File file)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JNIEnv *env, jobject obj, jobject file) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(
+		JNIEnv *env, jobject obj, jobject file) {
 	try {
 #ifdef MAC_ENV
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
@@ -1199,7 +1301,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JN
 /*
  * void makeOverlay(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(
+		JNIEnv *env, jobject obj, jint handle) {
 	try {
 #ifdef MAC_ENV
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
@@ -1207,7 +1310,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env
 		WindowRef swtWindow = GetControlOwner((ControlRef) handle);
 		// WindowGroupRef groupRef = GetWindowGroup(admWindow);
 		WindowGroupRef groupRef;
-		CreateWindowGroup(/* kWindowGroupAttrLayerTogether |*/ kWindowGroupAttrHideOnCollapse, &groupRef);
+		CreateWindowGroup(kWindowGroupAttrHideOnCollapse, &groupRef);
 		// SetWindowGroupParent(groupRef, GetWindowGroupOfClass(kOverlayWindowClass));
 		SendWindowGroupBehind(groupRef, GetWindowGroupOfClass(kAlertWindowClass));
 		SetWindowGroup(swtWindow, groupRef);
@@ -1216,11 +1319,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env
 }
 
 /*
- * The ADM Timers on Windows are rather unreliable. They fire quite slowly during
- * idle time and speed up as soon as the user moves the mouse around. So use native
- * timers on Windows instead which have more consistent timing behavior.
- * On the Mac, the ADM  timers are more accurate and an easy alternative for rolling
- * our own using idle events.
+ * The ADM Timers on Windows are rather unreliable. They fire quite slowly
+ * during idle time and speed up as soon as the user moves the mouse around.
+ * So use native timers on Windows instead which have more consistent timing
+ * behavior.
+ * On the Mac, the ADM  timers are more accurate and an easy alternative for
+ * rolling our own using idle events.
  */
 
 #ifdef WIN_ENV
@@ -1233,10 +1337,12 @@ ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
-		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer, gEngine->mid_ui_Timer_onExecute, (jint) timerId);
-		// Since the onExecute call might have changed the currently visible document,
-		// always try to redraw it here. RedrawDocument() seems cheap and only consumes
-		// time if something actually needs refreshing, so don't bother tracking changes.
+		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer,
+				gEngine->mid_ui_Timer_onExecute, (jint) timerId);
+		// Since the onExecute call might have changed the currently visible
+		// document, always try to redraw it here. RedrawDocument() seems cheap
+		// and only consumes time if something actually needs refreshing, so
+		// don't bother tracking changes.
 		sAIDocument->RedrawDocument();
 	} EXCEPTION_CATCH_REPORT(env);
 #ifndef WIN_ENV
