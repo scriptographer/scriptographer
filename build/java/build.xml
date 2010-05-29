@@ -261,10 +261,13 @@
 		<!-- Make an empty My Scripts folder -->
 		<mkdir dir="${target.packages}/Scriptographer/Scripts/My Scripts"/>
 
-		
 		<!-- License -->
 		<copy todir="${target.packages}/Scriptographer/" file="${docs.dir}/License.txt" />
 
+		<!-- Packages -->
+		<antcall target="packages.platform">
+			<param name="target" value="CS5"/>
+		</antcall>
 		<antcall target="packages.platform">
 			<param name="target" value="CS4"/>
 		</antcall>
@@ -416,8 +419,6 @@
 			<class name="com.scriptographer.ui.MenuGroup" />
 
 			<class name="com.scriptographer.ui.KeyModifiers" />
-
-			<class name="com.scriptographer.sg.Timer" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="scripts/jni.js">
