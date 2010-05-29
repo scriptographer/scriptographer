@@ -31,7 +31,6 @@
 
 package com.scriptographer.ui;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,7 +47,9 @@ import com.scratchdisk.script.MapArgumentReader;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
+import com.scriptographer.ai.RGBColor;
 import com.scriptographer.ui.layout.TableLayout;
 
 /**
@@ -490,7 +491,7 @@ public class PaletteComponent implements ChangeReceiver {
 			case COLOR:
 				Color color = ScriptEngine.convertToJava(value, Color.class);
 				if (color == null)
-					color = Color.BLACK;
+					color = new RGBColor(0, 0, 0);
 				((ColorButton) item).setColor(color);
 				break;
 			case FONT:

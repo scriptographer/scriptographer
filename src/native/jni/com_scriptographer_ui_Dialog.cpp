@@ -1078,33 +1078,22 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 }
 
 /*
- * java.awt.Color chooseColor(com.scriptographer.ui.Point point, java.awt.Color color)
+ * java.awt.Color chooseColor(com.criptographer.ai.Color color)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *env, jclass cls, jobject point, jobject color) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *env, jclass cls, jobject color) {
 	try {
-		ADMRGBColor col, result;
+		AIColor col, result;
 		if (color != NULL) {
 			gEngine->convertColor(env, color, &col);
 		} else {
-			// white:
-			col.red = 65535;
-			col.green = 65535;
-			col.blue = 65535;
+			// Default is RGB White
+			col.kind = kThreeColor;
+			col.c.rgb.red = 1.0;
+			col.c.rgb.green = 1.0;
+			col.c.rgb.blue = 1.0;
 		}
-		ADMPoint pt;
-		if (point != NULL) {
-			gEngine->convertPoint(env, point, &pt);
-		} else {
-			// center it on the main screen:
-			pt.h = 0;
-			pt.v = 0;
-			ADMRect rect;
-			sADMBasic->GetScreenDimensions(&pt, &rect);
-			pt.h = (rect.right - rect.left) / 2;
-			pt.v = (rect.bottom - rect.top) / 2;
-		}
-		if (sADMBasic->ChooseColor(pt, &col, &result))
-			return gEngine->convertColor(env, &result);
+		if (sAIPaintStyle->DisplayColorPicker(&col))
+			return gEngine->convertColor(env, &col);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

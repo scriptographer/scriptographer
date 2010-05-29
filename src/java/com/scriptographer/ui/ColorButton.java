@@ -31,7 +31,7 @@
 
 package com.scriptographer.ui;
 
-import java.awt.Color;
+import com.scriptographer.ai.Color;
 
 /**
  * @author lehni
@@ -59,7 +59,7 @@ public class ColorButton extends ImageButton {
 					getSize().subtract(getMargin()).subtract(6));
 			Image image = new Image(rect.width, rect.height, ImageType.RGB);
 			Drawer drawer = image.getDrawer();
-			drawer.setColor(color);
+			drawer.setColor(color.toAWTColor());
 			drawer.fillRect(rect);
 			drawer.dispose();
 			setImage(image);

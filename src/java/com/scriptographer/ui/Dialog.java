@@ -31,7 +31,6 @@
 
 package com.scriptographer.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,7 @@ import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
+import com.scriptographer.ai.Color;
 import com.scriptographer.script.RunnableCallable;
 import com.scriptographer.sg.Script;
 
@@ -1305,14 +1305,10 @@ public abstract class Dialog extends Component {
 		return chooseDirectory(null, null);
 	}
 
-	public static native Color chooseColor(Point where, Color color);
-
-	public static Color chooseColor(Color color) {
-		return chooseColor(null, color);
-	}
+	public static native Color chooseColor(Color color);
 
 	public static Color chooseColor() {
-		return chooseColor(null, null);
+		return chooseColor(null);
 	}
 
 	/**
