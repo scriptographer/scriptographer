@@ -93,32 +93,29 @@
 	<!-- =================================================================== -->
 	<!-- Help on usage                                                       -->
 	<!-- =================================================================== -->
-	<target name="help" depends="usage" />
-	<target name="usage">
-		<echo message=""/>
-		<echo message=""/>
-		<echo message="Scriptographer build instructions"/>
-		<echo message="-------------------------------------------------------------"/>
-		<echo message=""/>
-		<echo message=" available targets are:"/>
-		<echo message=""/>
-		<echo message=" compile      --> compiles the source code to ./classes"/>
-		<echo message=" jar          --> generates the ./lib/scriptographer.jar file"/>
-		<echo message=" buildnumber  --> increases the buildnumber that defines the revision"/>
-		<echo message=" resources    --> generates the resources needed to build the native plugin code"/>
-		<echo message=" packages     --> generates the packages for all distributions"/>
-		<echo message=" jniheaders   --> generates jni headers and registerNatives.cpp in ./jni/"/>
-		<echo message=" jnibodies    --> generates empty jni bodies in ./jni/"/>
-		<echo message=" javadocs     --> generates the API docs"/>
-		<echo message=" jsdocs       --> generatres the JS API docs"/>
-		<echo message=" templatedocs --> generatres the website templates for the online JS API docs"/>
-		<echo message=""/>
-		<echo message=" usage        --> provides help on using the build tool (default)"/>
-		<echo message=""/>
-		<echo message=" See comments inside the build.xml file for more details."/>
-		<echo message="-------------------------------------------------------------"/>
-		<echo message=""/>
-		<echo message=""/>
+	<target name="usage" description="Print usage hints">
+		<echo>
+Scriptographer build instructions
+-------------------------------------------------------------
+
+ available targets are:
+
+ compile      --> compiles the source code to ./classes
+ jar          --> generates the ./lib/scriptographer.jar file
+ buildnumber  --> increases the buildnumber that defines the revision
+ resources    --> generates the resources needed to build the native plugin code
+ packages     --> generates the packages for all distributions
+ jniheaders   --> generates jni headers and registerNatives.cpp in ./jni/
+ jnibodies    --> generates empty jni bodies in ./jni/
+ javadocs     --> generates the API docs
+ jsdocs       --> generatres the JS API docs
+ templatedocs --> generatres the website templates for the online JS API docs
+
+ usage        --> provides help on using the build tool (default)
+
+ See comments inside the build.xml file for more details.
+-------------------------------------------------------------
+		</echo>
 	</target>
 
 
@@ -155,7 +152,7 @@
 	<!-- =================================================================== -->
 	<!-- Creates scriptographer.jar and loader.jar in the lib-directory      -->
 	<!-- =================================================================== -->
-	<target name="jar" depends="compile">
+	<target name="jar" depends="compile" description="Create jar files">
 		<copy todir="${target.classes}/com/scriptographer/cmm">
 			<fileset dir="${src.java}/com/scriptographer/cmm">
 				<include name="**/*.icc" />
@@ -179,7 +176,7 @@
 	<!-- Increases the build.number by one. Execute only before publishing   -->
 	<!-- a new version.                                                      -->
 	<!-- =================================================================== -->
-	<target name="buildnumber" depends="init">
+	<target name="buildnumber" depends="init" description="Increase build number">
 		<propertyfile file="build.number" comment="Build Number for Scriptographer Plugin.">
 			  <entry  key="build.number" type="int" default="000" operation="+" pattern="000" />
 		</propertyfile>
@@ -213,7 +210,8 @@
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar, resources, packages.cleanup">
+	<target name="packages" depends="jar, resources, packages.cleanup"
+			description="Build and make install packages">
 		<mkdir dir="${target.packages}"/>
 
 		<!-- Clean up first, Remove everything except the archives -->
@@ -340,9 +338,9 @@
 	</target>
 
 	<!-- =================================================================== -->
-	<!-- Compiles the source directory                                       -->
+	<!-- Produces header files for native JNI methods                        -->
 	<!-- =================================================================== -->
-	<target name="jniheaders" depends="compile">
+	<target name="jniheaders" depends="compile" description="Make JNI header files">
 		<mkdir dir="${src.jni}"/>
 		<javah destdir="${src.jni}" classpath="${target.classes}">
 			<classpath refid="target.classpath" />
@@ -421,7 +419,7 @@
 			<class name="com.scriptographer.ui.KeyModifiers" />
 		</javah>
 		<echo id="echo" level="info" />
-		<script language="javascript" src="scripts/jni.js">
+		<script language="javascript" src="${src.js}/jni/jni.js">
 		<![CDATA[
 			// create registerNatives.cpp by parsing the generated files by javah, see jni.js:
 			registerNatives(project.getProperty("src.jni"), project.getProperty("src.jni") + "/registerNatives.cpp");
@@ -431,12 +429,13 @@
 
 
 	<!-- =================================================================== -->
-	<!-- Compiles the source directory                                       -->
+	<!-- Produces JNI method bodies and cpp files for native JNI methods     -->
 	<!-- =================================================================== -->
-	<target name="jnibodies" depends="jniheaders">
-		<script language="javascript" src="scripts/jni.js">
+	<target name="jnibodies" depends="jniheaders" description="Make JNI body files">
+		<script language="javascript" src="${src.js}/jni/jni.js">
 		<![CDATA[
-			// create jni bodies by parsing the generated files by javah, see jni.js:
+			// Create JNI bodies by parsing the generated files by javah,
+			// see jni.js:
 			createJniBodies(project.getProperty("src.jni"));
 		]]>
 		</script>
@@ -515,9 +514,9 @@
 	</target>
 
 	<!-- =================================================================== -->
-	<!-- Creates the JS API documentation                                    -->
+	<!-- Creates the JS API Documentation                                    -->
 	<!-- =================================================================== -->
-	<target name="jsdocs" depends="init">
+	<target name="jsdocs" depends="init" description="Produce JS API Documentation">
 		<mkdir dir="${docs.dir.js}/packages"/>
 		<antcall target="rhinodoclet">
 			<param name="templates" value="false"/>
@@ -528,7 +527,7 @@
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation as Templates for the Server        -->
 	<!-- =================================================================== -->
-	<target name="templatedocs" depends="init">
+	<target name="templatedocs" depends="init" description="Produce JS API Server Templates">
 		<antcall target="rhinodoclet">
 			<param name="templates" value="true"/>
 			<param name="destdir" value="${docs.dir.templates}"/>
