@@ -1234,6 +1234,10 @@ ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer, gEngine->mid_ui_Timer_onExecute, (jint) timerId);
+		// Since the onExecute call might have changed the currently visible document,
+		// always try to redraw it here. RedrawDocument() seems cheap and only consumes
+		// time if something actually needs refreshing, so don't bother tracking changes.
+		sAIDocument->RedrawDocument();
 	} EXCEPTION_CATCH_REPORT(env);
 #ifndef WIN_ENV
 	return true;
