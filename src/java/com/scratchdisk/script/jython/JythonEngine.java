@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.python.core.CompileMode;
 import org.python.core.Py;
 import org.python.core.PyCode;
 import org.python.core.PyDictionary;
@@ -72,7 +73,7 @@ public class JythonEngine extends ScriptEngine {
 		try {
 			in = new FileInputStream(file);
 			return new JythonScript(this,
-					(PyCode) Py.compile(in, file.getName(), "exec"), file);
+					(PyCode) Py.compile(in, file.getName(), CompileMode.exec), file);
 		} catch (PyException e) {
 			throw new JythonException(e);
 		} finally {
