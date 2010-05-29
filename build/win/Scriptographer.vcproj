@@ -1115,14 +1115,6 @@
 					</FileConfiguration>
 				</File>
 				<Filter
-					Name="SG"
-					>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_sg_Timer.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="AI"
 					>
 					<File

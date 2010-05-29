@@ -1215,16 +1215,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env
 	} EXCEPTION_CONVERT(env);
 }
 
+/*
+ * The ADM Timers on Windows are rather unreliable. They fire quite slowly during
+ * idle time and speed up as soon as the user moves the mouse around. So use native
+ * timers on Windows instead which have more consistent timing behavior.
+ * On the Mac, the ADM  timers are more accurate and an easy alternative for rolling
+ * our own using idle events.
+ */
+
+#ifdef WIN_ENV
+void CALLBACK Dialog_onTimer(HWND hwnd, UINT uMsg, UINT_PTR timerId, DWORD dwTime) {
+#else // !WIN_ENV
 ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
+#endif // !WIN_ENV
 	// Establish an application context for undoing.
 	AppContext context;
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
-		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Timer_onExecute, (jint) timerId);
+		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer, gEngine->mid_ui_Timer_onExecute, (jint) timerId);
 	} EXCEPTION_CATCH_REPORT(env);
+#ifndef WIN_ENV
 	return true;
+#endif // !WIN_ENV
 }
 
 /*
@@ -1233,10 +1246,14 @@ ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreateTimer(
 		JNIEnv *env, jobject obj, jint period) {
 	try {
+#ifdef WIN_ENV
+		return (jint) SetTimer(NULL, NULL, period, Dialog_onTimer);
+#else // !WIN_ENV
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_CALLBACK_PROC(Dialog_onTimer);
 		return (jint) sADMDialog->CreateTimer(dialog, period, 0,
 				(ADMDialogTimerProc) CALLBACK_PROC(Dialog_onTimer), NULL, 0);
+#endif // !WIN_ENV
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -1247,7 +1264,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreateTimer(
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeAbortTimer(
 		JNIEnv *env, jobject obj, jint handle) {
 	try {
+#ifdef WIN_ENV
+		KillTimer(NULL, (UINT_PTR) handle);
+#else // !WIN_ENV
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		sADMDialog->AbortTimer(dialog, (ADMTimerRef) handle);
+#endif // !WIN_ENV
 	} EXCEPTION_CONVERT(env);
 }
