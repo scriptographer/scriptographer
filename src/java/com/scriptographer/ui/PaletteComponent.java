@@ -77,13 +77,16 @@ public class PaletteComponent implements ChangeReceiver {
 	private Double max;
 	private Double increment;
 	private Integer fractionDigits;
-	private Item item;
 	private TextUnits units;
 	private Boolean steppers;
 
 	// Used for scaling slider values
 	private double factor = 1;
-	
+
+	// Native items / entries
+	private Item item;
+	private ListEntry entry;
+
 	/**
 	 * @jshide
 	 */
@@ -96,6 +99,10 @@ public class PaletteComponent implements ChangeReceiver {
 				// Determine type form options and value
 				if (reader.has("options"))
 					type = PaletteComponentType.LIST;
+				else if (reader.has("onClick"))
+					type = PaletteComponentType.BUTTON;
+				else if (reader.has("onSelect"))
+					type = PaletteComponentType.MENU_ENTRY;
 				else if (defaultValue instanceof Number)
 					type = PaletteComponentType.NUMBER;
 				else if (defaultValue instanceof Boolean)
@@ -104,14 +111,16 @@ public class PaletteComponent implements ChangeReceiver {
 					type = PaletteComponentType.STRING;
 			}
 			if (type != null) {
+				// Set scaling factor for Slider to allow fractional digits
 				if (type == PaletteComponentType.SLIDER)
 					factor = 1000;
 				// Call setMultiline to set default value for length
 				setMultiline(false);
 				// Tell the framework to set the properties from the map
-				// on the object after creating through ArgumentReader.
+				// on the object after creating through ArgumentReader
 				reader.setProperties(this);
-				// Turn on steppers for number components with units by default
+				// Turn on steppers for number components with units by
+				// default
 				if (steppers == null && type == PaletteComponentType.NUMBER
 						&& units != null && units != TextUnits.NONE)
 					setSteppers(true);
@@ -186,7 +195,7 @@ public class PaletteComponent implements ChangeReceiver {
 		// Item:
 		item = null;
 		switch (type) {
-		case NUMBER:
+		case NUMBER: {
 			if (steppers != null && steppers) {
 				item = new SpinEdit(dialog) {
 					protected void onChange() {
@@ -204,8 +213,9 @@ public class PaletteComponent implements ChangeReceiver {
 				textItem.setAllowUnits(true);
 				item = textItem;
 			}
-			break;
-		case STRING:
+		}
+		break;
+		case STRING: {
 			TextOption[] options = multiline != null && multiline
 					? new TextOption[] { TextOption.MULTILINE }
 					: null;
@@ -214,13 +224,15 @@ public class PaletteComponent implements ChangeReceiver {
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
-		case TEXT:
+		}
+		break;
+		case TEXT: {
 			item = new TextPane(dialog);
 			// Space a bit more to the top, to compensate the descender space.
 			item.setMargin(new Border(1, 0, 0, 0));
-			break;
-		case RULER:
+		}
+		break;
+		case RULER: {
 			// If the ruler has a label, add it to the left of it, using an
 			// ItemGroup and a TableLayout. The ItemGroup needs to be created
 			// before the frame, otherwise layouting issues arise...
@@ -235,7 +247,8 @@ public class PaletteComponent implements ChangeReceiver {
 				// then span the label across all three.
 				double[][] sizes = {
 					new double[] { TableLayout.PREFERRED, TableLayout.FILL },
-					new double[] { TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL }
+					new double[] { TableLayout.FILL, TableLayout.PREFERRED,
+							TableLayout.FILL }
 				};
 				group.setLayout(new TableLayout(sizes));
 				group.add(labelItem, "0, 0, 0, 2");
@@ -260,44 +273,50 @@ public class PaletteComponent implements ChangeReceiver {
 			} else {
 				item = frame;
 			}
-			break;
-		case SLIDER:
+		}
+		break;
+		case SLIDER: {
 			item = new Slider(dialog) {
 				protected void onChange() {
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
-		case CHECKBOX:
+		}
+		break;
+		case CHECKBOX: {
 			item = new CheckBox(dialog) {
 				protected void onClick() {
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
-		case LIST:
+		}
+		break;
+		case LIST: {
 			item = new PopupList(dialog, true) {
 				protected void onChange() {
 					selectedIndex = this.getSelectedEntry().getIndex();
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
-		case BUTTON:
+		}
+		break;
+		case BUTTON: {
 			item = new Button(dialog) {
 				protected void onClick() {
 					PaletteComponent.this.onClick();
 				}
 			};
-			break;
-		case COLOR:
+		}
+		break;
+		case COLOR: {
 			item = new ColorButton(dialog) {
 				protected void onClick() {
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
-		case FONT:
+		}
+		break;
+		case FONT: {
 			item = new FontPopupList(dialog, new FontPopupListOption[] {
 					FontPopupListOption.EDITABLE,
 					FontPopupListOption.VERTICAL
@@ -306,7 +325,22 @@ public class PaletteComponent implements ChangeReceiver {
 					PaletteComponent.this.onChange(true);
 				}
 			};
-			break;
+		}
+		break;
+		case MENU_ENTRY: 
+		case MENU_SEPARATOR: {
+			PopupMenu menu = dialog.getPopupMenu();
+			if (menu != null) {
+				entry = new ListEntry(menu) {
+					protected void onSelect() {
+						PaletteComponent.this.onSelect();
+					}
+				};
+				if (type == PaletteComponentType.MENU_SEPARATOR)
+					entry.setSeparator(true);
+			}
+		}
+		break;
 		}
 
 		// Now set all the values again, so the item reflects them:
@@ -452,32 +486,36 @@ public class PaletteComponent implements ChangeReceiver {
 	}
 
 	public void setValue(Object value) {
-		if (item == null) {
+		if (item == null && entry == null) {
 			defaultValue = value;
 		} else {
 			switch (type) {
 			case STRING:
-			case TEXT:
+			case TEXT: {
 				String text = ConversionUtils.toString(value);
 				if (maxLength != null && text != null
 						&& text.length() > maxLength)
 					text = text.substring(0, maxLength);
 				((TextValueItem) item).setText(text);
 				updateSize();
-				break;
-			case BUTTON:
+			}
+			break;
+			case BUTTON: {
 				((Button) item).setText(ConversionUtils.toString(value));
 				updateSize();
-				break;
+			}
+			break;
 			case NUMBER:
-			case SLIDER:
+			case SLIDER: {
 				((ValueItem) item).setValue(
 						(float) (ConversionUtils.toDouble(value) * factor));
-				break;
-			case CHECKBOX:
+			}
+			break;
+			case CHECKBOX: {
 				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
-				break;
-			case LIST:
+			}
+			break;
+			case LIST: {
 				PopupList list = (PopupList) item;
 				ListEntry selected = null;
 				int index = selectedIndex != null ? selectedIndex : 0;
@@ -488,19 +526,26 @@ public class PaletteComponent implements ChangeReceiver {
 				}
 				setSelectedIndex(index, false);
 				// No need to call onChange, as setSelectionIndex already does so.
-				return;
-			case COLOR:
+			}
+			return;
+			case COLOR: {
 				Color color = ScriptEngine.convertToJava(value, Color.class);
 				if (color == null)
 					color = new RGBColor(0, 0, 0);
 				((ColorButton) item).setColor(color);
-				break;
-			case FONT:
+			}
+			break;
+			case FONT: {
 				FontWeight weight = ScriptEngine.convertToJava(value,
 						FontWeight.class);
 				if (weight != null)
 					((FontPopupList) item).setFontWeight(weight);
-				break;
+			}
+			break;
+			case MENU_ENTRY: {
+				entry.setText(ConversionUtils.toString(value));
+			}
+			break;
 			}
 			// Update palette's value object too
 			onChange(false);
@@ -901,18 +946,20 @@ public class PaletteComponent implements ChangeReceiver {
 	}
 
 	protected void onChange(boolean callback) {
-		String name = getName();
-		Object value = getValue();
-		// First call onChange on Palette, so values get updated
-		Dialog dialog = item.getDialog();
-		if (dialog instanceof Palette) {
-			Palette palette = (Palette) dialog;
-			palette.onChange(this, name, value, callback);
+		if (item != null) {
+			String name = getName();
+			Object value = getValue();
+			// First call onChange on Palette, so values get updated
+			Dialog dialog = item.getDialog();
+			if (dialog instanceof Palette) {
+				Palette palette = (Palette) dialog;
+				palette.onChange(this, name, value, callback);
+			}
+			// And now call onChange on the item. values will contain the same
+			// new value now too.
+			if (callback && onChange != null)
+				ScriptographerEngine.invoke(onChange, this, value);
 		}
-		// And now call onChange on the item. values will contain the same
-		// new value now too.
-		if (callback && onChange != null)
-			ScriptographerEngine.invoke(onChange, this, value);
 	}
 
 	private Callable onClick;
@@ -928,6 +975,21 @@ public class PaletteComponent implements ChangeReceiver {
 	protected void onClick() {
 		if (onClick != null)
 			ScriptographerEngine.invoke(onClick, this);
+	}
+
+	private Callable onSelect;
+
+	public Callable getOnSelect() {
+		return onSelect;
+	}
+
+	public void setOnSelect(Callable onSelect) {
+		this.onSelect = onSelect;
+	}
+
+	protected void onSelect() {
+		if (onSelect != null)
+			ScriptographerEngine.invoke(onSelect, this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -976,7 +1038,8 @@ public class PaletteComponent implements ChangeReceiver {
 
 	protected static PaletteComponent[] getComponents(
 			Map<String, Object> components, Map<String, Object> values) {
-		ArrayList<PaletteComponent> promptItems = new ArrayList<PaletteComponent>();
+		ArrayList<PaletteComponent> promptItems =
+				new ArrayList<PaletteComponent>();
 		for (Map.Entry<String, Object> entry : components.entrySet()) {
 			String name = entry.getKey();
 			Object map = entry.getValue();

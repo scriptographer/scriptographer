@@ -47,7 +47,9 @@ public enum PaletteComponentType {
 	BUTTON("button"),
 	SLIDER("slider"),
 	COLOR("color"),
-	FONT("font");
+	FONT("font"),
+	MENU_ENTRY("menu-entry"),
+	MENU_SEPARATOR("menu-separator");
 
 	protected String name;
 
