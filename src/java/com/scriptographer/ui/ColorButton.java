@@ -72,11 +72,13 @@ public class ColorButton extends ImageButton {
 		setColor(color);
 	}
 
-	protected void onClick() {
-		Color color = Dialog.chooseColor(this.color);
-		if(color != null) {
+	protected void onNotify(Notifier notifier) {
+		if (notifier == Notifier.USER_CHANGED) {
+			Color color = Dialog.chooseColor(this.color);
+			if(color == null)
+				return;
 			setColor(color);
-			super.onClick();
 		}
+		super.onNotify(notifier);
 	}
 }

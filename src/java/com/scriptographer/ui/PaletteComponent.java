@@ -284,7 +284,6 @@ public class PaletteComponent implements ChangeReceiver {
 		case BUTTON:
 			item = new Button(dialog) {
 				protected void onClick() {
-					super.onClick();
 					PaletteComponent.this.onClick();
 				}
 			};
