@@ -231,9 +231,16 @@ public abstract class Dialog extends Component {
 				if (maxSize != null)
 					nativeSetMaximumSize(maxSize.width, maxSize.height);
 			}
+			// Call initBounds on all items at the first time the dialog is 
+			// shown. This fixes issues on CS4 and above with wrong item bounds.
 			if (initBounds && !boundsInitialized) {
 				for (Item item : items)
 					item.initBounds();
+				// Also call doLayout() again to be sure, as there are various
+				// situations when the dialog partially appears uninitialized,
+				// e.g. on CS3 upon first loading, and CS4 and above after
+				// reloading.
+				doLayout();
 				boundsInitialized = true;
 			}
 		}
