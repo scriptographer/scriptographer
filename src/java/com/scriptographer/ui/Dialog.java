@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
@@ -361,7 +360,7 @@ public abstract class Dialog extends Component {
 	}
 
 	private class BoundsSetter implements Runnable {
-		private Rectangle bounds;
+		Rectangle bounds;
 
 		BoundsSetter(Rectangle bounds) {
 			this.bounds = bounds;
@@ -375,31 +374,51 @@ public abstract class Dialog extends Component {
 			}
 		}
 	}
-	
-	private IntMap<Runnable> runnables = new IntMap<Runnable>();
 
-	private native int nativeInvokeLater();
+	private class RunnableTimer extends Timer {
+		Runnable runnable;
 
-	public boolean invokeLater(Runnable runnable) {
-		int timerId = nativeInvokeLater();
-		if (timerId != 0) {
-			runnables.put(timerId, runnable);
-			return true;
+		RunnableTimer(Runnable runnable) {
+			super(Dialog.this, 0, false);
+			this.runnable = runnable; 
 		}
-		return false;
+
+		protected void onExecute() {
+			runnable.run();
+		}
+	}
+
+	protected native int nativeCreateTimer(int period);
+	protected native void nativeAbortTimer(int handle);
+
+	/**
+	 * @jshide
+	 */
+	public Timer createTimer(int period, boolean periodic) {
+		return new Timer(this, period, periodic);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Timer createTimer(int period) {
+		return new Timer(this, period);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean invokeLater(Runnable runnable) {
+		try {
+			new RunnableTimer(runnable);
+			return true;
+		} catch (Throwable e) {
+			return false;
+		}
 	}
 
 	public boolean invokeLater(Callable function) {
 		return invokeLater(new RunnableCallable(function, this));
-	}
-	
-	/**
-	 * Called from the timer on the native side to execute the registered runnable.
-	 */
-	protected void onInvokeLater(int timerId) {
-		Runnable runnable = runnables.get(timerId);
-		if (runnable != null)
-			runnable.run();
 	}
 
 	/*

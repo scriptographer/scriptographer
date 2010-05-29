@@ -66,6 +66,7 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 }
 
 ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) {
+	AppContext context;
 	// Clear timer
 	sADMDialog->AbortTimer(dialog, timerID);
 	// Call onNotify with NOTIFIER_INITIALIZE
@@ -79,6 +80,7 @@ ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) 
 
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 	if (gEngine != NULL) {
+		AppContext context;
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			jobject obj = gEngine->getDialogObject(dialog);
@@ -93,6 +95,7 @@ void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
 	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
+		AppContext context;
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			ADMDialogRef dialog = sADMItem->GetDialog(item);
@@ -106,12 +109,15 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 
 void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier) {
 	sADMDialog->DefaultNotify(dialog, notifier);
-	jobject obj = gEngine->getDialogObject(dialog);
-	if (gEngine != NULL)
+	if (gEngine != NULL) {
+		AppContext context;
+		jobject obj = gEngine->getDialogObject(dialog);
 		gEngine->callOnNotify(obj, notifier);
+	}
 }
 
 ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
+	AppContext context;
 	jobject obj = gEngine->getDialogObject(dialog);
 	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
 	if (ret)
@@ -120,6 +126,7 @@ ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
 }
 
 void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
+	AppContext context;
 	jobject obj = gEngine->getDialogObject(dialog);
 	ASBoolean ret = gEngine->callOnDraw(obj, drawer);
 	if (ret)
@@ -1208,28 +1215,39 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env
 	} EXCEPTION_CONVERT(env);
 }
 
-ADMBoolean ADMAPI Dialog_onInvokeLater(ADMDialogRef dialog, ADMTimerRef timerId) {
-	// Clear timer
-	sADMDialog->AbortTimer(dialog, timerId);
+ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
+	// Establish an application context for undoing.
+	AppContext context;
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Dialog_onInvokeLater, (jint) timerId);
+		gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Timer_onExecute, (jint) timerId);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }
 
 /*
- * int nativeInvokeLater()
+ * int nativeCreateTimer(int period)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeInvokeLater(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreateTimer(
+		JNIEnv *env, jobject obj, jint period) {
 	try {
-		// Execute a one-shot timer right after
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		DEFINE_CALLBACK_PROC(Dialog_onInvokeLater);
-		ADMTimerRef timerId = sADMDialog->CreateTimer(dialog, 0, 0, (ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInvokeLater), NULL, 0);
-		return (jint) timerId;
+		DEFINE_CALLBACK_PROC(Dialog_onTimer);
+		return (jint) sADMDialog->CreateTimer(dialog, period, 0,
+				(ADMDialogTimerProc) CALLBACK_PROC(Dialog_onTimer), NULL, 0);
 	} EXCEPTION_CONVERT(env);
 	return 0;
+}
+
+/*
+ * void nativeAbortTimer(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeAbortTimer(
+		JNIEnv *env, jobject obj, jint handle) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		sADMDialog->AbortTimer(dialog, (ADMTimerRef) handle);
+	} EXCEPTION_CONVERT(env);
 }

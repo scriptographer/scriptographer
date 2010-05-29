@@ -30,6 +30,7 @@
 #include "stdHeaders.h"
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
+#include "AppContext.h"
 #include "uiGlobals.h"
 #include "com_scriptographer_ui_Item.h"
 #include "com_scriptographer_ui_Notifier.h"
@@ -44,6 +45,7 @@
  */
 
 ASErr ASAPI Item_onInit(ADMItemRef item) {
+	AppContext context;
 	// Attach the item-level callbacks
 	DEFINE_CALLBACK_PROC(Item_onDestroy);
 	sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
@@ -62,6 +64,7 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 
 void ASAPI Item_onDestroy(ADMItemRef item) {
 	if (gEngine != NULL) {
+		AppContext context;
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			jobject obj = gEngine->getItemObject(item);
@@ -91,11 +94,15 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 
 void ASAPI Item_onNotify(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
-	jobject obj = gEngine->getItemObject(item);
-	gEngine->callOnNotify(obj, notifier);
+	if (gEngine != NULL) {
+		AppContext context;
+		jobject obj = gEngine->getItemObject(item);
+		gEngine->callOnNotify(obj, notifier);
+	}
 }
 
 ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker) {
+	AppContext context;
 	jobject obj = gEngine->getItemObject(item);
 	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
 	if (ret)
@@ -104,6 +111,7 @@ ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker) {
 }
 
 void ASAPI Item_onDraw(ADMItemRef item, ADMDrawerRef drawer) {
+	AppContext context;
 	jobject obj = gEngine->getItemObject(item);
 	ASBoolean ret = gEngine->callOnDraw(obj, drawer);
 	if (ret)

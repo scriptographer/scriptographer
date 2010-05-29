@@ -298,10 +298,6 @@ public:
 
 	jclass cls_ai_LiveEffectParameters;
 	jmethodID mid_ai_LiveEffectParameters_wrapHandle;
-
-	jclass cls_sg_Timer;
-	jmethodID cid_sg_Timer;
-	jmethodID mid_sg_Timer_onExecute;
 	
 	jclass cls_ai_Annotator;
 	jmethodID cid_ai_Annotator;
@@ -340,7 +336,6 @@ public:
 
 	jclass cls_ui_Dialog;
 	jmethodID mid_ui_Dialog_onSizeChanged;
-	jmethodID mid_ui_Dialog_onInvokeLater;
 
 	jclass cls_ui_PopupDialog;
 
@@ -372,16 +367,19 @@ public:
 	jfieldID fid_ui_NotificationHandler_drawer;
 	jmethodID mid_ui_NotificationHandler_onNotify;
 	jmethodID mid_ui_NotificationHandler_onDraw;
-		
+
 	jclass cls_ui_Tracker;
 	jmethodID mid_ui_Tracker_onTrack;
-	
+
 	jclass cls_ui_MenuItem;
 	jmethodID mid_ui_MenuItem_wrapHandle;
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
-	
+
 	jclass cls_ui_MenuGroup;
+
+	jclass cls_ui_Timer;
+	jmethodID mid_ui_Timer_onExecute;
 
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	jclass cls_ui_TextEditItem;
@@ -627,9 +625,6 @@ public:
 	// AI MenuItem
 	ASErr MenuItem_onSelect(AIMenuMessage *message);
 	ASErr MenuItem_onUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
-
-	// AI Timer
-	ASErr Timer_onExecute(AITimerMessage *message);
 
 	// AI Annotator
 	ASErr Annotator_onDraw(AIAnnotatorMessage *message);

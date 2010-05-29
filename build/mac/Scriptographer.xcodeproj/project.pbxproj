@@ -176,10 +176,6 @@
 		915A26B60EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
 		915A26B70EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
 		915C032D0A435D0E0027685A /* Info.plist in Copy CFM Bundle Resources */ = {isa = PBXBuildFile; fileRef = 919823D40A37257700D57E4C /* Info.plist */; };
-		918052D10ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */; };
-		918052D20ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */; };
-		918052D30ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */; };
-		918052D40ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */; };
 		918052EA0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
 		918052EB0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
 		918052EC0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
@@ -368,7 +364,6 @@
 		91C8B8BB1049C0D3002882FE /* com_scriptographer_ai_FileFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */; };
 		91C8B8BC1049C0D3002882FE /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
 		91C8B8C11049C0D3002882FE /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
-		91C8B8C21049C0D3002882FE /* com_scriptographer_sg_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */; };
 		91C8B8C31049C0D3002882FE /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
 		91C8B8C41049C0D3002882FE /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
 		91C8B8C51049C0D3002882FE /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
@@ -455,7 +450,6 @@
 		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/native/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
 		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
 		916FC6FD0A264F2800BF8DE4 /* jniMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = jniMacros.h; sourceTree = "<group>"; };
-		918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_sg_Timer.cpp; path = ../../src/native/jni/com_scriptographer_sg_Timer.cpp; sourceTree = SOURCE_ROOT; };
 		918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_PlacedSymbol.cpp; path = jni/com_scriptographer_ai_PlacedSymbol.cpp; sourceTree = "<group>"; };
 		918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Button.cpp; path = jni/com_scriptographer_ui_Button.cpp; sourceTree = "<group>"; };
 		918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Dialog.cpp; path = jni/com_scriptographer_ui_Dialog.cpp; sourceTree = "<group>"; };
@@ -660,15 +654,6 @@
 			name = CS3;
 			sourceTree = "<group>";
 		};
-		918052CF0ED0FF4F007CD826 /* SG */ = {
-			isa = PBXGroup;
-			children = (
-				918052D00ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp */,
-			);
-			name = SG;
-			path = ../../build/mac;
-			sourceTree = "<group>";
-		};
 		9185E5290E7FC19B000BD8BA /* CS4 */ = {
 			isa = PBXGroup;
 			children = (
@@ -852,7 +837,6 @@
 			children = (
 				91EF0B4E0A20A4B900F0EF9A /* AI */,
 				91EF0B520A20A4CB00F0EF9A /* UI */,
-				918052CF0ED0FF4F007CD826 /* SG */,
 				91EF09BF0A20A2CD00F0EF9A /* uiGlobals.h */,
 				91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */,
 				91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */,
@@ -1124,7 +1108,6 @@
 				910C76A70DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B60EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
-				918052D30ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */,
 				918052EC0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
 				918053390ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
 				9180533A0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
@@ -1205,7 +1188,6 @@
 				910C76A80DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B70EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
-				918052D40ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */,
 				918052ED0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
 				9180534E0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
 				9180534F0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
@@ -1287,7 +1269,6 @@
 				910C76A60DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B50EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
-				918052D20ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */,
 				918052EB0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
 				918053240ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
 				918053250ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
@@ -1369,7 +1350,6 @@
 				9185E5330E7FC238000BD8BA /* IAIFilePath.cpp in Sources */,
 				9185E5340E7FC238000BD8BA /* IAIUnicodeString.cpp in Sources */,
 				915A26B40EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
-				918052D10ED0FF87007CD826 /* com_scriptographer_sg_Timer.cpp in Sources */,
 				918052EA0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
 				9180530F0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
 				918053100ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
@@ -1447,7 +1427,6 @@
 				91C8B8BB1049C0D3002882FE /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				91C8B8BC1049C0D3002882FE /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				91C8B8C11049C0D3002882FE /* com_scriptographer_ai_TextItem.cpp in Sources */,
-				91C8B8C21049C0D3002882FE /* com_scriptographer_sg_Timer.cpp in Sources */,
 				91C8B8C31049C0D3002882FE /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
 				91C8B8C41049C0D3002882FE /* com_scriptographer_ui_Button.cpp in Sources */,
 				91C8B8C51049C0D3002882FE /* com_scriptographer_ui_Dialog.cpp in Sources */,

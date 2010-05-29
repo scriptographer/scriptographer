@@ -56,11 +56,11 @@ import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.sg.Script;
-import com.scriptographer.sg.Timer;
 import com.scriptographer.ui.Dialog;
 import com.scriptographer.ui.KeyCode;
 import com.scriptographer.ui.KeyEvent;
 import com.scriptographer.ui.MenuItem;
+import com.scriptographer.ui.Timer;
 
 /**
  * @author lehni
@@ -390,7 +390,7 @@ public class ScriptographerEngine {
 		}
 		if (file != null) {
 			Dialog.destroyAll(false, false);
-			Timer.disposeAll(false, false);
+			Timer.abortAll(false, false);
 			// Put a script object in the scope to offer the user
 			// access to information about it.
 			if (script == null) {
@@ -607,7 +607,7 @@ public class ScriptographerEngine {
 	}
 
 	public static void stopAll(boolean ignoreKeepAlive, boolean force) {
-		Timer.disposeAll(ignoreKeepAlive, force);
+		Timer.abortAll(ignoreKeepAlive, force);
 		callCallbacks("onStop");
 		Dialog.destroyAll(ignoreKeepAlive, force);
 		removeCallbacks(ignoreKeepAlive);
@@ -616,8 +616,7 @@ public class ScriptographerEngine {
 	/**
 	 * To be called from the native environment.
 	 */
-	@SuppressWarnings("unused")
-	private static void onHandleEvent(int type) {
+	public static void onHandleEvent(int type) {
 		// TODO: There is currently no way to use these callbacks in a Java-only
 		// use of the API. Find one?
 		callCallbacks(callbackNames[type]);

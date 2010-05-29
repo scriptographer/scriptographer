@@ -30,6 +30,7 @@
 #include "stdHeaders.h"
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
+#include "AppContext.h"
 #include "resourceIds.h"
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ui_KeyModifiers.h"
@@ -793,11 +794,6 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			error = gEngine->LiveEffect_onInterpolate((AILiveEffectInterpParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInputType)) {
 			error = gEngine->LiveEffect_onGetInputType((AILiveEffectInputTypeMessage *) message);
-		}
-
-	} else if (sSPBasic->IsEqual(caller, kCallerAITimer)) {
-		if (sSPBasic->IsEqual(selector, kSelectorAIGoTimer)) {
-			error = gEngine->Timer_onExecute((AITimerMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {

@@ -634,10 +634,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_LiveEffectParameters = loadClass(env, "com/scriptographer/ai/LiveEffectParameters");
 	mid_ai_LiveEffectParameters_wrapHandle = getStaticMethodID(env, cls_ai_LiveEffectParameters, "wrapHandle", "(II)Lcom/scriptographer/ai/LiveEffectParameters;");
 
-	cls_sg_Timer = loadClass(env, "com/scriptographer/sg/Timer");
-	cid_sg_Timer = getConstructorID(env, cls_sg_Timer, "(I)V");
-	mid_sg_Timer_onExecute = getStaticMethodID(env, cls_sg_Timer, "onExecute", "(I)V");
-
 	cls_ai_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
 	cid_ai_Annotator = getConstructorID(env, cls_ai_Annotator, "(I)V");
 	mid_ai_Annotator_onDraw = getStaticMethodID(env, cls_ai_Annotator, "onDraw", "(IIII)V");
@@ -675,7 +671,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ui_Dialog = loadClass(env, "com/scriptographer/ui/Dialog");
 	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(IIZ)V");
-	mid_ui_Dialog_onInvokeLater = getMethodID(env, cls_ui_Dialog, "onInvokeLater", "(I)V");
 
 	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
 
@@ -707,16 +702,19 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ui_NotificationHandler_drawer = getFieldID(env, cls_ui_NotificationHandler, "drawer", "Lcom/scriptographer/ui/Drawer;");
 	mid_ui_NotificationHandler_onNotify = getMethodID(env, cls_ui_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
 	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/ui/Drawer;)Z");
-	
+
 	cls_ui_Tracker = loadClass(env, "com/scriptographer/ui/Tracker");
 	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/ui/NotificationHandler;IIIIIIICJ)Z");
-	
+
 	cls_ui_MenuItem = loadClass(env, "com/scriptographer/ui/MenuItem");
 	mid_ui_MenuItem_wrapHandle = getStaticMethodID(env, cls_ui_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ui/MenuItem;");
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
-	
+
 	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
+
+	cls_ui_Timer = loadClass(env, "com/scriptographer/ui/Timer");
+	mid_ui_Timer_onExecute = getStaticMethodID(env, cls_ui_Timer, "onExecute", "(I)V");
 
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");
@@ -2050,21 +2048,6 @@ ASErr ScriptographerEngine::MenuItem_onUpdate(AIMenuMessage *message, long inArt
 	try {
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onUpdate,
 				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-/**
- * AI Timer
- *
- */
-
-ASErr ScriptographerEngine::Timer_onExecute(AITimerMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_sg_Timer, mid_sg_Timer_onExecute,
-				(jint) message->timer);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

@@ -64,7 +64,7 @@ abstract class NativeObject {
 	/**
 	 * @jshide
 	 */
-	public String getId() {
+	public Object getId() {
 		return "@" + Integer.toHexString(hashCode());
 	}
 

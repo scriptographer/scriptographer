@@ -95,7 +95,6 @@ import com.scriptographer.ai.ToolEventHandler;
 import com.scriptographer.ai.Tracing;
 import com.scriptographer.sg.Application;
 import com.scriptographer.sg.Scriptographer;
-import com.scriptographer.sg.Timer;
 import com.scriptographer.ui.Border;
 import com.scriptographer.ui.Button;
 import com.scriptographer.ui.ChasingArrows;
@@ -239,10 +238,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextEdit.class,
 		TextValueItem.class,
 		ToggleItem.class,
-		Tracker.class,
-
-		// SG
-		Timer.class
+		Tracker.class
 	};
 
 	public TopLevel(Context context) {

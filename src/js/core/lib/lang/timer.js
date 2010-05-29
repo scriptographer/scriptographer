@@ -1,11 +1,10 @@
 new function() {
 	var timers = {}, current = 1;
 	function createTimer(func, delay, periodic) {
-		var id = current++;
-		var timer = timers[id] = new Timer(delay || 0, periodic);
+		var timer = mainDialog.createTimer(delay || 0, periodic);
+		timers[timer.id] = timer;
 		timer.onExecute = typeof func == 'string' ? new Function(func) : func;
-		timer.start();
-		return id;
+		return timer.id;
 	}
 
 	global.setTimeout = function(func, delay) {
@@ -19,7 +18,7 @@ new function() {
 	global.clearTimeout = global.clearInterval = function(id) {
 		var timer = timers[id];
 		if (timer) {
-			timer.dispose();
+			timer.abort();
 			delete timers[id];
 		}
 	}
@@ -30,28 +29,25 @@ new function() {
 }
 
 Function.inject(new function() {
-	function timer(that, periodic, delay, bind, args) {
-		if (delay === undefined)
-			return that.apply(bind, args ? args : []);
-		var fn = that.wrap(bind, args);
-		var timer = new Timer(delay, periodic);
-		fn.clear = function() {
-			timer.dispose();
+
+	function timer(periodic) {
+		return function(delay, bind, args) {
+			var func = this.wrap(bind, args);
+			if (delay === undefined)
+				return func();
+			var timer = mainDialog.createTimer(delay, periodic);
+			timer.onExecute = func;
+			func.clear = function() {
+				timer.dispose();
+			};
+			return func;
 		};
-		timer.onExecute = fn;
-		timer.start();
-		return fn;
 	}
 
 	return {
 		generics: true,
 
-		delay: function(delay, bind, args) {
-			return timer(this, false, delay, bind, args);
-		},
-
-		periodic: function(delay, bind, args) {
-			return timer(this, true, delay, bind, args);
-		}
+		delay: timer(false),
+		periodic: timer(true)
 	}
 });

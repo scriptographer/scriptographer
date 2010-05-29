@@ -115,7 +115,7 @@ abstract class NativeObject implements ValidationObject {
 	/**
 	 * @jshide
 	 */
-	public String getId() {
+	public Object getId() {
 		return "@" + Integer.toHexString(hashCode());
 	}
 
