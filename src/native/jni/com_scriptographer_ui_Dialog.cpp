@@ -1332,6 +1332,7 @@ ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
 #endif // !WIN_ENV
 	// Establish an application context for undoing.
 	AppContext context;
+	sAIUndo->SetKind(kAIAppendUndoContext);
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
