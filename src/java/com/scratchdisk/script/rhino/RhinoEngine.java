@@ -215,9 +215,11 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			Context cx = Context.getCurrentContext();
 			PropertyDescriptor desc = obj.getOwnPropertyDescriptor(cx, key);
 			if (desc != null && desc.isDataDescriptor()) {
+				ObserverGetterSetter getterSetter =
+						new ObserverGetterSetter(obj, key, desc, observer);
 				obj.defineOwnProperty(cx, key, new PropertyDescriptor(
-						new ObserverGetter(desc),
-						new ObserverSetter(obj, key, desc, observer),
+						getterSetter,
+						getterSetter,
 						desc.isEnumerable(),
 						desc.isConfigurable(),
 						true));
@@ -227,28 +229,18 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return false;
 	}
 
-	private static class ObserverGetter extends BaseFunction {
-
-		private PropertyDescriptor descriptor;
-
-		ObserverGetter(PropertyDescriptor descriptor) {
-			this.descriptor = descriptor;
-		}
-
-		public Object call(Context cx, Scriptable scope, Scriptable thisObj,
-				Object[] args) {
-			return descriptor.getValue();
-		}
-	}
-
-	private static class ObserverSetter extends BaseFunction {
+	/*
+	 * Use one function as both getter and setter and look at the argument count
+	 * to decide which one of the two is required.
+	 */
+	private static class ObserverGetterSetter extends BaseFunction {
 
 		private ScriptableObject object;
 		private Object id;
 		private PropertyDescriptor descriptor;
 		private PropertyObserver observer;
 
-		ObserverSetter(ScriptableObject object, Object id,
+		ObserverGetterSetter(ScriptableObject object, Object id,
 				PropertyDescriptor descriptor, PropertyObserver observer) {
 			this.object = object;
 			this.id = id;
@@ -258,10 +250,14 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 
 		public Object call(Context cx, Scriptable scope, Scriptable thisObj,
 				Object[] args) {
-			Object value = args[0];
-			descriptor.setValue(value);
-			observer.onChangeProperty(object, id, value);
-			return Undefined.instance;
+			if (args.length == 1) {
+				Object value = args[0];
+				descriptor.setValue(value);
+				observer.onChangeProperty(object, id, value);
+				return Undefined.instance;
+			} else {
+				return descriptor.getValue();
+			}
 		}
 	}
 }
