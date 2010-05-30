@@ -122,10 +122,13 @@ public class Timer extends NativeObject {
 	private static void onExecute(int handle) {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
-			// Simulate one shot timers:
-			if (!timer.periodic)
-				timer.abort();
-			timer.onExecute();
+			try {
+				timer.onExecute();
+			} finally {
+				// Simulate one shot timers by aborting:
+				if (!timer.periodic)
+					timer.abort();
+			}
 		}
 	}
 

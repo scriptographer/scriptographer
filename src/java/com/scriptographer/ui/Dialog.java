@@ -137,6 +137,8 @@ public abstract class Dialog extends Component {
 	private static HashMap<String, Dialog> dialogsByName =
 			new HashMap<String, Dialog>();
 
+	private ArrayList<Timer> timers = new ArrayList<Timer>();
+
 	protected Dialog(int style, EnumSet<DialogOption> options) {
 		script = ScriptographerEngine.getCurrentScript();
 		preferences = ScriptographerEngine.getPreferences(script);
@@ -188,12 +190,11 @@ public abstract class Dialog extends Component {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
-			boolean show = false;
 			if (unitialized) {
 				unitialized = false;
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not natively executed yet. handle this here
-				show = !options.contains(DialogOption.HIDDEN) || visible;
+				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
 				boolean prefsLoaded = false;
 				if (options.contains(DialogOption.REMEMBER_PLACING)) {
 					prefsLoaded = loadPreferences(title);
@@ -225,6 +226,8 @@ public abstract class Dialog extends Component {
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
+				if (show)
+					setVisible(true);
 			}
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac
@@ -235,8 +238,6 @@ public abstract class Dialog extends Component {
 				if (maxSize != null)
 					nativeSetMaximumSize(maxSize.width, maxSize.height);
 			}
-			if (show)
-				setVisible(true);
 		}
 	}
 	
@@ -254,6 +255,10 @@ public abstract class Dialog extends Component {
 				}
 			});
 		} else {
+			// Abort timers that belong to this Window as we will not be able
+			// to do so after it is destroyed.
+			for (Timer timer : timers)
+				timer.abort();
 //			setActive(false);
 //			setVisible(false);
 			nativeDestroy(handle);
@@ -396,14 +401,16 @@ public abstract class Dialog extends Component {
 	 * @jshide
 	 */
 	public Timer createTimer(int period, boolean periodic) {
-		return new Timer(this, period, periodic);
+		Timer timer = new Timer(this, period, periodic);
+		timers.add(timer);
+		return timer;
 	}
 
 	/**
 	 * @jshide
 	 */
 	public Timer createTimer(int period) {
-		return new Timer(this, period);
+		return createTimer(period, true);
 	}
 
 	/**

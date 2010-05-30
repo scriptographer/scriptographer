@@ -121,19 +121,13 @@ public class ModalDialog extends Dialog {
 		// onDeactivate know about this, and filter out the event.
 		if (!modal) {
 			fixModal = true;
-			// Deactivate the invisible modal dialog right after it was
-			// accidentally activated by a Illustrator CS3 bug. Immediately
-			// deactivating it does not work.
-			invokeLater(new Runnable() {
-				public void run() {
-					if (!isVisible())
-						setActive(false);
-				}
-			});
+			fixModal();
 		} else {
 			super.onActivate();
 		}
 	}
+
+	private native void fixModal();
 
 	protected void onDeactivate() {
 		if (fixModal) {
