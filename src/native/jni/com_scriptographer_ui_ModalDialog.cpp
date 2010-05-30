@@ -40,7 +40,9 @@
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ModalDialog_nativeDoModal(JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		sADMDialog->Show(dialog, true);
 		int id = env->IsInstanceOf(obj, gEngine->cls_ui_PopupDialog) ? sADMDialog->DisplayAsPopupModal(dialog) : sADMDialog->DisplayAsModal(dialog);
+		sADMDialog->Show(dialog, false);
 		ADMItemRef item = sADMDialog->GetItem(dialog, id);
 		if (item != NULL)
 			return gEngine->getItemObject(item);
@@ -60,26 +62,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_ModalDialog_endModal(JNIEnv *e
 }
 
 /*
- *
- */
-ADMBoolean ADMAPI ModalDialog_fixModal(ADMDialogRef dialog, ADMTimerRef timerID) {
-	// Clear timer
-	sADMDialog->AbortTimer(dialog, timerID);
-	if (!sADMDialog->IsVisible(dialog))
-		sADMDialog->Activate(dialog, false);
-	return true;
-}
-
-/*
  * void fixModal()
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_ModalDialog_fixModal(JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		// Execute a one-shot timer that deactivates a invisible modal dialog
-		// right after it was accidentaly activated by a Illustrator CS3 bug.
-		// Immediately deactivating it does not work.
-		DEFINE_CALLBACK_PROC(ModalDialog_fixModal);
-		sADMDialog->CreateTimer(dialog, 0, 0, (ADMDialogTimerProc) CALLBACK_PROC(ModalDialog_fixModal), NULL, 0);
+		WindowRef admWindow = sADMDialog->GetWindowRef(dialog);
+//		BeginAppModalStateForWindow(admWindow);
+		EndAppModalStateForWindow(admWindow);
 	} EXCEPTION_CONVERT(env);
 }

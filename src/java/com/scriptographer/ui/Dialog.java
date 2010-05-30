@@ -70,6 +70,11 @@ public abstract class Dialog extends Component {
 		STYLE_NOTITLE_DOCK_FLOATING = 13, // TODO: wrap this?
 		STYLE_TABBED_HIERARCHY_FLOATING = 14,
 		STYLE_TABBED_RESIZING_HIERARCHY_FLOATING = 15,
+		STYLE_RESIZING_POPUP_PALETTE = 16,
+		STYLE_POPUP_PALETTE = 17,
+		STYLE_HIERARCHY_POPUP_PALETTE = 18,
+		STYLE_RESIZING_HIERARCH_POPUP_PALETTE = 19,
+		STYLE_MODAL_NO_ACTIVATE = 20,
 		STYLE_HOST_DEFINED = 65536;
 
 	// 
@@ -111,9 +116,9 @@ public abstract class Dialog extends Component {
 	 * change event in this case, still the old dimensions are returned (!)
 	 */
 	private boolean ignoreSizeChange = false;
-	// Use two boolean values to monitor the initialized state,
-	// to make the distinction between completely initialized (initialized ==
-	// true) and somewhere during the call of initialize() (uninitialized == false)
+	// Use two boolean values to monitor the initialized state, to make the
+	// distinction between completely initialized (initialized == true) and
+	// somewhere during the call of initialize() (uninitialized == false)
 	private boolean unitialized = true;
 	private boolean initialized = false;
 	// Used to see whether the size where specified before the dialog is
@@ -129,7 +134,8 @@ public abstract class Dialog extends Component {
 	private Script script = null;
 
 	private static ArrayList<Dialog> dialogs = new ArrayList<Dialog>();
-	private static HashMap<String, Dialog> dialogsByName = new HashMap<String, Dialog>();
+	private static HashMap<String, Dialog> dialogsByName =
+			new HashMap<String, Dialog>();
 
 	protected Dialog(int style, EnumSet<DialogOption> options) {
 		script = ScriptographerEngine.getCurrentScript();
@@ -145,11 +151,6 @@ public abstract class Dialog extends Component {
 		isResizing = style == STYLE_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
-
-		/*
-		minSize = nativeGetMinimumSize();
-		maxSize = nativeGetMaximumSize();
-		*/
 
 		this.options = options != null ? options.clone()
 				: EnumSet.noneOf(DialogOption.class);
@@ -183,7 +184,7 @@ public abstract class Dialog extends Component {
 	 * We fake this through onActivate and a native dialog timer.
 	 * Whatever fires first, triggers initialize
 	 */
-	private void initialize(boolean setBoundaries) {
+	protected void initialize(boolean setBoundaries) {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
@@ -226,8 +227,8 @@ public abstract class Dialog extends Component {
 				onInitialize();
 			}
 			// setBoundaries is set to false when calling from initializeAll,
-			// because it would be too early to set it there. At least on Mac CS3
-			// this causes problems
+			// because it would be too early to set it there. At least on Mac
+			// CS3 this causes problems
 			if (setBoundaries && isResizing) {
 				if (minSize != null)
 					nativeSetMinimumSize(minSize.width, minSize.height);
@@ -245,14 +246,16 @@ public abstract class Dialog extends Component {
 
 	public void destroy() {
 		if (isNotifying) {
-			// If we're in a notification, invoke destroy later to fix
-			// a bug on Windows PC and possible future bugs on Mac.
+			// If we're in a notification, invoke destroy later to fix  a bug
+			// on Windows PC and possible future bugs on Mac.
 			invokeLater(new Runnable() {
 				public void run() {
 					Dialog.this.destroy();
 				}
 			});
 		} else {
+//			setActive(false);
+//			setVisible(false);
 			nativeDestroy(handle);
 			dialogs.remove(this);
 			dialogsByName.remove(name);
@@ -330,8 +333,8 @@ public abstract class Dialog extends Component {
 							Integer.parseInt(parts[2]),
 							Integer.parseInt(parts[3]));
 				} else {
-					// Pick a default location in case it has never come up before
-					// on this machine
+					// Pick a default location in case it has never come up
+					// before on this machine
 					Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
 					bounds = getBounds();
 					bounds.setPoint(defaultBounds.x, defaultBounds.y);
@@ -344,8 +347,8 @@ public abstract class Dialog extends Component {
 				// Now set the bounds
 				BoundsSetter setter = new BoundsSetter(bounds);
 				setter.run();
-				// Sometimes we need to set bounds again afterwards, as OWL seems
-				// to interfere here...
+				// Sometimes we need to set bounds again afterwards, as OWL
+				// seems to interfere here...
 				// This leads to annoying jumping around of the dialog.
 				// TODO: See if this can be fixed somehow?
 				invokeLater(setter);
@@ -633,7 +636,8 @@ public abstract class Dialog extends Component {
 				onDestroy();
 				break;
 			case WINDOW_ACTIVATE:
-				// See comment for initialize to understand why this is fired here too
+				// See comment for initialize to understand why this is fired
+				// here too
 				initialize(true);
 				active = true;
 				onActivate();
@@ -652,7 +656,8 @@ public abstract class Dialog extends Component {
 					// Workaround for missing onClose on CS3. This bug was 
 					// reported to Adobe too late, hopefully it will be back
 					// again in CS4...
-					// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the other two).
+					// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the
+					// other two).
 					long code = this.getGroupInfo().positionCode;
 					if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
 						(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0 ||
@@ -740,7 +745,8 @@ public abstract class Dialog extends Component {
 	public native void makeOverlay(int handle);
 
 	/**
-	 * Dumps the Mac control hierarchy to the given file. For debug purposes only.
+	 * Dumps the Mac control hierarchy to the given file. For debug purposes
+	 * only.
 	 * 
 	 * @jshide
 	 */
@@ -802,7 +808,7 @@ public abstract class Dialog extends Component {
 		return visible;
 	}
 
-	protected native void nativeSetVisible(boolean visible);
+	private native void nativeSetVisible(boolean visible);
 
 	public void setVisible(boolean visible) {
 		// Do not set visibility natively before the dialog was properly
@@ -845,7 +851,8 @@ public abstract class Dialog extends Component {
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
 	public Rectangle getBounds() {
-		// As kADMWindowDragMovedNotifier does not seem to work, fetch bounds natively.
+		// As kADMWindowDragMovedNotifier does not seem to work, fetch bounds
+		// natively.
 		return nativeGetBounds();
 	}
 
@@ -891,7 +898,8 @@ public abstract class Dialog extends Component {
 	protected void updateSize(int deltaX, int deltaY) {
 		if (deltaX != 0 || deltaY != 0) {
 			size.set(size.width + deltaX, size.height + deltaY);
-			// If a container was created, the layout needs to be recalculated now:
+			// If a container was created, the layout needs to be recalculated
+			// now:
 			if (container != null)
 				container.updateSize(size);
 			// Call onResize
@@ -1002,7 +1010,7 @@ public abstract class Dialog extends Component {
 			// Append script path to name
 			setName(script != null
 					? StringUtils.join(ScriptographerEngine.getScriptPath(
-							script.getFile(), false), "/") + "/" + title
+							script.getFile(), false), "_") + "_" + title
 					: title);
 		}
 	}
@@ -1224,11 +1232,13 @@ public abstract class Dialog extends Component {
 		return ConfirmDialog.confirm(title, message);
 	}
 
-	public static Map<String, Object> prompt(String title, Map<String, Map> items, Map<String, Object> values) {
+	public static Map<String, Object> prompt(String title,
+			Map<String, Map> items, Map<String, Object> values) {
 		return PromptDialog.prompt(title, items, values);
 	}
 
-	public static Map<String, Object> prompt(String title, Map<String, Map> items) {
+	public static Map<String, Object> prompt(String title,
+			Map<String, Map> items) {
 		return PromptDialog.prompt(title, items);
 	}
 
@@ -1299,7 +1309,8 @@ public abstract class Dialog extends Component {
 		return fileOpen(null, null, null);
 	}
 
-	public static File fileSave(String message, String[] filters, File selectedFile) {
+	public static File fileSave(String message, String[] filters,
+			File selectedFile) {
 		return fileDialog(message, filters, selectedFile, false);
 	}
 

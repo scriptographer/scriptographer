@@ -61,8 +61,10 @@ public class ModalDialog extends Dialog {
 		this((EnumSet<DialogOption>) null);
 	}
 
-	private static EnumSet<DialogOption> getOptions(EnumSet<DialogOption> options) {
-		options = options != null ? options.clone() : EnumSet.noneOf(DialogOption.class);
+	private static EnumSet<DialogOption> getOptions(
+			EnumSet<DialogOption> options) {
+		options = options != null ? options.clone()
+				: EnumSet.noneOf(DialogOption.class);
 		// Always create modal dialogs hidden, and they show them in doModal()
 		options.add(DialogOption.HIDDEN);
 		return options;
@@ -91,56 +93,43 @@ public class ModalDialog extends Dialog {
 		ScriptographerEngine.setProgressVisible(false);
 		try {
 			modal = true;
-			// On CS3 and below modal dialogs do not show up if they're not
-			// made visible first. This leads to flickering, so use a different
-			// approach on CS4 and above (see onInitialize()).
-			// Also, the onInitialize() trick only works if the dialog is not
-			// initialized already, in which case the flickering won't occur.
-			if (isInitialized()
-					|| ScriptographerEngine.getApplicationVersion() <= 13) {
-				centerOnScreen();
-				// Force visibility by using native method directly.
-				nativeSetVisible(true);
-			}
+			// Before showing the dialog, se need to initialize it, in order
+			// to avoid flicker.
+			initialize(true);
 			Item item = nativeDoModal();
 			ScriptographerEngine.setProgressVisible(progressVisible);
 			return item;
 		} finally {
 			modal = false;
-			setVisible(false);
 		}
 	}
 
 	public native void endModal();
 
-	private native void fixModal();
-
 	protected void onHide() {
-		this.endModal();
+		endModal();
 		super.onHide();
 	}
 
-	protected void onInitialize() {
-		if (modal) {
-			// Make modal dialogs only visible now, to avoid flickering.
-			// This only works on CS4 and above.
-			setVisible(true);
-		}
-		super.onInitialize();
-	}
-
 	protected void onActivate() {
-		// This is part of a workaround for a bug in Illustrator:
-		// invisible and inactive modal dialogs seem to get active
-		// but remain invisible after another modal dialog was 
-		// deactivated. So if we receive an onActivate event but
-		// are not in a modal loop, execute fixModal, which uses
-		// a native timer to deactivate the dialog again right after
-		// activation. The fixModal field is used to let onDeactivate
-		// know about this, and filter out the event.
+		// This is part of a workaround for a bug in Illustrator: Invisible and
+		// inactive modal dialogs seem to get active but remain invisible after
+		// another modal dialog was deactivated, blocking the whole interface.
+		// So if we receive an onActivate event but are not in a modal loop,
+		// execute fixModal, which uses a native timer to deactivate the dialog
+		// again right after activation. The fixModal field is used to let
+		// onDeactivate know about this, and filter out the event.
 		if (!modal) {
 			fixModal = true;
-			this.fixModal();
+			// Deactivate the invisible modal dialog right after it was
+			// accidentally activated by a Illustrator CS3 bug. Immediately
+			// deactivating it does not work.
+			invokeLater(new Runnable() {
+				public void run() {
+					if (!isVisible())
+						setActive(false);
+				}
+			});
 		} else {
 			super.onActivate();
 		}
