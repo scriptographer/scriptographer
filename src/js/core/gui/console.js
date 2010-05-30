@@ -25,7 +25,8 @@
  * -- GPL LICENSE NOTICE --
  */
 
-var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
+var consoleDialog = new FloatingDialog(
+		'tabbed show-cycle resizing remember-placing', function() {
 	var that = this;
 	var engine = ScriptEngine.getEngineByName('JavaScript');
 	var consoleScope = engine != null ? engine.createScope() : null;

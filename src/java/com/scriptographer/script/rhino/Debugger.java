@@ -66,16 +66,11 @@ public class Debugger extends Dim implements
 
 	void createTreeNode(String sourceName, Dim.SourceInfo sourceInfo) {
 		File file = new File(sourceName);
-		File baseDir = ScriptographerEngine.getScriptDirectory();
-		ArrayList<String> path = new ArrayList<String>();
-		do {
-			path.add(file.getName());
-			file = file.getParentFile();
-		} while (file != null && !file.equals(baseDir));
+		String[] path = ScriptographerEngine.getScriptPath(file, false);
 		DebuggerTreeNode node = treeRoot;
 		DebuggerTreeNode newNode = null;
-		for (int i = path.size() - 1; i >= 0; i--) {
-			String name = path.get(i);
+		for (int i = 0, l = path.length; i < l; i++) {
+			String name = path[i];
 			DebuggerTreeNode n = node.get(name);
 			if (n == null) {
 				n = new DebuggerTreeNode(name);

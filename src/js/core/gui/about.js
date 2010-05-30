@@ -50,6 +50,12 @@ var aboutDialog = new ModalDialog(function() {
 		'Documentation, API Design, Testing',
 		'Jonathan Puckey',
 		'',
+		'Scriptographer is kindly supported by the',
+		'R&D Department of ECAL, Lausanne',
+		'',
+		'To help out more, please consider a donation:',
+		'http://scriptographer.org/donation',
+		'',
 		'Illustrator ' + app.version + '.' + app.revision,
 		'Java ' + java.lang.System.getProperty('java.version')
 	];
@@ -57,7 +63,9 @@ var aboutDialog = new ModalDialog(function() {
 	var urls = { // line -> url
 		1: 'http://scriptographer.org',
 		7: 'http://scratchdisk.com',
-		10: 'http://jonathanpuckey.com'
+		10: 'http://jonathanpuckey.com',
+		13: 'http://ecal.ch',
+		16: 'http://scriptographer.org/donation',
 	};
 
 	var text = new TextPane(this) {
@@ -66,8 +74,8 @@ var aboutDialog = new ModalDialog(function() {
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
-				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
-				if (urls[line] && tracker.point.x < this.getTextSize(lines[line], -1).width)
+				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
+				if (urls[line] && tracker.point.x < this.getTextSize(lines[line]).width)
 					app.launch(urls[line]);
 			}
 			return true;

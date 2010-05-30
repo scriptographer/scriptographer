@@ -29,6 +29,8 @@
 
 package com.scriptographer.script.jython;
 
+import java.io.File;
+
 import org.python.core.Py;
 import org.python.core.PyInteger;
 import org.python.core.PyString;
@@ -52,5 +54,9 @@ public class JythonEngine extends com.scratchdisk.script.jython.JythonEngine {
 		__builtin__.__import__("com.scriptographer.ui", globals, globals, all);
 //		__builtin__.eval(new PyString("from com.scriptographer.ai import *"), globals);
 //		__builtin__.eval(new PyString("from com.scriptographer.ui import *"), globals);
+	}
+
+	public String[] getScriptPath(File file) {
+		return ScriptographerEngine.getScriptPath(file, true);
 	}
 }

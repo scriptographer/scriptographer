@@ -43,6 +43,7 @@ import org.mozilla.javascript.WrappedException;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.util.StringUtils;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -53,7 +54,8 @@ public class RhinoScriptException extends ScriptException {
 
 	private static Throwable getCause(Throwable cause) {
 		// Unwrap multiple wrapped exceptions, but make sure we have one
-		// WrappedException that contains information about script and line number.
+		// WrappedException that contains information about script and line
+		// number.
 		if (cause instanceof WrappedException) {
 			Throwable wrapped = ((WrappedException) cause).getWrappedException();
 			// Unwrap wrapped RhinoScriptExceptions if wrapped more than once
@@ -68,7 +70,8 @@ public class RhinoScriptException extends ScriptException {
 			if (value instanceof Wrapper) {
 				value = ((Wrapper) value).unwrap();
 			} else if (value instanceof Scriptable) {
-				value = ScriptableObject.getProperty((Scriptable) value, "exception");
+				value = ScriptableObject.getProperty((Scriptable) value,
+						"exception");
 			}
 			if (value instanceof Throwable)
 				return (Throwable) value;
@@ -89,16 +92,14 @@ public class RhinoScriptException extends ScriptException {
 	public String getFullMessage() {
 		Throwable cause = getCause();
 		String separator = System.getProperty("file.separator");
-		File baseDir = engine.getBaseDirectory();
-		String base = baseDir != null ?
-				baseDir.getAbsolutePath() + separator : null;
 		if (cause instanceof RhinoException) {
 			RhinoException re = (RhinoException) cause;
 			StringWriter buf = new StringWriter();
 			PrintWriter writer = new PrintWriter(buf);
 			if (re instanceof WrappedException) {
 				// Make sure we're not printing the "Wrapped ...Exception:" part
-				writer.println(((WrappedException) re).getWrappedException().getMessage());
+				writer.println(((WrappedException) re).getWrappedException()
+						.getMessage());
 			} else {
 				writer.println(re.details());
 			}
@@ -106,12 +107,16 @@ public class RhinoScriptException extends ScriptException {
 			String sourceName = re.sourceName();
 			if (sourceName != null) {
 				int lineNumber = re.lineNumber();
-				// Report sourceName / lineNumber if it is not in the stack trace already.
-				// Why is this needed? Rhino bug?
-				if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
-					if (base != null && sourceName.startsWith(base))
-						sourceName = sourceName.substring(base.length());
-					writer.println("\tat " + sourceName + ":" + lineNumber);
+				// Report sourceName / lineNumber if it is not in the stack
+				// trace already.
+				// TODO Why is this needed? Rhino bug?
+				if (stackTrace.length == 0 || stackTrace[0].indexOf(
+						sourceName + ":" + lineNumber) == -1) {
+					String[] path = engine.getScriptPath(new File(sourceName));
+					if (path != null)
+						writer.println("\tat "
+								+ StringUtils.join(path, separator)
+								+ ":" + lineNumber);
 				}
 			}
 			// Parse the lines for filename:linenumber
@@ -123,21 +128,18 @@ public class RhinoScriptException extends ScriptException {
 					String file = matcher.group(1);
 					// Filter out hidden scripts. Only report scripts
 					// that are located in base:
-					if ((base == null || file.startsWith(base)) &&
-							file.indexOf(separator + "__") == -1) {
-						String number = matcher.group(2);
-						writer.println("\tat " + file + ":" + number);
+					if (file.indexOf(separator + "__") == -1) {
+						String[] path = engine.getScriptPath(new File(file));
+						if (path != null) {
+							writer.println("\tat "
+									+ StringUtils.join(path, separator) + ":"
+									+ matcher.group(2));
+						}
 					}
 				}
 			}
 			return buf.toString().trim();
 		} else {
-			/*
-			if (cause instanceof EvaluatorException) {
-				return cause.getMessage();
-			} else {
-			}
-			*/
 			String message = cause.getMessage();
 			String error = cause.getClass().getSimpleName();
 			if (message != null && message.length() != 0)

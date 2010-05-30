@@ -44,7 +44,6 @@ import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.AreaText;
 import com.scriptographer.ai.Artboard;
@@ -292,8 +291,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
 	/**
 	 * Determines the directory of a script by reading it's scriptFile property
-	 * in the main scope. If script file is empty (e.g. for console),
-	 * Scriptographer's base directory is used
+	 * in the main scope.
 	 * 
 	 * @param scope
 	 */
@@ -303,8 +301,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			obj = ((Wrapper) obj).unwrap();
 		if (obj instanceof com.scriptographer.sg.Script)
 			return ((com.scriptographer.sg.Script) obj).getFile().getParentFile();
-		else
-			return ScriptographerEngine.getScriptDirectory();
+		return null;
 	}
 
 	/**

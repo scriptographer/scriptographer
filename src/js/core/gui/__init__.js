@@ -38,6 +38,10 @@ var buttonSize = new Size(27, 17);
 var lineHeight = 17;
 var lineBreak = java.lang.System.getProperty('line.separator');
 
+// Script Locations
+var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
+var scriptDirectory = null;
+
 function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
 }

@@ -48,7 +48,6 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.ConversionUtils;
-import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
@@ -64,7 +63,6 @@ import com.scriptographer.ui.Timer;
  * @author lehni
  */
 public class ScriptographerEngine {
-	private static File scriptDir = null;
 	private static File pluginDir = null;
 	private static File coreDir = null;
 	private static PrintStream errorLogger = null;
@@ -157,19 +155,17 @@ public class ScriptographerEngine {
 		return pluginDir;
 	}
 
-	public static File getScriptDirectory() {
-		return scriptDir;
-	}
-
-	public static void setScriptDirectory(File dir) {
-		// The core GUI calls setScriptDirectory each time it runs, so collect
-		// init scripts here
-		scriptDir = dir;
-		// First reset callbackScopes
-		removeCallbacks(true);
-		// Now compile all __init__ scripts in the Script folder:
-		if (scriptDir != null)
-			compileInitScripts(scriptDir);
+	public static String[] getScriptPath(File file, boolean hideCore) {
+		ArrayList<String> parts = new ArrayList<String>();
+		while (true) {
+			parts.add(0, file.getName());
+			file = file.getParentFile();
+			if (hideCore && file.equals(coreDir))
+				return null;
+			if (file == null || file.equals(pluginDir))
+				break;
+		}
+		return parts.toArray(new String[parts.size()]);
 	}
 
 	/**
@@ -235,27 +231,31 @@ public class ScriptographerEngine {
 				ScriptographerEngine.class).node("preferences");
 		if (script == null)
 			return prefs;
-		// determine preferences for the current executing script
+		// Determine preferences for the current executing script
 		// by walking up the file path to the script directory and 
 		// using each folder as a preference node.
-		ArrayList<String> parts = new ArrayList<String>();
-		// Collect the directory parts up to either scriptDir or pluginDir
 		File file = script.getFile();
-		while (true) {
+		/*
+		ArrayList<String> parts = new ArrayList<String>();
+		// Collect the directory parts up to either coreDir or pluginDir and see
+		// which preference node is to be used. Non-core script files are placed
+		// in the "scripts" node, all others use the main node.
+		boolean useScriptsPrefs = true;
+		while (useScriptsPrefs && file != null) {
 			parts.add(file.getName());
 			file = file.getParentFile();
-			if (file == null || file.equals(pluginDir)) {
-				break;
-			} else if (file.equals(scriptDir)) {
-				// Script files use the scripts preference node,
-				// all others (including GUI scripts) use the main node.
-				prefs = prefs.node("scripts");
-				break;
-			}
+			if (file != null && (file.equals(pluginDir) || file.equals(coreDir)))
+				useScriptsPrefs = false;
 		}
+		if (useScriptsPrefs)
+			prefs = prefs.node("scripts");
 		// Now walk backwards per added folder element and produce sub nodes
 		for (int i = parts.size() - 1; i >= 0; i--)
 			prefs = prefs.node(parts.get(i));
+		*/
+		String[] parts = getScriptPath(file, false);
+		for (int i = 0, l = parts.length; i < l; i++)
+			prefs = prefs.node(parts[i]);
 		return prefs;
 	}
 
@@ -315,9 +315,12 @@ public class ScriptographerEngine {
 			else if (cause instanceof UnsupportedOperationException)
 				error = "Unsupported Operation: " + error;
 			// Shorten file names by removing the script directory form it
-			if (scriptDir != null)
-				error = StringUtils.replace(error, scriptDir.getAbsolutePath()
+			/*
+			// TODO:
+			if (scriptsDir != null)
+				error = StringUtils.replace(error, scriptsDir.getAbsolutePath()
 						+ System.getProperty("file.separator"), "");
+			*/
 			// Add a line break at the end if the error does
 			// not contain one already.
 			// TODO: find out why this regular expression does not work and make

@@ -60,8 +60,9 @@ public class StringUtils {
 	public static String capitalize(String str, String delimiter) {
 		String[] parts = str.split("\\s");
 		StringBuffer res = new StringBuffer();
-		for (int i = 0; i < parts.length; i++) {
-			if (i > 0) res.append(delimiter);
+		for (int i = 0, l = parts.length; i < l; i++) {
+			if (i > 0)
+				res.append(delimiter);
 			String part = parts[i];
 			res.append(Character.toUpperCase(part.charAt(0)));
 			res.append(part, 1, part.length());
@@ -71,5 +72,23 @@ public class StringUtils {
 
 	public static String capitalize(String str) {
 		return capitalize(str, "");
+	}
+
+	public static String join(Object[] parts, String separator) {
+		if (parts == null)
+			return null;
+		int length = parts.length;
+		if (length == 0)
+			return "";
+		StringBuffer res = new StringBuffer((parts[0] == null
+				? 16 : parts[0].toString().length()) * length);
+		for (int i = 0; i < length; i++) {
+			if (i > 0)
+				res.append(separator);
+			if (parts[i] != null)
+				res.append(parts[i]);
+		}
+		return res.toString();
+
 	}
 }

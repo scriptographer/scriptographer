@@ -53,11 +53,11 @@ var licenseDialog = new ModalDialog(function() {
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
-				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
+				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
 				var url = line == 5 ? 'http://www.scriptographer.org/license'
 						: line == 14 ? 'http://www.scriptographer.org/donation'
 						: null;
-				if (url && tracker.point.x < this.getTextSize(url, -1).width)
+				if (url && tracker.point.x < this.getTextSize(url).width)
 					app.launch(url);
 			}
 			return true;

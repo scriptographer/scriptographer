@@ -55,13 +55,6 @@ public class Scriptographer {
 	}
 
 	/**
-	 * Scriptographer's script directory.
-	 */
-	public File getScriptDirectory() {
-		return ScriptographerEngine.getScriptDirectory();
-	}
-
-	/**
 	 * Scriptographer's version description.
 	 */
 	public String getVersion() {

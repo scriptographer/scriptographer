@@ -3,6 +3,7 @@
 BASE=../../../../..
 JAVA=$BASE/java/build/
 JAVASCRIPT=$BASE/../src/js/core/
+EXAMPLES=$BASE/src/js/scripts/
 REFERENCE=$BASE/docs/js/
 
 makeLink() {
@@ -21,6 +22,7 @@ makeTargetLinks() {
 	fi
 	makeLink $JAVA build/$1/$2/Core/Java
 	makeLink $JAVASCRIPT build/$1/$2/Core/JavaScript
+	makeLink $EXAMPLES build/$1/$2/Examples
 	makeLink $REFERENCE build/$1/$2/Reference
 } 
 

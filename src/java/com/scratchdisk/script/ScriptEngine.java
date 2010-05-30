@@ -31,6 +31,7 @@ package com.scratchdisk.script;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +104,8 @@ public abstract class ScriptEngine {
 
 	public abstract ArgumentReader getArgumentReader(Object object);
 
-	public abstract boolean observe(Map object, Object key, PropertyObserver observer);
+	public abstract boolean observe(Map object, Object key,
+			PropertyObserver observer);
 
 	@SuppressWarnings("unchecked")
 	public static <T> T convertToJava(Object object, Class<T> type) {
@@ -126,7 +128,8 @@ public abstract class ScriptEngine {
 		return null;
 	}
 
-	public static boolean observeChanges(Map object, Object key, PropertyObserver observer) {
+	public static boolean observeChanges(Map object, Object key,
+			PropertyObserver observer) {
 		for (ScriptEngine engine : enginesByName.values()) {
 			if (engine.observe(object, key, observer))
 				return true;
@@ -165,15 +168,17 @@ public abstract class ScriptEngine {
 			throws ScriptException;
 
 	/**
-	 * Returns the base of all paths, to be cut away from Error messages,
-	 * if desired.
-	 * TODO: This should be changed to a more script oriented approach,
-	 * Where the base directly is determined from a variable in the current
-	 * scope...
-	 * Think about a convention for naming baseDirectroies, scriptFiles, etc.
-	 * in the scope. e.g. app.directory, script.file, ...
+	 * Returns a shortened version of the path to the script file. The script
+	 * engine can provide its own mechanism, e.g. allowing multiple script
+	 * roots, through this one simple method. Returning null means the path
+	 * should not be shown to the user.
 	 */
-	public File getBaseDirectory() {
-		return null;
+	public String[] getScriptPath(File file) {
+		ArrayList<String> parts = new ArrayList<String>();
+		while (file != null) {
+			parts.add(0, file.getName());
+			file = file.getParentFile();
+		}
+		return parts.toArray(new String[parts.size()]);
 	}
 }

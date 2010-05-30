@@ -82,8 +82,8 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 			throw new ScriptCanceledException();
 	}
 
-	public File getBaseDirectory() {
-		return ScriptographerEngine.getScriptDirectory();
+	public String[] getScriptPath(File file) {
+		return ScriptographerEngine.getScriptPath(file, true);
 	}
 
 	public Object handleOperator(Context cx, Scriptable scope, int operator, Object lhs, Object rhs) {

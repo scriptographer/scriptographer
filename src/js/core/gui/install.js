@@ -23,8 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 22.08.2007.
  */
 
 if (app.isMacintosh()) {
@@ -48,7 +46,8 @@ if (app.isMacintosh()) {
 		}
 		process.exitValue();
 		function readStream(stream) {
-			var reader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
+			var reader = new java.io.BufferedReader(
+					new java.io.InputStreamReader(stream));
 			var res = [], line, first = true;
 			while ((line = reader.readLine()) != null) {
 				if (first) first = false;
@@ -67,18 +66,21 @@ if (app.isMacintosh()) {
 		return ret;
 	}
 
-	// Determine current user and see if it is part of the uucp group, as required by RXTX
+	// Determine current user and see if it is part of the uucp group,
+	// as required by RXTX
 	var user = executeProcess('id -p').match(/uid.(\w*)/)[1];
 	var found = false;
 	var useNS = new File('/usr/bin/niutil').exists();
 	var useDS = !useNS && new File('/usr/bin/dscl').exists();
 	if (useDS) {
-		var res = executeProcess('dsmemberutil checkmembership -U ' + user + ' -G uucp');
+		var res = executeProcess('dsmemberutil checkmembership -U ' + user
+				+ ' -G uucp');
 		found = res != 'user is not a member of the group';
 	} else if (useNS) {
 		var groups = []
 		try {
-			groups = executeProcess('niutil -readprop / /groups/uucp users').split(/\n/);
+			groups = executeProcess(
+					'niutil -readprop / /groups/uucp users').split(/\n/);
 		} catch(e) {}
 		for (var i = 0; i < groups.length && !found; i++)
 			found = groups[i] == user;
@@ -141,14 +143,21 @@ if (app.isMacintosh()) {
 					executeProcess('sudo chmod 775 /var/lock');
 				}
 				if (!found) {
-					if (useDS) executeProcess('sudo dscl . -append /Groups/uucp GroupMembership  ' + user);
-					else if (useNS) executeProcess('sudo niutil -mergeprop / /groups/uucp users ' + user);
+					if (useDS) executeProcess(
+							'sudo dscl . -append /Groups/uucp GroupMembership  '
+							+ user);
+					else if (useNS) executeProcess(
+							'sudo niutil -mergeprop / /groups/uucp users '
+							+ user);
 				}
 				executeProcess('sudo -K');
-		  		Dialog.alert('Finished making changes, you should be all set now.\n\nHave fun!');
+		  		Dialog.alert(
+						'Finished making changes, you should be all set now.\n\n'
+						+ 'Have fun!');
 				tryAgain = false;
 			} catch (e) {
-				tryAgain = Dialog.confirm('You do not seem to have the required permissions.\n' +
+				tryAgain = Dialog.confirm(
+					'You do not seem to have the required permissions.\n' +
 					'Would you like to reenter your password now?');
 			}
 		}

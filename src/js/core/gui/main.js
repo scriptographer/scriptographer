@@ -37,7 +37,8 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 var hasEffects = false; // Work in progress, turn off for now
 var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
-var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
+var mainDialog = new FloatingDialog(
+		'tabbed show-cycle resizing remember-placing', function() {
 
 	// Script List
 
@@ -46,14 +47,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		size: [208, 20 * lineHeight],
 		minimumSize: [208, 8 * lineHeight],
 		entryTextRect: [0, 0, 2000, lineHeight],
-		directory: scriptographer.scriptDirectory,
-		// TODO: consider adding onDoubleClick and onExpand / Collapse, instead of this 
-		// workaround here. Avoid onTrack as much as possible in scripts,
-		// and add what's needed behind the scenes.
 		onTrackEntry: function(tracker, entry) {
 			// Detect expansion of unpopulated folders and populate on the fly
 			var expanded = entry.expanded;
-			entry.defaultTrack(tracker); // this might change entry.expanded state
+			// This might change entry.expanded state
+			entry.defaultTrack(tracker);
 			if (!entry.populated && !expanded && entry.expanded)
 				entry.populate();
 			// Detect doubleclicks on files and folders.
@@ -65,12 +63,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					entry.list.invalidate();
 				} else {
 					// Edit the file through app.launch
-					// TODO: On windows, this launches the scripting host by default
 					app.launch(entry.file);
 					// execute();
 				}
 			}
-			// Return false to prevent calling of defaultTrack sine we called it already.
+			// Return false to prevent calling of defaultTrack as we called
+			// it already.
 			return false;
 		}
 	};
@@ -102,8 +100,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			entry.createChildList();
 			entry.childList.directory = file;
 			// Seal Examples and Tutorials and pass on sealed setting
-			entry.childList.sealed = isRoot ? /^(Examples|Tutorials)$/.test(file.name) : list.sealed;
-			if (isRoot && file.name == 'My Scripts')
+			entry.childList.sealed = isRoot 
+					? /^(Examples|Tutorials)$/.test(file.name) : list.sealed;
+			// Remember myScriptsEntry
+			if (isRoot && file == scriptDirectory)
 				myScriptsEntry = entry;
 			entry.expanded = false;
 			entry.populated = false;
@@ -111,7 +111,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				if (!this.populated) {
 					this.childList.directory = file;
 					var files = getFiles(this.childList);
-					for (var i = 0; i < files.length; i++)
+					for (var i = 0, l = files.length; i < l; i++)
 						addFile(this.childList, files[i]);
 					this.populated = true;
 				}
@@ -120,7 +120,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			directoryEntries[file] = entry;
 		} else {
 			entry.update = function() {
-				var type = file.readAll().match(/(onMouse(?:Up|Down|Move|Drag))|(onCalculate)/);
+				var type = file.readAll().match(
+						/(onMouse(?:Up|Down|Move|Drag))|(onCalculate)/);
 				this.type = type && (type[1] && 'tool' || type[2] && 'effect');
 				this.image = this.type == 'tool'
 					? (currentToolFile == this.file
@@ -137,36 +138,26 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function getFiles(list) {
-		if (!list.directory)
-			return [];
-		var files = list.directory.list(function(file) {
-			return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
-				(/\.(?:js|rb|py)$/.test(file.name) || file.isDirectory());
-		});
-		if (list == scriptList) {
-			var order = {
-				'Examples': 1,
-				'Tutorials': 2,
-				'My Scripts': 3
-			};
-			files.sort(function(file1, file2) {
-				var pos1 = order[file1.name] || 4;
-				var pos2 = order[file2.name] || 4;
-				return pos1 < pos2
-					? -1 
-					: pos1 > pos2
-						? 1
-						: 0;
+		var files;
+		if (!list.directory) {
+			// Define root directories
+			files = [];
+			if (examplesDirectory.exists())
+				files.push(examplesDirectory);
+			if (scriptDirectory && scriptDirectory.exists())
+				files.push(scriptDirectory);
+		} else {
+			files = list.directory.list(function(file) {
+				return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
+					(/\.(?:js|rb|py)$/.test(file.name) || file.isDirectory());
 			});
 		}
 		return files;
 	}
 
 	function refreshList(list) {
-		if (!list) {
-			scriptList.directory = scriptographer.scriptDirectory;
+		if (!list)
 			list = scriptList;
-		}
 		// Do only refresh populated lists
 		if (list.parentEntry && !list.parentEntry.populated)
 			return null;
@@ -294,8 +285,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			// to allow them to be defined globally.
 			// Support deprecated onOptions too, by converting it to onEditOptions.
 			var names = entry.type == 'tool'
-				? ['onEditOptions', 'onOptions', 'onSelect', 'onDeselect', 'onReselect',
-					'onMouseDown', 'onMouseUp', 'onMouseDrag', 'onMouseMove']
+				? ['onEditOptions', 'onOptions', 'onSelect', 'onDeselect',
+					'onReselect', 'onMouseDown', 'onMouseUp', 'onMouseDrag',
+					'onMouseMove']
 				: ['onEditParameters', 'onCalculate', 'onGetInputType'];
 			names.each(function(name) {
 				var func = scope.getCallable(name);
@@ -369,34 +361,36 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	// Script Directory Stuff
 
+	function stopAll() {
+		ScriptographerEngine.stopAll(true, false);
+		tool.reset();
+	}
+
 	function chooseScriptDirectory(dir) {
 		dir = Dialog.chooseDirectory(
-			'Please choose the Scriptographer script directory',
-			dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
+				'Please choose your Scriptographer Script Folder. It is recommended\n'
+				+ ' that you keep your scripts in a dedicated folder within your Documents.',
+				dir || scriptDirectory || new File(java.lang.System.getProperty('user.home')));
 		if (dir && dir.isDirectory()) {
-			script.preferences.scriptDirectory = dir.path;
 			setScriptDirectory(dir);
 			return true;
 		}
 	}
 
 	function setScriptDirectory(dir) {
+		stopAll();
 		// Tell Scriptographer about where to look for scripts.
-		ScriptographerEngine.scriptDirectory = dir;
-		// Load librarires:
-		// TODO: Is this still used?
-		ScriptographerEngine.loadLibraries(new File(dir, 'Libraries'));
+		script.preferences.scriptDirectory = dir.path;
+		ScriptographerEngine.compileInitScripts(dir);
+		scriptDirectory = dir;
 		refreshList();
 	}
 
 	// Read the script directory first, or ask for it if its not defined:
 	var dir = script.preferences.scriptDirectory;
-	// If no script directory is defined, try the default place for Scripts:
-	// The subdirectory 'scripts' in the plugin directory:
-	dir = dir
-		? new File(dir)
-		: new File(scriptographer.pluginDirectory, 'Scripts');
-	if (!dir.exists() || !dir.isDirectory()) {
+	if (dir)
+		dir = new File(dir);
+	if (!dir || !dir.exists() || !dir.isDirectory()) {
 		if (!chooseScriptDirectory(dir))
 			Dialog.alert('Could not find Scriptographer script directory.');
 	} else {
@@ -563,14 +557,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		text: 'Scriptographer'
 	};
 
-	// var separator = new MenuGroup(scriptographerGroup, MenuGroup.OPTION_ADD_ABOVE);
-
 	new MenuItem(scriptographerItem) {
 		onSelect: function() {
 			mainDialog.visible = !mainDialog.visible;
 		},
 		onUpdate: function() {
-			this.text = (mainDialog.visible ? 'Hide' : 'Show') + ' Main Palette';
+			this.text = (mainDialog.visible ? 'Hide' : 'Show')
+					+ ' Main Palette';
 		}
 	}.setCommand('M', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
 
@@ -579,7 +572,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			consoleDialog.visible = !consoleDialog.visible;
 		},
 		onUpdate: function() {
-			this.text = (consoleDialog.visible ? 'Hide' : 'Show') + ' Console Palette';
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
+					+ ' Console Palette';
 		}
 	}.setCommand('C', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
 
@@ -619,7 +613,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		},
 		onUpdate: function() {
 			// TODO: Make onUpdate work in ListEntry
-			this.text = (consoleDialog.visible ? 'Hide' : 'Show') + ' Console Palette';
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
+					+ ' Console Palette';
 		}
 	};
 
@@ -638,7 +633,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var referenceEntry = new ListEntry(menu) {
 		text: 'Reference...',
 		onSelect: function() {
-			app.launch('file://' + new File(scriptographer.pluginDirectory, 'Reference/index.html'));
+			app.launch('file://' + new File(scriptographer.pluginDirectory,
+					'Reference/index.html'));
 		}
 	};
 
@@ -660,7 +656,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	global.onKeyDown = function(event) {
-		if (event.character == '`' && !event.modifiers.command && !event.modifiers.shift) {
+		if (event.character == '`'
+				&& !event.modifiers.command && !event.modifiers.shift) {
 			tool.selected = true;
 			return true;
 		}
@@ -678,10 +675,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var stopButton = new ImageButton(this) {
 		image: getImage('stop.png'),
 		size: buttonSize,
-		onClick: function() {
-			ScriptographerEngine.stopAll(true, false);
-			tool.reset();
-		}
+		onClick: stopAll
 	};
 
 	var effectButton = hasEffects && new ImageButton(this) {
