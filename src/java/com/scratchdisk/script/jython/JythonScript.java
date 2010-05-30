@@ -53,7 +53,7 @@ public class JythonScript extends Script {
 		this.code = code;
 	}
 
-	public ScriptEngine getEngine() {
+	public JythonEngine getEngine() {
 		return engine;
 	}
 

@@ -54,7 +54,7 @@ public class RhinoScript extends Script {
 		this.script = script;
 	}
 	
-	public ScriptEngine getEngine() {
+	public RhinoEngine getEngine() {
 		return engine;
 	}
 	
