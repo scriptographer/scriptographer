@@ -647,7 +647,7 @@ var mainDialog = new FloatingDialog(
 	var reloadEntry = new ListEntry(menu) {
 		text: 'Reload',
 		onSelect: function() {
-			ScriptographerEngine.reload.delay(1);
+			ScriptographerEngine.reload();
 		}
 	};
 

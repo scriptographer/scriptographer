@@ -158,7 +158,18 @@ public class ListEntry extends NotificationHandler {
 	protected void onNotify(Notifier notifier) {
 		switch (notifier) {
 		case USER_CHANGED:
-			onSelect();
+			if (list instanceof PopupMenu) {
+				// We seem to run into troubles when executing things straight
+				// from USER_CHANGED callback on PopupMenus, e.g. crashes when
+				// reloading the plug-in. Use invokeLater() to solve it nicely.
+				list.dialog.invokeLater(new Runnable() {
+					public void run() {
+						onSelect();
+					}
+				});
+			} else {
+				onSelect();
+			}
 			break;
 		case DESTROY:
 			onDestroy();
