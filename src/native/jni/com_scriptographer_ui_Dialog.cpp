@@ -39,7 +39,6 @@
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
-	AppContext context;
 	// Hide the dialog by default:
 	sADMDialog->Show(dialog, false);
 	
@@ -69,7 +68,6 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 }
 
 ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) {
-	AppContext context;
 	// Clear timer
 	sADMDialog->AbortTimer(dialog, timerID);
 	// Call onNotify with NOTIFIER_INITIALIZE
@@ -83,7 +81,6 @@ ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) 
 
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 	if (gEngine != NULL) {
-		AppContext context;
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			jobject obj = gEngine->getDialogObject(dialog);
@@ -99,13 +96,13 @@ void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
 	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
-		AppContext context;
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			ADMDialogRef dialog = sADMItem->GetDialog(item);
 			jobject obj = gEngine->getDialogObject(dialog);
 			ADMRect size;
 			sADMDialog->GetLocalRect(dialog, &size);
+			AppContext context;
 			gEngine->callVoidMethod(env, obj,
 					gEngine->mid_ui_Dialog_onSizeChanged,
 					size.right, size.bottom, true);
@@ -116,14 +113,12 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier) {
 	sADMDialog->DefaultNotify(dialog, notifier);
 	if (gEngine != NULL) {
-		AppContext context;
 		jobject obj = gEngine->getDialogObject(dialog);
 		gEngine->callOnNotify(obj, notifier);
 	}
 }
 
 ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
-	AppContext context;
 	jobject obj = gEngine->getDialogObject(dialog);
 	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
 	if (ret)
@@ -132,7 +127,6 @@ ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
 }
 
 void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
-	AppContext context;
 	jobject obj = gEngine->getDialogObject(dialog);
 	ASBoolean ret = gEngine->callOnDraw(obj, drawer);
 	if (ret)
@@ -151,7 +145,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeCreate(
 				kEmptyDialogID, (ADMDialogStyle) style,
 				(ADMDialogInitProc) CALLBACK_PROC(Dialog_onInit),
 				env->NewGlobalRef(obj), options);
-		sADMDialog->Size(dialog, 200, 200);
 		delete str;
 		if (dialog == NULL)
 			throw new StringException("Unable to create dialog.");
@@ -589,7 +582,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setUpdateEnabled(
 		JNIEnv *env, jobject obj, jboolean updateEnabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		sADMDialog->Enable(dialog, updateEnabled);
+		sADMDialog->SetUpdateEnabled(dialog, updateEnabled);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -1331,11 +1324,11 @@ void CALLBACK Dialog_onTimer(HWND hwnd, UINT uMsg, UINT_PTR timerId, DWORD dwTim
 ADMBoolean ADMAPI Dialog_onTimer(ADMDialogRef dialog, ADMTimerRef timerId) {
 #endif // !WIN_ENV
 	// Establish an application context for undoing.
-	AppContext context;
 	sAIUndo->SetKind(kAIAppendUndoContext);
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
+		AppContext context;
 		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer,
 				gEngine->mid_ui_Timer_onExecute, (jint) timerId);
 		// Since the onExecute call might have changed the currently visible

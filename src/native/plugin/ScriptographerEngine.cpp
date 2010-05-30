@@ -2089,6 +2089,7 @@ void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier
 
 void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
 	JNIEnv *env = getEnv();
+	AppContext context;
 	callVoidMethodReport(env, handler, mid_ui_NotificationHandler_onNotify,
 			env->NewStringUTF(notifier));
 }
@@ -2100,6 +2101,7 @@ void ScriptographerEngine::callOnDestroy(jobject handler) {
 bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
+		AppContext context;
 		jobject trackerObj = getObjectField(env, handler, fid_ui_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
@@ -2117,6 +2119,7 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
+		AppContext context;
 		jobject drawerObj = getObjectField(env, handler, fid_ui_NotificationHandler_drawer);
 		setIntField(env, drawerObj, fid_ui_NativeObject_handle, (jint) drawer);
 		return callBooleanMethod(env, handler, mid_ui_NotificationHandler_onDraw, drawerObj);
