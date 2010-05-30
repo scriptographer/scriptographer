@@ -40,6 +40,7 @@ import java.util.prefs.Preferences;
 
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ai.Color;
@@ -801,7 +802,7 @@ public abstract class Dialog extends Component {
 		return visible;
 	}
 
-	private native void nativeSetVisible(boolean visible);
+	protected native void nativeSetVisible(boolean visible);
 
 	public void setVisible(boolean visible) {
 		// Do not set visibility natively before the dialog was properly
@@ -997,8 +998,13 @@ public abstract class Dialog extends Component {
 		this.title = title != null ? title : "";
 		nativeSetTitle(title);
 		// If the dialog name is not set yet, use the title
-		if (name.equals(""))
-			setName(title);
+		if (name.equals("")) {
+			// Append script path to name
+			setName(script != null
+					? StringUtils.join(ScriptographerEngine.getScriptPath(
+							script.getFile(), false), "/") + "/" + title
+					: title);
+		}
 	}
 
 	public String getName() {

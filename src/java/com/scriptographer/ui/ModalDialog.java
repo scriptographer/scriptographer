@@ -91,6 +91,17 @@ public class ModalDialog extends Dialog {
 		ScriptographerEngine.setProgressVisible(false);
 		try {
 			modal = true;
+			// On CS3 and below modal dialogs do not show up if they're not
+			// made visible first. This leads to flickering, so use a different
+			// approach on CS4 and above (see onInitialize()).
+			// Also, the onInitialize() trick only works if the dialog is not
+			// initialized already, in which case the flickering won't occur.
+			if (isInitialized()
+					|| ScriptographerEngine.getApplicationVersion() <= 13) {
+				centerOnScreen();
+				// Force visibility by using native method directly.
+				nativeSetVisible(true);
+			}
 			Item item = nativeDoModal();
 			ScriptographerEngine.setProgressVisible(progressVisible);
 			return item;
@@ -109,13 +120,12 @@ public class ModalDialog extends Dialog {
 		super.onHide();
 	}
 
-	protected void onNotify(Notifier notifier) {
-		super.onNotify(notifier);
-	}
-
 	protected void onInitialize() {
-		if (modal)
+		if (modal) {
+			// Make modal dialogs only visible now, to avoid flickering.
+			// This only works on CS4 and above.
 			setVisible(true);
+		}
 		super.onInitialize();
 	}
 
