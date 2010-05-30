@@ -73,6 +73,7 @@ public abstract class Item extends Component {
 	 */
 	protected Item(Dialog dialog, ItemType type, int options) {
 		init(dialog, nativeCreate(dialog.handle, type.name, options), type);
+		setFont(dialog.getFont());
 	}
 
 	protected Item(Dialog dialog, ItemType type) {

@@ -159,6 +159,12 @@ public abstract class Dialog extends Component {
 		setVisible(false);
 	}
 
+	public void setFont(DialogFont font) {
+		super.setFont(font);
+		for (Item item : items)
+			item.setFont(font);
+	}
+
 	/*
 	 * Load image from resource with given name, used by PromtDialog
 	 */

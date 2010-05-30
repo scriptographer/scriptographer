@@ -157,7 +157,6 @@ abstract class Component extends NotificationHandler {
 	abstract public int getTrackMask();
 
  	protected Callable onTrack = null;
-	protected Callable onDraw = null;
 
 	public void setOnTrack(Callable func) {
 		setTrackCallback(func != null);
@@ -179,6 +178,8 @@ abstract class Component extends NotificationHandler {
 		}
 		return true;
 	}
+
+	protected Callable onDraw = null;
 
 	public void setOnDraw(Callable func) {
 		setDrawCallback(func != null);
