@@ -664,25 +664,36 @@ bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec,
 	return true;
 }
 
-bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecification *fileSpec) {
+bool ScriptographerPlugin::pathToFileSpec(const char *path,
+		SPPlatformFileSpecification *fileSpec) {
 #ifdef MAC_ENV
-	// as FSRef can only be created for existing files and directories, this is a bit complicated:
-	// create an FSRef for the path's parent dir and from there create a FSSpec for the child: 
+	// As FSRef can only be created for existing files and directories, this is
+	// a bit complicated: 
+	// First try and see if the file exists, an go through FSref directly, as
+	// this supports file names longer than 32 chars.
+	FSRef fsRef;
+	Boolean isDir;
+	if (!FSPathMakeRef((unsigned char*) path, &fsRef, &isDir)
+			&& !FSGetCatalogInfo(&fsRef, 0, NULL, NULL, (FSSpec *) fileSpec, NULL))
+		return true;
+	// If that did not work, create an FSRef for the path's parent dir and from
+	// there create a FSSpec for the child. This will only work for filenames
+	// shorter than 32 chars.
 	int len = strlen(path);
 	int dirPos = len - 1;
-	if (path[dirPos] == '/') // skip trailing '/' for folders
+	if (path[dirPos] == '/') // Skip trailing '/' for folders
 		dirPos--;
-	// get the path for the parent folder:
+	// Get the path for the parent folder:
 	while (dirPos >= 0 && path[dirPos] != '/')
 		dirPos--;
 		
-	// path found?
+	// Path found?
 	if (dirPos < 0)
 		return false;
 	
 	dirPos++;
 	
-	// now split into directory and file:
+	// Now split into directory and file:
 	char dirPath[kMaxPathLength];
 	char filename[kMaxPathLength];
 	memcpy(dirPath, path, dirPos);
@@ -690,24 +701,25 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 	int fileLen = len - dirPos;
 	memcpy(filename, &path[dirPos], fileLen);
 	filename[fileLen] = '\0';
-	// now convert the parent directory to a FSRef:
-	FSRef fsRef;
-	Boolean isDir;
+	// Now convert the parent directory to a FSRef:
 	if (FSPathMakeRef((unsigned char*) dirPath, &fsRef, &isDir) != noErr)
 		return false;
 	
-	// get the information of the parent dir:
+	// Get the information of the parent dir:
 	FSCatalogInfo catalogInfo;
-	if (FSGetCatalogInfo(&fsRef, kFSCatInfoVolume | kFSCatInfoParentDirID | kFSCatInfoNodeID, &catalogInfo, NULL, NULL, NULL) != noErr)
+	if (FSGetCatalogInfo(&fsRef, kFSCatInfoVolume | kFSCatInfoParentDirID
+			| kFSCatInfoNodeID, &catalogInfo, NULL, NULL, NULL) != noErr)
 		return false;
 	
-	// and create a FSSpec (== SPPlatformFileSpecification) for the child with it:
-	OSErr error = FSMakeFSSpec(catalogInfo.volume, catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), (FSSpec *) fileSpec);
-	// file not found error is ok:
+	// And create a FSSpec (== SPPlatformFileSpecification) for the child with it:
+	OSErr error = FSMakeFSSpec(catalogInfo.volume, catalogInfo.nodeID,
+			toPascal(filename, (unsigned char *) filename), (FSSpec *) fileSpec);
+	// File not found error is OK:
 	if (error != noErr && error != fnfErr)
 		return false;
 #else
-	// on windows, things are much easier because we don't have to convert to a posix path:
+	// On Windows, things are much easier because we don't have to convert to a
+	// Posix path:
 	if (sAIUser->Path2SPPlatformFileSpecification(path, fileSpec))
 		return false;
 #endif

@@ -71,11 +71,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 			sprintf(test, "url.dll,FileProtocolHandler %s", path);
 			HINSTANCE res = ShellExecute(NULL, "open", "rundll32.exe", test, NULL, SW_SHOWNORMAL);
 			result = !res;
-#else
+#else // !WIN_ENV
 */
 			result = !sAIURL->OpenURL(path);
 /*
-#endif
+#endif // !WIN_ENV
 */
 		} else {
 			SPPlatformFileSpecification fileSpec;
