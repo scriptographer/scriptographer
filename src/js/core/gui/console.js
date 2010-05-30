@@ -34,8 +34,6 @@ var consoleDialog = new FloatingDialog(
 	var textIn = new TextEdit(this, 'multiline') {
 		size: [300, 100],
 		minimumSize: [200, 18],
-		maxLength: 32767,
-		font: 'palette',
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
 					&& tracker.virtualKey == Tracker.KEY_RETURN) {
@@ -76,9 +74,7 @@ var consoleDialog = new FloatingDialog(
 
 	var textOut = new TextEdit(this, 'readonly multiline') {
 		size: [300, 100],
-		minimumSize: [200, 18],
-		maxLength: 32767,
-		font: 'palette'
+		minimumSize: [200, 18]
 	};
 
 	var consoleText = new java.lang.StringBuffer();

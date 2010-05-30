@@ -42,7 +42,7 @@ var mainDialog = new FloatingDialog(
 
 	// Script List
 
-	scriptList = new HierarchyList(this) {
+	var scriptList = new HierarchyListBox(this) {
 		style: 'black-rect',
 		size: [208, 20 * lineHeight],
 		minimumSize: [208, 8 * lineHeight],
@@ -86,7 +86,7 @@ var mainDialog = new FloatingDialog(
 
 	function addFile(list, file, index) {
 		var entry = new HierarchyListEntry(list, Base.pick(index, -1)) {
-			text: file.name,
+			text: file.alternateName || file.name,
 			// backgroundColor: 'background',
 			file: file,
 			lastModified: file.lastModified,
@@ -103,7 +103,7 @@ var mainDialog = new FloatingDialog(
 			entry.childList.sealed = isRoot 
 					? /^(Examples|Tutorials)$/.test(file.name) : list.sealed;
 			// Remember myScriptsEntry
-			if (isRoot && file == scriptDirectory)
+			if (isRoot && !myScriptsEntry && !entry.childList.sealed)
 				myScriptsEntry = entry;
 			entry.expanded = false;
 			entry.populated = false;
@@ -141,11 +141,12 @@ var mainDialog = new FloatingDialog(
 		var files;
 		if (!list.directory) {
 			// Define root directories
-			files = [];
-			if (examplesDirectory.exists())
-				files.push(examplesDirectory);
-			if (scriptDirectory && scriptDirectory.exists())
-				files.push(scriptDirectory);
+			files = scriptRepositories.each(function(repository) {
+				var dir = new File(repository.path);
+				dir.alternateName = repository.name;
+				if (dir.exists())
+					this.push(dir);
+			}, [])
 		} else {
 			files = list.directory.list(function(file) {
 				return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
@@ -155,9 +156,12 @@ var mainDialog = new FloatingDialog(
 		return files;
 	}
 
-	function refreshList(list) {
-		if (!list)
+	function refreshList(list, force) {
+		if (!list) {
 			list = scriptList;
+			if (force)
+				myScriptsEntry = null;
+		}
 		// Do only refresh populated lists
 		if (list.parentEntry && !list.parentEntry.populated)
 			return null;
@@ -173,7 +177,7 @@ var mainDialog = new FloatingDialog(
 		// Now walk through all the already inserted files, find the ones that
 		// need to be removed, and refresh already populated ones.
 		var removed = list.each(function(entry) {
-			if (!files[entry.file.path]) {
+			if (force || !files[entry.file.path]) {
 				// Don't remove right away since that would mess up the each loop.
 				// Instead. we collect them in the removed array, to be removed
 				// in a seperate loop after.
@@ -189,7 +193,7 @@ var mainDialog = new FloatingDialog(
 						entry.update();
 				}
 				if (entry.populated)
-					refreshList(entry.childList);
+					refreshList(entry.childList, false);
 			}
 		}, []);
 		// Remove the deleted files.
@@ -229,7 +233,7 @@ var mainDialog = new FloatingDialog(
 			if (file && file.createNewFile()) {
 				// Use refreshList to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
-				var res = refreshList(list);
+				var res = refreshList(list, false);
 				if (res) {
 					res.added.each(function(newEntry) {
 						if (newEntry.file == file) {
@@ -283,7 +287,8 @@ var mainDialog = new FloatingDialog(
 			ScriptographerEngine.execute(scr, entry.file, scope);
 			// Now copy over handlers from the scope and set them on the tool,
 			// to allow them to be defined globally.
-			// Support deprecated onOptions too, by converting it to onEditOptions.
+			// Support deprecated onOptions too, by converting it to
+			// onEditOptions.
 			var names = entry.type == 'tool'
 				? ['onEditOptions', 'onOptions', 'onSelect', 'onDeselect',
 					'onReselect', 'onMouseDown', 'onMouseUp', 'onMouseDrag',
@@ -359,42 +364,15 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
-	// Script Directory Stuff
-
 	function stopAll() {
 		ScriptographerEngine.stopAll(true, false);
 		tool.reset();
 	}
 
-	function chooseScriptDirectory(dir) {
-		dir = Dialog.chooseDirectory(
-				'Please choose your Scriptographer Script Folder. It is recommended\n'
-				+ ' that you keep your scripts in a dedicated folder within your Documents.',
-				dir || scriptDirectory || new File(java.lang.System.getProperty('user.home')));
-		if (dir && dir.isDirectory()) {
-			setScriptDirectory(dir);
-			return true;
-		}
-	}
-
-	function setScriptDirectory(dir) {
-		stopAll();
-		// Tell Scriptographer about where to look for scripts.
-		script.preferences.scriptDirectory = dir.path;
-		ScriptographerEngine.compileInitScripts(dir);
-		scriptDirectory = dir;
-		refreshList();
-	}
-
-	// Read the script directory first, or ask for it if its not defined:
-	var dir = script.preferences.scriptDirectory;
-	if (dir)
-		dir = new File(dir);
-	if (!dir || !dir.exists() || !dir.isDirectory()) {
-		if (!chooseScriptDirectory(dir))
-			Dialog.alert('Could not find Scriptographer script directory.');
-	} else {
-		setScriptDirectory(dir);
+	function initAll() {
+		scriptRepositories.each(function(repository) {
+			ScriptographerEngine.compileInitScripts(new File(repository.path));
+		});
 	}
 
 	// Effect
@@ -618,9 +596,18 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	var scriptDirEntry = new ListEntry(menu) {
-		text: 'Set Script Directory...',
-		onSelect: chooseScriptDirectory
+	var repositoriesEntry = new ListEntry(menu) {
+		text: 'Manage Script Repositories...',
+		onSelect: function() {
+			var repositories = repositoriesDialog.choose(scriptRepositories);
+			if (repositories) {
+				scriptRepositories = repositories;
+				script.preferences.repositories = repositories;
+				stopAll();
+				initAll();
+				refreshList(null, true);
+			}
+		}
 	};
 
 	var aboutEntry = new ListEntry(menu) {
@@ -652,7 +639,7 @@ var mainDialog = new FloatingDialog(
 	// Event Handlers
 
 	global.onActivate = function() {
-		refreshList();
+		refreshList(null, false);
 	}
 
 	global.onKeyDown = function(event) {
@@ -701,6 +688,8 @@ var mainDialog = new FloatingDialog(
 			createFile();
 		}
 	};
+
+	refreshList(null, true);
 
 	return {
 		title: 'Scriptographer',

@@ -36,29 +36,39 @@ var licenseDialog = new ModalDialog(function() {
 		rightMargin: 10
 	};
 
+	var lines = [
+		'You seem to be running a new version of Scriptographer',
+		'for the first time.',
+		'',
+		'Please read the terms and conditions carefully:',
+		'',
+		'http://www.scriptographer.org/license',
+		'',
+		'And note that if you use Scriptographer in your work,',
+		'you should mention it along with the authors of',
+		'the scripts in use along with the product.',
+		'',
+		'If you use Scriptographer for commercial projects,',
+		'please consider a donation to support the effort:',
+		'',
+		'http://www.scriptographer.org/donation',
+		'',
+		'Thank you!'
+	];
+
+	var urls = { // Links text lines -> urls
+		5: 'http://www.scriptographer.org/license',
+		14: 'http://www.scriptographer.org/donation'
+	};
+
 	var text = new TextPane(this) {
-		text: 'You seem to be running a new version of Scriptographer\n'
-			+ 'for the first time.\n\n'
-			+ 'Please read the terms and conditions carefully:\n\n'
-			+ 'http://www.scriptographer.org/license\n\n'
-			+ 'And note that if you use Scriptographer in your work,\n'
-			+ 'you should mention it along with the authors of\n'
-			+ 'the scripts in use along with the product.\n\n'
-			+ 'If you use Scriptographer for commercial projects,\n'
-			+ 'please consider a donation to support the effort:\n\n'
-			+ 'http://www.scriptographer.org/donation\n\n'
-			+ 'Thank you!',
-
+		text: lines.join('\n'),
 		bottomMargin: 10,
-
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
-				var url = line == 5 ? 'http://www.scriptographer.org/license'
-						: line == 14 ? 'http://www.scriptographer.org/donation'
-						: null;
-				if (url && tracker.point.x < this.getTextSize(url).width)
-					app.launch(url);
+				if (urls[line] && tracker.point.x < this.getTextSize(lines[line]).width)
+					app.launch(urls[line]);
 			}
 			return true;
 		}
@@ -77,7 +87,6 @@ var licenseDialog = new ModalDialog(function() {
 			'preferred fill preferred preferred',
 			'preferred fill preferred'
 		],
-		// font: 'palette';
 		content: {
 			'0, 0, L, T': logo,
 			'1, 0, 3, 1': text,

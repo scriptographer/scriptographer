@@ -38,10 +38,6 @@ var buttonSize = new Size(27, 17);
 var lineHeight = 17;
 var lineBreak = java.lang.System.getProperty('line.separator');
 
-// Script Locations
-var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
-var scriptDirectory = null;
-
 function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
 }
@@ -53,9 +49,26 @@ if (firstRun) {
 	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
 }
 
+// Script Locations
+var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
+var userDirectory = new File(java.lang.System.getProperty('user.home'));
+var scriptRepositories = script.preferences.repositories;
+
 if (script.preferences.accepted) {
+	if (!scriptRepositories) {
+		scriptRepositories = [
+			{ name: 'Examples', path: examplesDirectory.path }
+		];
+		var dir = Dialog.chooseDirectory(
+				'Please choose your Scriptographer Script Folder. It is recommended\n'
+				+ ' that you keep your scripts in a dedicated folder within your Documents.',
+				userDirectory);
+		if (dir && dir.isDirectory())
+			scriptRepositories.push({ name: 'My Scripts', path: dir.path });
+	}
 	include('console.js');
 	include('about.js');
+	include('repositories.js');
 	include('main.js');
 
 	if (!script.preferences.installed) {

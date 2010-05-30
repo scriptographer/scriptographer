@@ -27,10 +27,6 @@
 
 var aboutDialog = new ModalDialog(function() {
 	var that = this;
-	// Add trailing zeros to revision
-	var revision = scriptographer.revision + '';
-	while (revision.length < 3)
-		revision = '0' + revision;
 
 	var logo = new ImagePane(this) {
 		image: getImage('logo.png'),
@@ -38,7 +34,8 @@ var aboutDialog = new ModalDialog(function() {
 	};
 
 	var lines = [
-		'Scriptographer ' + scriptographer.version + '.' + revision,
+		'Scriptographer ' + scriptographer.version + '.'
+				+ scriptographer.revision.toPaddedString(3),
 		'http://scriptographer.org',
 		'',
 		'Copyright \u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni',
@@ -60,7 +57,7 @@ var aboutDialog = new ModalDialog(function() {
 		'Java ' + java.lang.System.getProperty('java.version')
 	];
 
-	var urls = { // line -> url
+	var urls = { // Links text lines -> urls
 		1: 'http://scriptographer.org',
 		7: 'http://scratchdisk.com',
 		10: 'http://jonathanpuckey.com',
@@ -71,7 +68,6 @@ var aboutDialog = new ModalDialog(function() {
 	var text = new TextPane(this) {
 		text: lines.join('\n'),
 		bottomMargin: 8,
-
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
