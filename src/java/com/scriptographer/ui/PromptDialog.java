@@ -51,7 +51,7 @@ public class PromptDialog extends ModalDialog {
 		setTitle(title);
 		this.components = components;
 		// Add one more row for the buttons.
-		TableLayout layout = Palette.createLayout(this, components, true, 1);
+		TableLayout layout = Palette.createLayout(this, components, true, 1, 5);
 		
 		// Add buttons to the layout
 		ItemGroup buttons = new ItemGroup(this);

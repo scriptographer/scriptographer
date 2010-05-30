@@ -92,7 +92,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 		setTitle(title);
 		PaletteComponent[] paletteItems =
 				PaletteComponent.getComponents(components, values);
-		createLayout(this, paletteItems, false, 0);
+		createLayout(this, paletteItems, false, 0, 3);
 		hasLabels = false;
 		for (PaletteComponent item : paletteItems) {
 			if (item != null) {
@@ -104,9 +104,9 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 		}
 
 		if (hasLabels)
-			setMargin(2, 2, 0, 4);
+			setMargin(2, 2, 2, 4);
 		else
-			setMargin(2, -1, 0, -1);
+			setMargin(2, -1, 2, -1);
 	}
 
 	public Palette(String title, Map<String, Object> components) {
@@ -220,7 +220,8 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 	}
 
 	protected static TableLayout createLayout(Dialog dialog,
-			PaletteComponent[] components, boolean hasLogo, int extraRows) {
+			PaletteComponent[] components, boolean hasLogo, int extraRows,
+			int gap) {
 		// First collect all content in a LinkedHashMap, then create the layout
 		// at the end, and add the items to it. This allows flexibility
 		// regarding amount of rows, as needed by the ruler element that uses
@@ -263,7 +264,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 				: new double[] { TableLayout.PREFERRED, TableLayout.FILL },
 			rows
 		};
-		TableLayout layout = new TableLayout(sizes, 0, 3);
+		TableLayout layout = new TableLayout(sizes, 0, gap);
 		dialog.setLayout(layout);
 		dialog.setContent(content);
 

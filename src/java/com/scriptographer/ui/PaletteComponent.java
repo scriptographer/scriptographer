@@ -401,7 +401,9 @@ public class PaletteComponent implements ChangeReceiver {
 			if (size != null && !size.equals(item.getSize())) {
 				item.setSize(size);
 				// Tell palette to resize in next commit
-				((Palette) item.getDialog()).onLayoutChanged();
+				Dialog dialog = item.getDialog();
+				if (dialog instanceof Palette)
+					((Palette) dialog).onLayoutChanged();
 			}
 		}
 	}
