@@ -65,6 +65,7 @@ import com.scriptographer.ui.Timer;
 public class ScriptographerEngine {
 	private static File pluginDir = null;
 	private static File coreDir = null;
+	private static File[] scriptDirectories = null;
 	private static PrintStream errorLogger = null;
 	private static PrintStream consoleLogger = null;
 	private static Thread mainThread;
@@ -155,15 +156,36 @@ public class ScriptographerEngine {
 		return pluginDir;
 	}
 
+	public static void setScriptDirectories(File[] directories) {
+		scriptDirectories = directories;
+		// When setting script directories for error reporting, also compile
+		// init scripts within them.
+		for (int i = 0, l = scriptDirectories.length; i < l; i++) {
+			compileInitScripts(scriptDirectories[i]);
+		}
+	}
+
 	public static String[] getScriptPath(File file, boolean hideCore) {
 		ArrayList<String> parts = new ArrayList<String>();
-		while (true) {
+		boolean loop = true;
+		while (loop) {
 			parts.add(0, file.getName());
 			file = file.getParentFile();
 			if (file == null || file.equals(pluginDir))
 				break;
 			if (hideCore && file.equals(coreDir))
 				return null;
+			if (scriptDirectories != null) {
+				for (int i = 0, l = scriptDirectories.length; i < l; i++) {
+					if (file.equals(scriptDirectories[i])) {
+						// Add the script directory name itself too.
+						parts.add(0, file.getName());
+						loop = false;
+						break;
+					}
+				}
+			}
+					
 		}
 		return parts.toArray(new String[parts.size()]);
 	}
@@ -175,7 +197,7 @@ public class ScriptographerEngine {
 	 * @throws IOException
 	 * @throws ScriptException
 	 */
-	public static void compileInitScripts(File dir) {
+	protected static void compileInitScripts(File dir) {
 		File []files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
@@ -200,7 +222,7 @@ public class ScriptographerEngine {
 		}
 	}
 
-	public static void loadLibraries(File dir) {
+	protected static void loadLibraries(File dir) {
 		File[] files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {

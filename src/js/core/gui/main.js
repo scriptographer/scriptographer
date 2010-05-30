@@ -370,9 +370,13 @@ var mainDialog = new FloatingDialog(
 	}
 
 	function initAll() {
-		scriptRepositories.each(function(repository) {
-			ScriptographerEngine.compileInitScripts(new File(repository.path));
+		var directories = scriptRepositories.collect(function(repository) {
+			var file = new File(repository.path);
+			if (file.exists())
+				return file;
 		});
+		ScriptographerEngine.setScriptDirectories(directories);
+		refreshList(null, true);
 	}
 
 	// Effect
@@ -605,7 +609,6 @@ var mainDialog = new FloatingDialog(
 				script.preferences.repositories = repositories;
 				stopAll();
 				initAll();
-				refreshList(null, true);
 			}
 		}
 	};
@@ -689,7 +692,7 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	refreshList(null, true);
+	initAll();
 
 	return {
 		title: 'Scriptographer',
