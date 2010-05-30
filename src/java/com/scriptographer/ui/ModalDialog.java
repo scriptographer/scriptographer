@@ -96,6 +96,7 @@ public class ModalDialog extends Dialog {
 			return item;
 		} finally {
 			modal = false;
+			setVisible(false);
 		}
 	}
 
@@ -106,6 +107,16 @@ public class ModalDialog extends Dialog {
 	protected void onHide() {
 		this.endModal();
 		super.onHide();
+	}
+
+	protected void onNotify(Notifier notifier) {
+		super.onNotify(notifier);
+	}
+
+	protected void onInitialize() {
+		if (modal)
+			setVisible(true);
+		super.onInitialize();
 	}
 
 	protected void onActivate() {

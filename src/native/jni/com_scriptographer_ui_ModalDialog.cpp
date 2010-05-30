@@ -40,10 +40,8 @@
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ModalDialog_nativeDoModal(JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		sADMDialog->Show(dialog, true);
 		int id = env->IsInstanceOf(obj, gEngine->cls_ui_PopupDialog) ? sADMDialog->DisplayAsPopupModal(dialog) : sADMDialog->DisplayAsModal(dialog);
 		ADMItemRef item = sADMDialog->GetItem(dialog, id);
-		sADMDialog->Show(dialog, false);
 		if (item != NULL)
 			return gEngine->getItemObject(item);
 	} EXCEPTION_CONVERT(env);
