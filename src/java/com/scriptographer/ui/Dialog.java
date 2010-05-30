@@ -180,6 +180,8 @@ public abstract class Dialog extends Component {
 	 * Whatever fires first, triggers initialize
 	 */
 	private void initialize(boolean setBoundaries, boolean initBounds) {
+		if (unitialized)
+			setUpdateEnabled(false);
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
@@ -650,6 +652,7 @@ public abstract class Dialog extends Component {
 				onDeactivate();
 				break;
 			case WINDOW_SHOW:
+				setUpdateEnabled(true);
 				// See comment for initialize to understand why this is fired here too
 				initialize(true, true);
 				visible = true;
