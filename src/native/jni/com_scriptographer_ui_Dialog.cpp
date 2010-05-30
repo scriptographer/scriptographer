@@ -1051,7 +1051,7 @@ public:
 			jstring filename, jstring filter, jobject initialDir = NULL,
 			jobject selectedFile = NULL) {
 		NavigationService service(env, type, message, filename, filter);
-		service.execute(env, initialDir, selectedFile);
+		return service.execute(env, initialDir, selectedFile);
 	}
 	
 private:
