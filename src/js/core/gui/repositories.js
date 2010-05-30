@@ -31,6 +31,8 @@ var repositoriesDialog = new ModalDialog(function() {
 	// only width on edits).
 	this.font = 'palette';
 
+	var buttonMargin = 0; //[-1, -1, 1, -1];
+
 	var cancelButton = new Button(this) {
 		text: 'Cancel'
 	};
@@ -39,50 +41,77 @@ var repositoriesDialog = new ModalDialog(function() {
 		text: '  OK  '
 	};
 
-	var nameEdit = new TextEdit(this) {
-		onChange: changeEntry
+	var upButton = new ImageButton(this) {
+		image: getImage('up.png'),
+		size: buttonSize,
+		toolTip: 'Move Repository Up',
+		margin: buttonMargin,
+		marginLeft: 0,
+		onClick: function() {
+			moveEntry(-1);
+		}
 	};
 
-	var pathEdit = new TextEdit(this) {
-		onChange: changeEntry
+	var downButton = new ImageButton(this) {
+		image: getImage('down.png'),
+		size: buttonSize,
+		toolTip: 'Move Repository Down',
+		margin: buttonMargin,
+		onClick: function() {
+			moveEntry(2);
+		}
 	};
 
-	var chooseButton = new Button(this) {
-		text: 'Choose',
-		onClick: chooseDirectory
-	}
-
-	var addButton = new Button(this) {
-		text: 'Add',
+	var addButton = new ImageButton(this) {
+		image: getImage('new.png'),
+		size: buttonSize,
+		toolTip: 'Add New Repository',
+		margin: buttonMargin,
 		onClick: function() {
 			addEntry('', '', true);
 			chooseDirectory();
 			nameEdit.active = true;
 		}
-	}
+	};
 
-	var removeButton = new Button(this) {
-		text: 'Remove',
+	var removeButton = new ImageButton(this) {
+		image: getImage('remove.png'),
+		toolTip: 'Remove Repository',
+		margin: buttonMargin,
+		size: buttonSize,
 		onClick: removeEntry
-	}
+	};
 
-	var upButton = new Button(this) {
-		text: 'Up',
-		onClick: function() {
-			moveEntry(-1);
-		}
-	}
+	var visibleButton = new ImageButton(this) {
+		image: getImage('visible.png'),
+		toolTip: 'Show / Hide Repository',
+		margin: buttonMargin,
+		size: buttonSize,
+		onClick: removeEntry
+	};
 
-	var downButton = new Button(this) {
-		text: 'Down',
-		onClick: function() {
-			moveEntry(2);
-		}
-	}
+	var nameEdit = new TextEdit(this) {
+		width: 80,
+		onChange: changeEntry,
+		margin: buttonMargin
+	};
+
+	var pathEdit = new TextEdit(this) {
+		onChange: changeEntry,
+		margin: buttonMargin
+	};
+
+	var chooseButton = new ImageButton(this) {
+		image: getImage('folder.png'),
+		size: buttonSize,
+		toolTip: 'Choose Directory',
+		margin: buttonMargin,
+		onClick: chooseDirectory
+	};
 
 	var examplesCheckbox = new CheckBox(this) {
 		text: 'Show Examples'
-	}
+	};
 
 	var selectedEntry = null;
 	var previousEntry = {}; // To force a change when setting to null.
@@ -119,7 +148,8 @@ var repositoriesDialog = new ModalDialog(function() {
 	}
 
 	function removeEntry() {
-		if (selectedEntry) {
+		if (selectedEntry && Dialog.confirm('Removing Repository',
+				'Do you really want to remove this repository?')) {
 			var index = selectedEntry.index;
 			selectedEntry.remove();
 			var entry;
@@ -158,7 +188,7 @@ var repositoriesDialog = new ModalDialog(function() {
 	function chooseDirectory() {
 		if (selectedEntry) {
 			var dir = Dialog.chooseDirectory(
-					'Choose a Scriptographer Script Repository Folder.',
+					'Choose a Scriptographer Script Repository Folder:',
 					selectedEntry.directory || userDirectory);
 			if (dir) {
 				selectedEntry.directory = dir;
@@ -168,8 +198,9 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	}
 
-	var width = 400;
+	var width = 500;
 	var repositoriesList = new ListBox(this) {
+		style: 'black-rect',
 		size: [width, 10 * lineHeight],
 		minimumSize: [width, 8 * lineHeight],
 		entryTextRect: [0, 0, width, lineHeight],
@@ -193,19 +224,24 @@ var repositoriesDialog = new ModalDialog(function() {
 		margin: 8,
 		layout: [
 			'preferred preferred fill preferred',
-			'preferred preferred fill',
-			2, 2
+			'preferred preferred preferred',
+			0, 0
 		],
 		content: {
 			'0, 0, 3, 0': repositoriesList,
 			'0, 1': new ItemGroup(this) {
-				layout: [ 'left' ],
-				content: [
-					addButton,
-					removeButton,
-					upButton,
-					downButton
-				]
+				layout: [
+					'preferred preferred 4 preferred preferred 4 preferred',
+					'preferred',
+					-1, -1
+				],
+				content: {
+					'0, 0': upButton,
+					'1, 0': downButton,
+					'3, 0': addButton,
+					'4, 0': removeButton,
+					'6, 0': visibleButton
+				}
 			},
 			'1, 1, left, center': nameEdit,
 			'2, 1, full, center': pathEdit,

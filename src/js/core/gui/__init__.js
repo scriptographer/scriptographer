@@ -65,6 +65,7 @@ if (script.preferences.accepted) {
 				userDirectory);
 		if (dir && dir.isDirectory())
 			scriptRepositories.push({ name: 'My Scripts', path: dir.path });
+		script.preferences.repositories = scriptRepositories;
 	}
 	include('console.js');
 	include('about.js');
