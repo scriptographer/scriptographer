@@ -211,7 +211,7 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
-	function createFile() {
+	function createScript() {
 		var entry = scriptList.selectedLeafEntry;
 		var list = entry && (entry.isDirectory ? entry.childList : entry.list);
 		if (!list || list.sealed)
@@ -583,9 +583,17 @@ var mainDialog = new FloatingDialog(
 
 	var executeEntry = new ListEntry(menu) {
 		text: 'Execute Script',
-		onSelect: function() {
-			execute();
-		}
+		onSelect: execute
+	};
+
+	var stopAllEntry = new ListEntry(menu) {
+		text: 'Stop Running Scripts',
+		onSelect: stopAll
+	};
+
+	var createScriptEntry = new ListEntry(menu) {
+		text: 'Create a New Script...',
+		onSelect: createScript
 	};
 
 	var consoleEntry = new ListEntry(menu) {
@@ -600,8 +608,12 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
+	var separator1Entry = new ListEntry(menu) {
+		separator: true
+	};
+
 	var repositoriesEntry = new ListEntry(menu) {
-		text: 'Manage Script Repositories...',
+		text: 'Manage Repositories...',
 		onSelect: function() {
 			var repositories = repositoriesDialog.choose(scriptRepositories);
 			if (repositories) {
@@ -628,7 +640,7 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	var separatorEntry = new ListEntry(menu) {
+	var separator2Entry = new ListEntry(menu) {
 		separator: true
 	};
 
@@ -657,6 +669,7 @@ var mainDialog = new FloatingDialog(
 	var playButton = new ImageButton(this) {
 		image: getImage('play.png'),
 		size: buttonSize,
+		toolTip: 'Execute Script',
 		onClick: function() {
 			execute();
 		}
@@ -665,6 +678,7 @@ var mainDialog = new FloatingDialog(
 	var stopButton = new ImageButton(this) {
 		image: getImage('stop.png'),
 		size: buttonSize,
+		toolTip: 'Stop Running Scripts',
 		onClick: stopAll
 	};
 
@@ -676,19 +690,19 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
+	var newScriptButton = new ImageButton(this) {
+		image: getImage('script.png'),
+		size: buttonSize,
+		toolTip: 'Create a New Script...',
+		onClick: createScript
+	};
+
 	var consoleButton = new ImageButton(this) {
 		image: getImage('console.png'),
 		size: buttonSize,
+		toolTip: 'Show / Hide Console',
 		onClick: function() {
 			consoleDialog.visible = !consoleDialog.visible;
-		}
-	};
-
-	var newButton = new ImageButton(this) {
-		image: getImage('script.png'),
-		size: buttonSize,
-		onClick: function() {
-			createFile();
 		}
 	};
 
@@ -706,7 +720,7 @@ var mainDialog = new FloatingDialog(
 					stopButton,
 					effectButton,
 					new Spacer(4, 0),
-					newButton,
+					newScriptButton,
 					consoleButton,
 				]
 			}

@@ -91,6 +91,7 @@ var consoleDialog = new FloatingDialog(
 	var clearButton = new ImageButton(this) {
 		image: getImage('refresh.png'),
 		size: buttonSize,
+		toolTip: 'Clear Console',
 		onClick: function() {
 			textOut.text = '';
 			consoleText.setLength(0);
