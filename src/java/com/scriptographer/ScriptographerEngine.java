@@ -160,10 +160,10 @@ public class ScriptographerEngine {
 		while (true) {
 			parts.add(0, file.getName());
 			file = file.getParentFile();
-			if (hideCore && file.equals(coreDir))
-				return null;
 			if (file == null || file.equals(pluginDir))
 				break;
+			if (hideCore && file.equals(coreDir))
+				return null;
 		}
 		return parts.toArray(new String[parts.size()]);
 	}
