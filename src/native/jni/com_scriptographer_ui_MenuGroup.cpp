@@ -29,6 +29,8 @@
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ui_MenuGroup.h"
 
+#define NAME_PREFIX "Scriptographer "
+
 /*
  * com.scriptographer.ai.MenuGroup
  */
@@ -74,4 +76,38 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuGroup_getOptions(JNIEnv *e
 		return options;
 	} EXCEPTION_CONVERT(env);
 	return 0;
+}
+
+/*
+ * java.util.ArrayList nativeGetGroups()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_MenuGroup_nativeGetGroups(JNIEnv *env, jclass cls) {
+	try {
+		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
+#if kPluginInterfaceVersion < kAI15
+		long count;
+#else // kPluginInterfaceVersion >= kAI15
+		ai::int32 count;
+#endif // kPluginInterfaceVersion >= kAI15
+		sAIMenu->CountMenuGroups(&count);
+		for (int i = 0; i < count; i++) {
+			AIMenuGroup group;
+			sAIMenu->GetNthMenuGroup(i, &group);
+#if kPluginInterfaceVersion < kAI12
+			char *name;
+#else // kPluginInterfaceVersion >= kAI12
+			const char *name;
+#endif // kPluginInterfaceVersion >= kAI12
+			sAIMenu->GetMenuGroupName(group, &name);
+			// See wether it starts with Scriptographer :
+			if (strstr(name, NAME_PREFIX) == name) {
+				// Create the wrapper
+				jobject groupObj = gEngine->wrapMenuGroupHandle(env, group);
+				// And add it to the array
+				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, groupObj);
+			}
+		}
+		return array;
+	} EXCEPTION_CONVERT(env);
+	return NULL;
 }

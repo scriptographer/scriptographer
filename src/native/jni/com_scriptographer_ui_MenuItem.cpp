@@ -180,14 +180,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isChecked(JNIEnv 
 }
 
 /*
- * void nativeTest(java.lang.String arg1)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_nativeTest(JNIEnv *env, jobject obj, jstring name) {
-	try {
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * boolean setCommand(java.lang.String key, int arg2)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv *env, jobject obj, jstring key, jint modifiers) {
@@ -203,4 +195,34 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv
 		delete chars;
 	} EXCEPTION_CONVERT(env);
 	return false;
+}
+
+/*
+ * java.util.ArrayList nativeGetItems()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_MenuItem_nativeGetItems(JNIEnv *env, jclass cls) {
+	try {
+		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
+#if kPluginInterfaceVersion < kAI15
+		long count;
+#else // kPluginInterfaceVersion >= kAI15
+		ai::int32 count;
+#endif // kPluginInterfaceVersion >= kAI15
+		sAIMenu->CountMenuItems(&count);
+		SPPluginRef plugin = gPlugin->getPluginRef();
+		for (int i = 0; i < count; i++) {
+			AIMenuItemHandle item;
+			SPPluginRef itemPlugin;
+			if (!sAIMenu->GetNthMenuItem(i, &item)
+					&& !sAIMenu->GetMenuItemPlugin(item, &itemPlugin)
+					&& plugin == itemPlugin) {
+				// Create the wrapper
+				jobject itemObj = gEngine->wrapMenuItemHandle(env, item);
+				// And add it to the array
+				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, itemObj);
+			}
+		}
+		return array;
+	} EXCEPTION_CONVERT(env);
+	return NULL;
 }

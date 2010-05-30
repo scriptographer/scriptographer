@@ -369,12 +369,13 @@ public:
 	jclass cls_ui_Tracker;
 	jmethodID mid_ui_Tracker_onTrack;
 
+	jclass cls_ui_MenuGroup;
+	jmethodID mid_ui_MenuGroup_wrapHandle;
+
 	jclass cls_ui_MenuItem;
 	jmethodID mid_ui_MenuItem_wrapHandle;
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
-
-	jclass cls_ui_MenuGroup;
 
 	jclass cls_ui_Timer;
 	jmethodID mid_ui_Timer_onExecute;
@@ -595,8 +596,9 @@ public:
 	void setItemDictionary(JNIEnv *env, jobject obj, AIDictionaryRef dictionary, AIDictKey key);
 
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc = NULL);
+	jobject wrapMenuGroupHandle(JNIEnv *env, AIMenuGroup item);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
-	
+
 	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
 	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL, jobject validation = NULL);
 	jobject wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc = NULL);

@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import java.util.ArrayList;
+
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
@@ -62,7 +64,7 @@ public class MenuItem extends NativeObject{
 	protected MenuGroup group;
 	private MenuGroup subGroup;
 
-	private static IntMap<MenuItem> items = new IntMap<MenuItem>();
+	private static IntMap<MenuItem> items = null;
 
 	private static int uniqueId = 0;
 
@@ -71,28 +73,26 @@ public class MenuItem extends NativeObject{
 
 		this.group = group;
 
-		synchronized(items) {
-			for (MenuItem item : items.values()) {
-				if (this.equals(item)) {
-					// take over this item:
-					handle = item.handle;
-					item.handle = 0;
-				}
-			}
+		IntMap<MenuItem> items = getItems();
+		Integer handle = items.keyOf(this);
+		if (handle != null) {
+			// Take over the handle from the other item
+			items.get(handle).handle = 0;
+			this.handle = handle;
 		}
 		
 		// if no item has been taken over, create a new one:
-		if (handle == 0)
-			handle = nativeCreate(name, name, group.name, options);
+		if (this.handle == 0)
+			this.handle = nativeCreate(name, name, group.name, options);
 
-		if (handle == 0)
+		if (this.handle == 0)
 			throw new ScriptographerException("Unable to create MenuItem.");
 
 		items.put(this.handle, this);
 	}
 
 	public MenuItem(MenuGroup group) {
-		this (group, OPTION_NONE);
+		this(group, OPTION_NONE);
 	}
 
 	/**
@@ -158,13 +158,14 @@ public class MenuItem extends NativeObject{
 			int groupHandle, String groupName) {
 		MenuItem item = getItem(handle);
 		if (item == null)
-			item = new MenuItem(handle, name, MenuGroup.wrapGroupHandle(
+			item = new MenuItem(handle, name, MenuGroup.wrapHandle(
 					groupHandle, groupName));
 		return item;
 	}
 
 	public void remove() {
-		nativeRemove(handle);
+		if (subGroup == null)
+			nativeRemove(handle);
 		if (items.get(handle) == this)
 			items.remove(handle);
 		handle = 0;
@@ -278,8 +279,19 @@ public class MenuItem extends NativeObject{
 	}
 
 	private static MenuItem getItem(int handle) {
-		return (MenuItem) items.get(handle);
+		return (MenuItem) getItems().get(handle);
 	}
+
+	private static IntMap<MenuItem> getItems() {
+		if (items == null) {
+			items = new IntMap<MenuItem>();
+			for (MenuItem item : nativeGetItems())
+				items.put(item.handle, item);
+		}
+		return items;
+	}
+
+	private static native ArrayList<MenuItem> nativeGetItems();
 
 	public native boolean setCommand(String key, int modifiers);
 }

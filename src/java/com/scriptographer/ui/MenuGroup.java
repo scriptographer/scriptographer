@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import java.util.ArrayList;
+
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.ScriptographerException;
 
@@ -61,7 +63,7 @@ public class MenuGroup extends NativeObject {
 		GROUP_PRINT								= new MenuGroup("Print"),
 		GROUP_SEND								= new MenuGroup("Send Document"),
 
-		GROUP_APPLICATION_UTILITIES			= new MenuGroup("Application Utilities"),
+		GROUP_APPLICATION_UTILITIES				= new MenuGroup("Application Utilities"),
 		GROUP_QUIT								= new MenuGroup("Quit"),
 
 		GROUP_UNDO								= new MenuGroup("Undo"),
@@ -180,7 +182,7 @@ public class MenuGroup extends NativeObject {
 
 	protected String name;
 
-	private static IntMap<MenuGroup> groups = new IntMap<MenuGroup>();
+	private static IntMap<MenuGroup> groups = null;
 
 	private static int uniqueId = 0;
 
@@ -192,6 +194,15 @@ public class MenuGroup extends NativeObject {
 	 */
 	private MenuGroup(String name) {
 		this.name = name != null ? name : "Scriptographer MenuGroup " + (++uniqueId);
+		if (name == null) {
+			IntMap<MenuGroup> groups = getGroups();
+			Integer handle = groups.keyOf(this);
+			if (handle != null) {
+				// Take over the handle from the other item
+				groups.get(handle).handle = 0;
+				this.handle = handle;
+			}
+		}
 	}
 
 	/**
@@ -200,34 +211,40 @@ public class MenuGroup extends NativeObject {
 	 */
 	public MenuGroup(MenuGroup near, int options) {
 		this(null);
-		// use this.name, instead of name, because it was modified
-		// in the constructor above
-		handle = nativeCreate(name, near.name, 0, options);
+		if (handle == 0) {
+			// use this.name, instead of name, because it was modified
+			// in the constructor above
+			handle = nativeCreate(name, near.name, 0, options);
 
-		if (handle == 0)
-			throw new ScriptographerException("Unable to create MenuGroup.");
-
+			if (handle == 0)
+				throw new ScriptographerException("Unable to create MenuGroup.");
+		} else {
+			setOptions(options);
+		}
 		putGroup(this);
 	}
 
 	/**
-	 * Creates a submenu group at parent
+	 * Creates a sub-menu group at parent
 	 * @param parent
 	 * @param options MenuGroup.OPTION_*
 	 */
 	public MenuGroup(MenuItem parent, int options) {
 		this(null);
-		// if parent already has a subGroup, appendChild this one after:
-		MenuGroup subGroup = parent.getSubGroup();
-		if (subGroup != null) {
-			handle = nativeCreate(this.name, subGroup.name, 0, options);
+		if (handle == 0) {
+			// if parent already has a subGroup, appendChild this one after:
+			MenuGroup subGroup = parent.getSubGroup();
+			if (subGroup != null) {
+				handle = nativeCreate(this.name, subGroup.name, 0, options);
+			} else {
+				handle = nativeCreate(this.name, null, parent.handle, options);
+			}
+	
+			if (handle == 0)
+				throw new ScriptographerException("Unable to create MenuGroup.");
 		} else {
-			handle = nativeCreate(this.name, null, parent.handle, options);
+			setOptions(options);
 		}
-
-		if (handle == 0)
-			throw new ScriptographerException("Unable to create MenuGroup.");
-
 		putGroup(this);
 	}
 
@@ -246,10 +263,12 @@ public class MenuGroup extends NativeObject {
 	/**
 	 * Called from the native environment to wrap a MenuGroup:
 	 */
-	protected static MenuGroup wrapGroupHandle(int handle, String name) {
+	protected static MenuGroup wrapHandle(int handle, String name) {
 		MenuGroup group = getGroup(handle);
 		if (group == null) {
 			group = new MenuGroup(handle, name);
+		} else {
+			group.name = name;
 		}
 		return group;
 	}
@@ -260,7 +279,8 @@ public class MenuGroup extends NativeObject {
 	public boolean equals(Object obj) {
 		if (obj instanceof MenuGroup) {
 			MenuGroup group = (MenuGroup) obj;
-			return name.equals(group.name);
+			return name != null && name.equals(group.name)
+					|| name == group.name;
 		}
 		return false;
 	}
@@ -269,10 +289,21 @@ public class MenuGroup extends NativeObject {
 	public native int getOptions();
 
 	private static void putGroup(MenuGroup group) {
-		groups.put(group.handle, group);
+		getGroups().put(group.handle, group);
 	}
 
 	private static MenuGroup getGroup(int handle) {
-		return (MenuGroup) groups.get(handle);
+		return (MenuGroup) getGroups().get(handle);
 	}
+
+	private static IntMap<MenuGroup> getGroups() {
+		if (groups == null) {
+			groups = new IntMap<MenuGroup>();
+			for (MenuGroup group : nativeGetGroups())
+				groups.put(group.handle, group);
+		}
+		return groups;
+	}
+
+	private static native ArrayList<MenuGroup> nativeGetGroups();
 }

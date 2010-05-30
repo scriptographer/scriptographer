@@ -704,12 +704,13 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ui_Tracker = loadClass(env, "com/scriptographer/ui/Tracker");
 	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/ui/NotificationHandler;IIIIIIICJ)Z");
 
+	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
+	mid_ui_MenuGroup_wrapHandle = getStaticMethodID(env, cls_ui_MenuGroup, "wrapHandle", "(ILjava/lang/String;)Lcom/scriptographer/ui/MenuGroup;");
+
 	cls_ui_MenuItem = loadClass(env, "com/scriptographer/ui/MenuItem");
 	mid_ui_MenuItem_wrapHandle = getStaticMethodID(env, cls_ui_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ui/MenuItem;");
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
-
-	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
 
 	cls_ui_Timer = loadClass(env, "com/scriptographer/ui/Timer");
 	mid_ui_Timer_onExecute = getStaticMethodID(env, cls_ui_Timer, "onExecute", "(I)V");
@@ -1725,6 +1726,27 @@ jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env, AILiveEffect
 	JNI_CHECK_ENV
 	return callStaticObjectMethod(env, cls_ai_LiveEffectParameters, mid_ai_LiveEffectParameters_wrapHandle,
 			(jint) parameters, (jint) (doc ? doc : gWorkingDoc));
+}
+
+/**
+ * Wraps the handle in a java object. see the Java function MenuGroup.wrapHandle
+ * to see how he cashing of already wrapped objects is handled.
+ *
+ * throws exceptions
+ */
+jobject ScriptographerEngine::wrapMenuGroupHandle(JNIEnv *env, AIMenuGroup group) {
+	JNI_CHECK_ENV
+#if kPluginInterfaceVersion < kAI12
+	char *groupName;
+#else // kPluginInterfaceVersion >= kAI12
+	const char *groupName;
+#endif // kPluginInterfaceVersion >= kAI12
+	if (!sAIMenu->GetMenuGroupName(group, &groupName)) {
+		return callStaticObjectMethod(env, cls_ui_MenuGroup, mid_ui_MenuGroup_wrapHandle,
+			(jint) group, convertString(env, groupName)
+		);
+	}
+	return NULL;
 }
 
 /**
