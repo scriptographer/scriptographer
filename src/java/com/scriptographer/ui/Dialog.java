@@ -118,9 +118,6 @@ public abstract class Dialog extends Component {
 	// Used to see whether the size where specified before the dialog is
 	// initialized
 	private boolean sizeSet = false;
-	// Used to check if the boundaries (min / max size) are to bet set after
-	// initialization
-	private boolean boundsInitialized = false;
 
 	// For scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
 	// store a reference to the script's preferences object so we can always
@@ -138,6 +135,10 @@ public abstract class Dialog extends Component {
 		preferences = ScriptographerEngine.getPreferences(script);
 		items = new ArrayList<Item>();
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
+		// Always set dialogs hidden first. 
+		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
+		// displayed in initialize
+		setVisible(false);
 		size = nativeGetSize();
 
 		isResizing = style == STYLE_RESIZING_FLOATING ||
@@ -153,10 +154,6 @@ public abstract class Dialog extends Component {
 				: EnumSet.noneOf(DialogOption.class);
 		if (handle != 0)
 			dialogs.add(this);
-		// Always set dialogs hidden first. 
-		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
-		// displayed in initialize
-		setVisible(false);
 	}
 
 	public void setFont(DialogFont font) {
@@ -185,17 +182,16 @@ public abstract class Dialog extends Component {
 	 * We fake this through onActivate and a native dialog timer.
 	 * Whatever fires first, triggers initialize
 	 */
-	private void initialize(boolean setBoundaries, boolean initBounds) {
-		if (unitialized)
-			setUpdateEnabled(false);
+	private void initialize(boolean setBoundaries) {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
+			boolean show = false;
 			if (unitialized) {
 				unitialized = false;
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not natively executed yet. handle this here
-				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
+				show = !options.contains(DialogOption.HIDDEN) || visible;
 				boolean prefsLoaded = false;
 				if (options.contains(DialogOption.REMEMBER_PLACING)) {
 					prefsLoaded = loadPreferences(title);
@@ -227,8 +223,6 @@ public abstract class Dialog extends Component {
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
-				if (show)
-					setVisible(true);
 			}
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac CS3
@@ -239,18 +233,8 @@ public abstract class Dialog extends Component {
 				if (maxSize != null)
 					nativeSetMaximumSize(maxSize.width, maxSize.height);
 			}
-			// Call initBounds on all items at the first time the dialog is 
-			// shown. This fixes issues on CS4 and above with wrong item bounds.
-			if (initBounds && !boundsInitialized) {
-				for (Item item : items)
-					item.initBounds();
-				// Also call doLayout() again to be sure, as there are various
-				// situations when the dialog partially appears uninitialized,
-				// e.g. on CS3 upon first loading, and CS4 and above after
-				// reloading.
-				doLayout();
-				boundsInitialized = true;
-			}
+			if (show)
+				setVisible(true);
 		}
 	}
 	
@@ -309,7 +293,7 @@ public abstract class Dialog extends Component {
 	 */
 	public static void initializeAll() {
 		for (Dialog dialog : dialogs)
-			dialog.initialize(false, false);
+			dialog.initialize(false);
 	}
 
 	public boolean removeItem(Item item) {
@@ -640,7 +624,7 @@ public abstract class Dialog extends Component {
 		try {
 			switch (notifier) {
 			case INITIALIZE:
-				initialize(true, false);
+				initialize(true);
 				break;
 			case DESTROY:
 				if (options.contains(DialogOption.REMEMBER_PLACING))
@@ -649,7 +633,7 @@ public abstract class Dialog extends Component {
 				break;
 			case WINDOW_ACTIVATE:
 				// See comment for initialize to understand why this is fired here too
-				initialize(true, false);
+				initialize(true);
 				active = true;
 				onActivate();
 				break;
@@ -658,9 +642,6 @@ public abstract class Dialog extends Component {
 				onDeactivate();
 				break;
 			case WINDOW_SHOW:
-				setUpdateEnabled(true);
-				// See comment for initialize to understand why this is fired here too
-				initialize(true, true);
 				visible = true;
 				fireOnClose = true;
 				onShow();

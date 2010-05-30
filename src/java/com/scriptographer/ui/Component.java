@@ -241,6 +241,10 @@ abstract class Component extends NotificationHandler {
 		return this.getAWTContainer().getLayout();
 	}
 
+	public void doLayout() {
+		this.getAWTContainer().doLayout();
+	}
+
 	/**
 	 * @jshide
 	 */

@@ -108,24 +108,6 @@ public abstract class Item extends Component {
 		bounds = new Rectangle(nativeBounds).add(margin);
 	}
 
-	protected void initBounds() {
-		if (!sizeSet)
-			setSize(getBestSize());
-		// This is used to fix ADM bugs on CS4 where an item does not update its
-		// native bounds in certain situations (hidden window?) even if it was
-		// asked to do so.
-		Rectangle bounds = nativeGetBounds();
-		if (!bounds.equals(nativeBounds)) {
-			// Do not change location for children as this messes things up e.g.
-			// for spin edits
-			if (isChild)
-				nativeSetSize(nativeBounds.width, nativeBounds.height);
-			else
-				nativeSetBounds(nativeBounds.x, nativeBounds.y,
-						nativeBounds.width, nativeBounds.height);
-		}
-	}
-
 	public void destroy() {
 		if (handle != 0) {
 			nativeDestroy(handle);
