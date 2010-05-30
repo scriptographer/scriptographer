@@ -478,7 +478,10 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		if (ScriptographerEngine.isMacintosh()) {
 			// On Mac, edit fields appear to be vertically offset by 1px.
 			// Correct using margins
-			return new Border(-1, 0, 1, 0);
+			if (this instanceof SpinEdit)
+				return new Border(-1, 0, 1, 0);
+			else
+				return new Border(-1, -1, 1, -1);
 		} else if (ScriptographerEngine.isWindows()) {
 			// Popup-lists on Windows appear to need a 1px margin at the bottom
 			// as they would overlap otherwise.
@@ -493,7 +496,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 			// This seems needed on Mac, as all TextEditItems appear 2px smaller
 			// than they are told to, except for SpinEdits. Also if it has a 
 			// popup list, the popup button gets cropped on the 2nd time bounds
-			// are set otherwise. 
+			// are set otherwise.
 			if (!(this instanceof SpinEdit))
 				height += 2;
 		} else if (ScriptographerEngine.isWindows()) {
