@@ -169,7 +169,7 @@ public abstract class Item extends Component {
 
 	protected void onDestroy() {
 		// retrieve through getter so it can be overridden by subclasses,
-		// e.g. HierarchyList
+		// e.g. HierarchyListBox
 		Callable onDestroy = this.getOnDestroy();
 		if (onDestroy != null)
 			ScriptographerEngine.invoke(onDestroy, this);

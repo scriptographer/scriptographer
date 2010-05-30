@@ -406,7 +406,7 @@ Scriptographer build instructions
 
 		   	<class name="com.scriptographer.ui.ListItem" />
 		   	<class name="com.scriptographer.ui.ListEntry" />
-		   	<class name="com.scriptographer.ui.HierarchyList" />
+		   	<class name="com.scriptographer.ui.HierarchyListBox" />
 		   	<class name="com.scriptographer.ui.HierarchyListEntry" />
 
 		   	<class name="com.scriptographer.ui.Drawer" />

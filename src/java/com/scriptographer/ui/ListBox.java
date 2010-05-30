@@ -37,13 +37,13 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class List extends ListItem<ListEntry> {
+public class ListBox extends ListItem<ListEntry> {
 
-	protected List(Dialog dialog, ItemType type) {
+	protected ListBox(Dialog dialog, ItemType type) {
 		super(dialog, type);
 	}
 
-	public List(Dialog dialog) {
+	public ListBox(Dialog dialog) {
 		this(dialog, ItemType.LISTBOX);
 	}
 	
@@ -52,9 +52,9 @@ public class List extends ListItem<ListEntry> {
 	}
 
 	/**
-	 * Empty constructor used for nested HierarchyLists 
+	 * Empty constructor used for nested HierarchyListBoxes 
 	 */
-	protected List() {
+	protected ListBox() {
 	}
 
 	public EnumSet<ListStyle> getStyle() {

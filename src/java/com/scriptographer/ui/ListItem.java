@@ -43,7 +43,7 @@ import com.scriptographer.ScriptographerEngine;
 
 /**
  * ListItem is a UI list item (e.g. ListBox, PopupMenu, ...) and a
- * UI list object (e.g. List, HierarchyList) in one. It melts the
+ * UI list object (e.g. ListBox, HierarchyListBox) in one. It melts the
  * two objects to one and makes handling much easier.
  * 
  * @author lehni
@@ -76,7 +76,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 	}
 
 	/**
-	 * Empty constructor used for nested HierarchyLists 
+	 * Empty constructor used for nested HierarchyListBoxes 
 	 */
 	protected ListItem() {
 	}

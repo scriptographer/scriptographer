@@ -38,9 +38,9 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class HierarchyList extends ListItem<HierarchyListEntry> {
+public class HierarchyListBox extends ListItem<HierarchyListEntry> {
 	
-	public HierarchyList(Dialog dialog) {
+	public HierarchyListBox(Dialog dialog) {
 		super(dialog, ItemType.HIERARCHY_LISTBOX);
 	}
 
@@ -51,12 +51,12 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	 * is used indirectly through HierarchyListEntry only.
 	 * @param entry
 	 */
-	protected HierarchyList(HierarchyListEntry entry) {
+	protected HierarchyListBox(HierarchyListEntry entry) {
 		listHandle = nativeCreateChildList(entry.handle);
 		// determine the parent hierarchyList:
 		parentEntry = entry;
 		parentEntry.childList = this;
-		HierarchyList parentList = (HierarchyList) entry.getList();
+		HierarchyListBox parentList = (HierarchyListBox) entry.getList();
 		// Pass through track / draw callback settings
 		// This requires the callback to be set before child lists are created
 		// as otherwise only the parent list would recieve callbacks!
@@ -103,7 +103,7 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	private native HierarchyListEntry nativeRemoveList(int listHandle);
 
 	/*
-	 * Override all getters for ScriptFunctions in HierarchyLists, so they
+	 * Override all getters for ScriptFunctions in HierarchyListBoxes, so they
 	 * walk up the list chain on find a function in the parent if they
 	 * do not define one locally.
 	 */

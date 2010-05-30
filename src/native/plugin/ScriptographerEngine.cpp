@@ -689,7 +689,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ui_ListItem = loadClass(env, "com/scriptographer/ui/ListItem");
 	fid_ui_ListItem_listHandle = getFieldID(env, cls_ui_ListItem, "listHandle", "I");	
 	
-	cls_ui_HierarchyList = loadClass(env, "com/scriptographer/ui/HierarchyList");
+	cls_ui_HierarchyListBox = loadClass(env, "com/scriptographer/ui/HierarchyListBox");
 
 	cls_ui_ListEntry = loadClass(env, "com/scriptographer/ui/ListEntry");
 
@@ -2150,9 +2150,9 @@ int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const cha
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
 	if (!handle) {
-		// For HierarchyLists it could be that the user wants to call item functions
+		// For HierarchyListBoxes it could be that the user wants to call item functions
 		// on a child list. report that this can only be called on the root list:
-		if (env->IsInstanceOf(obj, cls_ui_HierarchyList)) {
+		if (env->IsInstanceOf(obj, cls_ui_HierarchyListBox)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
 			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);

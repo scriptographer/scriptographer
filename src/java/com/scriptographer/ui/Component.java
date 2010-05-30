@@ -170,7 +170,7 @@ abstract class Component extends NotificationHandler {
 
 	protected boolean onTrack(Tracker tracker) {
 		// Retrieve through getter so it can be overridden by subclasses,
-		// e.g. HierarchyList
+		// e.g. HierarchyListBox
 		Callable onTrack = this.getOnTrack();
 		if (onTrack != null) {
 			Object result = ScriptographerEngine.invoke(onTrack, this, tracker);
@@ -191,7 +191,7 @@ abstract class Component extends NotificationHandler {
 
 	protected boolean onDraw(Drawer drawer) {
 		// Retrieve through getter so it can be overridden by subclasses,
-		// e.g. HierarchyList
+		// e.g. HierarchyListBox
 		Callable onDraw = this.getOnDraw();
 		if (onDraw != null) {
 			Object result = ScriptographerEngine.invoke(onDraw, this, drawer);
@@ -213,7 +213,7 @@ abstract class Component extends NotificationHandler {
 
 	protected void onResize(int dx, int dy) {
 		// Retrieve through getter so it can be overridden by subclasses,
-		// e.g. HierarchyList
+		// e.g. HierarchyListBox
 		Callable onResize = this.getOnResize();
 		if (onResize != null)
 			ScriptographerEngine.invoke(onResize, this, dx, dy);

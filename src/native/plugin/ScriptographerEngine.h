@@ -354,7 +354,7 @@ public:
 	jclass cls_ui_ListItem;
 	jfieldID fid_ui_ListItem_listHandle;
 
-	jclass cls_ui_HierarchyList;
+	jclass cls_ui_HierarchyListBox;
 	
 	jclass cls_ui_ListEntry;
 	
@@ -675,11 +675,11 @@ public:
 		return (ADMItemRef) getADMObjectHandle(env, obj, "item");
 	}
 
-	inline ADMListRef getListHandle(JNIEnv *env, jobject obj) {
+	inline ADMListRef getListBoxHandle(JNIEnv *env, jobject obj) {
 		return (ADMListRef) getADMListHandle(env, obj, "list");
 	}
 
-	inline ADMHierarchyListRef getHierarchyListHandle(JNIEnv *env, jobject obj) {
+	inline ADMHierarchyListRef getHierarchyListBoxHandle(JNIEnv *env, jobject obj) {
 		return (ADMHierarchyListRef) getADMListHandle(env, obj, "hierarchy list");
 	}
 

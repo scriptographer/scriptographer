@@ -106,7 +106,7 @@ import com.scriptographer.ui.Drawer;
 import com.scriptographer.ui.FloatingDialog;
 import com.scriptographer.ui.FontInfo;
 import com.scriptographer.ui.Frame;
-import com.scriptographer.ui.HierarchyList;
+import com.scriptographer.ui.HierarchyListBox;
 import com.scriptographer.ui.HierarchyListEntry;
 import com.scriptographer.ui.Image;
 import com.scriptographer.ui.ImageButton;
@@ -115,7 +115,7 @@ import com.scriptographer.ui.ImagePane;
 import com.scriptographer.ui.ImageRadioButton;
 import com.scriptographer.ui.ItemGroup;
 import com.scriptographer.ui.Key;
-import com.scriptographer.ui.List;
+import com.scriptographer.ui.ListBox;
 import com.scriptographer.ui.ListEntry;
 import com.scriptographer.ui.ListItem;
 import com.scriptographer.ui.MenuGroup;
@@ -208,7 +208,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		FloatingDialog.class,
 		FontInfo.class,
 		Frame.class,
-		HierarchyList.class,
+		HierarchyListBox.class,
 		HierarchyListEntry.class,
 		Image.class,
 		ImageButton.class,
@@ -217,7 +217,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ImagePane.class,
 		ItemGroup.class,
 		Key.class,
-		List.class,
+		ListBox.class,
 		ListEntry.class,
 		ListItem.class,
 		MenuGroup.class,

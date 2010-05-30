@@ -50,9 +50,9 @@ public class ListEntry extends NotificationHandler {
 	 * @param index
 	 */
 	public ListEntry(ListItem list, int index) {
-		if (list instanceof HierarchyList && !(this instanceof HierarchyListEntry))
+		if (list instanceof HierarchyListBox && !(this instanceof HierarchyListEntry))
 			throw new ScriptographerException(
-					"Use HierarchyListEntry objects for HierarchyList");
+					"Use HierarchyListEntry objects for HierarchyListBox");
 		handle = nativeCreate(list, index, list.getUniqueId());
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create list entry.");

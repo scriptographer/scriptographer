@@ -75,14 +75,14 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 			// SetUserData needs to be called again as the user data is not valid anymore here:
 
 			if (env->IsInstanceOf(obj, gEngine->cls_ui_ListItem)) {
-				if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyList)) {
-					ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
+				if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListBox)) {
+					ADMHierarchyListRef list = gEngine->getHierarchyListBoxHandle(env, obj);
 					sADMHierarchyList->SetUserData(list, obj);
-					HierarchyList_onDestroy(list);
+					HierarchyListBox_onDestroy(list);
 				} else {
-					ADMListRef list = gEngine->getListHandle(env, obj);
+					ADMListRef list = gEngine->getListBoxHandle(env, obj);
 					sADMList->SetUserData(list, obj);
-					List_onDestroy(list);
+					ListItem_onDestroy(list);
 				}
 			}
 			env->DeleteGlobalRef(obj);

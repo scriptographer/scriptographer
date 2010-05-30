@@ -39,11 +39,11 @@ void ASAPI Item_onNotify(ADMItemRef item, ADMNotifierRef notifier);
 ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker);
 void ASAPI Item_onDraw(ADMItemRef item, ADMDrawerRef drawer);
 
-ASErr ASAPI List_onInit(ADMListRef lst);
-void ASAPI List_onDestroy(ADMListRef lst);
+ASErr ASAPI ListItem_onInit(ADMListRef lst);
+void ASAPI ListItem_onDestroy(ADMListRef lst);
 
-ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef list);
-void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef list);
+ASErr ASAPI HierarchyListBox_onInit(ADMHierarchyListRef list);
+void ASAPI HierarchyListBox_onDestroy(ADMHierarchyListRef list);
 
 void ASAPI ListEntry_onDestroy(ADMEntryRef entry);
 void ASAPI ListEntry_onNotify(ADMEntryRef entry, ADMNotifierRef notifier);

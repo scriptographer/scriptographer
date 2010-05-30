@@ -39,24 +39,24 @@ public class HierarchyListEntry extends ListEntry {
 	private DialogColor bgColor = DialogColor.BACKGROUND;
 	private DialogColor textColor = DialogColor.TEXT;
 	private DialogColor dividerColor = DialogColor.BLACK;
-	protected HierarchyList childList = null;
+	protected HierarchyListBox childList = null;
 	
 	/**
-	 * This constructor is used by HierarchyList#createEntry / ListItem#add
+	 * This constructor is used by HierarchyListBox#createEntry / ListItem#add
 	 * @param list
 	 * @param index
 	 */
-	public HierarchyListEntry(HierarchyList list, int index) {
+	public HierarchyListEntry(HierarchyListBox list, int index) {
 		super(list, index);
 	}
 
-	public HierarchyListEntry(HierarchyList list, boolean hasChildren) {
+	public HierarchyListEntry(HierarchyListBox list, boolean hasChildren) {
 		super(list);
 		if (hasChildren)
 			createChildList();
 	}
 	
-	public HierarchyListEntry(HierarchyList list) {
+	public HierarchyListEntry(HierarchyListBox list) {
 		this(list, false);
 	}
 
@@ -73,16 +73,16 @@ public class HierarchyListEntry extends ListEntry {
 	 */
 	
 	public HierarchyListEntry getParentEntry() {
-		return ((HierarchyList) getList()).getParentEntry();
+		return ((HierarchyListBox) getList()).getParentEntry();
 	}
 	
-	public HierarchyList getChildList() {
+	public HierarchyListBox getChildList() {
 		return childList;
 	}
 	
-	public HierarchyList createChildList() {
+	public HierarchyListBox createChildList() {
 		if (childList == null)
-			childList = new HierarchyList(this);
+			childList = new HierarchyListBox(this);
 		return childList;
 	}
 

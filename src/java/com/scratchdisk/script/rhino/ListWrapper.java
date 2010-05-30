@@ -53,7 +53,7 @@ import com.scratchdisk.script.ChangeReceiver;
  * behavior of a native Object (e.g. script.preferences.values returning the
  * values() method from Map), whereas on lists, such clashes are not going to
  * happen, and right now list classes still often define other functionality in
- * Scriptographer, e.g. HierarchyList in the UI framework.
+ * Scriptographer, e.g. HierarchyListBox in the UI framework.
  * 
  * TODO: In the future, this should be handled in the same way as MapAdapter,
  * making the list behave like a 100% native array.
@@ -140,7 +140,7 @@ public class ListWrapper extends ExtendedJavaObject {
 	public void put(String name, Scriptable start, Object value) {
 		// Since lists have the native size method that's already accessible
 		// through "length", offer access here to get/setSize if these are
-		// present, such as in Scriptographer's HierarchyList, where they
+		// present, such as in Scriptographer's HierarchyListBox, where they
 		// get / set the item's dimensions.
 		if (name.equals("size") && members.has("setSize", false)) {
 			Object obj = members.get(this, "setSize", javaObject, false);

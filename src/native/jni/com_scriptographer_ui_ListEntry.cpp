@@ -100,7 +100,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_ListEntry_nativeCreate(JNIEnv 
 	try {
 		// if index is bellow 0, insert at the end:
 		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListEntry)) {
-			ADMHierarchyListRef lst = gEngine->getHierarchyListHandle(env, list);
+			ADMHierarchyListRef lst = gEngine->getHierarchyListBoxHandle(env, list);
 			ADMListEntryRef entry = index < 0 ? sADMListEntry->Create(lst) :
 				sADMHierarchyList->InsertEntry(lst, index);
 			if (entry != NULL) {
@@ -109,7 +109,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_ListEntry_nativeCreate(JNIEnv 
 			}
 			return (jint) entry;
 		} else {
-			ADMListRef lst = gEngine->getListHandle(env, list);
+			ADMListRef lst = gEngine->getListBoxHandle(env, list);
 			ADMEntryRef entry = index < 0 ? sADMEntry->Create(lst) : 
 				sADMList->InsertEntry(lst, index);
 			if (entry != NULL) {

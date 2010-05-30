@@ -61,7 +61,7 @@ void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry) {
 			// but only call if it's not the root list:
 			ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 			if (sADMHierarchyList->NumberOfEntries(list) == 0 && sADMHierarchyList->GetParentEntry(list) != NULL) {
-				HierarchyList_onDestroy(list);
+				HierarchyListBox_onDestroy(list);
 			}
 		} EXCEPTION_CATCH_REPORT(env);
 	}

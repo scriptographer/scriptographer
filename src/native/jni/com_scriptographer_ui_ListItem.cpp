@@ -36,7 +36,7 @@
  */
 
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
-ASErr ASAPI List_onInit(ADMListRef list) {
+ASErr ASAPI ListItem_onInit(ADMListRef list) {
 	DEFINE_CALLBACK_PROC(ListEntry_onDestroy);
 	sADMList->SetDestroyProc(list, (ADMEntryDestroyProc) CALLBACK_PROC(ListEntry_onDestroy));
 	DEFINE_CALLBACK_PROC(ListEntry_onNotify);
@@ -48,7 +48,7 @@ ASErr ASAPI List_onInit(ADMListRef list) {
 	return kNoErr;
 }
 
-void ASAPI List_onDestroy(ADMListRef list) {
+void ASAPI ListItem_onDestroy(ADMListRef list) {
 	if (gEngine != NULL) {
 		jobject listObj = gEngine->getListObject(list);
 		JNIEnv *env = gEngine->getEnv();
@@ -61,11 +61,11 @@ void ASAPI List_onDestroy(ADMListRef list) {
 }
 
 #define DEFINE_METHOD(METHOD) \
-		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyList)) { \
-			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj); \
+		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListBox)) { \
+			ADMHierarchyListRef list = gEngine->getHierarchyListBoxHandle(env, obj); \
 			METHOD(sADMHierarchyList, sADMListEntry, ADMListEntryRef) \
 		} else { \
-			ADMListRef list = gEngine->getListHandle(env, obj); \
+			ADMListRef list = gEngine->getListBoxHandle(env, obj); \
 			METHOD(sADMList, sADMEntry, ADMEntryRef) \
 		}
 
@@ -80,14 +80,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_ListItem_nativeInit(JNIEnv *en
 		if (list != NULL) {
 			// link it with the java object that calls this
 			sADMList->SetUserData(list, env->NewGlobalRef(obj));
-			List_onInit(list);
+			ListItem_onInit(list);
 			return (jint) list;
 		} else {
 			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) itemHandle);
 			if (hierarchyList != NULL) {
 				// link it with the java object that calls this
 				sADMHierarchyList->SetUserData(hierarchyList, env->NewGlobalRef(obj));
-				HierarchyList_onInit(hierarchyList);
+				HierarchyListBox_onInit(hierarchyList);
 				return (jint) hierarchyList;
 			}
 		}
@@ -100,12 +100,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_ListItem_nativeInit(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListItem_nativeSetTrackEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
-		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyList)) {
-			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
+		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListBox)) {
+			ADMHierarchyListRef list = gEngine->getHierarchyListBoxHandle(env, obj);
 			DEFINE_CALLBACK_PROC(HierarchyListEntry_onTrack);
 			sADMHierarchyList->SetTrackProc(list, enabled ? (ADMListEntryTrackProc) CALLBACK_PROC(HierarchyListEntry_onTrack) : NULL);
 		} else {
-			ADMListRef list = gEngine->getListHandle(env, obj);
+			ADMListRef list = gEngine->getListBoxHandle(env, obj);
 			DEFINE_CALLBACK_PROC(ListEntry_onTrack);
 			sADMList->SetTrackProc(list, enabled ? (ADMEntryTrackProc) CALLBACK_PROC(ListEntry_onTrack) : NULL);
 		}
@@ -117,12 +117,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListItem_nativeSetTrackEntryCa
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListItem_nativeSetDrawEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
-		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyList)) {
-			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
+		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListBox)) {
+			ADMHierarchyListRef list = gEngine->getHierarchyListBoxHandle(env, obj);
 			DEFINE_CALLBACK_PROC(HierarchyListEntry_onDraw);
 			sADMHierarchyList->SetDrawProc(list, enabled ? (ADMListEntryDrawProc) CALLBACK_PROC(HierarchyListEntry_onDraw) : NULL);
 		} else {
-			ADMListRef list = gEngine->getListHandle(env, obj);
+			ADMListRef list = gEngine->getListBoxHandle(env, obj);
 			DEFINE_CALLBACK_PROC(ListEntry_onDraw);
 			sADMList->SetDrawProc(list, enabled ? (ADMEntryDrawProc) CALLBACK_PROC(ListEntry_onDraw) : NULL);
 		}
@@ -238,7 +238,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_ListItem_size(JNIEnv *env, job
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ListItem_remove(JNIEnv *env, jobject obj, jint index) {
 	try {
-		// before removing, a local reference needs to be created, as the global reference is destroyed in List_onDestroy 
+		// before removing, a local reference needs to be created, as the global reference is destroyed in ListItem_onDestroy 
 
 		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, index); \
@@ -359,10 +359,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListItem_nativeSetBackgroundCo
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListItem_selectByText(JNIEnv *env, jobject obj, jstring text) {
 	try {
-		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyList)) {
+		if (env->IsInstanceOf(obj, gEngine->cls_ui_HierarchyListBox)) {
 			throw new StringException("selectByText is not supported in hierarchy lists.");
 		} else {
-			ADMListRef list = gEngine->getListHandle(env, obj);
+			ADMListRef list = gEngine->getListBoxHandle(env, obj);
 			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			sADMList->SelectByTextW(list, chars);
 			delete chars;
