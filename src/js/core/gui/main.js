@@ -573,7 +573,7 @@ var mainDialog = new FloatingDialog(
 	new MenuItem(scriptographerItem) {
 		text: 'Reload',
 		onSelect: function() {
-			ScriptographerEngine.reload();
+			ScriptographerEngine.reload.delay(0);
 		}
 	};
 
