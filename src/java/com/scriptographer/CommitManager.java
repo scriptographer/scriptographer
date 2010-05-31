@@ -60,12 +60,16 @@ public class CommitManager {
 	 * usually a item, where path styles and segment lists use the item
 	 * as a key when calling markDirty. If key is null, all changes are
 	 * committed.
+	 * 
+	 * @return true if anything was committed.
 	 */
-	public static void commit(Object key) {
+	public static boolean commit(Object key) {
+		boolean committed = false;
 		if (key != null) {
 			Committable obj = committables.get(key);
 			if (obj != null) {
 				obj.commit();
+				committed = true;
 				// case it's a text, use the story as a key as well. it's used
 				// like that in CharacterAttributes
 				if (obj instanceof TextItem)
@@ -76,18 +80,20 @@ public class CommitManager {
 		} else if (committables.size() > 0) {
 			for (Committable committable : committables.values())
 				committable.commit();
+			committed = true;
 			committables.clear();
 		}
+		return committed;
 	}
 
 	/**
 	 * commit all changes and increases the internal commit version
 	 */
-	public static void commit() {
+	public static boolean commit() {
 		version++;
 		// Also set the modificationVersion to allow versioning for increased performance.
 		ExtendedJavaObject.changeVersion = version;
-		commit(null);
+		return commit(null);
 	}
 
 	public static void markDirty(Object key, Committable committable) {

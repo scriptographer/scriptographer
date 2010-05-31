@@ -477,7 +477,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
 	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
-	mid_CommitManager_commit = getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
+	mid_CommitManager_commit = getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)Z");
 
 // AI:
 	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
@@ -562,7 +562,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIZZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIZ)V");
-	mid_ai_Item_commitIfWrapped = getStaticMethodID(env, cls_ai_Item, "commitIfWrapped", "(IZ)V");
+	mid_ai_Item_commitIfWrapped = getStaticMethodID(env, cls_ai_Item, "commitIfWrapped", "(IZ)Z");
 	mid_ai_Item_isValid = getMethodID(env, cls_ai_Item, "isValid", "()Z");
 
 	cls_ai_ItemList = loadClass(env, "com/scriptographer/ai/ItemList");

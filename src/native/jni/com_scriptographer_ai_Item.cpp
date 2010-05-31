@@ -265,7 +265,7 @@ AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc) {
  * invalidates them too.
  */
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
-	// only commit if it's wrapped
+	// Only commit if it's wrapped
 	gEngine->callStaticVoidMethod(env, gEngine->cls_ai_Item,
 			gEngine->mid_ai_Item_commitIfWrapped, (jint) art, invalidate);
 	if (children) {

@@ -520,8 +520,9 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassApplication, kEventAppActivated },
 		{ kEventClassApplication, kEventAppDeactivated }
 	};
-	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-	RETURN_ERROR(InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
+	DEFINE_CALLBACK_PROC(appEventHandler);
+	RETURN_ERROR(InstallApplicationEventHandler(
+			NewEventHandlerUPP(CALLBACK_PROC(appEventHandler)),
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
 	// Install Events
@@ -537,8 +538,9 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 //		{ kEventClassMouse, kEventMouseUp }
 #endif // _DEBUG
 	};
-	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
+	DEFINE_CALLBACK_PROC(eventHandler);
+	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(),
+			NewEventHandlerUPP(CALLBACK_PROC(eventHandler)),
 			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV

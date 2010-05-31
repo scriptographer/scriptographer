@@ -41,7 +41,7 @@ void CALLBACK Dialog_onTimer(HWND wnd, UINT msg, UINT_PTR timerId, DWORD time) {
 
 #ifdef MAC_ENV
 
-pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* data) {
+void Dialog_onTimer(EventLoopTimerRef timerId, void* data) {
 #endif // MAC_ENV
 	AppContext context;
 	// Establish an application context for undoing.
@@ -51,15 +51,16 @@ pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* data) {
 	try {
 		if (gEngine->callStaticBooleanMethod(env, gEngine->cls_ui_Timer,
 				gEngine->mid_ui_Timer_onExecute, (jint) timerId)) {
-			// Since the onExecute call might have changed the currently visible
-			// document, always try to redraw it here. RedrawDocument() seems
-			// cheap and only consumes time if something actually needs
-			// refreshing, so don't bother tracking changes.
+			// If onExecute returns true, we are asked to redraw the current
+			// document. We can call RedrawDocument() even if there is no
+			// document, in which case it will just bail out.
 #if defined(MAC_ENV) && kPluginInterfaceVersion < kAI15
 			// Unfortunately, calling Redraw on Mac CS4 and below lets the mouse
 			// cursor flicker a lot. So backup the cursor and restore it again
 			// after, in a rather complicated procedure that still leads to some
 			// flicker...
+			// Use a sort of double bufferning teqnique of two alternating named
+			// pixmap cursors, to avoid flicker even more...
 			static int cursorVersion = 0;
 			static const char *cursorNames[] = {
 				"Scriptographer Cursor 1",
@@ -83,10 +84,6 @@ pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* data) {
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
-#ifdef MAC_ENV
-EventLoopTimerUPP Dialog_onTimer = NewEventLoopTimerUPP(Dialog_onTimerFuntion);
-#endif // MAC_ENV
-
 /*
  * int nativeCreate(int period)
  */
@@ -97,9 +94,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Timer_nativeCreate(
 		return (jint) SetTimer(NULL, NULL, period, Dialog_onTimer);
 #endif // WIN_ENV
 #ifdef MAC_ENV
+		DEFINE_CALLBACK_PROC(Dialog_onTimer);
+		static EventLoopTimerUPP timerUPP = NewEventLoopTimerUPP(CALLBACK_PROC(Dialog_onTimer));
 		EventLoopTimerRef timer;
 		InstallEventLoopTimer(GetMainEventLoop(), 0,
-                kEventDurationMillisecond * period, Dialog_onTimer, NULL, &timer);
+                kEventDurationMillisecond * period, timerUPP, NULL, &timer);
 		return (jint) timer;
 #endif // MAC_ENV
 	} EXCEPTION_CONVERT(env);

@@ -531,21 +531,25 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * The version is then increased to invalidate the cached values, as they
 	 * were just changed.
 	 */
-	protected void commit(boolean invalidate) {
-		CommitManager.commit(this);
-		// Increasing version by one causes refetching of cached data:
-		if (invalidate)
-			version++;
+	protected boolean commit(boolean invalidate) {
+		if (CommitManager.commit(this)) {
+			// Increasing version by one causes refetching of cached data:
+			if (invalidate)
+				version++;
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Called by native methods if all cached changes need to be committed
 	 * before the objects are modified.
 	 */
-	protected static void commitIfWrapped(int handle, boolean invalidate) {
+	protected static boolean commitIfWrapped(int handle, boolean invalidate) {
 		Item item = getIfWrapped(handle);
 		if (item != null) 
-			item.commit(invalidate);
+			return item.commit(invalidate);
+		return false;
 	}
 
 	private static native boolean nativeRemove(int handle, int docHandle,

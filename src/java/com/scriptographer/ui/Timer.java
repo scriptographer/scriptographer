@@ -120,8 +120,10 @@ public class Timer extends NativeObject {
 	protected boolean onExecute() {
 		if (onExecute != null) {
 			Object result = ScriptographerEngine.invoke(onExecute, this);
-			if (result != null)
-				return ConversionUtils.toBoolean(result);
+			return result != null
+					? ConversionUtils.toBoolean(result)
+					: ScriptographerEngine.executionHasCommitted();
+			
 		}
 		return false;
 	}
