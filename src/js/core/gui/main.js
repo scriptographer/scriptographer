@@ -141,12 +141,15 @@ var mainDialog = new FloatingDialog(
 		var files;
 		if (!list.directory) {
 			// Define root directories
-			files = scriptRepositories.each(function(repository) {
-				var dir = new File(repository.path);
-				dir.alternateName = repository.name;
-				if (dir.exists())
-					this.push(dir);
-			}, [])
+			files = scriptRepositories.collect(function(repository) {
+				if (repository.visible) {
+					var dir = new File(repository.path);
+					if (dir.exists()) {
+						dir.alternateName = repository.name;
+						return dir;
+					}
+				}
+			});
 		} else {
 			files = list.directory.list(function(file) {
 				return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 

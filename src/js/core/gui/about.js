@@ -67,7 +67,7 @@ var aboutDialog = new ModalDialog(function() {
 
 	var text = new TextPane(this) {
 		text: lines.join('\n'),
-		bottomMargin: 8,
+		marginBottom: 8,
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);

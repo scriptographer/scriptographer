@@ -37,9 +37,16 @@ importPackage(Packages.com.scriptographer.script);
 var buttonSize = new Size(27, 17);
 var lineHeight = 17;
 var lineBreak = java.lang.System.getProperty('line.separator');
+var images = {};
 
 function getImage(filename) {
-	return new Image(new File(script.directory, 'resources/' + filename));
+	// Cache images so getImage can be used efficiently.
+	var image = images[filename];
+	if (!image) {
+		image = new Image(new File(script.directory, 'resources/' + filename));
+		images[filename] = image;
+	}
+	return image;
 }
 
 var firstRun = !script.preferences.accepted;

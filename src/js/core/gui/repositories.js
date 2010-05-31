@@ -31,8 +31,6 @@ var repositoriesDialog = new ModalDialog(function() {
 	// only width on edits).
 	this.font = 'palette';
 
-	var buttonMargin = 0; //[-1, -1, 1, -1];
-
 	var cancelButton = new Button(this) {
 		text: 'Cancel'
 	};
@@ -43,9 +41,9 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	var upButton = new ImageButton(this) {
 		image: getImage('up.png'),
+		disabledImage: getImage('up-disabled.png'),
 		size: buttonSize,
 		toolTip: 'Move Repository Up',
-		margin: buttonMargin,
 		marginLeft: 0,
 		onClick: function() {
 			moveEntry(-1);
@@ -54,9 +52,9 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	var downButton = new ImageButton(this) {
 		image: getImage('down.png'),
+		disabledImage: getImage('down-disabled.png'),
 		size: buttonSize,
 		toolTip: 'Move Repository Down',
-		margin: buttonMargin,
 		onClick: function() {
 			moveEntry(2);
 		}
@@ -64,11 +62,11 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	var addButton = new ImageButton(this) {
 		image: getImage('new.png'),
+		disabledImage: getImage('new-disabled.png'),
 		size: buttonSize,
 		toolTip: 'Add New Repository',
-		margin: buttonMargin,
 		onClick: function() {
-			addEntry('', '', true);
+			addEntry('', '', true, true);
 			chooseDirectory();
 			nameEdit.active = true;
 		}
@@ -76,41 +74,39 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	var removeButton = new ImageButton(this) {
 		image: getImage('remove.png'),
+		disabledImage: getImage('remove-disabled.png'),
 		toolTip: 'Remove Repository',
-		margin: buttonMargin,
 		size: buttonSize,
 		onClick: removeEntry
 	};
 
 	var visibleButton = new ImageButton(this) {
 		image: getImage('visible.png'),
+		disabledImage: getImage('visible-disabled.png'),
 		toolTip: 'Show / Hide Repository',
-		margin: buttonMargin,
 		size: buttonSize,
-		onClick: removeEntry
+		onClick: changeEntryVisibility
 	};
 
 	var nameEdit = new TextEdit(this) {
 		width: 80,
-		onChange: changeEntry,
-		margin: buttonMargin
+		onChange: changeEntry
+	};
+
+	var arrowImage = new ImagePane(this) {
+		image: getImage('arrow.png'),
 	};
 
 	var pathEdit = new TextEdit(this) {
-		onChange: changeEntry,
-		margin: buttonMargin
+		onChange: changeEntry
 	};
 
 	var chooseButton = new ImageButton(this) {
 		image: getImage('folder.png'),
+		disabledImage: getImage('folder-disabled.png'),
 		size: buttonSize,
 		toolTip: 'Choose Directory',
-		margin: buttonMargin,
 		onClick: chooseDirectory
-	};
-
-	var examplesCheckbox = new CheckBox(this) {
-		text: 'Show Examples'
 	};
 
 	var selectedEntry = null;
@@ -121,17 +117,22 @@ var repositoriesDialog = new ModalDialog(function() {
 		var parts = [];
 		if (name)
 			parts.push(name);
-		if (directory)
+		if (directory && directory != examplesDirectory)
 			parts.push(directory);
 		return parts.join(separator);
 	}
 
-	function addEntry(name, directory, select) {
+	function getEntryImage(visible) {
+		return getImage(visible ? 'folder.png' : 'folder-hidden.png');
+	}
+
+	function addEntry(name, directory, visible, select) {
 		var entry = new ListEntry(repositoriesList) {
 			text: getEntryText(name, directory),
-			image: folderImage,
+			image: getEntryImage(visible),
 			name: name,
-			directory: directory
+			directory: directory,
+			visible: visible
 		}
 		if (select)
 			selectEntry(entry);
@@ -140,10 +141,21 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	function changeEntry() {
 		if (selectedEntry) {
-			selectedEntry.name = nameEdit.text;
-			selectedEntry.directory = new File(pathEdit.text);
-			selectedEntry.text = getEntryText(
-					selectedEntry.name, selectedEntry.directory);
+			if (nameEdit.enabled)
+				selectedEntry.name = nameEdit.text;
+			if (pathEdit.enabled)
+				selectedEntry.directory = new File(pathEdit.text);
+			selectedEntry.image = getEntryImage(selectedEntry.visible);
+			selectedEntry.text = getEntryText(selectedEntry.name,
+					selectedEntry.directory);
+		}
+	}
+
+	function changeEntryVisibility() {
+		if (selectedEntry) {
+			selectedEntry.visible = !selectedEntry.visible;
+			changeEntry();
+			updateEditor(selectedEntry);
 		}
 	}
 
@@ -160,6 +172,21 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	}
 
+	function updateEditor(entry) {
+		var dir = entry && entry.directory;
+		var enabled = dir != examplesDirectory;
+		if (entry)
+			editor.enabled = true;
+		removeButton.enabled = chooseButton.enabled = enabled;
+		nameEdit.enabled = pathEdit.enabled = enabled;
+		nameEdit.text = entry && entry.name || '';
+		pathEdit.text = enabled && dir || '';
+		visibleButton.image = getImage(entry && entry.visible
+				? 'visible.png' : 'visible-disabled.png');
+		if (!entry)
+			editor.enabled = false;
+	}
+
 	function selectEntry(entry) {
 		if (previousEntry != entry) {
 			if (previousEntry && previousEntry.isValid && previousEntry.isValid())
@@ -167,9 +194,7 @@ var repositoriesDialog = new ModalDialog(function() {
 			previousEntry = entry
 			if (entry)
 				entry.selected = true;
-			nameEdit.enabled = pathEdit.enabled = !!entry;
-			nameEdit.text = entry && entry.name || '';
-			pathEdit.text = entry && entry.directory || '';
+			updateEditor(entry);
 			selectedEntry = entry;
 		}
 	}
@@ -206,16 +231,39 @@ var repositoriesDialog = new ModalDialog(function() {
 		entryTextRect: [0, 0, width, lineHeight],
 		// onChange does not fire for key events, so abuse onTrack
 		onTrackEntry: function(tracker, entry) {
-			// This might change entry.expanded state
+			// This might change the selection state
 			entry.defaultTrack(tracker);
 			selectEntry(this.selected.first);
+			// Return false to prevent calling of defaultTrack as we called
+			// it already.
+			return false;
 		},
+
 		onChange: function() {
 			selectEntry(this.selected.first);
 		}
 	};
 
-	var folderImage = getImage('folder.png');
+	var editor = new ItemGroup(this) {
+		marginTop: -1,
+		marginBottom: 6,
+		layout: [
+			'preferred preferred 4 preferred 4 preferred preferred 4 preferred preferred fill preferred',
+			'preferred',
+			-1, -1
+		],
+		content: {
+			'0, 0': upButton,
+			'1, 0': downButton,
+			'3, 0': visibleButton,
+			'5, 0': addButton,
+			'6, 0': removeButton,
+			'8, 0': nameEdit,
+			'9, 0': arrowImage,
+			'10, 0': pathEdit,
+			'11, 0': chooseButton
+		}
+	};
 
 	return {
 		title: 'Manage Scriptographer Repositories',
@@ -223,31 +271,14 @@ var repositoriesDialog = new ModalDialog(function() {
 		cancelItem: cancelButton,
 		margin: 8,
 		layout: [
-			'preferred preferred fill preferred',
+			'preferred',
 			'preferred preferred preferred',
 			0, 0
 		],
 		content: {
-			'0, 0, 3, 0': repositoriesList,
-			'0, 1': new ItemGroup(this) {
-				layout: [
-					'preferred preferred 4 preferred preferred 4 preferred',
-					'preferred',
-					-1, -1
-				],
-				content: {
-					'0, 0': upButton,
-					'1, 0': downButton,
-					'3, 0': addButton,
-					'4, 0': removeButton,
-					'6, 0': visibleButton
-				}
-			},
-			'1, 1, left, center': nameEdit,
-			'2, 1, full, center': pathEdit,
-			'3, 1': chooseButton,
-			'0, 2': examplesCheckbox,
-			'1, 2, 3, 2': new ItemGroup(this) {
+			'0, 0': repositoriesList,
+			'0, 1': editor,
+			'0, 2': new ItemGroup(this) {
 				layout: [ 'right' ],
 				content: [
 					cancelButton,
@@ -260,21 +291,18 @@ var repositoriesDialog = new ModalDialog(function() {
 			repositoriesList.removeAll();
 			if (repositories) {
 				repositories.each(function(repository) {
-					var dir = new File(repository.path);
-					if (dir.equals(examplesDirectory)) {
-						examplesCheckbox.checked = true;
-					} else {
-						addEntry(repository.name, dir);
-					}
+					addEntry(repository.name, new File(repository.path),
+							repository.visible);
 				})
 			}
 			selectEntry();
 			if (this.doModal() == okButton) {
 				repositories = [];
-				if (examplesCheckbox.checked)
-					repositories.push({ name: 'Examples', path: examplesDirectory.path });
 				return repositoriesList.each(function(entry) {
-				 	var repository = { path: entry.directory.path };
+				 	var repository = {
+						path: entry.directory.path,
+						visible: entry.visible
+					};
 					if (entry.name)
 						repository.name = entry.name;
 					this.push(repository);

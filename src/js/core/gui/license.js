@@ -33,7 +33,7 @@ var licenseDialog = new ModalDialog(function() {
 
 	var logo = new ImagePane(this) {
 		image: getImage('logo.png'),
-		rightMargin: 10
+		marginRight: 10
 	};
 
 	var lines = [
@@ -63,7 +63,7 @@ var licenseDialog = new ModalDialog(function() {
 
 	var text = new TextPane(this) {
 		text: lines.join('\n'),
-		bottomMargin: 10,
+		marginBottom: 10,
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
