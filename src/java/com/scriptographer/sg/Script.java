@@ -110,7 +110,17 @@ public class Script {
 		this.keepAlive  = keepAlive;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean canRemove(boolean ignoreKeepAlive) {
 		return !coreScript && (ignoreKeepAlive || !keepAlive);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean isCoreScript() {
+		return coreScript;
 	}
 }

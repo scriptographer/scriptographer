@@ -171,8 +171,11 @@ public class ScriptographerEngine {
 			file = file.getParentFile();
 			if (file == null || file.equals(pluginDir))
 				break;
-			if (hideCore && file.equals(coreDir))
-				return null;
+			if (file.equals(coreDir)) {
+				if (hideCore)
+					return null;
+				break;
+			}
 			if (scriptDirectories != null) {
 				for (int i = 0, l = scriptDirectories.length; i < l; i++) {
 					if (file.equals(scriptDirectories[i])) {
@@ -255,24 +258,9 @@ public class ScriptographerEngine {
 		// by walking up the file path to the script directory and 
 		// using each folder as a preference node.
 		File file = script.getFile();
-		/*
-		ArrayList<String> parts = new ArrayList<String>();
-		// Collect the directory parts up to either coreDir or pluginDir and see
-		// which preference node is to be used. Non-core script files are placed
-		// in the "scripts" node, all others use the main node.
-		boolean useScriptsPrefs = true;
-		while (useScriptsPrefs && file != null) {
-			parts.add(file.getName());
-			file = file.getParentFile();
-			if (file != null && (file.equals(pluginDir) || file.equals(coreDir)))
-				useScriptsPrefs = false;
-		}
-		if (useScriptsPrefs)
-			prefs = prefs.node("scripts");
-		// Now walk backwards per added folder element and produce sub nodes
-		for (int i = parts.size() - 1; i >= 0; i--)
-			prefs = prefs.node(parts.get(i));
-		*/
+		// Core script preferences are placed in the "core" node, all others
+		// go into the "scripts" node.
+		prefs = prefs.node(script.isCoreScript() ? "core" : "scripts");
 		String[] parts = getScriptPath(file, false);
 		for (int i = 0, l = parts.length; i < l; i++)
 			prefs = prefs.node(parts[i]);
