@@ -104,9 +104,9 @@ public class Document extends NativeObject implements ChangeReceiver {
 	private ArrayList<Item> removedItems = new ArrayList<Item>();
 
 	// Keep track of state changes
-	private boolean itemsCreated = false;
-	private boolean itemsModified = false;
-	private boolean itemsRemoved = false;
+	private boolean createdState = false;
+	private boolean modifiedState = false;
+	private boolean removedState = false;
 
 	protected Document(int handle) {
 		super(handle);
@@ -136,7 +136,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 		if (handle == 0) {
 			if (!file.exists())
 				throw new FileNotFoundException(
-						"Unable to create document from non existing file: " + file);
+						"Unable to create document from non existing file: "
+						+ file);
 			throw new ScriptographerException(
 					"Unable to create document from file: " + file);
 		}
@@ -173,14 +174,15 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * @param colorModel the document's desired color model {@default 'cmyk'}
 	 * @param dialogStatus how dialogs should be handled {@default 'none'}
 	 */
-	public Document(String title, float width, float height, ColorModel colorModel,
-			DialogStatus dialogStatus) {
+	public Document(String title, float width, float height,
+			ColorModel colorModel, DialogStatus dialogStatus) {
 		this(nativeCreate(title, width, height, 
 				(colorModel != null ? colorModel : ColorModel.CMYK).value,
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 	}
 
-	public Document(String title, float width, float height, ColorModel colorModel) {
+	public Document(String title, float width, float height,
+			ColorModel colorModel) {
 		this(title, width, height, colorModel, null);
 	}
 
@@ -232,28 +234,80 @@ public class Document extends NativeObject implements ChangeReceiver {
 
 	protected void addCreatedItem(Item item) {
 		createdItems.add(item);
-		itemsCreated = true;
+		createdState = true;
 	}
 
 	protected void addModifiedItem(Item item) {
 		modifiedItems.add(item);
-		itemsModified = true;
+		modifiedState = true;
 	}
 
 	protected void addRemovedItem(Item item) {
 		removedItems.add(item);
-		itemsRemoved = true;
+		removedState = true;
 	}
 
-	public boolean clearChangeStates() {
-		boolean changes = itemsCreated || itemsModified || itemsRemoved;
-		if (changes) {
-			itemsCreated = false;
-			itemsModified = false;
-			itemsRemoved = false;
-		}
-		return changes;
+	/**
+	 * @jshide
+	 */
+	public boolean hasCreatedState() {
+		return createdState;
 	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean hasModifiedState() {
+		return modifiedState;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean hasRemovedState() {
+		return removedState;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean hasChangedSates() {
+		return createdState || modifiedState || removedState;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void clearChangedStates() {
+		createdState = false;
+		modifiedState = false;
+		removedState = false;
+	}
+
+	// AIUndoContextKind
+	public static final int
+		/** 
+		 * A standard context results in the addition of a new transaction which
+		 * can be undone/redone by the user.
+		 */
+		UNDO_STANDARD = 0,
+		/** 
+		 * A silent context does not cause redos to be discarded and is skipped
+		 * over when undoing and redoing. An example is a selection change.
+		 */
+		UNDO_SILENT = 1,
+		/** 
+		 * An appended context is like a standard context, except that it is
+		 * combined with the preceding transaction. It does not appear as a
+		 * separate transaction. Used, for example, to collect sequential
+		 * changes to the color of an object into a	single undo/redo transaction.
+		 */
+		UNDO_MERGE = 2;
+
+	/**
+	 * @jshide
+	 */
+	public native void setUndoType(int ype);
 
 	private class HistoryBranch {
 		long branch; // the branch number
@@ -338,19 +392,16 @@ public class Document extends NativeObject implements ChangeReceiver {
 						item.modificationVersion = historyVersion;
 					}
 					createdItems.clear();
-					itemsCreated = false;
 				}
 				if (!modifiedItems.isEmpty()) {
 					for (Item item : modifiedItems)
 						item.updateModified(historyVersion);
 					modifiedItems.clear();
-					itemsModified = false;
 				}
 				if (!removedItems.isEmpty()) {
 					for (Item item : removedItems)
 						item.deletionVersion = historyVersion;
 					removedItems.clear();
-					itemsRemoved = false;
 				}
 			}
 			this.undoLevel = undoLevel;

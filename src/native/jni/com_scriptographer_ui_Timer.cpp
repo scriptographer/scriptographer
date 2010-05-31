@@ -43,10 +43,8 @@ void CALLBACK Dialog_onTimer(HWND wnd, UINT msg, UINT_PTR timerId, DWORD time) {
 
 void Dialog_onTimer(EventLoopTimerRef timerId, void* data) {
 #endif // MAC_ENV
-	AppContext context;
 	// Establish an application context for undoing.
-	sAIUndo->SetKind(kAIAppendUndoContext);
-	// Call run on runnable
+	AppContext context;
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		if (gEngine->callStaticBooleanMethod(env, gEngine->cls_ui_Timer,

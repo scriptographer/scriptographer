@@ -123,9 +123,6 @@ public class Timer extends NativeObject {
 			Object result = ScriptographerEngine.invoke(onExecute, this);
 			if (result != null)
 				return ConversionUtils.toBoolean(result);
-			Document document = Document.getActiveDocument();
-			if (document != null)
-				return document.clearChangeStates();
 		}
 		return false;
 	}
@@ -138,7 +135,26 @@ public class Timer extends NativeObject {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
 			try {
-				return timer.onExecute();
+				Document document = Document.getActiveDocument();
+				if (document != null) {
+					// Produce a normal undo cycle if in the previous cycle we
+					// have created or removed items. Otherwise just merge the
+					// changes of this cycle with the previous one.
+					// It is important to create new cycles when such changes
+					// happen, as they affect the live span of items within the
+					// undo history, and if all cycles were merged, the history
+					// tracking code in Document would not be able to track 
+					// their life span.
+					document.setUndoType(document.hasCreatedState()
+							|| document.hasRemovedState()
+									? Document.UNDO_STANDARD
+									: Document.UNDO_MERGE);
+					document.clearChangedStates();
+				}
+				if (timer.onExecute())
+					return true;
+				if (document != null)
+					return document.hasChangedSates();
 			} finally {
 				// Simulate one shot timers by aborting:
 				if (!timer.periodic)
