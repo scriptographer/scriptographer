@@ -89,6 +89,7 @@ import com.scriptographer.ai.Swatch;
 import com.scriptographer.ai.Symbol;
 import com.scriptographer.ai.TextRange;
 import com.scriptographer.ai.TextStory;
+import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 import com.scriptographer.ai.ToolEventHandler;
 import com.scriptographer.ai.Tracing;
@@ -134,7 +135,6 @@ import com.scriptographer.ui.SpinEdit;
 import com.scriptographer.ui.TextEdit;
 import com.scriptographer.ui.TextPane;
 import com.scriptographer.ui.TextValueItem;
-import com.scriptographer.ui.Timer;
 import com.scriptographer.ui.ToggleItem;
 import com.scriptographer.ui.Tracker;
 /**

@@ -347,26 +347,33 @@ Scriptographer build instructions
 
 			<class name="com.scriptographer.ScriptographerEngine" />
 
-			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Item" />
 			<class name="com.scriptographer.ai.Path" />
 			<class name="com.scriptographer.ai.PathStyle" />
+			<class name="com.scriptographer.ai.SegmentList" />
+			<class name="com.scriptographer.ai.Curve" />
+
 			<class name="com.scriptographer.ai.Group" />
 			<class name="com.scriptographer.ai.Raster" />
 			<class name="com.scriptographer.ai.PlacedFile" />
-			<class name="com.scriptographer.ai.SegmentList" />
-			<class name="com.scriptographer.ai.Curve" />
 			<class name="com.scriptographer.ai.Layer" />
 			<class name="com.scriptographer.ai.LayerList" />
-			<class name="com.scriptographer.ai.Dictionary" />
+
 			<class name="com.scriptographer.ai.Document" />
 			<class name="com.scriptographer.ai.DocumentList" />
 			<class name="com.scriptographer.ai.DocumentView" />
 			<class name="com.scriptographer.ai.DocumentViewList" />
+
 			<class name="com.scriptographer.ai.Color" />
+			<class name="com.scriptographer.ai.Dictionary" />
+			<class name="com.scriptographer.ai.FileFormat" />
 			<class name="com.scriptographer.ai.Pathfinder" />
+
+			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.LiveEffect" />
 			<class name="com.scriptographer.ai.Annotator" />
+		   	<class name="com.scriptographer.ai.Timer" />
+
 			<class name="com.scriptographer.ai.TextItem" />
 			<class name="com.scriptographer.ai.PointText" />
 			<class name="com.scriptographer.ai.AreaText" />
@@ -376,20 +383,25 @@ Scriptographer build instructions
 			<class name="com.scriptographer.ai.TextStoryList" />
 			<class name="com.scriptographer.ai.CharacterStyle" />
 			<class name="com.scriptographer.ai.ParagraphStyle" />
+
 			<class name="com.scriptographer.ai.FontList" />
 			<class name="com.scriptographer.ai.FontFamily" />
 			<class name="com.scriptographer.ai.FontWeight" />
+
 			<class name="com.scriptographer.ai.Tracing" />
 			<class name="com.scriptographer.ai.Pattern" />
+
 			<class name="com.scriptographer.ai.Symbol" />
 			<class name="com.scriptographer.ai.SymbolList" />
 			<class name="com.scriptographer.ai.PlacedSymbol" />
+
 			<class name="com.scriptographer.ai.Swatch" />
 			<class name="com.scriptographer.ai.SwatchList" />
+
 			<class name="com.scriptographer.ai.Gradient" />
 			<class name="com.scriptographer.ai.GradientStopList" />
+
 			<class name="com.scriptographer.ai.ArtboardList" />
-			<class name="com.scriptographer.ai.FileFormat" />
 
 			<class name="com.scriptographer.ui.Notifier" />
 			<class name="com.scriptographer.ui.Dialog" />
@@ -411,7 +423,6 @@ Scriptographer build instructions
 
 		   	<class name="com.scriptographer.ui.Drawer" />
 		   	<class name="com.scriptographer.ui.Image" />
-		   	<class name="com.scriptographer.ui.Timer" />
 		   	<class name="com.scriptographer.ui.Tracker" />
 
 			<class name="com.scriptographer.ui.MenuItem" />

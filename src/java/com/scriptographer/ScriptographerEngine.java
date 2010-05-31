@@ -50,12 +50,12 @@ import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
+import com.scriptographer.ai.Timer;
 import com.scriptographer.sg.Script;
 import com.scriptographer.ui.Dialog;
 import com.scriptographer.ui.KeyCode;
 import com.scriptographer.ui.KeyEvent;
 import com.scriptographer.ui.MenuItem;
-import com.scriptographer.ui.Timer;
 
 /**
  * @author lehni

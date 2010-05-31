@@ -308,6 +308,9 @@ public:
 	jclass cls_ai_FileFormat;
 	jmethodID cid_ai_FileFormat;
 
+	jclass cls_ai_Timer;
+	jmethodID mid_ai_Timer_onExecute;
+
 // ADM:
 	jclass cls_ui_NativeObject;
 	jfieldID fid_ui_NativeObject_handle;
@@ -376,9 +379,6 @@ public:
 	jmethodID mid_ui_MenuItem_wrapHandle;
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
-
-	jclass cls_ui_Timer;
-	jmethodID mid_ui_Timer_onExecute;
 
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	jclass cls_ui_TextEditItem;

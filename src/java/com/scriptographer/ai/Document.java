@@ -231,83 +231,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	/*
 	 * Undo / Redo History Stuff
 	 */
-
-	protected void addCreatedItem(Item item) {
-		createdItems.add(item);
-		createdState = true;
-	}
-
-	protected void addModifiedItem(Item item) {
-		modifiedItems.add(item);
-		modifiedState = true;
-	}
-
-	protected void addRemovedItem(Item item) {
-		removedItems.add(item);
-		removedState = true;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean hasCreatedState() {
-		return createdState;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean hasModifiedState() {
-		return modifiedState;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean hasRemovedState() {
-		return removedState;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean hasChangedSates() {
-		return createdState || modifiedState || removedState;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public void clearChangedStates() {
-		createdState = false;
-		modifiedState = false;
-		removedState = false;
-	}
-
-	// AIUndoContextKind
-	public static final int
-		/** 
-		 * A standard context results in the addition of a new transaction which
-		 * can be undone/redone by the user.
-		 */
-		UNDO_STANDARD = 0,
-		/** 
-		 * A silent context does not cause redos to be discarded and is skipped
-		 * over when undoing and redoing. An example is a selection change.
-		 */
-		UNDO_SILENT = 1,
-		/** 
-		 * An appended context is like a standard context, except that it is
-		 * combined with the preceding transaction. It does not appear as a
-		 * separate transaction. Used, for example, to collect sequential
-		 * changes to the color of an object into a	single undo/redo transaction.
-		 */
-		UNDO_MERGE = 2;
-
-	/**
-	 * @jshide
-	 */
-	public native void setUndoType(int ype);
+	
 
 	private class HistoryBranch {
 		long branch; // the branch number
@@ -344,6 +268,46 @@ public class Document extends NativeObject implements ChangeReceiver {
 					+ ", start: " + start + ", end: " + end + " }";
 		}
 	};
+
+	/*
+	 * 
+	 */
+	protected void addCreatedItem(Item item) {
+		createdItems.add(item);
+		createdState = true;
+	}
+
+	protected void addModifiedItem(Item item) {
+		modifiedItems.add(item);
+		modifiedState = true;
+	}
+
+	protected void addRemovedItem(Item item) {
+		removedItems.add(item);
+		removedState = true;
+	}
+
+	protected boolean hasCreatedState() {
+		return createdState;
+	}
+
+	protected boolean hasModifiedState() {
+		return modifiedState;
+	}
+
+	protected boolean hasRemovedState() {
+		return removedState;
+	}
+
+	protected boolean hasChangedSates() {
+		return createdState || modifiedState || removedState;
+	}
+
+	protected void clearChangedStates() {
+		createdState = false;
+		modifiedState = false;
+		removedState = false;
+	}
 
 	private void resetHistory() {
 		undoLevel = -1;
@@ -442,6 +406,36 @@ public class Document extends NativeObject implements ChangeReceiver {
 		}
 		return false;
 	}
+
+	/*
+	 * Undo cycle manipulation
+	 */
+
+	// AIUndoContextKind
+	protected static final int
+		/** 
+		 * A standard context results in the addition of a new transaction which
+		 * can be undone/redone by the user.
+		 */
+		UNDO_STANDARD = 0,
+		/** 
+		 * A silent context does not cause redos to be discarded and is skipped
+		 * over when undoing and redoing. An example is a selection change.
+		 */
+		UNDO_SILENT = 1,
+		/** 
+		 * An appended context is like a standard context, except that it is
+		 * combined with the preceding transaction. It does not appear as a
+		 * separate transaction. Used, for example, to collect sequential
+		 * changes to the color of an object into a	single undo/redo transaction.
+		 */
+		UNDO_MERGE = 2;
+
+	protected native void setUndoType(int ype);
+
+	/*
+	 * Undo related callbacks
+	 */
 
 	protected void onClosed() {
 		// Since AI reused document handles, we have to manually remove wrappers
@@ -547,8 +541,6 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 */
 	public static native void endExecution();
 
-	private native void nativeActivate(boolean focus, boolean forCreation);
-
 	/**
 	 * Activates this document, so all newly created items will be placed
 	 * in it.
@@ -564,6 +556,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 		if (forCreation)
 			commitCurrentStyle();
 	}
+
+	private native void nativeActivate(boolean focus, boolean forCreation);
 
 	/**
 	 * Activates this document, so all newly created items will be placed

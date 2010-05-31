@@ -44,6 +44,7 @@ import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ai.Color;
+import com.scriptographer.ai.Timer;
 import com.scriptographer.script.RunnableCallable;
 import com.scriptographer.sg.Script;
 

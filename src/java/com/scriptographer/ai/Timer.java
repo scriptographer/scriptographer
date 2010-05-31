@@ -27,14 +27,13 @@
  * File created on May 29, 2010.
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.ai;
 
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.ai.Document;
 import com.scriptographer.sg.Script;
 
 /**

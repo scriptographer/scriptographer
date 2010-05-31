@@ -643,6 +643,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_FileFormat = loadClass(env, "com/scriptographer/ai/FileFormat");
 	cid_ai_FileFormat = getConstructorID(env, cls_ai_FileFormat, "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 
+	cls_ai_Timer = loadClass(env, "com/scriptographer/ai/Timer");
+	mid_ai_Timer_onExecute = getStaticMethodID(env, cls_ai_Timer, "onExecute", "(I)Z");
+
 // UI:
 	cls_ui_NativeObject = loadClass(env, "com/scriptographer/ui/NativeObject");
 	fid_ui_NativeObject_handle = getFieldID(env, cls_ui_NativeObject, "handle", "I");
@@ -711,9 +714,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_wrapHandle = getStaticMethodID(env, cls_ui_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ui/MenuItem;");
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
-
-	cls_ui_Timer = loadClass(env, "com/scriptographer/ui/Timer");
-	mid_ui_Timer_onExecute = getStaticMethodID(env, cls_ui_Timer, "onExecute", "(I)Z");
 
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");

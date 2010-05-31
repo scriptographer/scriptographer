@@ -106,11 +106,11 @@
 		91193B6A0A2DF3C600B0E3A7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
 		91193C420A2DF7CD00B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
 		91193C430A2DF7D100B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
-		911D17E711B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */; };
-		911D17E811B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */; };
-		911D17E911B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */; };
-		911D17EA11B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */; };
-		911D17EB11B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */; };
+		911D195611B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		911D195711B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		911D195811B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		911D195911B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		911D195A11B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
 		912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
 		912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
 		912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
@@ -437,7 +437,7 @@
 		91168EAB0A2B86790023EB84 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
-		911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Timer.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_ui_Timer.cpp; sourceTree = SOURCE_ROOT; };
+		911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Timer.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_ai_Timer.cpp; sourceTree = SOURCE_ROOT; };
 		912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_GradientStopList.cpp; path = jni/com_scriptographer_ai_GradientStopList.cpp; sourceTree = "<group>"; };
 		912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Pattern.cpp; path = jni/com_scriptographer_ai_Pattern.cpp; sourceTree = "<group>"; };
 		913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Dictionary.cpp; path = jni/com_scriptographer_ai_Dictionary.cpp; sourceTree = "<group>"; };
@@ -764,6 +764,7 @@
 		91EF0B4E0A20A4B900F0EF9A /* AI */ = {
 			isa = PBXGroup;
 			children = (
+				911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */,
 				9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */,
 				913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */,
 				910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */,
@@ -831,7 +832,6 @@
 				918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */,
 				9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */,
 				9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */,
-				911D17E611B35586004648CA /* com_scriptographer_ui_Timer.cpp */,
 				9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */,
 				9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */,
 				9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */,
@@ -1137,7 +1137,7 @@
 				9180534C0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				9180534D0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9EA10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
-				911D17E911B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */,
+				911D195811B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1218,7 +1218,7 @@
 				918053610ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053620ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9EB10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
-				911D17E811B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */,
+				911D195711B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1300,7 +1300,7 @@
 				918053370ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053380ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9E910074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
-				911D17EA11B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */,
+				911D195911B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1382,7 +1382,7 @@
 				918053220ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053230ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9E810074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
-				911D17E711B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */,
+				911D195611B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1464,7 +1464,7 @@
 				91C8B9021049C255002882FE /* IAIUnicodeString.cpp in Sources */,
 				91C8B9051049C27C002882FE /* IText.cpp in Sources */,
 				91C8B9061049C27C002882FE /* IThrowException.cpp in Sources */,
-				911D17EB11B35586004648CA /* com_scriptographer_ui_Timer.cpp in Sources */,
+				911D195A11B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

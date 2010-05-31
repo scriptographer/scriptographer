@@ -1041,7 +1041,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(JNIEnv 
 /*
  * void setUndoType(int type)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_mergeUndo(JNIEnv *env, jobject obj, jint type) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setUndoType(JNIEnv *env, jobject obj, jint type) {
 	try {
 		sAIUndo->SetKind(type);
 	} EXCEPTION_CONVERT(env);

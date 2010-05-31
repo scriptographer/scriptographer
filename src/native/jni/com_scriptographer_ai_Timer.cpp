@@ -29,10 +29,10 @@
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "AppContext.h"
-#include "com_scriptographer_ui_Timer.h"
+#include "com_scriptographer_ai_Timer.h"
 
 /*
- * com.scriptographer.ui.Timer
+ * com.scriptographer.ai.Timer
  */
 
 #ifdef WIN_ENV
@@ -47,8 +47,8 @@ void Dialog_onTimer(EventLoopTimerRef timerId, void* data) {
 	AppContext context;
 	JNIEnv *env = gEngine->getEnv();
 	try {
-		if (gEngine->callStaticBooleanMethod(env, gEngine->cls_ui_Timer,
-				gEngine->mid_ui_Timer_onExecute, (jint) timerId)) {
+		if (gEngine->callStaticBooleanMethod(env, gEngine->cls_ai_Timer,
+				gEngine->mid_ai_Timer_onExecute, (jint) timerId)) {
 			// If onExecute returns true, we are asked to redraw the current
 			// document. We can call RedrawDocument() even if there is no
 			// document, in which case it will just bail out.
@@ -71,10 +71,10 @@ void Dialog_onTimer(EventLoopTimerRef timerId, void* data) {
 			QDGetCursorData(true, &data, &point);
 			QDUnregisterNamedPixMapCursor(name);
 			QDRegisterNamedPixMapCursor(data, NULL, point, name);
-			sAIDocument->RedrawDocument();
-			QDSetNamedPixMapCursor(name);
 			DisposePtr((**data).baseAddr);
 			DisposePixMap(data);
+			sAIDocument->RedrawDocument();
+			QDSetNamedPixMapCursor(name);
 #else // !MAC_ENV || kPluginInterfaceVersion >= kAI15 
 			sAIDocument->RedrawDocument();
 #endif // !MAC_ENV || kPluginInterfaceVersion >= kAI15 
@@ -85,7 +85,7 @@ void Dialog_onTimer(EventLoopTimerRef timerId, void* data) {
 /*
  * int nativeCreate(int period)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Timer_nativeCreate(
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Timer_nativeCreate(
 		JNIEnv *env, jobject obj, jint period) {
 	try {
 #ifdef WIN_ENV
@@ -106,7 +106,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Timer_nativeCreate(
 /*
  * void nativeAbort(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Timer_nativeAbort(
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Timer_nativeAbort(
 		JNIEnv *env, jobject obj, jint handle) {
 	try {
 #ifdef WIN_ENV
