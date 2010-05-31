@@ -202,9 +202,13 @@ var repositoriesDialog = new ModalDialog(function() {
 	function moveEntry(dir) {
 		if (selectedEntry) {
 			// There's no way to move, we need to duplicate and remove.
-			var entry = repositoriesList.add(selectedEntry.index + dir, selectedEntry);
+			var index = selectedEntry.index + dir;
+			if (index > repositoriesList.length)
+				index = 0;
+			var entry = repositoriesList.add(index, selectedEntry);
 			entry.name = selectedEntry.name;
 			entry.directory = selectedEntry.directory;
+			entry.visible = selectedEntry.visible;
 			selectedEntry.remove();
 			selectEntry(entry);
 		}
