@@ -454,10 +454,6 @@ Array.inject({
 		return entry.value;
 	},
 
-	contains: function(obj) {
-		return this.indexOf(obj) != -1;
-	},
-
 	remove: function(iter, bind) {
 		var entry = this.findEntry(iter, bind);
 		if (entry) {
