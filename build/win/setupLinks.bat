@@ -3,6 +3,7 @@
 set BASE=..\..
 set JAVA=%BASE%\build\java\build\
 set JAVASCRIPT=%BASE%\src\js\core\
+set EXAMPLES=%BASE%\src\js\scripts\
 set REFERENCE=%BASE%\docs\js\
 
 call :makeLinks CS
@@ -30,6 +31,7 @@ if not exist "%1 %2\Core" (
 )
 call :makeLink %JAVA% "%1 %2\Core\Java"
 call :makeLink %JAVASCRIPT% "%1 %2\Core\JavaScript"
+call :makeLink %EXAMPLES% "%1 %2\Examples"
 call :makeLink %REFERENCE% "%1 %2\Reference"
 goto:eof
 

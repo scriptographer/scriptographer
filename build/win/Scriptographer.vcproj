@@ -1306,7 +1306,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_HierarchyList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ui_HierarchyListBox.cpp"
 						>
 					</File>
 					<File
