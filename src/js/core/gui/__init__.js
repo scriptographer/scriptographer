@@ -63,10 +63,7 @@ var scriptRepositories = script.preferences.repositories;
 
 if (script.preferences.accepted) {
 	if (!scriptRepositories) {
-		scriptRepositories = [
-			// Add standard Examples repository
-			{ name: 'Examples', sealed: true, visible: true }
-		];
+		scriptRepositories = [];
 		var dir = Dialog.chooseDirectory(
 				'Please choose your Scriptographer Script Folder. It is recommended\n'
 				+ ' that you keep your scripts in a dedicated folder within your Documents.',
@@ -76,8 +73,16 @@ if (script.preferences.accepted) {
 				name: 'My Scripts', path: dir.path, visible: true
 			});
 		}
-		script.preferences.repositories = scriptRepositories;
 	}
+	// Add standard Examples repository if it does not exist:
+	if (!scriptRepositories.contains(function(repository) {
+		return repository.name == 'Examples';
+	})) {
+		scriptRepositories.unshift({
+			name: 'Examples', sealed: true, visible: true
+		});
+	}
+	script.preferences.repositories = scriptRepositories;
 	include('console.js');
 	include('about.js');
 	include('repositories.js');
