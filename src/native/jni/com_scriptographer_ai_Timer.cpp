@@ -93,7 +93,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Timer_nativeCreate(
 #endif // WIN_ENV
 #ifdef MAC_ENV
 		DEFINE_CALLBACK_PROC(Dialog_onTimer);
-		static EventLoopTimerUPP timerUPP = NewEventLoopTimerUPP(CALLBACK_PROC(Dialog_onTimer));
+		static EventLoopTimerUPP timerUPP = NewEventLoopTimerUPP(
+				CALLBACK_PROC(Dialog_onTimer));
 		EventLoopTimerRef timer;
 		InstallEventLoopTimer(GetMainEventLoop(), 0,
                 kEventDurationMillisecond * period, timerUPP, NULL, &timer);
