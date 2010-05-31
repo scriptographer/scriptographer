@@ -41,10 +41,9 @@ ASErr ASAPI HierarchyListBox_onInit(ADMHierarchyListRef list) {
 	sADMHierarchyList->SetDestroyProc(list, (ADMListEntryDestroyProc) CALLBACK_PROC(HierarchyListEntry_onDestroy));
 	DEFINE_CALLBACK_PROC(HierarchyListEntry_onNotify);
 	sADMHierarchyList->SetNotifyProc(list, (ADMListEntryNotifyProc) CALLBACK_PROC(HierarchyListEntry_onNotify));
-	/* these are activated in enable****Callback
-	sADMHierarchyList->SetTrackProc(list, HierarchyListEntry_onTrack);
-	sADMHierarchyList->SetDrawProc(list, HierarchyListEntry_onDraw);
-	*/
+	// These are activated in enable****Callback
+	// sADMHierarchyList->SetTrackProc(list, HierarchyListEntry_onTrack);
+	// sADMHierarchyList->SetDrawProc(list, HierarchyListEntry_onDraw);
 	return kNoErr;
 }
 

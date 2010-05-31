@@ -33,6 +33,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.Callable;
@@ -60,12 +61,18 @@ public class RhinoCallable extends Callable {
 				args[i] = Context.javaToJS(args[i], scope);
 			Context cx = Context.getCurrentContext();
 			Object ret = function.call(cx, wrapper, wrapper, args);
-			// unwrap if the return value is a native java object:
-			if (ret instanceof Wrapper)
+			if (ret == Undefined.instance) {
+				// Do not return undefined, as it cannot be handled by the
+				// native side, e.g. ConversionUtils.toBoolean would produce
+				// true.
+				ret = null;
+			} else if (ret instanceof Wrapper) {
+				// Unwrap if the return value is a native java object:
 				ret = ((Wrapper) ret).unwrap();
+			}
 			return ret;
 		} catch (Throwable t) {
-			// Rethrow if it was a RhinoScriptException already
+			// Re-throw if it was a RhinoScriptException already
 			if (t.getCause() instanceof RhinoScriptException)
 				throw (RhinoScriptException) t.getCause();
 			throw new RhinoScriptException(engine, t);
