@@ -229,9 +229,42 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	/*
-	 * Undo / Redo History Stuff
+	 * Undo / Redo History Tracking
+	 * 
+	 * Illustrator's native handles are not versioned. Through the undo / redo
+	 * functionality, an item that we have a handle to might become invalid at a
+	 * certain point, or a redo command might make a previously invalid item
+	 * valid again.
+	 * 
+	 * Unfortunately, Illustrator does not give us a way to tie into this system
+	 * and to easily know when and if a certain item is valid. In order to solve
+	 * this, Scriptographer implements its own undo history tracking system that
+	 * internally represents the history in a tree structure, with branches both
+	 * representing future possible changes (through redo) and past changes that
+	 * are undoable. Going back in history and branching off on a different
+	 * branch makes whole future branches invalid.
+	 * 
+	 * All this is kept track of through Illustrator's facility to find out the
+	 * current amount of undo transactions:
+	 * sAIUndo->CountTransactions(&undoLevel, &redoLevel);
+	 * 
+	 * In the code below we tie into Illustrator's internal undo processes
+	 * through a row of callbacks: onClosed, onRevert, onSelectionChanged,
+	 * onUndo, onRedo, onClear. The native side uses different approaches to get
+	 * these notifications. On each of them, the history tree is kept up to date
+	 * and checked.
+	 * 
+	 * At the same time, Scriptographer keeps track of creation, deletion and
+	 * modification of items, and marks these with a versioned id at the end of
+	 * an undo cycle. These numbers consist of 64bit of information: 32bit for
+	 * the branch number, and 32bit for the level within that branch at which
+	 * the change happened. These ids then offer an easy and efficient way to
+	 * check at any time if an item is currently valid or not.
+	 * 
+	 * The same mechanism then is also used by the Timer class to know of items
+	 * have changed in the meantime and decide how to handle / define the undo
+	 * cycle type.
 	 */
-	
 
 	private class HistoryBranch {
 		long branch; // the branch number
@@ -268,46 +301,6 @@ public class Document extends NativeObject implements ChangeReceiver {
 					+ ", start: " + start + ", end: " + end + " }";
 		}
 	};
-
-	/*
-	 * 
-	 */
-	protected void addCreatedItem(Item item) {
-		createdItems.add(item);
-		createdState = true;
-	}
-
-	protected void addModifiedItem(Item item) {
-		modifiedItems.add(item);
-		modifiedState = true;
-	}
-
-	protected void addRemovedItem(Item item) {
-		removedItems.add(item);
-		removedState = true;
-	}
-
-	protected boolean hasCreatedState() {
-		return createdState;
-	}
-
-	protected boolean hasModifiedState() {
-		return modifiedState;
-	}
-
-	protected boolean hasRemovedState() {
-		return removedState;
-	}
-
-	protected boolean hasChangedSates() {
-		return createdState || modifiedState || removedState;
-	}
-
-	protected void clearChangedStates() {
-		createdState = false;
-		modifiedState = false;
-		removedState = false;
-	}
 
 	private void resetHistory() {
 		undoLevel = -1;
@@ -408,33 +401,54 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	/*
-	 * Undo cycle manipulation
+	 * Methods to be called by the Item class to keep track of created, modified
+	 * and removed items, and to mark them accordingly at the end of the current
+	 * undo cycle. 
 	 */
+	protected void addCreatedItem(Item item) {
+		createdItems.add(item);
+		createdState = true;
+	}
 
-	// AIUndoContextKind
-	protected static final int
-		/** 
-		 * A standard context results in the addition of a new transaction which
-		 * can be undone/redone by the user.
-		 */
-		UNDO_STANDARD = 0,
-		/** 
-		 * A silent context does not cause redos to be discarded and is skipped
-		 * over when undoing and redoing. An example is a selection change.
-		 */
-		UNDO_SILENT = 1,
-		/** 
-		 * An appended context is like a standard context, except that it is
-		 * combined with the preceding transaction. It does not appear as a
-		 * separate transaction. Used, for example, to collect sequential
-		 * changes to the color of an object into a	single undo/redo transaction.
-		 */
-		UNDO_MERGE = 2;
+	protected void addModifiedItem(Item item) {
+		modifiedItems.add(item);
+		modifiedState = true;
+	}
 
-	protected native void setUndoType(int ype);
+	protected void addRemovedItem(Item item) {
+		removedItems.add(item);
+		removedState = true;
+	}
 
 	/*
-	 * Undo related callbacks
+	 * Methods to access the current internal state since the last time it was
+	 * accessed, used by the Timer class to decide how to define the undo cycle
+	 * type.
+	 */
+	protected boolean hasCreatedState() {
+		return createdState;
+	}
+
+	protected boolean hasModifiedState() {
+		return modifiedState;
+	}
+
+	protected boolean hasRemovedState() {
+		return removedState;
+	}
+
+	protected boolean hasChangedSates() {
+		return createdState || modifiedState || removedState;
+	}
+
+	protected void clearChangedStates() {
+		createdState = false;
+		modifiedState = false;
+		removedState = false;
+	}
+
+	/*
+	 * Undo History Tracking related callbacks
 	 */
 
 	protected void onClosed() {
@@ -526,6 +540,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * @jshide
 	 */
 	public static void beginExecution() {
+		// Use an array as a simple way to receive values back from the native
+		// side.
 		int[] values = new int[3]; // docHandle, undoLevel, redoLevel
 		nativeBeginExecution(values);
 		Document document = wrapHandle(values[0]);
@@ -541,6 +557,36 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 */
 	public static native void endExecution();
 
+	/*
+	 * Undo Cycle manipulation
+	 */
+
+	// AIUndoContextKind
+	protected static final int
+		/** 
+		 * A standard context results in the addition of a new transaction which
+		 * can be undone/redone by the user.
+		 */
+		UNDO_STANDARD = 0,
+		/** 
+		 * A silent context does not cause redos to be discarded and is skipped
+		 * over when undoing and redoing. An example is a selection change.
+		 */
+		UNDO_SILENT = 1,
+		/** 
+		 * An appended context is like a standard context, except that it is
+		 * combined with the preceding transaction. It does not appear as a
+		 * separate transaction. Used, for example, to collect sequential
+		 * changes to the color of an object into a	single undo/redo transaction.
+		 */
+		UNDO_MERGE = 2;
+
+	protected native void setUndoType(int ype);
+
+	/*
+	 * Normal document methods
+	 */
+	
 	/**
 	 * Activates this document, so all newly created items will be placed
 	 * in it.

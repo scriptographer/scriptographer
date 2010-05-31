@@ -45,6 +45,11 @@ abstract class NativeObject {
 	}
 
 	public int hashCode() {
+		// Return the native handle here as hashCode, as we use equals() in
+		// quite a few places to see if wrapper objects are actually
+		// representing the same native object. For example this is used when
+		// reusing live effects and menu groups / items after the plug-in was
+		// reloaded.
 		return handle != 0 ? handle : super.hashCode();
 	}
 
