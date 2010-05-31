@@ -143,7 +143,9 @@ var mainDialog = new FloatingDialog(
 			// Define root directories
 			files = scriptRepositories.collect(function(repository) {
 				if (repository.visible) {
-					var dir = new File(repository.path);
+					var dir = repository.sealed && repository.name == 'Examples'
+							? examplesDirectory
+							: new File(repository.path);
 					if (dir.exists()) {
 						dir.alternateName = repository.name;
 						return dir;

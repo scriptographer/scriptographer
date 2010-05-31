@@ -57,21 +57,25 @@ if (firstRun) {
 }
 
 // Script Locations
-var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
 var userDirectory = new File(java.lang.System.getProperty('user.home'));
+var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
 var scriptRepositories = script.preferences.repositories;
 
 if (script.preferences.accepted) {
 	if (!scriptRepositories) {
 		scriptRepositories = [
-			{ name: 'Examples', path: examplesDirectory.path }
+			// Add standard Examples repository
+			{ name: 'Examples', sealed: true, visible: true }
 		];
 		var dir = Dialog.chooseDirectory(
 				'Please choose your Scriptographer Script Folder. It is recommended\n'
 				+ ' that you keep your scripts in a dedicated folder within your Documents.',
 				userDirectory);
-		if (dir && dir.isDirectory())
-			scriptRepositories.push({ name: 'My Scripts', path: dir.path });
+		if (dir && dir.isDirectory()) {
+			scriptRepositories.push({
+				name: 'My Scripts', path: dir.path, visible: true
+			});
+		}
 		script.preferences.repositories = scriptRepositories;
 	}
 	include('console.js');

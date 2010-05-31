@@ -46,7 +46,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		toolTip: 'Move Repository Up',
 		marginLeft: 0,
 		onClick: function() {
-			moveEntry(-1);
+			moveEntry(selectedEntry, -1);
 		}
 	};
 
@@ -56,7 +56,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		size: buttonSize,
 		toolTip: 'Move Repository Down',
 		onClick: function() {
-			moveEntry(2);
+			moveEntry(selectedEntry, 2);
 		}
 	};
 
@@ -66,7 +66,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		size: buttonSize,
 		toolTip: 'Add New Repository',
 		onClick: function() {
-			addEntry('', '', true, true);
+			addEntry({ name: '', path: '', visible: true }, true);
 			chooseDirectory();
 			nameEdit.active = true;
 		}
@@ -77,7 +77,9 @@ var repositoriesDialog = new ModalDialog(function() {
 		disabledImage: getImage('remove-disabled.png'),
 		toolTip: 'Remove Repository',
 		size: buttonSize,
-		onClick: removeEntry
+		onClick: function() {
+			removeEntry(selectedEntry);
+		}
 	};
 
 	var visibleButton = new ImageButton(this) {
@@ -85,12 +87,12 @@ var repositoriesDialog = new ModalDialog(function() {
 		disabledImage: getImage('visible-disabled.png'),
 		toolTip: 'Show / Hide Repository',
 		size: buttonSize,
-		onClick: changeEntryVisibility
+		onClick: changeSelectedVisibility
 	};
 
 	var nameEdit = new TextEdit(this) {
 		width: 80,
-		onChange: changeEntry
+		onChange: changeSelectedEntry
 	};
 
 	var arrowImage = new ImagePane(this) {
@@ -98,7 +100,7 @@ var repositoriesDialog = new ModalDialog(function() {
 	};
 
 	var pathEdit = new TextEdit(this) {
-		onChange: changeEntry
+		onChange: changeSelectedEntry
 	};
 
 	var chooseButton = new ImageButton(this) {
@@ -113,78 +115,27 @@ var repositoriesDialog = new ModalDialog(function() {
 	var previousEntry = {}; // To force a change when setting to null.
 	var separator = ' -> ';
 
-	function getEntryText(name, directory) {
-		var parts = [];
-		if (name)
-			parts.push(name);
-		if (directory && directory != examplesDirectory)
-			parts.push(directory);
-		return parts.join(separator);
-	}
-
-	function getEntryImage(visible) {
-		return getImage(visible ? 'folder.png' : 'folder-hidden.png');
-	}
-
-	function addEntry(name, directory, visible, select) {
+	function addEntry(repository, select) {
 		var entry = new ListEntry(repositoriesList) {
-			text: getEntryText(name, directory),
-			image: getEntryImage(visible),
-			name: name,
-			directory: directory,
-			visible: visible
-		}
+			name: repository.name,
+			directory: repository.path && new File(repository.path),
+			visible: repository.visible,
+			sealed: repository.sealed
+		};
+		updateEntry(entry);
 		if (select)
 			selectEntry(entry);
 		return entry;
 	}
 
-	function changeEntry() {
-		if (selectedEntry) {
-			if (nameEdit.enabled)
-				selectedEntry.name = nameEdit.text;
-			if (pathEdit.enabled)
-				selectedEntry.directory = new File(pathEdit.text);
-			selectedEntry.image = getEntryImage(selectedEntry.visible);
-			selectedEntry.text = getEntryText(selectedEntry.name,
-					selectedEntry.directory);
-		}
-	}
-
-	function changeEntryVisibility() {
-		if (selectedEntry) {
-			selectedEntry.visible = !selectedEntry.visible;
-			changeEntry();
-			updateEditor(selectedEntry);
-		}
-	}
-
-	function removeEntry() {
-		if (selectedEntry && Dialog.confirm('Removing Repository',
-				'Do you really want to remove this repository?')) {
-			var index = selectedEntry.index;
-			selectedEntry.remove();
-			var entry;
-			do {
-				entry = repositoriesList[index];
-			} while (!entry && --index >= 0)
-			selectEntry(entry);
-		}
-	}
-
-	function updateEditor(entry) {
-		var dir = entry && entry.directory;
-		var enabled = dir != examplesDirectory;
-		if (entry)
-			editor.enabled = true;
-		removeButton.enabled = chooseButton.enabled = enabled;
-		nameEdit.enabled = pathEdit.enabled = enabled;
-		nameEdit.text = entry && entry.name || '';
-		pathEdit.text = enabled && dir || '';
-		visibleButton.image = getImage(entry && entry.visible
-				? 'visible.png' : 'visible-disabled.png');
-		if (!entry)
-			editor.enabled = false;
+	function updateEntry(entry) {
+		var parts = [];
+		if (entry.name)
+			parts.push(entry.name);
+		if (entry.directory && !entry.sealed)
+			parts.push(entry.directory);
+		entry.text = parts.join(separator);
+		entry.image = getImage(entry.visible ? 'folder.png' : 'folder-hidden.png');
 	}
 
 	function selectEntry(entry) {
@@ -199,19 +150,69 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	}
 
-	function moveEntry(dir) {
-		if (selectedEntry) {
+	function moveEntry(entry, dir) {
+		if (entry) {
 			// There's no way to move, we need to duplicate and remove.
-			var index = selectedEntry.index + dir;
+			var index = entry.index + dir;
 			if (index > repositoriesList.length)
 				index = 0;
-			var entry = repositoriesList.add(index, selectedEntry);
-			entry.name = selectedEntry.name;
-			entry.directory = selectedEntry.directory;
-			entry.visible = selectedEntry.visible;
-			selectedEntry.remove();
-			selectEntry(entry);
+			var other = repositoriesList.add(index, entry);
+			other.name = entry.name;
+			other.directory = entry.directory;
+			other.visible = entry.visible;
+			other.sealed = entry.sealed;
+			var selected = entry.selected;
+			entry.remove();
+			if (selected)
+				selectEntry(other);
 		}
+	}
+
+	function removeEntry(entry) {
+		if (entry && !entry.sealed && (!entry.name && !entry.directory
+				|| Dialog.confirm('Removing Repository',
+						'Do you really want to remove the repository\n'
+						+ "'" + (entry.name || entry.directory) + "'?"))) {
+			if (entry.selected) {
+				var index = entry.index;
+				entry.remove();
+				do {
+					entry = repositoriesList[index];
+				} while (!entry && --index >= 0)
+				selectEntry(entry);
+			}
+		}
+	}
+
+	function changeSelectedEntry() {
+		if (selectedEntry) {
+			if (nameEdit.enabled)
+				selectedEntry.name = nameEdit.text;
+			if (pathEdit.enabled)
+				selectedEntry.directory = new File(pathEdit.text);
+			updateEntry(selectedEntry);
+		}
+	}
+
+	function changeSelectedVisibility() {
+		if (selectedEntry) {
+			selectedEntry.visible = !selectedEntry.visible;
+			changeSelectedEntry();
+			updateEditor(selectedEntry);
+		}
+	}
+
+	function updateEditor(entry) {
+		var dir = entry && entry.directory;
+		var enabled = !entry || !entry.sealed;
+		if (entry)
+			editor.enabled = true;
+		removeButton.enabled = chooseButton.enabled = enabled;
+		nameEdit.enabled = pathEdit.enabled = enabled;
+		nameEdit.text = entry && entry.name || '';
+		pathEdit.text = enabled && dir || '';
+		if (!entry)
+			editor.enabled = false;
 	}
 
 	function chooseDirectory() {
@@ -222,7 +223,7 @@ var repositoriesDialog = new ModalDialog(function() {
 			if (dir) {
 				selectedEntry.directory = dir;
 				pathEdit.text = dir;
-				changeEntry();
+				changeSelectedEntry();
 			}
 		}
 	}
@@ -295,22 +296,19 @@ var repositoriesDialog = new ModalDialog(function() {
 			repositoriesList.removeAll();
 			if (repositories) {
 				repositories.each(function(repository) {
-					addEntry(repository.name, new File(repository.path),
-							repository.visible);
+					addEntry(repository);
 				})
 			}
 			selectEntry();
 			if (this.doModal() == okButton) {
-				repositories = [];
-				return repositoriesList.each(function(entry) {
-				 	var repository = {
-						path: entry.directory.path,
-						visible: entry.visible
+				return repositoriesList.map(function(entry) {
+					return {
+						name: entry.name,
+						path: entry.directory && entry.directory.path,
+						visible: entry.visible,
+						sealed: entry.sealed
 					};
-					if (entry.name)
-						repository.name = entry.name;
-					this.push(repository);
-				}, repositories);
+				});
 			}
 			return null;
 		}
