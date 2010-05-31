@@ -56,11 +56,11 @@ public class PromptDialog extends ModalDialog {
 		// Add buttons to the layout
 		ItemGroup buttons = new ItemGroup(this);
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		buttons.setTopMargin(8);
+		buttons.setMarginTop(8);
 
 		Button cancelButton = new Button(this);
 		cancelButton.setText("Cancel");
-		cancelButton.setRightMargin(4);
+		cancelButton.setMarginRight(4);
 		buttons.addToContent(cancelButton);
 
 		Button okButton = new Button(this);

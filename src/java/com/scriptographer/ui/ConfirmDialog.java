@@ -63,12 +63,12 @@ public class ConfirmDialog extends ModalDialog {
 			text.setMaximumSize(new Size(320, -1));
 		text.setMinimumSize(240, -1);
 		text.setText(message);
-		text.setBottomMargin(8);
+		text.setMarginBottom(8);
 		this.addToContent(text, "1, 0, 3, 0, L, C");
 		
 		Button cancelButton = new Button(this);
 		cancelButton.setText("Cancel");
-		cancelButton.setRightMargin(10);
+		cancelButton.setMarginRight(10);
 		this.addToContent(cancelButton, "1, 1, R, T");
 		
 		Button okButton = new Button(this);

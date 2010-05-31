@@ -64,7 +64,7 @@ public class AlertDialog extends ModalDialog {
 			text.setMaximumSize(new Size(320, -1));
 		text.setMinimumSize(240, -1);
 		text.setText(message);
-		text.setBottomMargin(8);
+		text.setMarginBottom(8);
 		addToContent(text, "1, 0, 2, 0, L, C");
 
 		Button okButton = new Button(this);

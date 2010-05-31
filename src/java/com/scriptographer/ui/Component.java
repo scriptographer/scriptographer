@@ -285,41 +285,41 @@ abstract class Component extends NotificationHandler {
 		setMargin(ver, hor, ver, hor);
 	}
 
-	public int getLeftMargin() {
+	public int getMarginLeft() {
 		return getMargin().left;
 	}
 
-	public void setLeftMargin(int left) {
+	public void setMarginLeft(int left) {
 		Border margin = getMargin();
 		margin.left = left;
 		setMargin(margin);
 	}
 
-	public int getTopMargin() {
+	public int getMarginTop() {
 		return getMargin().top;
 	}
 
-	public void setTopMargin(int top) {
+	public void setMarginTop(int top) {
 		Border margin = getMargin();
 		margin.top = top;
 		setMargin(margin);
 	}
 
-	public int getRightMargin() {
+	public int getMarginRight() {
 		return getMargin().right;
 	}
 
-	public void setRightMargin(int right) {
+	public void setMarginRight(int right) {
 		Border margin = getMargin();
 		margin.right = right;
 		setMargin(margin);
 	}
 
-	public int getBottomMargin() {
+	public int getMarginBottom() {
 		return getMargin().bottom;
 	}
 
-	public void setBottomMargin(int bottom) {
+	public void setMarginBottom(int bottom) {
 		Border margin = getMargin();
 		margin.bottom = bottom;
 		setMargin(margin);
