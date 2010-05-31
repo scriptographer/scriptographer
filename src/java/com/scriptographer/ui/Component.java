@@ -82,15 +82,29 @@ abstract class Component extends NotificationHandler {
 		Image image = new Image(1, 1, ImageType.RGB);
 		Drawer drawer = image.getDrawer();
 		drawer.setFont(getFont());
-		if (ignoreBreaks)
-			text = text.replaceAll("\r\n|\n|\r", " ");
-		// Calculate the size of this part, using the drawer
-		int width = drawer.getTextWidth(text);
-		if (maxWidth > 0 && width > maxWidth)
-			width = maxWidth;
-		int height = drawer.getTextHeight(text, width + 1);
+		// Split at new lines chars, and measure each line separately
+		String[] lines = ignoreBreaks ? new String[] {
+			text.replaceAll("\r\n|\n|\r", " ")
+		} : text.split("\r\n|\n|\r");
+		Size size = new Size(0, 0);
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.length() == 0)
+				line = " "; // Make sure empty lines are measured too
+
+			// Calculate the size of this part, using the drawer
+			int width = drawer.getTextWidth(line);
+			if (maxWidth > 0 && width > maxWidth)
+				width = maxWidth;
+			int height = drawer.getTextHeight(line, width + 1);
+
+			// And add up size
+			if (width > size.width)
+				size.width = width;
+			size.height += height;
+		}
 		drawer.dispose();
-		return new Size(width, height);
+		return size;
 	}
 
 	public Size getTextSize(String text) {
