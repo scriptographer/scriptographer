@@ -138,9 +138,7 @@ public class Timer extends NativeObject {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
 			try {
-				boolean redraw = timer.onExecute();
-				ScriptographerEngine.logConsole("Redraw: " + redraw);
-				return redraw;
+				return timer.onExecute();
 			} finally {
 				// Simulate one shot timers by aborting:
 				if (!timer.periodic)
