@@ -41,7 +41,6 @@ import com.scriptographer.sg.Script;
  */
 public class Timer extends NativeObject {
 
-	private Dialog dialog;
 	private int period;
 	private boolean periodic;
 
@@ -55,29 +54,31 @@ public class Timer extends NativeObject {
 	 * @param period The timer's period in milliseconds.
 	 * @param periodic Controls whether the timer is one-shop or periodic. 
 	 */
-	public Timer(Dialog dialog, int period, boolean periodic) {
+	public Timer(int period, boolean periodic) {
 		script = ScriptographerEngine.getCurrentScript();
-		this.dialog = dialog;
 		this.period = period;
 		this.periodic = periodic;
-		handle = dialog.nativeCreateTimer(period);
+		handle = nativeCreate(period);
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create Timer.");
 		timers.put(handle, this);
 	}
 
-	public Timer(Dialog dialog, int period) {
-		this(dialog, period, true);
+	public Timer(int period) {
+		this(period, true);
 	}
 
 	public void abort() {
 		if (handle != 0) {
 			timers.remove(handle);
-			dialog.nativeAbortTimer(handle);
+			nativeAbort(handle);
 			handle = 0;
 		}
 	}
 	
+	private native int nativeCreate(int period);
+	private native void nativeAbort(int handle);
+
 	public double getPeriod() {
 		return period;
 	}

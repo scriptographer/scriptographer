@@ -1,7 +1,7 @@
 new function() {
 	var timers = {}, current = 1;
 	function createTimer(func, delay, periodic) {
-		var timer = mainDialog.createTimer(delay || 0, periodic);
+		var timer = new Timer(delay || 0, periodic);
 		timers[timer.id] = timer;
 		timer.onExecute = typeof func == 'string' ? new Function(func) : func;
 		return timer.id;
@@ -35,7 +35,7 @@ Function.inject(new function() {
 			var func = this.wrap(bind, args);
 			if (delay === undefined)
 				return func();
-			var timer = mainDialog.createTimer(delay, periodic);
+			var timer = new Timer(delay, periodic);
 			timer.onExecute = func;
 			func.clear = function() {
 				timer.dispose();

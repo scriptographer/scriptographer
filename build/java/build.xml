@@ -411,6 +411,7 @@ Scriptographer build instructions
 
 		   	<class name="com.scriptographer.ui.Drawer" />
 		   	<class name="com.scriptographer.ui.Image" />
+		   	<class name="com.scriptographer.ui.Timer" />
 		   	<class name="com.scriptographer.ui.Tracker" />
 
 			<class name="com.scriptographer.ui.MenuItem" />

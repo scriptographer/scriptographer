@@ -134,6 +134,7 @@ import com.scriptographer.ui.SpinEdit;
 import com.scriptographer.ui.TextEdit;
 import com.scriptographer.ui.TextPane;
 import com.scriptographer.ui.TextValueItem;
+import com.scriptographer.ui.Timer;
 import com.scriptographer.ui.ToggleItem;
 import com.scriptographer.ui.Tracker;
 /**
@@ -236,6 +237,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextPane.class,
 		TextEdit.class,
 		TextValueItem.class,
+		Timer.class,
 		ToggleItem.class,
 		Tracker.class
 	};
