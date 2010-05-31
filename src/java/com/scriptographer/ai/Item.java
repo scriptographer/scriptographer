@@ -215,7 +215,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			creationVersion = document.historyVersion;
 			// This item's versions need to be updated after the history cycle
 			// is finished.
-			document.createdItems.add(this);
+			document.addCreatedItem(this);
 		} else {
 			// This is an existing item of which the creation level is unknown.
 			// set levels to -1
@@ -459,7 +459,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	protected void setModified() {
 		modificationVersion = document.historyVersion;
 		// This item's modification date needs updating after the cycle.
-		document.modifiedItems.add(this);
+		document.addModifiedItem(this);
 	}
 
 	/**
@@ -562,7 +562,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			deletionVersion = document.historyVersion;
 			// This item's versions need to be updated after the history cycle
 			// is finished.
-			document.removedItems.add(this);
+			document.addRemovedItem(this);
 			return true;
 		}
 		return false;

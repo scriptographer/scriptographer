@@ -378,7 +378,6 @@ public class ScriptographerEngine {
 	
 	private static Stack<Script> scriptStack = new Stack<Script>();
 	private static boolean allowScriptCancelation = true;
-	private static boolean executionHasCommitted = false;
 
 	public static Script getCurrentScript() {
 		// There can be 'holes' in the script stack, so find the first non-null
@@ -405,7 +404,6 @@ public class ScriptographerEngine {
 		// Only call Document.beginExecution if it has not already
 		// been called through the UI notification callback.
 		if (scriptStack.empty()) {
-			executionHasCommitted  = false;
 			Document.beginExecution();
 			// Disable output to the console while the script is
 			// executed as it won't get updated anyway
@@ -443,12 +441,12 @@ public class ScriptographerEngine {
 	 * 
 	 * @return if any changes to the document were committed.
 	 */
-	public static boolean endExecution() {
+	public static void endExecution() {
 		if (!scriptStack.empty())
 			scriptStack.pop();
 		if (scriptStack.empty()) {
 			try {
-				executionHasCommitted = CommitManager.commit();
+				CommitManager.commit();
 			} catch(Throwable t) {
 				ScriptographerEngine.reportError(t);
 			}
@@ -456,11 +454,6 @@ public class ScriptographerEngine {
 			Document.endExecution();
 			closeProgress();
 		}
-		return executionHasCommitted;
-	}
-
-	public static boolean executionHasCommitted() {
-		return executionHasCommitted;
 	}
 
 	/**

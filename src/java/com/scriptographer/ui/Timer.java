@@ -34,6 +34,7 @@ import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
+import com.scriptographer.ai.Document;
 import com.scriptographer.sg.Script;
 
 /**
@@ -120,10 +121,11 @@ public class Timer extends NativeObject {
 	protected boolean onExecute() {
 		if (onExecute != null) {
 			Object result = ScriptographerEngine.invoke(onExecute, this);
-			return result != null
-					? ConversionUtils.toBoolean(result)
-					: ScriptographerEngine.executionHasCommitted();
-			
+			if (result != null)
+				return ConversionUtils.toBoolean(result);
+			Document document = Document.getActiveDocument();
+			if (document != null)
+				return document.clearChangeStates();
 		}
 		return false;
 	}
@@ -136,7 +138,9 @@ public class Timer extends NativeObject {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
 			try {
-				return timer.onExecute();
+				boolean redraw = timer.onExecute();
+				ScriptographerEngine.logConsole("Redraw: " + redraw);
+				return redraw;
 			} finally {
 				// Simulate one shot timers by aborting:
 				if (!timer.periodic)

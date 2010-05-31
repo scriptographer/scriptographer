@@ -99,9 +99,14 @@ public class Document extends NativeObject implements ChangeReceiver {
 	protected ArrayList<SoftReference<Item>> checkItems =
 			new ArrayList<SoftReference<Item>>();
 
-	protected ArrayList<Item> createdItems = new ArrayList<Item>();
-	protected ArrayList<Item> modifiedItems = new ArrayList<Item>();
-	protected ArrayList<Item> removedItems = new ArrayList<Item>();
+	private ArrayList<Item> createdItems = new ArrayList<Item>();
+	private ArrayList<Item> modifiedItems = new ArrayList<Item>();
+	private ArrayList<Item> removedItems = new ArrayList<Item>();
+
+	// Keep track of state changes
+	private boolean itemsCreated = false;
+	private boolean itemsModified = false;
+	private boolean itemsRemoved = false;
 
 	protected Document(int handle) {
 		super(handle);
@@ -225,6 +230,31 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * Undo / Redo History Stuff
 	 */
 
+	protected void addCreatedItem(Item item) {
+		createdItems.add(item);
+		itemsCreated = true;
+	}
+
+	protected void addModifiedItem(Item item) {
+		modifiedItems.add(item);
+		itemsModified = true;
+	}
+
+	protected void addRemovedItem(Item item) {
+		removedItems.add(item);
+		itemsRemoved = true;
+	}
+
+	public boolean clearChangeStates() {
+		boolean changes = itemsCreated || itemsModified || itemsRemoved;
+		if (changes) {
+			itemsCreated = false;
+			itemsModified = false;
+			itemsRemoved = false;
+		}
+		return changes;
+	}
+
 	private class HistoryBranch {
 		long branch; // the branch number
 		long level; // the current level within this branch, if it is active
@@ -308,16 +338,19 @@ public class Document extends NativeObject implements ChangeReceiver {
 						item.modificationVersion = historyVersion;
 					}
 					createdItems.clear();
+					itemsCreated = false;
 				}
 				if (!modifiedItems.isEmpty()) {
 					for (Item item : modifiedItems)
 						item.updateModified(historyVersion);
 					modifiedItems.clear();
+					itemsModified = false;
 				}
 				if (!removedItems.isEmpty()) {
 					for (Item item : removedItems)
 						item.deletionVersion = historyVersion;
 					removedItems.clear();
+					itemsRemoved = false;
 				}
 			}
 			this.undoLevel = undoLevel;
