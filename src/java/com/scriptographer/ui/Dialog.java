@@ -294,8 +294,19 @@ public abstract class Dialog extends Component {
 	 * @jshide
 	 */
 	public static void initializeAll() {
-		for (Dialog dialog : dialogs)
+		for (Dialog dialog : dialogs) {
 			dialog.initialize(false);
+			// Work around weird issue of items sometimes not appearing properly
+			// in layouts after reloading the plug-in by just slightly reshaping
+			// the Window, causing the layout to be regenerated again. Simply
+			// calling doLayout() does not seem to be enough.
+			// This affects CS4 and above on Mac.
+			if (dialog.isVisible()) {
+				Size size = dialog.getSize();
+				size.height--;
+				dialog.setSize(size);
+			}
+		}
 	}
 
 	public boolean removeItem(Item item) {

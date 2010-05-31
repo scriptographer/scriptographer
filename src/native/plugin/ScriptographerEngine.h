@@ -311,7 +311,7 @@ public:
 	jclass cls_ai_Timer;
 	jmethodID mid_ai_Timer_onExecute;
 
-// ADM:
+// UI:
 	jclass cls_ui_NativeObject;
 	jfieldID fid_ui_NativeObject_handle;
 
