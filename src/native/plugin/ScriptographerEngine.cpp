@@ -713,7 +713,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 
 	cls_ui_Timer = loadClass(env, "com/scriptographer/ui/Timer");
-	mid_ui_Timer_onExecute = getStaticMethodID(env, cls_ui_Timer, "onExecute", "(I)V");
+	mid_ui_Timer_onExecute = getStaticMethodID(env, cls_ui_Timer, "onExecute", "(I)Z");
 
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");

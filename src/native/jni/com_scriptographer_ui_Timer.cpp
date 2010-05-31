@@ -36,12 +36,12 @@
  */
 
 #ifdef WIN_ENV
-void CALLBACK Dialog_onTimer(HWND hwnd, UINT uMsg, UINT_PTR timerId, DWORD dwTime) {
+void CALLBACK Dialog_onTimer(HWND wnd, UINT msg, UINT_PTR timerId, DWORD time) {
 #endif // WIN_ENV
 
 #ifdef MAC_ENV
 
-pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* userData) {
+pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* data) {
 #endif // MAC_ENV
 	AppContext context;
 	// Establish an application context for undoing.
@@ -49,13 +49,37 @@ pascal void Dialog_onTimerFuntion(EventLoopTimerRef timerId, void* userData) {
 	// Call run on runnable
 	JNIEnv *env = gEngine->getEnv();
 	try {
-		gEngine->callStaticVoidMethod(env, gEngine->cls_ui_Timer,
-				gEngine->mid_ui_Timer_onExecute, (jint) timerId);
-		// Since the onExecute call might have changed the currently visible
-		// document, always try to redraw it here. RedrawDocument() seems cheap
-		// and only consumes time if something actually needs refreshing, so
-		// don't bother tracking changes.
-		// sAIDocument->RedrawDocument();
+		if (gEngine->callStaticBooleanMethod(env, gEngine->cls_ui_Timer,
+				gEngine->mid_ui_Timer_onExecute, (jint) timerId)) {
+			// Since the onExecute call might have changed the currently visible
+			// document, always try to redraw it here. RedrawDocument() seems
+			// cheap and only consumes time if something actually needs
+			// refreshing, so don't bother tracking changes.
+#if defined(MAC_ENV) && kPluginInterfaceVersion < kAI15
+			// Unfortunately, calling Redraw on Mac CS4 and below lets the mouse
+			// cursor flicker a lot. So backup the cursor and restore it again
+			// after, in a rather complicated procedure that still leads to some
+			// flicker...
+			static int cursorVersion = 0;
+			static const char *cursorNames[] = {
+				"Scriptographer Cursor 1",
+				"Scriptographer Cursor 2"
+			};
+			const char *name = cursorNames[cursorVersion];
+			cursorVersion = !cursorVersion;
+			PixMapHandle data;
+			Point point;
+			QDGetCursorData(true, &data, &point);
+			QDUnregisterNamedPixMapCursor(name);
+			QDRegisterNamedPixMapCursor(data, NULL, point, name);
+			sAIDocument->RedrawDocument();
+			QDSetNamedPixMapCursor(name);
+			DisposePtr((**data).baseAddr);
+			DisposePixMap(data);
+#else // !MAC_ENV || kPluginInterfaceVersion >= kAI15 
+			sAIDocument->RedrawDocument();
+#endif // !MAC_ENV || kPluginInterfaceVersion >= kAI15 
+		}
 	} EXCEPTION_CATCH_REPORT(env);
 }
 

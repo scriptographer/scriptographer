@@ -381,8 +381,10 @@ public abstract class Dialog extends Component {
 			this.runnable = runnable; 
 		}
 
-		protected void onExecute() {
+		protected boolean onExecute() {
 			runnable.run();
+			// Do not redraw document
+			return false;
 		}
 	}
 

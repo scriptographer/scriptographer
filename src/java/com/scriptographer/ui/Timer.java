@@ -30,6 +30,7 @@
 package com.scriptographer.ui;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
@@ -75,7 +76,7 @@ public class Timer extends NativeObject {
 			handle = 0;
 		}
 	}
-	
+
 	private native int nativeCreate(int period);
 	private native void nativeAbort(int handle);
 
@@ -86,7 +87,7 @@ public class Timer extends NativeObject {
 	public boolean isPeriodic() {
 		return periodic;
 	}
-
+	
 	protected boolean canAbort(boolean ignoreKeepAlive) {
 		return script == null || script.canRemove(ignoreKeepAlive);
 	}
@@ -111,32 +112,42 @@ public class Timer extends NativeObject {
 		return onExecute;
 	}
 
-	protected void onExecute() {
-		if (onExecute != null)
-			ScriptographerEngine.invoke(onExecute, this);
+	/**
+	 * The timer callback.
+	 * 
+	 * Return true if document should be redrawn automatically.
+	 */
+	protected boolean onExecute() {
+		if (onExecute != null) {
+			Object result = ScriptographerEngine.invoke(onExecute, this);
+			if (result != null)
+				return ConversionUtils.toBoolean(result);
+		}
+		return false;
 	}
 
 	/**
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onExecute(int handle) {
+	private static boolean onExecute(int handle) {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
 			try {
-				timer.onExecute();
+				return timer.onExecute();
 			} finally {
 				// Simulate one shot timers by aborting:
 				if (!timer.periodic)
 					timer.abort();
 			}
 		}
+		return false;
 	}
 
 	private static Timer getTimer(int handle) {
 		return (Timer) timers.get(handle);
 	}
-	
+
 	protected void finalize() {
 		abort();
 	}
