@@ -36,7 +36,6 @@ import org.python.core.PyCode;
 
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
-import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 
 /**
