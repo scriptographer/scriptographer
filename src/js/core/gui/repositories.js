@@ -66,9 +66,11 @@ var repositoriesDialog = new ModalDialog(function() {
 		size: buttonSize,
 		toolTip: 'Add New Repository',
 		onClick: function() {
-			addEntry({ name: '', path: '', visible: true }, true);
-			chooseDirectory();
-			nameEdit.active = true;
+			var dir = chooseDirectory();
+			if (dir) {
+				addEntry({ name: '', path: dir.path, visible: true }, true);
+				nameEdit.active = true;
+			}
 		}
 	};
 
@@ -108,7 +110,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		disabledImage: getImage('folder-disabled.png'),
 		size: buttonSize,
 		toolTip: 'Choose Directory',
-		onClick: chooseDirectory
+		onClick: changeSelectedDirectory
 	};
 
 	var selectedEntry = null;
@@ -184,6 +186,12 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	}
 
+	function chooseDirectory(directory) {
+		return Dialog.chooseDirectory(
+				'Choose a Scriptographer Script Repository Folder:',
+				directory || userDirectory);
+	}
+
 	function changeSelectedEntry() {
 		if (selectedEntry) {
 			if (nameEdit.enabled)
@@ -202,6 +210,16 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	}
 
+	function changeSelectedDirectory() {
+		if (selectedEntry) {
+			var dir = chooseDirectory(selectedEntry.directory);
+			if (dir) {
+				pathEdit.text = dir;
+				changeSelectedEntry();
+			}
+		}
+	}
+
 	function updateEditor(entry) {
 		var dir = entry && entry.directory;
 		var enabled = !entry || !entry.sealed;
@@ -213,19 +231,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		pathEdit.text = enabled && dir || '';
 		if (!entry)
 			editor.enabled = false;
-	}
-
-	function chooseDirectory() {
-		if (selectedEntry) {
-			var dir = Dialog.chooseDirectory(
-					'Choose a Scriptographer Script Repository Folder:',
-					selectedEntry.directory || userDirectory);
-			if (dir) {
-				selectedEntry.directory = dir;
-				pathEdit.text = dir;
-				changeSelectedEntry();
-			}
-		}
+		addButton.enabled = true;
 	}
 
 	var width = 500;
