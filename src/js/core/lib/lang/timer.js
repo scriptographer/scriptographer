@@ -38,8 +38,11 @@ Function.inject(new function() {
 			var timer = new Timer(delay, periodic);
 			timer.onExecute = func;
 			func.clear = function() {
-				timer.dispose();
+				timer.abort();
 			};
+			func.isValid = function() {
+				return timer.isValid();
+			}
 			return func;
 		};
 	}
