@@ -30,7 +30,8 @@
 #include "ScriptographerPlugin.h"
 #include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
+// for com_scriptographer_ai_Item_TYPE_LAYER:
+#include "com_scriptographer_ai_Item.h"
 #include "uiGlobals.h"
 
 #ifdef WIN_ENV
@@ -78,8 +79,8 @@ void ScriptographerEngine::javaThread() {
 	// Keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
 	MPWaitOnQueue(m_requestQueue, NULL, NULL, NULL, kDurationForever);
-	// Now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
-	// which may block the current thread until the end of the app.
+	// Now tell the caller that the engine can be deleted, before DestroyJavaVM
+	// is called, which may block the current thread until the end of the app.
 	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
 	// Now exit, and destroy the JavaVM. 
 	// exit();
@@ -100,7 +101,8 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 		MPCreateQueue(&m_responseQueue);
 		MPCreateTask((TaskProc)::javaThread, this, 0, NULL, NULL, NULL, 0, NULL); 
 		// Now wait for the javaThread to finish initialization
-		// exceptions that happen in the javaThread are passed through to this thread in order to display the error code:
+		// exceptions that happen in the javaThread are passed through to this
+		// thread in order to display the error code:
 		MPWaitOnQueue(m_responseQueue, (void **) &exc, NULL, NULL, kDurationForever);
 	} else 
 #endif // MAC_THREAD
@@ -122,7 +124,8 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 }
 
 ScriptographerEngine::~ScriptographerEngine() {
-	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
+	callStaticVoidMethodReport(NULL,
+			cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 	gEngine = NULL;
 	delete m_pluginPath;
 #ifdef MAC_THREAD
@@ -221,9 +224,10 @@ public:
 	void fillArgs(JavaVMInitArgs *args) {
 #ifdef WIN_ENV
 		if (m_checkSize) {
-			// Depending on the situation, the JVM seems to require some extra amount of space
-			// 16mb seems to be a good guess ????
-			m_maxHeapSize = getMaxHeapAvailable(m_maxPermSize, m_maxHeapSize, 16 * 1024 * 1024);
+			// Depending on the situation, the JVM seems to require some extra
+			// amount of space. 16mb seems to be a good guess ????
+			m_maxHeapSize = getMaxHeapAvailable(m_maxPermSize, m_maxHeapSize,
+					16 * 1024 * 1024);
 			// Turn off now so the add-calls below actually add the sizes
 			m_checkSize = false;
 		}
@@ -254,7 +258,8 @@ void ScriptographerEngine::init() {
 #endif // !WIN_ENV
 
 	char javaPath[512];
-	sprintf(javaPath, "%s" PATH_SEP_STR "Core" PATH_SEP_STR "Java" PATH_SEP_STR, m_pluginPath);
+	sprintf(javaPath, "%s" PATH_SEP_STR "Core" PATH_SEP_STR "Java" PATH_SEP_STR,
+			m_pluginPath);
 
 	// Initialize args
 	JavaVMInitArgs args;
@@ -287,7 +292,8 @@ void ScriptographerEngine::init() {
 	if (file != NULL) {
 		while (fgets(buffer, sizeof(buffer), file)) {
 			char *str = buffer;
-			// Trim new line and white space at beginning and the end of the line:
+			// Trim new line and white space at beginning and the end of the
+			// line:
 			while (isspace(*str) && str != '\0') str++;
 			if (*str == '#') continue; // skip comments
 			int pos = strlen(str) - 1;
@@ -321,16 +327,18 @@ void ScriptographerEngine::init() {
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_pluginPath));
 	
-	// Initialize reflection. This retrieves references to all the classes, fields and methods
-	// that are accessed from native code. Since JSE 1.6, this cannot be called after 
-	// registerNatives, since this would somehow clear the internal native link tables.
-	// Also, registerNatives needs yet another workaround to get 1.6 to work: By calling
-	// a reflection method, e.g. getConstructors, the classes are pulled in fully,
-	// avoiding yet another clearing of the link tables at a later point.
-	// (e.g. for classes that are not loaded in initReflection)
+	// Initialize reflection. This retrieves references to all the classes,
+	// fields and methods that are accessed from native code. Since JSE 1.6,
+	// this cannot be called after registerNatives, since this would somehow
+	// clear the internal native link tables. Also, registerNatives needs yet
+	// another workaround to get 1.6 to work: By calling a reflection method,
+	// e.g. getConstructors, the classes are pulled in fully, avoiding yet
+	// another clearing of the link tables at a later point. (e.g. for classes
+	// that are not loaded in initReflection)
 	initReflection(env);
-	// Link the native functions to the java functions. The code for this is in registerNatives.cpp,
-	// which is automatically generated from the JNI header files by jni.js
+	// Link the native functions to the java functions. The code for this is in
+	// registerNatives.cpp, which is automatically generated from the JNI header
+	// files by jni.js
 	registerNatives(env);
 }
 
@@ -340,35 +348,39 @@ void ScriptographerEngine::exit() {
 }
 
 /**
- * Initializes the engine, e.g. activates console redirection and similar things. To be called when
- * all the underlying native structures are initiialized.
+ * Initializes the engine, e.g. activates console redirection and similar things.
+ * To be called when all the underlying native structures are initiialized.
  */
 void ScriptographerEngine::initEngine() {
 	JNIEnv *env = getEnv();
 	try {
-		// create the art handle key in which the art object's original handle value is stored
-		// as this value is used to lookup wrappers on the java side, this needs to be passed
-		// in onSelectionChanged, in case the art's handle was changed due to manipulations
-		// the java wrappers can then be updated accordingly
+		// create the art handle key in which the art object's original handle
+		// value is stored as this value is used to lookup wrappers on the java
+		// side, this needs to be passed in onSelectionChanged, in case the
+		// art's handle was changed due to manipulations the java wrappers can
+		// then be updated accordingly
 		
-		// According Adobe: note that entries whose keys are prefixed with
-		// the character '-' are considered to be temporary entries which are not saved to file.
+		// According Adobe: note that entries whose keys are prefixed with the
+		// character '-' are considered to be temporary entries which are not
+		// saved to file.
 		m_artHandleKey = sAIDictionary->Key("-scriptographer-art-handle");
 		m_docReflowKey = sAIDictionary->Key("-scriptographer-doc-reflow-suspended");
 		
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_pluginPath));
+		callStaticVoidMethod(env, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_init, env->NewStringUTF(m_pluginPath));
 		m_initialized = true;
 		onStartup();
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
 /**
- * Reloads the engine through Loader.reload, which does the half of the work. The other half is to
- * remap the reflections and register the natives again.
+ * Reloads the engine through Loader.reload, which does the half of the work.
+ * The other half is to remap the reflections and register the natives again.
  */
 jstring ScriptographerEngine::reloadEngine() {
 	JNIEnv *env = getEnv();
-	jstring errors = (jstring) callStaticObjectMethodReport(env, cls_Loader, mid_Loader_reload);
+	jstring errors = (jstring) callStaticObjectMethodReport(env, cls_Loader,
+			mid_Loader_reload);
 	m_initialized = false;
 	initReflection(env);
 	registerNatives(env);
@@ -385,8 +397,8 @@ ASErr ScriptographerEngine::onShutdown() {
 }
 
 /**
- * Loads the Java classes, and the method and field descriptors required for Java reflection.
- * Returns true on success, false on failure.
+ * Loads the Java classes, and the method and field descriptors required for
+ * Java reflection. Returns true on success, false on failure.
  */
 void ScriptographerEngine::initReflection(JNIEnv *env) {
 // JSE:
@@ -730,7 +742,10 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	va_start(args, str);
 	vsnprintf(text, size, str, args);
 	va_end(args);
-	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
+	callVoidMethodReport(env,
+			env->GetStaticObjectField(cls_System, fid_System_out),
+			mid_PrintStream_println,
+			env->NewStringUTF(text));
 	delete text;
 }
 
@@ -740,7 +755,8 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 		jthrowable throwable = env->ExceptionOccurred();
 		if (throwable != NULL) {
 			env->ExceptionClear();
-			callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_reportError, throwable);
+			callStaticVoidMethod(env, cls_ScriptographerEngine,
+					mid_ScriptographerEngine_reportError, throwable);
 		}
 	} else {
 		// TODO: ????
@@ -750,7 +766,8 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 
 /**
  * Creates a Java String from a given C-String.
- * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
+ * TODO: The non depreceated version that takes an encoding parameter should be
+ * used in the future.
  *
  * throws exceptions
  */
@@ -780,15 +797,18 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, unsigned char *str) {
 
 /**
  * Creates a C-String from a given Java String. 
- * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
+ * TODO: The non depreceated version that takes an encoding parameter should be
+ * used in the future.
  *
  * throws exceptions
  */
-char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr, int minLength) {
+char *ScriptographerEngine::convertString(JNIEnv *env,
+		jstring jstr, int minLength) {
 	if (!jstr)
 		return NULL;
 	JNI_CHECK_ENV
-	jbyteArray bytes = (jbyteArray)callObjectMethod(env, jstr, mid_String_getBytes);
+	jbyteArray bytes = (jbyteArray) callObjectMethod(env, jstr,
+			mid_String_getBytes);
 	jint len = env->GetArrayLength(bytes);
 	jint length = len + 1;
 	if (length < minLength)
@@ -804,7 +824,8 @@ char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr, int minLeng
 	return result;
 }
 
-jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str, int length) {
+jstring ScriptographerEngine::convertString(JNIEnv *env,
+		const ASUnicode *str, int length) {
 	JNI_CHECK_ENV
 	if (length < 0) {
 		// find length
@@ -817,7 +838,8 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str, i
 	return res;
 }
 
-ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring jstr) {
+ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env,
+		jstring jstr) {
 	JNI_CHECK_ENV
 	int length = env->GetStringLength(jstr);
 	ASUnicode *chars = new ASUnicode[length + 1];
@@ -833,7 +855,8 @@ ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring js
  * Creates a Java String from a given Pascal-String.
  * Only supported in CS and bellow
  */
-unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env, jstring jstr, int minLength) {
+unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env,
+		jstring jstr, int minLength) {
 	char *str = convertString(env, jstr, minLength);
 	return gPlugin->toPascal(str, (unsigned char*) str);
 }
@@ -844,7 +867,8 @@ unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env, jstring j
  * Creates a Java String from a given UTF-16-String.
  * Only supported in CS2 and above
  */
-jstring ScriptographerEngine::convertString(JNIEnv *env, ai::UnicodeString &str) {
+jstring ScriptographerEngine::convertString(JNIEnv *env,
+		ai::UnicodeString &str) {
 	JNI_CHECK_ENV
 	const ASUnicode *buffer;
 	int len = str.utf_16(buffer);
@@ -853,7 +877,8 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, ai::UnicodeString &str)
 	return res;
 }
 
-ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env, jstring jstr) {
+ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env,
+		jstring jstr) {
 	JNI_CHECK_ENV
 	const jchar *chars = env->GetStringCritical(jstr, NULL);
 	ai::UnicodeString str(chars, env->GetStringLength(jstr));
@@ -864,12 +889,14 @@ ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env,
 #endif
 
 #ifdef MAC_ENV
-CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env, jstring jstr) {
+CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env,
+		jstring jstr) {
 	if (jstr == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	const jchar *chars = env->GetStringCritical(jstr, NULL);
-	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault, chars, env->GetStringLength(jstr));
+	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault,
+			chars, env->GetStringLength(jstr));
 	env->ReleaseStringCritical(jstr, chars); 
 	return str;
 }		
@@ -912,50 +939,30 @@ jdouble ScriptographerEngine::convertDouble(JNIEnv *env, jobject value) {
 }
 
 // com.scriptographer.ai.Point <-> AIRealPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res) {
+jobject ScriptographerEngine::convertPoint(JNIEnv *env,
+		AIReal x, AIReal y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_ai_Point, cid_ai_Point, (jdouble) x, (jdouble) y);
+		return newObject(env, cls_ai_Point, cid_ai_Point,
+				(jdouble) x, (jdouble) y);
 	} else {
-		callVoidMethod(env, res, mid_ai_Point_set, (jdouble) x, (jdouble) y);
+		callVoidMethod(env, res, mid_ai_Point_set,
+				(jdouble) x, (jdouble) y);
 		return res;
 	}
 }
 
-// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, com.scriptographer.adm.Point
-AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res) {
+// This handles 2 types of points: com.scriptographer.ai.Point,
+// com.scriptographer.adm.Point
+AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
+		jobject point, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
-	if (env->IsInstanceOf(pt, cls_ai_Point)) {
-		res->h = env->GetDoubleField(pt, fid_ai_Point_x);
-		res->v = env->GetDoubleField(pt, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_adm_Point)) {
-		res->h = env->GetIntField(pt, fid_adm_Point_x);
-		res->v = env->GetIntField(pt, fid_adm_Point_y);
-	}
-	EXCEPTION_CHECK(env);
-	return res;
-}
-
-// com.scriptographer.adm.Point <-> ADMPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
-	if (res == NULL) {
-		return newObject(env, cls_adm_Point, cid_adm_Point, x, y);
-	} else {
-		callVoidMethod(env, res, mid_adm_Point_set, x, y);
-		return res;
-	}
-}
-
-// This handles 2 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point
-ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
-	if (res == NULL)
-		res = new ADMPoint;
-	if (env->IsInstanceOf(pt, cls_adm_Point)) {
-		res->h = env->GetIntField(pt, fid_adm_Point_x);
-		res->v = env->GetIntField(pt, fid_adm_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_ai_Point)) {
-		res->h = (short) env->GetDoubleField(pt, fid_ai_Point_x);
-		res->v = (short) env->GetDoubleField(pt, fid_ai_Point_y);
+	if (env->IsInstanceOf(point, cls_ai_Point)) {
+		res->h = env->GetDoubleField(point, fid_ai_Point_x);
+		res->v = env->GetDoubleField(point, fid_ai_Point_y);
+	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
+		res->h = env->GetIntField(point, fid_adm_Point_x);
+		res->v = env->GetIntField(point, fid_adm_Point_y);
 	}
 	EXCEPTION_CHECK(env);
 	return res;
@@ -963,61 +970,51 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 
 // com.scriptographer.ai.Rectangle <-> AIRealRect
 
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env, 
+		AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
-		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle, (jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
+		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle,
+				(jdouble) left, (jdouble) bottom,
+				(jdouble) (right - left),
+				(jdouble) (top - bottom));
 	} else {
-		callVoidMethod(env, res, mid_ai_Rectangle_set, (jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
+		callVoidMethod(env, res, mid_ai_Rectangle_set,
+				(jdouble) left, (jdouble) bottom,
+				(jdouble) (right - left),
+				(jdouble) (top - bottom));
 		return res;
 	}
 }
 
-AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRealRect *res) {
+AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
+		jobject rect, AIRealRect *res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL)
 		res = new AIRealRect;
-	res->left =  env->GetDoubleField(rt, fid_ai_Rectangle_x);
-	res->bottom =  env->GetDoubleField(rt, fid_ai_Rectangle_y);
-	res->right = res->left + env->GetDoubleField(rt, fid_ai_Rectangle_width);
-	res->top = res->bottom + env->GetDoubleField(rt, fid_ai_Rectangle_height);
-	EXCEPTION_CHECK(env);
-	return res;
-}
-
-// java.awt.Rectangle <-> ADMRect
-
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res) {
-	if (res == NULL) {
-		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle, left, top, right - left, bottom - top);
-	} else {
-		callVoidMethod(env, res, mid_adm_Rectangle_set, left, top, right - left, bottom - top);
-		return res;
-	}
-}
-
-ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect *res) {
-	if (res == NULL)
-		res = new ADMRect;
-	res->left = env->GetIntField(rt, fid_adm_Rectangle_x);
-	res->top = env->GetIntField(rt, fid_adm_Rectangle_y);
-	res->right = res->left + env->GetIntField(rt, fid_adm_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rt, fid_adm_Rectangle_height);
+	res->left =  env->GetDoubleField(rect, fid_ai_Rectangle_x);
+	res->bottom =  env->GetDoubleField(rect, fid_ai_Rectangle_y);
+	res->right = res->left + env->GetDoubleField(rect, fid_ai_Rectangle_width);
+	res->top = res->bottom + env->GetDoubleField(rect, fid_ai_Rectangle_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
 
 // com.scriptographer.ai.Size <-> AIRealPoint
-jobject ScriptographerEngine::convertSize(JNIEnv *env, float width, float height, jobject res) {
+jobject ScriptographerEngine::convertSize(JNIEnv *env,
+		float width, float height, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_ai_Size, cid_ai_Size, (jdouble) width, (jdouble) height);
+		return newObject(env, cls_ai_Size, cid_ai_Size,
+				(jdouble) width, (jdouble) height);
 	} else {
-		callVoidMethod(env, res, mid_ai_Size_set, (jdouble) width, (jdouble) height);
+		callVoidMethod(env, res, mid_ai_Size_set,
+				(jdouble) width, (jdouble) height);
 		return res;
 	}
 }
 
-AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AIRealPoint *res) {
+AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
+		jobject size, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
 	res->h = env->GetDoubleField(size, fid_ai_Size_width);
@@ -1026,17 +1023,80 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AIReal
 	return res;
 }
 
-// com.scriptographer.adm.Size <-> ADMPoint
-jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jobject res) {
+// com.scriptographer.adm.Point <-> ADMPoint
+jobject ScriptographerEngine::convertPoint(JNIEnv *env,
+		ADMPoint *point, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Size, cid_adm_Size, (jint) width, (jint) height);
+		return newObject(env, cls_adm_Point, cid_adm_Point,
+				(jint) point->h, (jint) point->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Size_set, (jint) width, (jint) height);
+		callVoidMethod(env, res, mid_adm_Point_set,
+				(jint) point->h, (jint) point->v);
 		return res;
 	}
 }
 
-ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, ADMPoint *res) {
+// This handles 2 types of points: com.scriptographer.adm.Point,
+// com.scriptographer.ai.Point
+ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
+		jobject point, ADMPoint *res) {
+	if (res == NULL)
+		res = new ADMPoint;
+	if (env->IsInstanceOf(point, cls_adm_Point)) {
+		res->h = env->GetIntField(point, fid_adm_Point_x);
+		res->v = env->GetIntField(point, fid_adm_Point_y);
+	} else if (env->IsInstanceOf(point, cls_ai_Point)) {
+		res->h = (short) env->GetDoubleField(point, fid_ai_Point_x);
+		res->v = (short) env->GetDoubleField(point, fid_ai_Point_y);
+	}
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptographer.adm.Rectangle <-> ADMRect
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
+		ADMRect *rect, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+	} else {
+		callVoidMethod(env, res, mid_adm_Rectangle_set,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+		return res;
+	}
+}
+
+ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
+		jobject rect, ADMRect *res) {
+	if (res == NULL)
+		res = new ADMRect;
+	res->left = env->GetIntField(rect, fid_adm_Rectangle_x);
+	res->top = env->GetIntField(rect, fid_adm_Rectangle_y);
+	res->right = res->left + env->GetIntField(rect, fid_adm_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rect, fid_adm_Rectangle_height);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptographer.adm.Size <-> ADMPoint
+jobject ScriptographerEngine::convertSize(JNIEnv *env,
+		ADMPoint *size, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_adm_Size, cid_adm_Size,
+				(jint) size->h, (jint) size->v);
+	} else {
+		callVoidMethod(env, res, mid_adm_Size_set,
+				(jint) size->h, (jint) size->v);
+		return res;
+	}
+}
+
+ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env,
+		jobject size, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
 	res->h = env->GetIntField(size, fid_adm_Size_width);
@@ -1047,13 +1107,18 @@ ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, ADMPoint 
 
 // java.awt.Color <-> ADMRGBColor
 jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
-	return newObject(env, cls_awt_Color, cid_awt_Color, (jfloat) srcCol->red / 65535.0, (jfloat) srcCol->green / 65535.0, (jfloat) srcCol->blue / 65535.0);
+	return newObject(env, cls_awt_Color, cid_awt_Color,
+			(jfloat) srcCol->red / 65535.0,
+			(jfloat) srcCol->green / 65535.0,
+			(jfloat) srcCol->blue / 65535.0);
 }
 
-ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol) {
+ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env,
+		jobject srcCol, ADMRGBColor *dstCol) {
 	if (dstCol == NULL)
 		dstCol = new ADMRGBColor;
-	jfloatArray array = (jfloatArray) env->CallObjectMethod(srcCol, mid_awt_Color_getColorComponents, NULL);
+	jfloatArray array = (jfloatArray) env->CallObjectMethod(srcCol,
+			mid_awt_Color_getColorComponents, NULL);
 	int length = env->GetArrayLength(array);
 	// TODO: add handling for different values of length!!!
 	jfloat *values = new jfloat[length];
@@ -1068,7 +1133,8 @@ ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADM
 }
 
 // com.scriptoggrapher.ai.Color <-> AIColor
-jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha) {
+jobject ScriptographerEngine::convertColor(JNIEnv *env,
+		AIColor *srcCol, AIReal alpha) {
 	switch (srcCol->kind) {
 		case kGrayColor: {
 			return newObject(env, cls_ai_GrayColor, cid_ai_GrayColor,
@@ -1076,38 +1142,47 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal 
 		}
 		case kThreeColor: {
 			AIThreeColorStyle *rgb = &srcCol->c.rgb;
-			return newObject(env, cls_ai_RGBColor, cid_ai_RGBColor, (jfloat) rgb->red,
-				(jfloat) rgb->green, (jfloat) rgb->blue, (jfloat) alpha);
+			return newObject(env, cls_ai_RGBColor, cid_ai_RGBColor,
+					(jfloat) rgb->red, (jfloat) rgb->green, (jfloat) rgb->blue,
+					(jfloat) alpha);
 		}
 		case kFourColor: {
 			AIFourColorStyle *f = &srcCol->c.f;
-			return newObject(env, cls_ai_CMYKColor, cid_ai_CMYKColor, (jfloat) f->cyan,
-				(jfloat) f->magenta, (jfloat) f->yellow, (jfloat) f->black, (jfloat) alpha);
+			return newObject(env, cls_ai_CMYKColor, cid_ai_CMYKColor,
+					(jfloat) f->cyan, (jfloat) f->magenta, (jfloat) f->yellow,
+					(jfloat) f->black, (jfloat) alpha);
 		}
 		case kGradient: {
 			AIGradientStyle *b = &srcCol->c.b;
 			return newObject(env, cls_ai_GradientColor, cid_ai_GradientColor,
-				(jint) b->gradient, gEngine->convertPoint(env, &b->gradientOrigin),
+				(jint) b->gradient,
+				gEngine->convertPoint(env, &b->gradientOrigin),
 				(jfloat) b->gradientAngle, (jfloat) b->gradientLength,
 				gEngine->convertMatrix(env, &b->matrix),
 				(jfloat) b->hiliteAngle, (jfloat) b->hiliteLength);
 		}
 		case kPattern: {
 			AIPatternStyle *p = &srcCol->c.p;
-			// TODO: These values always seem to be the same, so we do not need to expose them 
-			// and can only use the Matrix instead. This check here is just there to see if it 
-			// can happen that they contain something else, in which case they would need to
-			// be added to the matrix.
-			if (p->shiftDist != 0 || p->shiftAngle != 0 || p->scale.h != 100 || p->scale.v != 100 || p->rotate != 0
-				|| p->reflect || p->reflectAngle != 0 || p->shearAngle != 0 || p->shearAxis != 0) {
-				throw new StringException("Pattern contains old-style transform definition.\n\
-					Please store file and send to sg@scriptographer.com along with these values:\n\
-					%f %f %f %f %f %i %f %f %f",
-					p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v, p->rotate,
-					p->reflect, p->reflectAngle, p->shearAngle, p->shearAxis);
+			// TODO: These values always seem to be the same, so we do not need
+			// to expose them and can only use the Matrix instead. This check
+			// here is just there to see if it can happen that they contain
+			// something else, in which case they would need to be added to the
+			// matrix.
+			if (p->shiftDist != 0 || p->shiftAngle != 0 || p->scale.h != 100
+					|| p->scale.v != 100 || p->rotate != 0 || p->reflect
+					|| p->reflectAngle != 0 || p->shearAngle != 0 
+					|| p->shearAxis != 0) {
+				throw new StringException(
+						"Pattern contains old-style transform definition.\n"
+						"Please store file and send to sg@scriptographer.com"
+						"along with these values:\n\%f %f %f %f %f %i %f %f %f",
+						p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v,
+						p->rotate, p->reflect, p->reflectAngle, p->shearAngle,
+						p->shearAxis);
 			}
 			return newObject(env, cls_ai_PatternColor, cid_ai_PatternColor,
-				 (jint) p->pattern, gEngine->convertMatrix(env, &p->transform));
+					(jint) p->pattern,
+					gEngine->convertMatrix(env, &p->transform));
 		}
 		case kNoneColor: {
 			return obj_ai_Color_NONE;
@@ -1117,27 +1192,34 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal 
 	return NULL;
 }
 
-AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, AIColor *dstCol, AIReal *alpha) {
+AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
+		jobject srcCol, AIColor *dstCol, AIReal *alpha) {
 	if (dstCol == NULL)
 		dstCol = new AIColor;
 	// TODO: add kCustomColor
 	if (env->IsInstanceOf(srcCol, cls_ai_GradientColor)) {
 		dstCol->kind = kGradient;
-		// call mid_ai_GradientColor_set, which sets the AIGradientStyle by calling 
-		// Java_com_scriptographer_ai_Color_nativeSetGradient with the right arguments
-		callVoidMethod(env, srcCol, mid_ai_GradientColor_set, (jint) &dstCol->c.b);
+		// call mid_ai_GradientColor_set, which sets the AIGradientStyle by
+		// calling Java_com_scriptographer_ai_Color_nativeSetGradient with the
+		// right arguments
+		callVoidMethod(env, srcCol, mid_ai_GradientColor_set,
+				(jint) &dstCol->c.b);
 	} else if (env->IsInstanceOf(srcCol, cls_ai_PatternColor)) {
 		dstCol->kind = kPattern;
-		// call mid_ai_PatternColor_set, which sets the AIPatternStyle by calling 
-		// Java_com_scriptographer_ai_Color_nativeSetPattern with the right arguments
-		callVoidMethod(env, srcCol, mid_ai_PatternColor_set, (jint) &dstCol->c.p);
+		// call mid_ai_PatternColor_set, which sets the AIPatternStyle by
+		// calling Java_com_scriptographer_ai_Color_nativeSetPattern with the
+		// right arguments
+		callVoidMethod(env, srcCol, mid_ai_PatternColor_set,
+				(jint) &dstCol->c.p);
 	} else {
-		convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_ai_Color_getComponents), dstCol, alpha);
+		convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol,
+				mid_ai_Color_getComponents), dstCol, alpha);
 	}
 	return dstCol;
 }
 
-AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
+AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
+		jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
 	if (dstCol == NULL)
 		dstCol = new AIColor;
 	int length = env->GetArrayLength(srcCol);
@@ -1174,7 +1256,8 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIC
 
 // AIColor <-> ADMRGBColor
 
-AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol, AIColor *dstCol) {
+AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol,
+		AIColor *dstCol) {
 	if (dstCol == NULL)
 		dstCol = new AIColor;
 	dstCol->kind = kThreeColor;
@@ -1184,11 +1267,13 @@ AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol, AIColor *dstCol
 	return dstCol;
 }
 
-ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *dstCol) {
+ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol,
+		ADMRGBColor *dstCol) {
 	if (dstCol == NULL)
 		dstCol = new ADMRGBColor;
 	// convert to RGB if it isn't already:
-	if (srcCol->kind != kThreeColor && !convertColor(srcCol, kAIRGBColorSpace, srcCol))
+	if (srcCol->kind != kThreeColor && !convertColor(srcCol,
+			kAIRGBColorSpace, srcCol))
 		return NULL;
 	dstCol->red = (short) (srcCol->c.rgb.red * 65535.0 + 0.5);
 	dstCol->green = (short) (srcCol->c.rgb.green * 65535.0 + 0.5);
@@ -1197,7 +1282,9 @@ ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *ds
 }
 
 // AIColor <-> AIColor
-AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol, AIReal srcAlpha, AIReal *dstAlpha) {
+AIColor *ScriptographerEngine::convertColor(AIColor *srcCol,
+		AIColorConversionSpaceValue dstSpace, AIColor *dstCol, AIReal srcAlpha,
+		AIReal *dstAlpha) {
 	// Determine srcCol's space and sample size:
 	AIColorConversionSpaceValue srcSpace;
 	int srcSize;
@@ -1247,10 +1334,12 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 			src[0] = 1.0 - src[0];
 		ASBoolean inGamut;
 #if kPluginInterfaceVersion < kAI12
-		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, &inGamut)) {
+		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
+				dst, &inGamut)) {
 #else
 		AIColorConvertOptions options;
-		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, options, &inGamut)) {
+		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
+				dst, options, &inGamut)) {
 #endif
 			if (dstCol == NULL)
 				dstCol = new AIColor;
@@ -1292,18 +1381,20 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 }
 
 // AIRealMatrix <-> com.scriptoggrapher.ai.Matrix
-jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res) {
+jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt,
+		jobject res) {
 	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
 		(jdouble) mt->a, (jdouble) mt->b,
 		(jdouble) mt->c, (jdouble) mt->d,
 		(jdouble) mt->tx, (jdouble) mt->ty);
 }
 
-AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res) {
+AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt,
+		AIRealMatrix *res) {
 	if (res == NULL)
 		res = new AIRealMatrix;
-	// TODO: use same conversion as Gradient where the native side calls a java function on Matrix
-	// to call back into native side with values.
+	// TODO: use same conversion as Gradient where the native side calls a java
+	// function on Matrix to call back into native side with values.
 	res->a = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleX);
 	res->b = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearY);
 	res->c = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearX);
@@ -1316,18 +1407,22 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRea
 
 // AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
 
-jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res) {
+jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style,
+		jobject res) {
 	// TODO: add additional AIFillStyleMap
 	jobject color = convertColor(env, &style->color);
 	if (res == NULL) {
-		res = newObject(env, cls_ai_FillStyle, cid_ai_FillStyle, color, true, style->overprint);
+		res = newObject(env, cls_ai_FillStyle, cid_ai_FillStyle, color, true,
+				style->overprint);
 	} else {
-		callVoidMethod(env, res, mid_ai_FillStyle_init, color, true, style->overprint);
+		callVoidMethod(env, res, mid_ai_FillStyle_init, color, true,
+				style->overprint);
 	}
 	return res;
 }
 
-AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res) {
+AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env,
+		jobject style, AIFillStyle *res) {
 	if (res == NULL)
 		res = new AIFillStyle;
 	callVoidMethod(env, style, mid_ai_FillStyle_initNative, res);
@@ -1336,7 +1431,8 @@ AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env, jobject style, 
 
 // AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
 
-jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res) {
+jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
+		AIStrokeStyle *style, jobject res) {
 	// TODO: add additional AIStrokeStyleMap
 	jobject color = convertColor(env, &style->color);
 	int count = style->dash.length;
@@ -1356,7 +1452,8 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *sty
 	return res;
 }
 
-AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res) {
+AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
+		jobject style, AIStrokeStyle *res) {
 	if (res == NULL)
 		res = new AIStrokeStyle;
 	callVoidMethod(env, style, mid_ai_StrokeStyle_initNative, res);
@@ -1366,7 +1463,8 @@ AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject sty
 
 // AIArtSet <-> ItemList
 
-jobject ScriptographerEngine::convertItemSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
+jobject ScriptographerEngine::convertItemSet(JNIEnv *env,
+		AIArtSet set, bool layerOnly) {
 	Item_filter(set, layerOnly);
 	long count = 0;
 	sAIArtSet->CountArtSet(set, &count);
@@ -1386,10 +1484,12 @@ jobject ScriptographerEngine::convertItemSet(JNIEnv *env, AIArtSet set, bool lay
 	return itemSet;
 }
 
-AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobject itemSet, bool activate) {
+AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env,
+		jobject itemSet, bool activate) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
-		// Use a for loop with size instead of hasNext, because that saves us many calls...
+		// Use a for loop with size instead of hasNext, because that saves us
+		// many calls...
 		jint size = callIntMethod(env, itemSet, mid_List_size);
 		for (int i = 0; i < size; i++) {
 			jobject obj = callObjectMethod(env, itemSet, mid_List_get, i);
@@ -1403,7 +1503,8 @@ AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobject itemSet, bool
 	return set;
 }
 
-AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobjectArray items, bool activate) {
+AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env,
+		jobjectArray items, bool activate) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		jint length = env->GetArrayLength(items);
@@ -1422,7 +1523,8 @@ AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobjectArray items, b
 // java.io.File <-> SPPlatformFileSpecification
 
 char *ScriptographerEngine::getFilePath(JNIEnv *env, jobject file) {
-	char *path = convertString(env, (jstring) callObjectMethod(env, file, mid_File_getPath));
+	char *path = convertString(env,
+			(jstring) callObjectMethod(env, file, mid_File_getPath));
 	EXCEPTION_CHECK(env);
 	return path;
 }
@@ -1443,7 +1545,8 @@ jobject ScriptographerEngine::convertFile(JNIEnv *env, CFStringRef path) {
 }
 #endif
 
-jobject ScriptographerEngine::convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec) {
+jobject ScriptographerEngine::convertFile(JNIEnv *env,
+		SPPlatformFileSpecification *fileSpec) {
 	if (fileSpec != NULL) {
 		char path[kMaxPathLength];
 		if (gPlugin->fileSpecToPath(fileSpec, path))
@@ -1452,7 +1555,8 @@ jobject ScriptographerEngine::convertFile(JNIEnv *env, SPPlatformFileSpecificati
 	return NULL;
 }
 
-SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res) {
+SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env,
+		jobject file, SPPlatformFileSpecification *res) {
 	if (file == NULL)
 		return NULL;
 	char *path = getFilePath(env, file);
@@ -1491,46 +1595,54 @@ void ScriptographerEngine::resumeSuspendedDocuments() {
 	m_suspendedDocuments.reset();
 }
 
-int ScriptographerEngine::getAIObjectHandle(JNIEnv *env, jobject obj, const char *name) {
+int ScriptographerEngine::getAIObjectHandle(JNIEnv *env,
+		jobject obj, const char *name) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (!handle)
-		throw new StringException("The %i is no longer valid. Use isValid() checks to avoid this error.", name);
+		throw new StringException("The %i is no longer valid. Use isValid()"
+				"checks to avoid this error.", name);
 	return handle;
 }
 
-int ScriptographerEngine::getDocumentObjectHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name) {
+int ScriptographerEngine::getDocumentObjectHandle(JNIEnv *env,
+		jobject obj, bool activateDoc, const char *name) {
 	int handle = getAIObjectHandle(env, obj, name);
 	if (activateDoc && handle)
 		getDocumentHandle(env, obj, true);
 	return handle;
 }
 
-AIDictionaryRef ScriptographerEngine::getDictionaryHandle(JNIEnv *env, jobject obj) {
+AIDictionaryRef ScriptographerEngine::getDictionaryHandle(JNIEnv *env,
+		jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ai_Dictionary_handle);
 	if (!handle)
-		throw new StringException("The dictionary is no longer valid. Use isValid() checks to avoid this error.");
+		throw new StringException("The dictionary is no longer valid."
+				"Use isValid() checks to avoid this error.");
 	return (AIDictionaryRef) handle;
 }
 /**
- * Returns the wrapped AIDocumentHandle of an object by assuming that it is a Document and
- * accessing its field 'handle', or an Item, in which case it's document field is fetched first. 
+ * Returns the wrapped AIDocumentHandle of an object by assuming that it is a
+ * Document and accessing its field 'handle', or an Item, in which case it's
+ * document field is fetched first. 
  *
  * throws exceptions
  */
-AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject obj, bool activate) {
+AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env,
+		jobject obj, bool activate) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	if (env->IsInstanceOf(obj, cls_ai_DocumentObject))
 		// Fetch document field and switch if necessary
 		obj = getObjectField(env, obj, fid_ai_DocumentObject_document);
-	AIDocumentHandle doc = (AIDocumentHandle) getAIObjectHandle(env, obj, "document");
+	AIDocumentHandle doc =
+			(AIDocumentHandle) getAIObjectHandle(env, obj, "document");
 	// Switch to this document if necessary
 	if (activate && doc && doc != gWorkingDoc) {
 		sAIDocumentList->Activate(doc, false);
@@ -1540,12 +1652,14 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
 }
 
 /**
- * Returns the wrapped AIArtHandle of an object by assuming that it is an anchestor of Class Item and
+ * Returns the wrapped AIArtHandle of an object by assuming that it is an
+ * anchestor of Class Item and
  * accessing its field 'handle':
  *
  * throws exceptions
  */
-AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool activateDoc, AIDocumentHandle *doc) {
+AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env,
+		jobject obj, bool activateDoc, AIDocumentHandle *doc) {
 	if (obj == NULL)
 		return NULL;
 	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art");
@@ -1553,12 +1667,15 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 		return NULL;
 	// Make sure the object is valid
 	if (!callBooleanMethod(env, obj, mid_ai_Item_isValid))
-		throw new StringException("The item is no longer valid, either due to deletion or undoing. Use isValid() checks to avoid this error.");
+		throw new StringException("The item is no longer valid, either due to"
+				"deletion or undoing. Use isValid() checks to avoid this error.");
 	if (activateDoc || doc != NULL) {
 		// Fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_ai_DocumentObject_document);
+		jobject docObj = getObjectField(env, obj,
+				fid_ai_DocumentObject_document);
 		if (docObj != NULL) {
-			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
+			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env,
+					docObj, fid_ai_NativeObject_handle);
 			if (doc != NULL)
 				*doc = docHandle;
 			// Switch to this document if necessary
@@ -1571,8 +1688,10 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 				// text flow of all suspended documents is resumed at the end
 				// by gEngine->resumeSuspendedDocuments()
 				AIDictionaryRef dict = NULL;
-				// Use a dictionary entry to see if it was suspsended before already
-				if (Item_getType(art) == kTextFrameArt && !sAIDocument->GetDictionary(&dict)) {
+				// Use a dictionary entry to see if it was suspsended before
+				// already
+				if (Item_getType(art) == kTextFrameArt
+						&& !sAIDocument->GetDictionary(&dict)) {
 					if (!sAIDictionary->IsKnown(dict, m_docReflowKey)) {
 						sAIDocument->SuspendTextReflow();
 						sAIDictionary->SetBooleanEntry(dict, m_docReflowKey, true);
@@ -1587,12 +1706,13 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 }
 
 /**
- * Returns the wrapped AILayerHandle of an object by assuming that it is an anchestor of Class Item and
- * accessing its field 'handle':
+ * Returns the wrapped AILayerHandle of an object by assuming that it is an
+ * anchestor of Class Item and accessing its field 'handle':
  *
  * throws exceptions
  */
-AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj, bool activateDoc) {
+AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env,
+		jobject obj, bool activateDoc) {
 	AIArtHandle art = getArtHandle(env, obj, activateDoc);
 	AILayerHandle layer = NULL;
 	sAIArt->GetLayerOfArt(art, &layer);
@@ -1604,11 +1724,13 @@ AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj, boo
  *
  * throws exceptions
  */
-AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env, jobject obj) {
+AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env,
+		jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	return (AIDictionaryRef) gEngine->getIntField(env, obj, fid_ai_Item_dictionaryHandle);
+	return (AIDictionaryRef) gEngine->getIntField(env, obj,
+			fid_ai_Item_dictionaryHandle);
 }
 
 AIDictKey ScriptographerEngine::getArtDictionaryKey(JNIEnv *env, jobject obj) {
@@ -1619,31 +1741,37 @@ AIDictKey ScriptographerEngine::getArtDictionaryKey(JNIEnv *env, jobject obj) {
 }
 
 /**
- * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class TextFrame and
+ * Returns the wrapped TextFrameRef of an object by assuming that it is an
+ * anchestor of Class TextFrame and
  * accessing its field 'handle':
  *
  * throws exceptions
  */
-ATE::TextFrameRef ScriptographerEngine::getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc) {
+ATE::TextFrameRef ScriptographerEngine::getTextFrameHandle(JNIEnv *env,
+		jobject obj, bool activateDoc) {
 	AIArtHandle art = getArtHandle(env, obj, activateDoc);
 	ATE::TextFrameRef ref = NULL;
 	sAITextFrame->GetATETextFrame(art, &ref);
 	return ref;
 }
 
-jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range) {
-	// we need to increase the ref count here. this is decreased again in TextRange.finalize
+jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env,
+		ATE::TextRangeRef range) {
+	// we need to increase the ref count here. this is decreased again in
+	// TextRange.finalize
 	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_ai_TextRange, cid_ai_TextRange, (jint) range, (jint) gWorkingDoc);
+	return newObject(env, cls_ai_TextRange, cid_ai_TextRange,
+			(jint) range, (jint) gWorkingDoc);
 }
 
 /**
- * Wraps the handle in a java object. see the Java function Item.wrapArtHandle to see how 
- * the cashing of already wrapped objects is handled.
+ * Wraps the handle in a java object. see the Java function Item.wrapArtHandle
+ * to see how the cashing of already wrapped objects is handled.
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, bool created, short type, bool checkWrapped) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art,
+		AIDocumentHandle doc, bool created, short type, bool checkWrapped) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
@@ -1652,7 +1780,8 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	// Currently this is only used by wrapLayerHandle.
 	if (type == -1) {
 		ASBoolean isLayer = false;
-		if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
+		if (sAIArt->GetArtType(art, &type)
+				|| sAIArt->IsArtLayerGroup(art, &isLayer))
 			throw new StringException("Cannot determine the item's type");
 		if (isLayer) {
 			// Self defined type for layer groups
@@ -1683,11 +1812,14 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 			(jint) (doc ? doc : gWorkingDoc), wrapped, created);
 }
 
-void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, bool clearDictionary) {
-	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jboolean) clearDictionary);
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item,
+		AIArtHandle art, AIDocumentHandle doc, bool clearDictionary) {
+	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc,
+			(jboolean) clearDictionary);
 }
 
-void ScriptographerEngine::setItemDictionary(JNIEnv *env, jobject item, AIDictionaryRef dictionary, AIDictKey key) {
+void ScriptographerEngine::setItemDictionary(JNIEnv *env, jobject item,
+		AIDictionaryRef dictionary, AIDictKey key) {
 	// Release the previous dictionary if there was one. Do this even if it is
 	// the same since we are adding a reference again after.
 	AIDictionaryRef prevDict = getArtDictionaryHandle(env, item);
@@ -1702,31 +1834,39 @@ void ScriptographerEngine::setItemDictionary(JNIEnv *env, jobject item, AIDictio
 		sAIDictionary->AddRef(dictionary);
 }
 
-jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc) {
-	// Layer handles are not used in java as Layer is derived from Item. Allways use the first invisible
-	// Item group in the layer that contains everything (even in AI, layer seems only be a wrapper around
-	// an art group:
+jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer,
+		AIDocumentHandle doc) {
+	// Layer handles are not used in java as Layer is derived from Item. Allways
+	// use the first invisible Item group in the layer that contains everything
+	// (even in AI, layer seems only be a wrapper around an art group:
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return wrapArtHandle(env, art, doc, false, com_scriptographer_ai_Item_TYPE_LAYER);
+	return wrapArtHandle(env, art, doc, false,
+			com_scriptographer_ai_Item_TYPE_LAYER);
 }
 
-jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc) {
+jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env,
+		AIDocumentHandle doc) {
 	JNI_CHECK_ENV
-	return callStaticObjectMethod(env, cls_ai_Document, mid_ai_Document_wrapHandle, (jint) doc);
+	return callStaticObjectMethod(env, cls_ai_Document,
+			mid_ai_Document_wrapHandle, (jint) doc);
 }
 
-jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc, jobject validation) {
+jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env,
+		AIDictionaryRef dictionary, AIDocumentHandle doc, jobject validation) {
 	JNI_CHECK_ENV
-	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
-			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc), validation);
+	return callStaticObjectMethod(env, cls_ai_Dictionary,
+			mid_ai_Dictionary_wrapHandle, (jint) dictionary,
+			(jint) (doc ? doc : gWorkingDoc), validation);
 }
 
-jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc) {
+jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env,
+		AILiveEffectParameters parameters, AIDocumentHandle doc) {
 	JNI_CHECK_ENV
-	return callStaticObjectMethod(env, cls_ai_LiveEffectParameters, mid_ai_LiveEffectParameters_wrapHandle,
-			(jint) parameters, (jint) (doc ? doc : gWorkingDoc));
+	return callStaticObjectMethod(env, cls_ai_LiveEffectParameters,
+			mid_ai_LiveEffectParameters_wrapHandle, (jint) parameters,
+			(jint) (doc ? doc : gWorkingDoc));
 }
 
 /**
@@ -1735,7 +1875,8 @@ jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env, AILiveEffect
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapMenuGroupHandle(JNIEnv *env, AIMenuGroup group) {
+jobject ScriptographerEngine::wrapMenuGroupHandle(JNIEnv *env,
+		AIMenuGroup group) {
 	JNI_CHECK_ENV
 #if kPluginInterfaceVersion < kAI12
 	char *groupName;
@@ -1743,20 +1884,23 @@ jobject ScriptographerEngine::wrapMenuGroupHandle(JNIEnv *env, AIMenuGroup group
 	const char *groupName;
 #endif // kPluginInterfaceVersion >= kAI12
 	if (!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_ui_MenuGroup, mid_ui_MenuGroup_wrapHandle,
-			(jint) group, convertString(env, groupName)
+		return callStaticObjectMethod(env, cls_ui_MenuGroup,
+				mid_ui_MenuGroup_wrapHandle, (jint) group,
+				convertString(env, groupName)
 		);
 	}
 	return NULL;
 }
 
 /**
- * Wraps the handle in a java object. see the Java function MenuItem.wrapHandle to see how 
+ * Wraps the handle in a java object. see the Java function MenuItem.wrapHandle
+ * to see how 
  * the cashing of already wrapped objects is handled.
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item) {
+jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env,
+		AIMenuItemHandle item) {
 	JNI_CHECK_ENV
 	AIMenuGroup group;
 #if kPluginInterfaceVersion < kAI12
@@ -1768,7 +1912,8 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 #endif // kPluginInterfaceVersion >= kAI12
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_wrapHandle,
+		return callStaticObjectMethod(env, cls_ui_MenuItem,
+			mid_ui_MenuItem_wrapHandle,
 			(jint) item, convertString(env, name),
 			(jint) group, convertString(env, groupName)
 		);
@@ -1778,12 +1923,13 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		
 /**
  * onSelectionChanged is fired in the following situations:
- * when either a change in the selected art objects occurs or an artwork modification
- * such as moving a point on a path occurs. In other words EITHER something was selected
- * or deselected or targeted or untargeted, OR some aspect of the current selected
- * object(s) changed. 
- * It calls Item.onSelectionChanged with an array containing all the affected artHandles,
- * which then increases the version variable of already wrapped objects
+ * when either a change in the selected art objects occurs or an artwork
+ * modification such as moving a point on a path occurs. In other words EITHER
+ * something was selected or deselected or targeted or untargeted, OR some
+ * aspect of the current selected  object(s) changed. 
+ * It calls Item.onSelectionChanged with an array containing all the affected
+ * artHandles, which then increases the version variable of already wrapped
+ * objects
  */
 ASErr ScriptographerEngine::onSelectionChanged() {
 	JNIEnv *env = getEnv();
@@ -1797,33 +1943,42 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		if (numMatches > 0) {
 			// pass an array of twice the size to the java side:
 			// i + 0 contains the current handle
-			// i + 1 contains the previous handle, in case the object was wrapped earlier and its handle was changed 
-			// in the meantime. like this, the java side can update its wrappers. the previous handle's value is stored
-			// in the art's dictionary which is copied over to the knew instance by illustrator automatically.
+			// i + 1 contains the previous handle, in case the object was
+			// wrapped earlier and its handle was changed  in the meantime.
+			// Like this, the java side can update its wrappers. The previous
+			// handle's value is stored in the art's dictionary which is copied
+			// over to the knew instance by illustrator automatically.
 			
-			// new instances are created by illustrator when objects are moved, rotated with the rotate tool, etc.
-			// why it's doing this i don't know...
+			// New instances are created by illustrator when objects are moved,
+			// rotated with the rotate tool, etc. why it's doing this i don't
+			// know...
 
-			// the maximum possible amount of handles is the amount of matches x 2, as each wrapped art object needs two handles:
+			// The maximum possible amount of handles is the amount of
+			// matches x 2, as each wrapped art object needs two handles:
 			jint *handles = new jint[numMatches * 2];
 			int count = 0;
 			for (int i = 0; i < numMatches; i++) {
 				AIArtHandle art = (*matches)[i];
 				AIArtHandle prevArt = NULL;
-				// see if the object already was wrapped earlier and its handle was changed due to manipulations by the user
-				// if that's the case, let the java side know about the handle change
+				// See if the object already was wrapped earlier and its handle
+				// was changed due to manipulations by the user if that's the
+				// case, let the java side know about the handle change.
 				AIDictionaryRef artDict;
 				if (!sAIArt->GetDictionary(art, &artDict)) {
 					if (sAIDictionary->IsKnown(artDict, m_artHandleKey)) {
 						bool changed = true;
-						if (!sAIDictionary->GetIntegerEntry(artDict, m_artHandleKey, (ASInt32 *) &prevArt) && prevArt == art) {
+						if (!sAIDictionary->GetIntegerEntry(artDict,
+								m_artHandleKey, (ASInt32 *) &prevArt)
+								&& prevArt == art) {
 							prevArt = NULL;
 							changed = false;
 						}
-						// set the new handle:
+						// Set the new handle:
 						if (changed)
-							sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
-						// only if the m_artHandleKey was set before, this object was wrapped
+							sAIDictionary->SetIntegerEntry(artDict,
+									m_artHandleKey, (ASInt32) art);
+						// Only if the m_artHandleKey was set before, this
+						// object was wrapped
 						handles[count++] = (jint) art;
 						handles[count++] = (jint) prevArt;
 					}
@@ -1951,21 +2106,27 @@ ASErr ScriptographerEngine::onRevert() {
  *
  */
 
-ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMessage *message) {
+ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector,
+		AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		// TODO: Wrap additional mesage->event properties too and add support for these:
+		// TODO: Wrap additional mesage->event properties too and add support
+		// for these:
 		/*
-		// For graphic tablets, tangential pressure on the finger wheel of the airbrush tool.
+		// For graphic tablets, tangential pressure on the finger wheel of the
+		// airbrush tool.
 		AIToolPressure stylusWheel;
 		// How the tool is angled, also called altitude or elevation.
 		AIToolAngle tilt;
-		// The direction of tilt, measured clockwise in degrees around the Z axis, also called azimuth,
+		// The direction of tilt, measured clockwise in degrees around the
+		// Z axis, also called azimuth,
 		AIToolAngle bearing;
-		// Rotation of the tool, measured clockwise in degrees around the tool's barrel.
+		// Rotation of the tool, measured clockwise in degrees around the tool's
+		// barrel.
 		AIToolAngle rotation;
 		*/
-		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent,
+		jint cursorId = callStaticIntMethod(env, cls_ai_Tool,
+				mid_ai_Tool_onHandleEvent,
 				(jint) message->tool, convertString(env, selector),
 				(jfloat) message->cursor.h, (jfloat) message->cursor.v,
 				(jint) message->pressure,
@@ -1981,10 +2142,12 @@ ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMess
  * AI LiveEffect
  */
 
-ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onEditParameters(
+		AILiveEffectEditParamMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
+		callStaticVoidMethod(env, cls_ai_LiveEffect,
+				mid_ai_LiveEffect_onEditParameters,
 				(jint) message->effect, (jint) message->parameters);
 		if (message->allowPreview)
 			sAILiveEffect->UpdateParameters(message->context);
@@ -1993,37 +2156,20 @@ ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMes
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::LiveEffect_onCalculate(AILiveEffectGoMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onCalculate(
+		AILiveEffectGoMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-	/*
-		// Filter test code without JS side
-		AIArtHandle art = message->art;
-		AIRealRect bounds;
-		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &bounds);
-		DEFINE_POINT(center,
-			(bounds.left + bounds.right) / 2,
-			(bounds.top + bounds.bottom) / 2);
-		AIRealMatrix mx;
-		sAIRealMath->AIRealMatrixSetTranslate(&mx, -center.h, -center.v);
-		sAIRealMath->AIRealMatrixConcatRotate(&mx, random() / double((1 << 31) - 1) * PI * 2);
-		sAIRealMath->AIRealMatrixConcatTranslate(&mx, center.h, center.v);
-		// According to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
-		AIReal sx, sy;
-		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
-		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
-		sAITransformArt->TransformArt(art, &mx, lineScale, kTransformChildren | kTransformObjects);
-		wrapArtHandle(env, message->art, NULL, true, -1, false);
-		return kNoErr;
-	*/
-		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onCalculate,
+		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect,
+				mid_ai_LiveEffect_onCalculate,
 				(jint) message->effect,
-				// Do not check wrappers as the art items in live effects are duplicated
-				// and therefore seem to contain the m_artHandleKey, causing wrapped to
-				// be set to true when Item#wrapHandle is called. And sometimes their
-				// handles are reused, causing reuse of wrong wrappers.
-				// We could call Item_clearArtHandles but that's slow. Passing false for
-				// checkWrapped should do it.
+				// Do not check wrappers as the art items in live effects are
+				// duplicated and therefore seem to contain the m_artHandleKey,
+				// causing wrapped to be set to true when Item#wrapHandle is
+				// called. And sometimes their handles are reused, causing reuse
+				// of wrong wrappers.
+				// We could call Item_clearArtHandles but that's slow. Passing
+				// false for checkWrapped should do it.
 				wrapArtHandle(env, message->art, NULL, true, -1, false),
 				(jint) message->parameters);
 		return kNoErr;
@@ -2031,15 +2177,18 @@ ASErr ScriptographerEngine::LiveEffect_onCalculate(AILiveEffectGoMessage *messag
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::LiveEffect_onInterpolate(AILiveEffectInterpParamMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onInterpolate(
+		AILiveEffectInterpParamMessage *message) {
 	// TODO: define
 	return kNoErr;
 }
 
-ASErr ScriptographerEngine::LiveEffect_onGetInputType(AILiveEffectInputTypeMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onGetInputType(
+		AILiveEffectInputTypeMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onGetInputType,
+		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect,
+				mid_ai_LiveEffect_onGetInputType,
 				(jint) message->effect,
 				(jint) message->inputArt,
 				(jint) message->parameters);
@@ -2064,11 +2213,13 @@ ASErr ScriptographerEngine::MenuItem_onSelect(AIMenuMessage *message) {
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::MenuItem_onUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue) {
+ASErr ScriptographerEngine::MenuItem_onUpdate(AIMenuMessage *message,
+		long inArtwork, long isSelected, long isTrue) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onUpdate,
-				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
+				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected,
+				(jint) isTrue);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2083,7 +2234,8 @@ ASErr ScriptographerEngine::Annotator_onDraw(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onDraw,
-				(jint) message->annotator, (jint) message->port, (jint) message->view, (jint) gWorkingDoc);
+				(jint) message->annotator, (jint) message->port,
+				(jint) message->view, (jint) gWorkingDoc);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2092,7 +2244,8 @@ ASErr ScriptographerEngine::Annotator_onDraw(AIAnnotatorMessage *message) {
 ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onInvalidate,
+		callStaticVoidMethod(env, cls_ai_Annotator,
+				mid_ai_Annotator_onInvalidate,
 				(jint) message->annotator);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2104,7 +2257,8 @@ ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) 
  * ADM CallbackListener
  *
  */
-void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier) {
+void ScriptographerEngine::callOnNotify(jobject handler,
+		ADMNotifierRef notifier) {
 	char type[64];
 	sADMNotifier->GetNotifierType(notifier, type, 64);
 	callOnNotify(handler, type);
@@ -2125,10 +2279,12 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
 		AppContext context;
-		jobject trackerObj = getObjectField(env, handler, fid_adm_NotificationHandler_tracker);
+		jobject trackerObj = getObjectField(env, handler,
+				fid_adm_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
-		return callBooleanMethod(env, trackerObj, mid_adm_Tracker_onTrack, handler,
+		return callBooleanMethod(env, trackerObj,
+				mid_adm_Tracker_onTrack, handler,
 				(jint) tracker, (jint) sADMTracker->GetAction(tracker),
 				(jint) sADMTracker->GetModifiers(tracker), pt.h, pt.v,
 				(jint) sADMTracker->GetMouseState(tracker),
@@ -2143,9 +2299,11 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
 		AppContext context;
-		jobject drawerObj = getObjectField(env, handler, fid_adm_NotificationHandler_drawer);
+		jobject drawerObj = getObjectField(env, handler,
+				fid_adm_NotificationHandler_drawer);
 		setIntField(env, drawerObj, fid_ui_NativeObject_handle, (jint) drawer);
-		return callBooleanMethod(env, handler, mid_adm_NotificationHandler_onDraw, drawerObj);
+		return callBooleanMethod(env, handler,
+				mid_adm_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }
@@ -2154,30 +2312,35 @@ ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 	AppContext context;
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleEvent, event);
+		callStaticVoidMethod(env, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleEvent, event);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
-bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers) {
+bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
+		ASUnicode character, ASUInt32 modifiers) {
 	AppContext context;
 	JNIEnv *env = getEnv();
 	try {
-		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleKeyEvent,
+		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleKeyEvent,
 				type, keyCode, character, modifiers);
 	} EXCEPTION_CATCH_REPORT(env);
 	return false;
 }
 
-int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const char *name) {
+int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj,
+		const char *name) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
 	if (!handle) {
-		// For HierarchyListBoxes it could be that the user wants to call item functions
-		// on a child list. report that this can only be called on the root list:
+		// For HierarchyListBoxes it could be that the user wants to call item
+		// functions on a child list. report that this can only be called on the
+		// root list:
 		if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
@@ -2187,7 +2350,8 @@ int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const cha
 	return handle;
 }
 
-int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj, const char *name) {
+int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj,
+		const char *name) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
@@ -2272,11 +2436,13 @@ JNIEnv *ScriptographerEngine::getEnv() {
 }
 	
 /**
- * Throws an exception with the given name (like "com/scriptographer/ScriptographerException") and message.
+ * Throws an exception with the given name (like
+ * "com/scriptographer/ScriptographerException") and message.
  *
  * throws exceptions
  */
-void ScriptographerEngine::throwException(JNIEnv *env, const char* name, const char* msg) {
+void ScriptographerEngine::throwException(JNIEnv *env, const char* name,
+		const char* msg) {
 	JNI_CHECK_ENV
 	jclass cls = findClass(env, name);
 	// if cls is NULL, an exception has already been thrown
@@ -2297,17 +2463,18 @@ void ScriptographerEngine::throwException(JNIEnv *env, const char* msg) {
 }
 
 /**
- * Uses the Scriptographer loader instead of the default JNI one, because otherwise
- * classes for reflection and registering of natives won't be found! The JNI loader
- * can only be used for loading the Loader, because that's the only thing initially
- * on the classpath.
+ * Uses the Scriptographer loader instead of the default JNI one, because
+ * otherwise classes for reflection and registering of natives won't be found!
+ * The JNI loader can only be used for loading the Loader, because that's the
+ * only thing initially on the classpath.
  */
 jclass ScriptographerEngine::findClass(JNIEnv *env, const char *name) {
 	JNI_CHECK_ENV
 	jclass cls = NULL;
 	if (cls_Loader != NULL) {
 		// Try loading using the URL classloader first:
-		cls = (jclass) callStaticObjectMethod(env, cls_Loader, mid_Loader_loadClass, env->NewStringUTF(name));
+		cls = (jclass) callStaticObjectMethod(env, cls_Loader,
+				mid_Loader_loadClass, env->NewStringUTF(name));
 		if (cls == NULL) {
 			env->ExceptionClear();
 			// Fallback to loading using JNI throught the default classloader:
@@ -2329,39 +2496,45 @@ jclass ScriptographerEngine::loadClass(JNIEnv *env, const char *name) {
 	return res;
 }
 
-jmethodID ScriptographerEngine::getMethodID(JNIEnv *env, jclass cls, const char *name, const char *signature) {
+jmethodID ScriptographerEngine::getMethodID(JNIEnv *env, jclass cls,
+		const char *name, const char *signature) {
 	JNI_CHECK_ENV
 	jmethodID res = env->GetMethodID(cls, name, signature);
 	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
 }
 
-jmethodID ScriptographerEngine::getStaticMethodID(JNIEnv *env, jclass cls, const char *name, const char *signature) {
+jmethodID ScriptographerEngine::getStaticMethodID(JNIEnv *env, jclass cls,
+		const char *name, const char *signature) {
 	JNI_CHECK_ENV
 	jmethodID res = env->GetStaticMethodID(cls, name, signature);
 	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
 }
 
-jmethodID ScriptographerEngine::getConstructorID(JNIEnv *env, jclass cls, const char *signature) {
+jmethodID ScriptographerEngine::getConstructorID(JNIEnv *env, jclass cls,
+		const char *signature) {
 	return getMethodID(env, cls, "<init>", signature);
 }
 
-jfieldID ScriptographerEngine::getFieldID(JNIEnv *env, jclass cls, const char *name, const char *signature) {
+jfieldID ScriptographerEngine::getFieldID(JNIEnv *env, jclass cls,
+		const char *name, const char *signature) {
 	JNI_CHECK_ENV
 	jfieldID res = env->GetFieldID(cls, name, signature);
 	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
 }
 
-jfieldID ScriptographerEngine::getStaticFieldID(JNIEnv *env, jclass cls, const char *name, const char *signature) {
+jfieldID ScriptographerEngine::getStaticFieldID(JNIEnv *env, jclass cls,
+		const char *name, const char *signature) {
 	JNI_CHECK_ENV
 	jfieldID res = env->GetStaticFieldID(cls, name, signature);
 	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
 }
 
-jobject ScriptographerEngine::newObject(JNIEnv *env, jclass cls, jmethodID ctor, ...) {
+jobject ScriptographerEngine::newObject(JNIEnv *env, jclass cls,
+		jmethodID ctor, ...) {
 	JNI_CHECK_ENV
 	JNI_ARGS_BEGIN(ctor)
 	jobject res = env->NewObjectV(cls, ctor, args);
