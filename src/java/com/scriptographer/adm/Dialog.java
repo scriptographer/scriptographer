@@ -1210,44 +1210,44 @@ public abstract class Dialog extends Component {
 	 * Alerts and prompts
 	 */
 
-	public static void alert(String message) {
-		AlertDialog.alert("Scriptographer", message);
-	}
-
 	public static void alert(String title, String message) {
 		AlertDialog.alert(title, message);
 	}
 
-	public static boolean confirm(String message) {
-		return ConfirmDialog.confirm("Scriptographer", message);
+	public static void alert(String message) {
+		alert("Scriptographer", message);
 	}
 
 	public static boolean confirm(String title, String message) {
 		return ConfirmDialog.confirm(title, message);
 	}
 
-	public static Map<String, Object> prompt(String title,
-			Map<String, Map> items, Map<String, Object> values) {
-		return PromptDialog.prompt(title, items, values);
+	public static boolean confirm(String message) {
+		return confirm("Scriptographer", message);
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map> items) {
-		return PromptDialog.prompt(title, items);
+			Map<String, Map> components, Map<String, Object> values) {
+		return PromptDialog.prompt(title, components, values);
+	}
+
+	public static Map<String, Object> prompt(String title,
+			Map<String, Map> components) {
+		return prompt(title, components, null);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, PaletteComponent[] items) {
-		return PromptDialog.prompt(title, items);
+	public static Object[] prompt(String title, PaletteComponent[] components) {
+		return PromptDialog.prompt(title, components);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, Map<String, Object>[] items) {
-		return PromptDialog.prompt(title, items);
+	public static Object[] prompt(String title, Map<String, Object>[] components) {
+		return prompt(title, PaletteComponent.getComponents(components));
 	}
 
 	/*

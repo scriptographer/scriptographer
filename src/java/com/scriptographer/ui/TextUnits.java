@@ -24,50 +24,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 15, 2008.
+ * File created on Apr 14, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
-import java.util.HashMap;
 
 /**
  * @author lehni
- *
  */
-public enum PaletteComponentType {
-	STRING("string"),
-	NUMBER("number"),
-	TEXT("text"),
-	RULER("ruler"),
-	CHECKBOX("checkbox"),
-	LIST("list"),
-	BUTTON("button"),
-	SLIDER("slider"),
-	COLOR("color"),
-	FONT("font"),
-	MENU_ENTRY("menu-entry"),
-	MENU_SEPARATOR("menu-separator");
-
-	protected String name;
-
-	private PaletteComponentType(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * A hash-map for case insensitive retrieval of type objects based on their
-	 * name.
-	 */
-	private static HashMap<String, PaletteComponentType> types =
-		new HashMap<String, PaletteComponentType>();
-
-	static {
-		for (PaletteComponentType type : values())
-			types.put(type.name.toLowerCase(), type);
-	}
-	
-	public static PaletteComponentType get(String name) {
-		return types.get(name.toLowerCase());
-	}
+public enum TextUnits {
+	NONE,
+	POINT,
+	INCH,
+	MILLIMETER,
+	CENTIMETER,
+	PICA,
+	PERCENT,
+	DEGREE,
+	PIXEL;
 }

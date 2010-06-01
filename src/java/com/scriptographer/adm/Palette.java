@@ -49,7 +49,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 	private Map<String, Object> values;
 	private Map<String, Object> components;
 	private boolean hasLabels;
-	private boolean layoutChanged;
+	private boolean sizeChanged;
 
 	public Palette(String title, Map<String, Object> components,
 			Map<String, Object> values) {
@@ -181,15 +181,15 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 			ScriptographerEngine.invoke(onChange, this, component);
 	}
 
-	protected void onLayoutChanged() {
-		layoutChanged = true;
+	protected void onSizeChanged() {
+		sizeChanged = true;
 		// Use CommitManager functionality to update this dialog once
 		// after all value changes.
 		CommitManager.markDirty(this, this);
 	}
 
 	public void commit() {
-		if (layoutChanged) {
+		if (sizeChanged) {
 			// Make sure size changes are taken into account and palette is
 			// resized accordingly.
 			Size size = getPreferredSize();
@@ -202,7 +202,7 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 				// size has not changed.
 				doLayout();
 			}
-			layoutChanged = false;
+			sizeChanged = false;
 		}
 		update();
 	}

@@ -70,7 +70,8 @@ public class KeyModifiers {
 	}
 
 	/**
-	 * Specifies whether the option key is pressed, often also refered to as alt key.
+	 * Specifies whether the option key is pressed, often also refered to as alt
+	 * key.
 	 * 
 	 * @return {@true if the option key is pressed}
 	 */

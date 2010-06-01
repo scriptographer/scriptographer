@@ -24,40 +24,50 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 14, 2008.
+ * File created on Apr 15, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
-import com.scratchdisk.util.IntegerEnum;
+import java.util.HashMap;
 
 /**
- * ADMUnits
- * 
  * @author lehni
+ *
  */
-public enum TextUnits implements IntegerEnum {
-	NONE(0),
-	POINT(1),
-	INCH(2),
-	MILLIMETER(3),
-	CENTIMETER(4),
-	PICA(5),
-	PERCENT(6),
-	DEGREE(7),
-//	Q(8),
-//	BASE16(9),
-	PIXEL(10);
-//	TIME(11),
-//	HA(12);
+public enum PaletteComponentType {
+	STRING("string"),
+	NUMBER("number"),
+	TEXT("text"),
+	RULER("ruler"),
+	CHECKBOX("checkbox"),
+	LIST("list"),
+	BUTTON("button"),
+	SLIDER("slider"),
+	COLOR("color"),
+	FONT("font"),
+	MENU_ENTRY("menu-entry"),
+	MENU_SEPARATOR("menu-separator");
 
-	protected int value;
+	protected String name;
 
-	private TextUnits(int value) {
-		this.value = value;
+	private PaletteComponentType(String name) {
+		this.name = name;
 	}
 
-	public int value() {
-		return value;
+	/**
+	 * A hash-map for case insensitive retrieval of type objects based on their
+	 * name.
+	 */
+	private static HashMap<String, PaletteComponentType> types =
+		new HashMap<String, PaletteComponentType>();
+
+	static {
+		for (PaletteComponentType type : values())
+			types.put(type.name.toLowerCase(), type);
+	}
+	
+	public static PaletteComponentType get(String name) {
+		return types.get(name.toLowerCase());
 	}
 }

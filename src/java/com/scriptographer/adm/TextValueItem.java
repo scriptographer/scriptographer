@@ -29,7 +29,9 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ui.TextUnits;
 
 /**
  * @author lehni
@@ -71,15 +73,30 @@ public abstract class TextValueItem extends ValueItem {
 	private native void nativeSetUnits(int units);
 	private native int nativeGetUnits();
 
-	public void setUnits(TextUnits units) {
-		if (units == null)
-			units = TextUnits.NONE;
-		nativeSetUnits(units.value);
+	/*
+	 * ADMUnits to TextUnits lookup table
+	 */
+	private static IntMap<TextUnits> textUnitsLookup = new IntMap<TextUnits>();
+	static {
+		textUnitsLookup.put(0, TextUnits.NONE);
+		textUnitsLookup.put(1, TextUnits.POINT);
+		textUnitsLookup.put(2, TextUnits.INCH);
+		textUnitsLookup.put(3, TextUnits.MILLIMETER);
+		textUnitsLookup.put(4, TextUnits.CENTIMETER);
+		textUnitsLookup.put(5, TextUnits.PICA);
+		textUnitsLookup.put(6, TextUnits.PERCENT);
+		textUnitsLookup.put(7, TextUnits.DEGREE);
+		textUnitsLookup.put(10, TextUnits.PIXEL);
 	}
 
-	public TextUnits getUnits() {
-		return IntegerEnumUtils.get(TextUnits.class,
-				nativeGetUnits());
+	public void setUnits(TextUnits units) {
+		Integer key = textUnitsLookup.keyOf(units);
+		nativeSetUnits(key != null ? key : 0);
+	}
+
+	public TextUnits getTextUnitsLookup() {
+		TextUnits units = textUnitsLookup.get(nativeGetUnits());
+		return units != null ? units : TextUnits.NONE;
 	}
 	
 	public native void setShowUnits(boolean showUnits);

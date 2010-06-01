@@ -51,6 +51,8 @@ import com.scriptographer.adm.layout.TableLayout;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
 import com.scriptographer.ai.RGBColor;
+import com.scriptographer.ui.PaletteComponentType;
+import com.scriptographer.ui.TextUnits;
 
 /**
  * @author lehni
@@ -403,7 +405,7 @@ public class PaletteComponent implements ChangeReceiver {
 				// Tell palette to resize in next commit
 				Dialog dialog = item.getDialog();
 				if (dialog instanceof Palette)
-					((Palette) dialog).onLayoutChanged();
+					((Palette) dialog).onSizeChanged();
 			}
 		}
 	}

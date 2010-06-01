@@ -76,10 +76,6 @@ public class PromptDialog extends ModalDialog {
 		setMargin(8);
 	}
 
-	public PromptDialog(String title, Map<String, Object>[] components) {
-		this(title, PaletteComponent.getComponents(components));
-	}
-
 	public Object[] getValues() {
 		if (values == null) {
 			values = new Object[components.length];
@@ -126,20 +122,16 @@ public class PromptDialog extends ModalDialog {
 		return null;
 	}
 
-	public static Object[] prompt(String title, Map<String, Object>[] components) {
-		return prompt(title, PaletteComponent.getComponents(components));
-	}
-
 	public static Map<String, Object> prompt(String title,
 			Map<String, Object> components, Map<String, Object> values) {
-		PaletteComponent[] paletteItems =
+		PaletteComponent[] comps =
 				PaletteComponent.getComponents(components, values);
-		Object[] results = prompt(title, paletteItems);
+		Object[] results = prompt(title, comps);
 		if (results != null) {
 			if (values == null)
 				values = new LinkedHashMap<String, Object>();
-			for (int i = 0; i < paletteItems.length; i++)
-				values.put(paletteItems[i].getName(), results[i]);
+			for (int i = 0; i < comps.length; i++)
+				values.put(comps[i].getName(), results[i]);
 		}
 		return values;
 	}
