@@ -84,10 +84,10 @@ var repositoriesDialog = new ModalDialog(function() {
 		}
 	};
 
-	var visibileCheckbox = new ImageCheckBox(this) {
-		image: getImage('visible.png'),
-		disabledImage: getImage('visible-disabled.png'),
-		toolTip: 'Show / Hide Repository',
+	var hideCheckbox = new ImageCheckBox(this) {
+		image: getImage('hidden.png'),
+		disabledImage: getImage('hidden-disabled.png'),
+		toolTip: 'Hide Repository',
 		size: buttonSize,
 		onClick: changeSelectedVisibility
 	};
@@ -204,7 +204,7 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	function changeSelectedVisibility() {
 		if (selectedEntry) {
-			selectedEntry.visible = visibileCheckbox.checked;
+			selectedEntry.visible = !hideCheckbox.checked;
 			changeSelectedEntry();
 			updateEditor(selectedEntry);
 		}
@@ -229,7 +229,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		nameEdit.enabled = pathEdit.enabled = enabled;
 		nameEdit.text = entry && entry.name || '';
 		pathEdit.text = enabled && dir || '';
-		visibileCheckbox.checked = entry && entry.visible;
+		hideCheckbox.checked = entry && !entry.visible;
 		if (!entry)
 			editor.enabled = false;
 		addButton.enabled = true;
@@ -267,7 +267,7 @@ var repositoriesDialog = new ModalDialog(function() {
 		content: {
 			'0, 0': upButton,
 			'1, 0': downButton,
-			'3, 0': visibileCheckbox,
+			'3, 0': hideCheckbox,
 			'5, 0': addButton,
 			'6, 0': removeButton,
 			'8, 0': nameEdit,
