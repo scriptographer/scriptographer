@@ -921,7 +921,7 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobj
 	}
 }
 
-// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, com.scriptographer.adm.Point
+// This handles 2 types of points: com.scriptographer.ai.Point, com.scriptographer.adm.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
@@ -936,39 +936,16 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealP
 	return res;
 }
 
-// com.scriptographer.adm.Point <-> ADMPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
-	if (res == NULL) {
-		return newObject(env, cls_adm_Point, cid_adm_Point, x, y);
-	} else {
-		callVoidMethod(env, res, mid_adm_Point_set, x, y);
-		return res;
-	}
-}
-
-// This handles 2 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point
-ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
-	if (res == NULL)
-		res = new ADMPoint;
-	if (env->IsInstanceOf(pt, cls_adm_Point)) {
-		res->h = env->GetIntField(pt, fid_adm_Point_x);
-		res->v = env->GetIntField(pt, fid_adm_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_ai_Point)) {
-		res->h = (short) env->GetDoubleField(pt, fid_ai_Point_x);
-		res->v = (short) env->GetDoubleField(pt, fid_ai_Point_y);
-	}
-	EXCEPTION_CHECK(env);
-	return res;
-}
-
 // com.scriptographer.ai.Rectangle <-> AIRealRect
 
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
-		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle, (jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
+		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle,
+				(jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
 	} else {
-		callVoidMethod(env, res, mid_ai_Rectangle_set, (jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
+		callVoidMethod(env, res, mid_ai_Rectangle_set,
+				(jdouble) left, (jdouble) bottom, (jdouble) (right - left), (jdouble) (top - bottom));
 		return res;
 	}
 }
@@ -977,32 +954,12 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL)
 		res = new AIRealRect;
-	res->left =  env->GetDoubleField(rt, fid_ai_Rectangle_x);
-	res->bottom =  env->GetDoubleField(rt, fid_ai_Rectangle_y);
-	res->right = res->left + env->GetDoubleField(rt, fid_ai_Rectangle_width);
-	res->top = res->bottom + env->GetDoubleField(rt, fid_ai_Rectangle_height);
-	EXCEPTION_CHECK(env);
-	return res;
-}
-
-// java.awt.Rectangle <-> ADMRect
-
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res) {
-	if (res == NULL) {
-		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle, left, top, right - left, bottom - top);
-	} else {
-		callVoidMethod(env, res, mid_adm_Rectangle_set, left, top, right - left, bottom - top);
-		return res;
-	}
-}
-
-ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect *res) {
-	if (res == NULL)
-		res = new ADMRect;
-	res->left = env->GetIntField(rt, fid_adm_Rectangle_x);
-	res->top = env->GetIntField(rt, fid_adm_Rectangle_y);
-	res->right = res->left + env->GetIntField(rt, fid_adm_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rt, fid_adm_Rectangle_height);
+	double left =  env->GetDoubleField(rt, fid_ai_Rectangle_x);
+	double bottom =  env->GetDoubleField(rt, fid_ai_Rectangle_y);
+	res->left =  left;
+	res->bottom =  bottom;
+	res->right = left + env->GetDoubleField(rt, fid_ai_Rectangle_width);
+	res->top = bottom + env->GetDoubleField(rt, fid_ai_Rectangle_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -1026,14 +983,75 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AIReal
 	return res;
 }
 
-// com.scriptographer.adm.Size <-> ADMPoint
-jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jobject res) {
+// com.scriptographer.adm.Point <-> ADMPoint
+jobject ScriptographerEngine::convertPoint(JNIEnv *env, ADMPoint *point, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Size, cid_adm_Size, (jint) width, (jint) height);
+		return newObject(env, cls_adm_Point, cid_adm_Point,
+				point->h, point->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Size_set, (jint) width, (jint) height);
+		callVoidMethod(env, res, mid_adm_Point_set,
+				point->h, point->v);
 		return res;
 	}
+}
+
+// This handles 2 types of points: com.scriptographer.adm.Point, com.scriptographer.ai.Point
+ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject point, ADMPoint *res) {
+	if (res == NULL)
+		res = new ADMPoint;
+	if (env->IsInstanceOf(point, cls_adm_Point)) {
+		res->h = env->GetIntField(point, fid_adm_Point_x);
+		res->v = env->GetIntField(point, fid_adm_Point_y);
+	} else if (env->IsInstanceOf(point, cls_ai_Point)) {
+		res->h = (short) env->GetDoubleField(point, fid_ai_Point_x);
+		res->v = (short) env->GetDoubleField(point, fid_ai_Point_y);
+	}
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptographer.adm.Rectangle <-> ADMRect
+
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env, ADMRect *rect, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle,
+				rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top);
+	} else {
+		callVoidMethod(env, res, mid_adm_Rectangle_set,
+				rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top);
+		return res;
+	}
+}
+
+ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rect, ADMRect *res) {
+	if (res == NULL)
+		res = new ADMRect;
+	int left = env->GetIntField(rect, fid_adm_Rectangle_x);
+	int top = env->GetIntField(rect, fid_adm_Rectangle_y);
+	res->left = left;
+	res->top = top;
+	res->right = left + env->GetIntField(rect, fid_adm_Rectangle_width);
+	res->bottom = top + env->GetIntField(rect, fid_adm_Rectangle_height);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptographer.adm.Size <-> ADMPoint
+
+jobject ScriptographerEngine::convertSize(JNIEnv *env, ADMPoint *point, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_adm_Size, cid_adm_Size,
+				(jint) point->h, (jint) point->h);
+	} else {
+		callVoidMethod(env, res, mid_adm_Size_set,
+				(jint) point->h, (jint) point->h);
+		return res;
+	}
+}
+
+jobject ScriptographerEngine::convertSize(JNIEnv *env, ADMRect *rect, jobject res) {
+	DEFINE_ADM_POINT(point, rect->right - rect->left, rect->bottom - rect->top);
+	return convertSize(env, &point, res);
 }
 
 ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, ADMPoint *res) {

@@ -246,9 +246,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetStyle(JNIEnv *e
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
-		ADMRect size;
-		sADMItem->GetLocalRect(item, &size);
-		return gEngine->convertSize(env, size.right, size.bottom);
+		ADMRect rect;
+		sADMItem->GetLocalRect(item, &rect);
+		return gEngine->convertSize(env, &rect);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
