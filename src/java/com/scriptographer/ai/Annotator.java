@@ -38,7 +38,7 @@ import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.SoftIntMap;
-import com.scriptographer.ui.Drawer;
+import com.scriptographer.adm.Drawer;
 
 /**
  * @author lehni
@@ -210,6 +210,10 @@ public class Annotator extends NativeObject {
 	/**
 	 * Returns a Drawer for the passed portHandle.
 	 * The drawers are cashed and reused for the same port.
+	 * TODO: Remove dependency from adm.Drawer and introduce a new ui.Drawer
+	 * that makes the abstraction behind the scenes. Or: Use an interface called
+	 * ui.Drawer and have different implementations sharing that common
+	 * interface.
 	 * 
 	 * @param portHandle
 	 */

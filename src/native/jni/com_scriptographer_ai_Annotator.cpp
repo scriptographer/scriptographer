@@ -113,7 +113,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 #else
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont);
 #endif
-		return gEngine->newObject(env, gEngine->cls_ui_Drawer, gEngine->cid_ui_Drawer, (jint) drawer);
+		return gEngine->newObject(env, gEngine->cls_adm_Drawer, gEngine->cid_adm_Drawer, (jint) drawer);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

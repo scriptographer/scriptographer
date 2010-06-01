@@ -31,8 +31,10 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
-abstract class NativeObject {
+public abstract class NativeObject {
 	// used for storing the native handle for this object
 	protected int handle;
 

@@ -116,7 +116,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *en
 }
 
 /*
- * com.scriptographer.ui.Size getSize()
+ * com.scriptographer.ai.Size getSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getSize(JNIEnv *env, jobject obj) {
 	try {

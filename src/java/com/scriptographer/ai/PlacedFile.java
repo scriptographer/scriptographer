@@ -88,20 +88,20 @@ public class PlacedFile extends Item {
 	 * The original size of the placed file, ignoring any transformation
 	 * matrices applied to it in the document.
 	 */
-	public native com.scriptographer.ui.Size getSize();
+	public native Size getSize();
 
 	/**
 	 * The original width of the placed file.
 	 */
 	public int getWidth() {
-		return getSize().width;
+		return (int) getSize().width;
 	}
 
 	/**
 	 * The original height of the placed file.
 	 */
 	public int getHeight() {
-		return getSize().height;
+		return (int) getSize().height;
 	}
 	
 	public native Matrix getMatrix();

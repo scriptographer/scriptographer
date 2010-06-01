@@ -46,7 +46,7 @@ import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.ui.Image;
+import com.scriptographer.adm.Image;
 
 /**
  * The Item type allows you to access and modify the artwork items in

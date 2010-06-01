@@ -273,7 +273,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
 						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
-							   env->IsInstanceOf(value, gEngine->cls_ui_Point)) {
+							   env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
 						AIRealPoint point;
 						gEngine->convertPoint(env, value, &point);
 						entry = sAIEntry->FromRealPoint(&point);

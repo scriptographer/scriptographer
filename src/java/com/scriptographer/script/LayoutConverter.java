@@ -34,8 +34,8 @@ import java.awt.LayoutManager;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
-import com.scriptographer.ui.layout.HorizontalLayout;
-import com.scriptographer.ui.layout.TableLayout;
+import com.scriptographer.adm.layout.HorizontalLayout;
+import com.scriptographer.adm.layout.TableLayout;
 
 /**
  * @author lehni

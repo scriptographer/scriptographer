@@ -309,13 +309,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, j
 }
 
 /*
- * com.scriptographer.ui.Size getSize()
+ * com.scriptographer.ai.Size getSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);
-		return gEngine->convertSize(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
+		return gEngine->convertSize(env,
+				data->info.bounds.right - data->info.bounds.left,
+				data->info.bounds.bottom - data->info.bounds.top);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

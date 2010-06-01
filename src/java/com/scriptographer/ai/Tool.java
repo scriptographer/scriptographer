@@ -35,7 +35,7 @@ import java.util.EnumSet;
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.ui.Image;
+import com.scriptographer.adm.Image;
 
 /**
  * The Tool object refers to the Scriptographer tool in the Illustrator tool

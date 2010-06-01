@@ -111,6 +111,96 @@
 		911D195811B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
 		911D195911B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
 		911D195A11B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		9121618311B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		9121618411B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		9121618511B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		9121618611B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		9121618711B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		9121618811B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		9121618911B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		9121618A11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		9121618B11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		9121618C11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		9121618D11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		9121618E11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		9121618F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		9121619011B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		9121619111B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		9121619211B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		9121619311B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		9121619411B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
+		9121619511B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		9121619611B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		9121619711B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		9121619811B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		9121619911B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		9121619A11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		9121619B11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		9121619C11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		9121619D11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		9121619E11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		9121619F11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		912161A011B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		912161A111B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		912161A211B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		912161A311B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		912161A411B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		912161A511B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		912161A611B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
+		912161A711B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		912161A811B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		912161A911B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		912161AA11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		912161AB11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		912161AC11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		912161AD11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		912161AE11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		912161AF11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		912161B011B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		912161B111B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		912161B211B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		912161B311B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		912161B411B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		912161B511B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		912161B611B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		912161B711B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		912161B811B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
+		912161B911B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		912161BA11B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		912161BB11B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		912161BC11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		912161BD11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		912161BE11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		912161BF11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		912161C011B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		912161C111B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		912161C211B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		912161C311B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		912161C411B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		912161C511B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		912161C611B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		912161C711B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		912161C811B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		912161C911B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		912161CA11B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
+		912161CB11B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		912161CC11B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		912161CD11B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		912161CE11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		912161CF11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		912161D011B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		912161D111B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		912161D211B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		912161D311B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		912161D411B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		912161D511B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		912161D611B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		912161D711B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		912161D811B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		912161D911B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		912161DA11B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		912161DB11B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		912161DC11B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
 		912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
 		912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
 		912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
@@ -185,86 +275,14 @@
 		918052EB0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
 		918052EC0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
 		918052ED0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
-		9180530F0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
-		918053100ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
-		918053110ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */; };
-		918053120ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */; };
-		918053130ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */; };
-		918053140ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */; };
-		918053150ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
-		918053160ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
-		918053170ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053190ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
-		9180531A0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		9180531B0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
 		9180531C0ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
-		9180531D0ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */; };
-		9180531E0ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */; };
-		9180531F0ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */; };
-		918053200ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */; };
-		918053210ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */; };
-		918053220ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */; };
-		918053230ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */; };
-		918053240ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
-		918053250ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
-		918053260ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */; };
-		918053270ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */; };
-		918053280ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */; };
-		918053290ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */; };
-		9180532A0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
-		9180532B0ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
-		9180532C0ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		9180532E0ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
-		9180532F0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		918053300ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
 		918053310ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
-		918053320ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */; };
-		918053330ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */; };
-		918053340ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */; };
-		918053350ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */; };
-		918053360ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */; };
-		918053370ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */; };
-		918053380ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */; };
-		918053390ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
-		9180533A0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
-		9180533B0ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */; };
-		9180533C0ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */; };
-		9180533D0ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */; };
-		9180533E0ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */; };
-		9180533F0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
-		918053400ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
-		918053410ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053430ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
-		918053440ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		918053450ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
 		918053460ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
-		918053470ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */; };
-		918053480ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */; };
-		918053490ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */; };
-		9180534A0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */; };
-		9180534B0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */; };
-		9180534C0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */; };
-		9180534D0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */; };
-		9180534E0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
-		9180534F0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
-		918053500ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */; };
-		918053510ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */; };
-		918053520ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */; };
-		918053530ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */; };
-		918053540ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
-		918053550ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
-		918053560ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053580ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
-		918053590ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		9180535A0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
 		9180535B0ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
-		9180535C0ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */; };
-		9180535D0ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */; };
-		9180535E0ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */; };
-		9180535F0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */; };
-		918053600ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */; };
-		918053610ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */; };
-		918053620ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */; };
 		9185E4C40E7FC0DA000BD8BA /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
 		9185E4C50E7FC0DA000BD8BA /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
 		9185E4C60E7FC0DA000BD8BA /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
@@ -370,26 +388,8 @@
 		91C8B8BC1049C0D3002882FE /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
 		91C8B8C11049C0D3002882FE /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
 		91C8B8C31049C0D3002882FE /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
-		91C8B8C41049C0D3002882FE /* com_scriptographer_ui_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */; };
-		91C8B8C51049C0D3002882FE /* com_scriptographer_ui_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */; };
-		91C8B8C61049C0D3002882FE /* com_scriptographer_ui_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */; };
-		91C8B8C71049C0D3002882FE /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */; };
-		91C8B8C81049C0D3002882FE /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */; };
-		91C8B8C91049C0D3002882FE /* com_scriptographer_ui_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */; };
-		91C8B8CA1049C0D3002882FE /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
-		91C8B8CB1049C0D3002882FE /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
-		91C8B8CC1049C0D3002882FE /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		91C8B8CE1049C0D3002882FE /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
-		91C8B8CF1049C0D3002882FE /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		91C8B8D01049C0D3002882FE /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
 		91C8B8D11049C0D3002882FE /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
-		91C8B8D21049C0D3002882FE /* com_scriptographer_ui_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */; };
-		91C8B8D31049C0D3002882FE /* com_scriptographer_ui_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */; };
-		91C8B8D41049C0D3002882FE /* com_scriptographer_ui_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */; };
-		91C8B8D51049C0D3002882FE /* com_scriptographer_ui_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */; };
-		91C8B8D61049C0D3002882FE /* com_scriptographer_ui_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */; };
-		91C8B8D71049C0D3002882FE /* com_scriptographer_ui_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */; };
-		91C8B8D81049C0D3002882FE /* com_scriptographer_ui_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */; };
 		91C8B8D91049C0D3002882FE /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
 		91C8B8DB1049C0D3002882FE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
 		91C8B8DC1049C0D3002882FE /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
@@ -438,6 +438,24 @@
 		91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Timer.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_ai_Timer.cpp; sourceTree = SOURCE_ROOT; };
+		9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Button.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Button.cpp; sourceTree = SOURCE_ROOT; };
+		9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Dialog.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Dialog.cpp; sourceTree = SOURCE_ROOT; };
+		9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Drawer.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Drawer.cpp; sourceTree = SOURCE_ROOT; };
+		9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_HierarchyListBox.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_HierarchyListBox.cpp; sourceTree = SOURCE_ROOT; };
+		9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_HierarchyListEntry.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_HierarchyListEntry.cpp; sourceTree = SOURCE_ROOT; };
+		9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Image.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Image.cpp; sourceTree = SOURCE_ROOT; };
+		9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ImagePane.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ImagePane.cpp; sourceTree = SOURCE_ROOT; };
+		9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Item.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Item.cpp; sourceTree = SOURCE_ROOT; };
+		9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ItemGroup.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ItemGroup.cpp; sourceTree = SOURCE_ROOT; };
+		9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ListEntry.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ListEntry.cpp; sourceTree = SOURCE_ROOT; };
+		9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ListItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ListItem.cpp; sourceTree = SOURCE_ROOT; };
+		9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ModalDialog.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ModalDialog.cpp; sourceTree = SOURCE_ROOT; };
+		9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_TextEditItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_TextEditItem.cpp; sourceTree = SOURCE_ROOT; };
+		9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_TextItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_TextItem.cpp; sourceTree = SOURCE_ROOT; };
+		9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_TextValueItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_TextValueItem.cpp; sourceTree = SOURCE_ROOT; };
+		9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ToggleItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ToggleItem.cpp; sourceTree = SOURCE_ROOT; };
+		9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Tracker.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_Tracker.cpp; sourceTree = SOURCE_ROOT; };
+		9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ValueItem.cpp; path = ../../../scriptographer/src/native/jni/com_scriptographer_adm_ValueItem.cpp; sourceTree = SOURCE_ROOT; };
 		912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_GradientStopList.cpp; path = jni/com_scriptographer_ai_GradientStopList.cpp; sourceTree = "<group>"; };
 		912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Pattern.cpp; path = jni/com_scriptographer_ai_Pattern.cpp; sourceTree = "<group>"; };
 		913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Dictionary.cpp; path = jni/com_scriptographer_ai_Dictionary.cpp; sourceTree = "<group>"; };
@@ -457,26 +475,8 @@
 		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
 		916FC6FD0A264F2800BF8DE4 /* jniMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = jniMacros.h; sourceTree = "<group>"; };
 		918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_PlacedSymbol.cpp; path = jni/com_scriptographer_ai_PlacedSymbol.cpp; sourceTree = "<group>"; };
-		918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Button.cpp; path = jni/com_scriptographer_ui_Button.cpp; sourceTree = "<group>"; };
-		918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Dialog.cpp; path = jni/com_scriptographer_ui_Dialog.cpp; sourceTree = "<group>"; };
-		918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Drawer.cpp; path = jni/com_scriptographer_ui_Drawer.cpp; sourceTree = "<group>"; };
-		918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_HierarchyListBox.cpp; path = jni/com_scriptographer_ui_HierarchyListBox.cpp; sourceTree = "<group>"; };
-		918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_HierarchyListEntry.cpp; path = jni/com_scriptographer_ui_HierarchyListEntry.cpp; sourceTree = "<group>"; };
-		918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Image.cpp; path = jni/com_scriptographer_ui_Image.cpp; sourceTree = "<group>"; };
-		918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ImagePane.cpp; path = jni/com_scriptographer_ui_ImagePane.cpp; sourceTree = "<group>"; };
-		918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Item.cpp; path = jni/com_scriptographer_ui_Item.cpp; sourceTree = "<group>"; };
-		918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ItemGroup.cpp; path = jni/com_scriptographer_ui_ItemGroup.cpp; sourceTree = "<group>"; };
-		918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ListEntry.cpp; path = jni/com_scriptographer_ui_ListEntry.cpp; sourceTree = "<group>"; };
-		918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ListItem.cpp; path = jni/com_scriptographer_ui_ListItem.cpp; sourceTree = "<group>"; };
 		918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_MenuGroup.cpp; path = jni/com_scriptographer_ui_MenuGroup.cpp; sourceTree = "<group>"; };
 		918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_MenuItem.cpp; path = jni/com_scriptographer_ui_MenuItem.cpp; sourceTree = "<group>"; };
-		918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ModalDialog.cpp; path = jni/com_scriptographer_ui_ModalDialog.cpp; sourceTree = "<group>"; };
-		918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_TextEditItem.cpp; path = jni/com_scriptographer_ui_TextEditItem.cpp; sourceTree = "<group>"; };
-		9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_TextItem.cpp; path = jni/com_scriptographer_ui_TextItem.cpp; sourceTree = "<group>"; };
-		9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_TextValueItem.cpp; path = jni/com_scriptographer_ui_TextValueItem.cpp; sourceTree = "<group>"; };
-		9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ToggleItem.cpp; path = jni/com_scriptographer_ui_ToggleItem.cpp; sourceTree = "<group>"; };
-		9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Tracker.cpp; path = jni/com_scriptographer_ui_Tracker.cpp; sourceTree = "<group>"; };
-		9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ValueItem.cpp; path = jni/com_scriptographer_ui_ValueItem.cpp; sourceTree = "<group>"; };
 		9185E51C0E7FC0DA000BD8BA /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		9185E52D0E7FC1FE000BD8BA /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		9185E52E0E7FC1FE000BD8BA /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS4 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
@@ -649,6 +649,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9121616911B5199E00EFD8D4 /* ADM */ = {
+			isa = PBXGroup;
+			children = (
+				9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */,
+				9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */,
+				9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */,
+				9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */,
+				9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */,
+				9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */,
+				9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */,
+				9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */,
+				9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */,
+				9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */,
+				9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */,
+				9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */,
+				9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */,
+				9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */,
+				9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */,
+				9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */,
+				9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */,
+				9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */,
+			);
+			name = ADM;
+			sourceTree = "<group>";
+		};
 		91456A8D0AF7E85D000FD468 /* CS3 */ = {
 			isa = PBXGroup;
 			children = (
@@ -815,26 +840,8 @@
 		91EF0B520A20A4CB00F0EF9A /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				918052FA0ED108AB007CD826 /* com_scriptographer_ui_Button.cpp */,
-				918052FB0ED108AB007CD826 /* com_scriptographer_ui_Dialog.cpp */,
-				918052FC0ED108AB007CD826 /* com_scriptographer_ui_Drawer.cpp */,
-				918052FD0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp */,
-				918052FE0ED108AB007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp */,
-				918052FF0ED108AB007CD826 /* com_scriptographer_ui_Image.cpp */,
-				918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */,
-				918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */,
-				918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */,
-				918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */,
-				918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */,
 				918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */,
 				918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */,
-				918053080ED108AB007CD826 /* com_scriptographer_ui_ModalDialog.cpp */,
-				918053090ED108AB007CD826 /* com_scriptographer_ui_TextEditItem.cpp */,
-				9180530A0ED108AB007CD826 /* com_scriptographer_ui_TextItem.cpp */,
-				9180530B0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp */,
-				9180530C0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp */,
-				9180530D0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp */,
-				9180530E0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -844,6 +851,7 @@
 			children = (
 				91EF0B4E0A20A4B900F0EF9A /* AI */,
 				91EF0B520A20A4CB00F0EF9A /* UI */,
+				9121616911B5199E00EFD8D4 /* ADM */,
 				91EF09BF0A20A2CD00F0EF9A /* uiGlobals.h */,
 				91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */,
 				91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */,
@@ -1116,28 +1124,28 @@
 				913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B60EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 				918052EC0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
-				918053390ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
-				9180533A0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
-				9180533B0ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */,
-				9180533C0ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */,
-				9180533D0ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */,
-				9180533E0ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */,
-				9180533F0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
-				918053400ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
-				918053410ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053430ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
-				918053440ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				918053450ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
 				918053460ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */,
-				918053470ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */,
-				918053480ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */,
-				918053490ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */,
-				9180534A0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */,
-				9180534B0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
-				9180534C0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
-				9180534D0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9EA10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 				911D195811B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
+				912161A711B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */,
+				912161A811B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				912161A911B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				912161AA11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				912161AB11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				912161AC11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */,
+				912161AD11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				912161AE11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */,
+				912161AF11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				912161B011B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				912161B111B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				912161B211B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				912161B311B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				912161B411B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				912161B511B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				912161B611B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				912161B711B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				912161B811B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1197,28 +1205,28 @@
 				913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B70EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 				918052ED0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
-				9180534E0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
-				9180534F0ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
-				918053500ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */,
-				918053510ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */,
-				918053520ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */,
-				918053530ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */,
-				918053540ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
-				918053550ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
-				918053560ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053580ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
-				918053590ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				9180535A0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
 				9180535B0ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */,
-				9180535C0ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */,
-				9180535D0ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */,
-				9180535E0ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */,
-				9180535F0ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */,
-				918053600ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
-				918053610ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
-				918053620ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9EB10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 				911D195711B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
+				9121619511B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */,
+				9121619611B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				9121619711B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				9121619811B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				9121619911B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				9121619A11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */,
+				9121619B11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				9121619C11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */,
+				9121619D11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				9121619E11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				9121619F11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				912161A011B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				912161A111B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				912161A211B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				912161A311B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				912161A411B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				912161A511B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				912161A611B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1279,28 +1287,28 @@
 				913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				915A26B50EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 				918052EB0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
-				918053240ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
-				918053250ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
-				918053260ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */,
-				918053270ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */,
-				918053280ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */,
-				918053290ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */,
-				9180532A0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
-				9180532B0ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
-				9180532C0ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				9180532E0ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
-				9180532F0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				918053300ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
 				918053310ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */,
-				918053320ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */,
-				918053330ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */,
-				918053340ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */,
-				918053350ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */,
-				918053360ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
-				918053370ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
-				918053380ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9E910074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 				911D195911B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
+				912161B911B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */,
+				912161BA11B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				912161BB11B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				912161BC11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				912161BD11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				912161BE11B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */,
+				912161BF11B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				912161C011B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */,
+				912161C111B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				912161C211B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				912161C311B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				912161C411B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				912161C511B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				912161C611B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				912161C711B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				912161C811B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				912161C911B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				912161CA11B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1361,28 +1369,28 @@
 				9185E5340E7FC238000BD8BA /* IAIUnicodeString.cpp in Sources */,
 				915A26B40EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 				918052EA0ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
-				9180530F0ED108AC007CD826 /* com_scriptographer_ui_Button.cpp in Sources */,
-				918053100ED108AC007CD826 /* com_scriptographer_ui_Dialog.cpp in Sources */,
-				918053110ED108AC007CD826 /* com_scriptographer_ui_Drawer.cpp in Sources */,
-				918053120ED108AC007CD826 /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */,
-				918053130ED108AC007CD826 /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */,
-				918053140ED108AC007CD826 /* com_scriptographer_ui_Image.cpp in Sources */,
-				918053150ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
-				918053160ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
-				918053170ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053190ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
-				9180531A0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				9180531B0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
 				9180531C0ED108AC007CD826 /* com_scriptographer_ui_MenuItem.cpp in Sources */,
-				9180531D0ED108AC007CD826 /* com_scriptographer_ui_ModalDialog.cpp in Sources */,
-				9180531E0ED108AC007CD826 /* com_scriptographer_ui_TextEditItem.cpp in Sources */,
-				9180531F0ED108AC007CD826 /* com_scriptographer_ui_TextItem.cpp in Sources */,
-				918053200ED108AC007CD826 /* com_scriptographer_ui_TextValueItem.cpp in Sources */,
-				918053210ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
-				918053220ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
-				918053230ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				9139C9E810074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 				911D195611B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
+				9121618311B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */,
+				9121618411B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				9121618511B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				9121618611B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				9121618711B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				9121618811B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */,
+				9121618911B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				9121618A11B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */,
+				9121618B11B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				9121618C11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				9121618D11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				9121618E11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				9121618F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				9121619011B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				9121619111B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				9121619211B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				9121619311B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				9121619411B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1439,32 +1447,32 @@
 				91C8B8BC1049C0D3002882FE /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 				91C8B8C11049C0D3002882FE /* com_scriptographer_ai_TextItem.cpp in Sources */,
 				91C8B8C31049C0D3002882FE /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
-				91C8B8C41049C0D3002882FE /* com_scriptographer_ui_Button.cpp in Sources */,
-				91C8B8C51049C0D3002882FE /* com_scriptographer_ui_Dialog.cpp in Sources */,
-				91C8B8C61049C0D3002882FE /* com_scriptographer_ui_Drawer.cpp in Sources */,
-				91C8B8C71049C0D3002882FE /* com_scriptographer_ui_HierarchyListBox.cpp in Sources */,
-				91C8B8C81049C0D3002882FE /* com_scriptographer_ui_HierarchyListEntry.cpp in Sources */,
-				91C8B8C91049C0D3002882FE /* com_scriptographer_ui_Image.cpp in Sources */,
-				91C8B8CA1049C0D3002882FE /* com_scriptographer_ui_ImagePane.cpp in Sources */,
-				91C8B8CB1049C0D3002882FE /* com_scriptographer_ui_Item.cpp in Sources */,
-				91C8B8CC1049C0D3002882FE /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				91C8B8CE1049C0D3002882FE /* com_scriptographer_ui_ListEntry.cpp in Sources */,
-				91C8B8CF1049C0D3002882FE /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				91C8B8D01049C0D3002882FE /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
 				91C8B8D11049C0D3002882FE /* com_scriptographer_ui_MenuItem.cpp in Sources */,
-				91C8B8D21049C0D3002882FE /* com_scriptographer_ui_ModalDialog.cpp in Sources */,
-				91C8B8D31049C0D3002882FE /* com_scriptographer_ui_TextEditItem.cpp in Sources */,
-				91C8B8D41049C0D3002882FE /* com_scriptographer_ui_TextItem.cpp in Sources */,
-				91C8B8D51049C0D3002882FE /* com_scriptographer_ui_TextValueItem.cpp in Sources */,
-				91C8B8D61049C0D3002882FE /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
-				91C8B8D71049C0D3002882FE /* com_scriptographer_ui_Tracker.cpp in Sources */,
-				91C8B8D81049C0D3002882FE /* com_scriptographer_ui_ValueItem.cpp in Sources */,
 				91C8B8D91049C0D3002882FE /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 				91C8B9011049C255002882FE /* IAIFilePath.cpp in Sources */,
 				91C8B9021049C255002882FE /* IAIUnicodeString.cpp in Sources */,
 				91C8B9051049C27C002882FE /* IText.cpp in Sources */,
 				91C8B9061049C27C002882FE /* IThrowException.cpp in Sources */,
 				911D195A11B41C37004648CA /* com_scriptographer_ai_Timer.cpp in Sources */,
+				912161CB11B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp in Sources */,
+				912161CC11B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				912161CD11B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				912161CE11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				912161CF11B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				912161D011B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp in Sources */,
+				912161D111B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				912161D211B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp in Sources */,
+				912161D311B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				912161D411B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				912161D511B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				912161D611B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				912161D711B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				912161D811B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				912161D911B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				912161DA11B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				912161DB11B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				912161DC11B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

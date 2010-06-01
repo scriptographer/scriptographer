@@ -650,63 +650,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ui_NativeObject = loadClass(env, "com/scriptographer/ui/NativeObject");
 	fid_ui_NativeObject_handle = getFieldID(env, cls_ui_NativeObject, "handle", "I");
 
-	cls_ui_Rectangle = loadClass(env, "com/scriptographer/ui/Rectangle");
-	cid_ui_Rectangle = getConstructorID(env, cls_ui_Rectangle, "(IIII)V");
-	fid_ui_Rectangle_x = getFieldID(env, cls_ui_Rectangle, "x", "I");
-	fid_ui_Rectangle_y = getFieldID(env, cls_ui_Rectangle, "y", "I");
-	fid_ui_Rectangle_width = getFieldID(env, cls_ui_Rectangle, "width", "I");
-	fid_ui_Rectangle_height = getFieldID(env, cls_ui_Rectangle, "height", "I");
-	mid_ui_Rectangle_set = getMethodID(env, cls_ui_Rectangle, "set", "(IIII)V");
-	
-	cls_ui_Point = loadClass(env, "com/scriptographer/ui/Point");
-	cid_ui_Point = getConstructorID(env, cls_ui_Point, "(II)V");
-	fid_ui_Point_x = getFieldID(env, cls_ui_Point, "x", "I");
-	fid_ui_Point_y = getFieldID(env, cls_ui_Point, "y", "I");
-	mid_ui_Point_set = getMethodID(env, cls_ui_Point, "set", "(II)V");
-	
-	cls_ui_Size = loadClass(env, "com/scriptographer/ui/Size");
-	cid_ui_Size = getConstructorID(env, cls_ui_Size, "(II)V");
-	fid_ui_Size_width = getFieldID(env, cls_ui_Size, "width", "I");
-	fid_ui_Size_height = getFieldID(env, cls_ui_Size, "height", "I");
-	mid_ui_Size_set = getMethodID(env, cls_ui_Size, "set", "(II)V");
-
-	cls_ui_Dialog = loadClass(env, "com/scriptographer/ui/Dialog");
-	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(IIZ)V");
-
-	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
-
-	cls_ui_DialogGroupInfo = loadClass(env, "com/scriptographer/ui/DialogGroupInfo");
-	cid_ui_DialogGroupInfo = getConstructorID(env, cls_ui_DialogGroupInfo, "(Ljava/lang/String;I)V");
-
-	cls_ui_Drawer = loadClass(env, "com/scriptographer/ui/Drawer");
-	cid_ui_Drawer = getConstructorID(env, cls_ui_Drawer, "(I)V");
-
-	cls_ui_FontInfo = loadClass(env, "com/scriptographer/ui/FontInfo");
-	cid_ui_FontInfo = getConstructorID(env, cls_ui_FontInfo, "(IIIII)V");
-
-	cls_ui_Image = loadClass(env, "com/scriptographer/ui/Image");
-	fid_ui_Image_byteWidth = getFieldID(env, cls_ui_Image, "byteWidth", "I");
-	fid_ui_Image_bitsPerPixel = getFieldID(env, cls_ui_Image, "bitsPerPixel", "I");
-	mid_ui_Image_getIconHandle = getMethodID(env, cls_ui_Image, "getIconHandle", "()I");
-
-	cls_ui_ListItem = loadClass(env, "com/scriptographer/ui/ListItem");
-	fid_ui_ListItem_listHandle = getFieldID(env, cls_ui_ListItem, "listHandle", "I");	
-	
-	cls_ui_HierarchyListBox = loadClass(env, "com/scriptographer/ui/HierarchyListBox");
-
-	cls_ui_ListEntry = loadClass(env, "com/scriptographer/ui/ListEntry");
-
-	cls_ui_HierarchyListEntry = loadClass(env, "com/scriptographer/ui/HierarchyListEntry");
-
-	cls_ui_NotificationHandler = loadClass(env, "com/scriptographer/ui/NotificationHandler");
-	fid_ui_NotificationHandler_tracker = getFieldID(env, cls_ui_NotificationHandler, "tracker", "Lcom/scriptographer/ui/Tracker;");
-	fid_ui_NotificationHandler_drawer = getFieldID(env, cls_ui_NotificationHandler, "drawer", "Lcom/scriptographer/ui/Drawer;");
-	mid_ui_NotificationHandler_onNotify = getMethodID(env, cls_ui_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
-	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/ui/Drawer;)Z");
-
-	cls_ui_Tracker = loadClass(env, "com/scriptographer/ui/Tracker");
-	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/ui/NotificationHandler;IIIIIIICJ)Z");
-
 	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
 	mid_ui_MenuGroup_wrapHandle = getStaticMethodID(env, cls_ui_MenuGroup, "wrapHandle", "(ILjava/lang/String;)Lcom/scriptographer/ui/MenuGroup;");
 
@@ -715,9 +658,67 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 
+// ADM:
+	cls_adm_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
+	cid_adm_Rectangle = getConstructorID(env, cls_adm_Rectangle, "(IIII)V");
+	fid_adm_Rectangle_x = getFieldID(env, cls_adm_Rectangle, "x", "I");
+	fid_adm_Rectangle_y = getFieldID(env, cls_adm_Rectangle, "y", "I");
+	fid_adm_Rectangle_width = getFieldID(env, cls_adm_Rectangle, "width", "I");
+	fid_adm_Rectangle_height = getFieldID(env, cls_adm_Rectangle, "height", "I");
+	mid_adm_Rectangle_set = getMethodID(env, cls_adm_Rectangle, "set", "(IIII)V");
+	
+	cls_adm_Point = loadClass(env, "com/scriptographer/adm/Point");
+	cid_adm_Point = getConstructorID(env, cls_adm_Point, "(II)V");
+	fid_adm_Point_x = getFieldID(env, cls_adm_Point, "x", "I");
+	fid_adm_Point_y = getFieldID(env, cls_adm_Point, "y", "I");
+	mid_adm_Point_set = getMethodID(env, cls_adm_Point, "set", "(II)V");
+	
+	cls_adm_Size = loadClass(env, "com/scriptographer/adm/Size");
+	cid_adm_Size = getConstructorID(env, cls_adm_Size, "(II)V");
+	fid_adm_Size_width = getFieldID(env, cls_adm_Size, "width", "I");
+	fid_adm_Size_height = getFieldID(env, cls_adm_Size, "height", "I");
+	mid_adm_Size_set = getMethodID(env, cls_adm_Size, "set", "(II)V");
+
+	cls_adm_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
+	mid_adm_Dialog_onSizeChanged = getMethodID(env, cls_adm_Dialog, "onSizeChanged", "(IIZ)V");
+
+	cls_adm_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
+
+	cls_adm_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");
+	cid_adm_DialogGroupInfo = getConstructorID(env, cls_adm_DialogGroupInfo, "(Ljava/lang/String;I)V");
+
+	cls_adm_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
+	cid_adm_Drawer = getConstructorID(env, cls_adm_Drawer, "(I)V");
+
+	cls_adm_FontInfo = loadClass(env, "com/scriptographer/adm/FontInfo");
+	cid_adm_FontInfo = getConstructorID(env, cls_adm_FontInfo, "(IIIII)V");
+
+	cls_adm_Image = loadClass(env, "com/scriptographer/adm/Image");
+	fid_adm_Image_byteWidth = getFieldID(env, cls_adm_Image, "byteWidth", "I");
+	fid_adm_Image_bitsPerPixel = getFieldID(env, cls_adm_Image, "bitsPerPixel", "I");
+	mid_adm_Image_getIconHandle = getMethodID(env, cls_adm_Image, "getIconHandle", "()I");
+
+	cls_adm_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
+	fid_adm_ListItem_listHandle = getFieldID(env, cls_adm_ListItem, "listHandle", "I");	
+	
+	cls_adm_HierarchyListBox = loadClass(env, "com/scriptographer/adm/HierarchyListBox");
+
+	cls_adm_ListEntry = loadClass(env, "com/scriptographer/adm/ListEntry");
+
+	cls_adm_HierarchyListEntry = loadClass(env, "com/scriptographer/adm/HierarchyListEntry");
+
+	cls_adm_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
+	fid_adm_NotificationHandler_tracker = getFieldID(env, cls_adm_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
+	fid_adm_NotificationHandler_drawer = getFieldID(env, cls_adm_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
+	mid_adm_NotificationHandler_onNotify = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
+	mid_adm_NotificationHandler_onDraw = getMethodID(env, cls_adm_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)Z");
+
+	cls_adm_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
+	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIIICJ)Z");
+
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
-	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");
-	fid_ui_TextEditItem_setSelectionTimer = getFieldID(env, cls_ui_TextEditItem, "setSelectionTimer", "I");
+	cls_adm_TextEditItem = loadClass(env, "com/scriptographer/adm/TextEditItem");
+	fid_adm_TextEditItem_setSelectionTimer = getFieldID(env, cls_adm_TextEditItem, "setSelectionTimer", "I");
 #endif
 }
 
@@ -920,38 +921,38 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobj
 	}
 }
 
-// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, com.scriptographer.ui.Point
+// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, com.scriptographer.adm.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
 	if (env->IsInstanceOf(pt, cls_ai_Point)) {
 		res->h = env->GetDoubleField(pt, fid_ai_Point_x);
 		res->v = env->GetDoubleField(pt, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_ui_Point)) {
-		res->h = env->GetIntField(pt, fid_ui_Point_x);
-		res->v = env->GetIntField(pt, fid_ui_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_adm_Point)) {
+		res->h = env->GetIntField(pt, fid_adm_Point_x);
+		res->v = env->GetIntField(pt, fid_adm_Point_y);
 	}
 	EXCEPTION_CHECK(env);
 	return res;
 }
 
-// com.scriptographer.ui.Point <-> ADMPoint
+// com.scriptographer.adm.Point <-> ADMPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_ui_Point, cid_ui_Point, x, y);
+		return newObject(env, cls_adm_Point, cid_adm_Point, x, y);
 	} else {
-		callVoidMethod(env, res, mid_ui_Point_set, x, y);
+		callVoidMethod(env, res, mid_adm_Point_set, x, y);
 		return res;
 	}
 }
 
-// This handles 2 types of points: com.scriptographer.ui.Point,com.scriptographer.ai.Point
+// This handles 2 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point
 ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
-	if (env->IsInstanceOf(pt, cls_ui_Point)) {
-		res->h = env->GetIntField(pt, fid_ui_Point_x);
-		res->v = env->GetIntField(pt, fid_ui_Point_y);
+	if (env->IsInstanceOf(pt, cls_adm_Point)) {
+		res->h = env->GetIntField(pt, fid_adm_Point_x);
+		res->v = env->GetIntField(pt, fid_adm_Point_y);
 	} else if (env->IsInstanceOf(pt, cls_ai_Point)) {
 		res->h = (short) env->GetDoubleField(pt, fid_ai_Point_x);
 		res->v = (short) env->GetDoubleField(pt, fid_ai_Point_y);
@@ -988,9 +989,9 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_ui_Rectangle, cid_ui_Rectangle, left, top, right - left, bottom - top);
+		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle, left, top, right - left, bottom - top);
 	} else {
-		callVoidMethod(env, res, mid_ui_Rectangle_set, left, top, right - left, bottom - top);
+		callVoidMethod(env, res, mid_adm_Rectangle_set, left, top, right - left, bottom - top);
 		return res;
 	}
 }
@@ -998,10 +999,10 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, i
 ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect *res) {
 	if (res == NULL)
 		res = new ADMRect;
-	res->left = env->GetIntField(rt, fid_ui_Rectangle_x);
-	res->top = env->GetIntField(rt, fid_ui_Rectangle_y);
-	res->right = res->left + env->GetIntField(rt, fid_ui_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rt, fid_ui_Rectangle_height);
+	res->left = env->GetIntField(rt, fid_adm_Rectangle_x);
+	res->top = env->GetIntField(rt, fid_adm_Rectangle_y);
+	res->right = res->left + env->GetIntField(rt, fid_adm_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rt, fid_adm_Rectangle_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -1025,12 +1026,12 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AIReal
 	return res;
 }
 
-// com.scriptographer.ui.Size <-> ADMPoint
+// com.scriptographer.adm.Size <-> ADMPoint
 jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_ui_Size, cid_ui_Size, (jint) width, (jint) height);
+		return newObject(env, cls_adm_Size, cid_adm_Size, (jint) width, (jint) height);
 	} else {
-		callVoidMethod(env, res, mid_ui_Size_set, (jint) width, (jint) height);
+		callVoidMethod(env, res, mid_adm_Size_set, (jint) width, (jint) height);
 		return res;
 	}
 }
@@ -1038,8 +1039,8 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jo
 ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
-	res->h = env->GetIntField(size, fid_ui_Size_width);
-	res->v = env->GetIntField(size, fid_ui_Size_height);
+	res->h = env->GetIntField(size, fid_adm_Size_width);
+	res->v = env->GetIntField(size, fid_adm_Size_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -2112,7 +2113,7 @@ void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier
 void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
 	JNIEnv *env = getEnv();
 	AppContext context;
-	callVoidMethodReport(env, handler, mid_ui_NotificationHandler_onNotify,
+	callVoidMethodReport(env, handler, mid_adm_NotificationHandler_onNotify,
 			env->NewStringUTF(notifier));
 }
 
@@ -2124,10 +2125,10 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
 		AppContext context;
-		jobject trackerObj = getObjectField(env, handler, fid_ui_NotificationHandler_tracker);
+		jobject trackerObj = getObjectField(env, handler, fid_adm_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
-		return callBooleanMethod(env, trackerObj, mid_ui_Tracker_onTrack, handler,
+		return callBooleanMethod(env, trackerObj, mid_adm_Tracker_onTrack, handler,
 				(jint) tracker, (jint) sADMTracker->GetAction(tracker),
 				(jint) sADMTracker->GetModifiers(tracker), pt.h, pt.v,
 				(jint) sADMTracker->GetMouseState(tracker),
@@ -2142,9 +2143,9 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
 		AppContext context;
-		jobject drawerObj = getObjectField(env, handler, fid_ui_NotificationHandler_drawer);
+		jobject drawerObj = getObjectField(env, handler, fid_adm_NotificationHandler_drawer);
 		setIntField(env, drawerObj, fid_ui_NativeObject_handle, (jint) drawer);
-		return callBooleanMethod(env, handler, mid_ui_NotificationHandler_onDraw, drawerObj);
+		return callBooleanMethod(env, handler, mid_adm_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }
@@ -2177,7 +2178,7 @@ int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const cha
 	if (!handle) {
 		// For HierarchyListBoxes it could be that the user wants to call item functions
 		// on a child list. report that this can only be called on the root list:
-		if (env->IsInstanceOf(obj, cls_ui_HierarchyListBox)) {
+		if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
 			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
@@ -2190,7 +2191,7 @@ int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj, const char 
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	int handle = getIntField(env, obj, fid_ui_ListItem_listHandle);
+	int handle = getIntField(env, obj, fid_adm_ListItem_listHandle);
 	if (!handle)
 		throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
 	return handle;

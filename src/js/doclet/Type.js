@@ -180,12 +180,12 @@ Type = Base.extend(new function() {
 
 		isPoint: function() {
 			return !this.isArray() && (this.hasSuperclass('com.scriptographer.ai.Point') ||
-				this.hasSuperclass('com.scriptographer.ui.Point'));
+				this.hasSuperclass('com.scriptographer.adm.Point'));
 		},
 
 		isRectangle: function() {
 			return !this.isArray() && (this.hasSuperclass('com.scriptographer.ai.Rectangle') ||
-				this.hasSuperclass('com.scriptographer.ui.Rectangle'));
+				this.hasSuperclass('com.scriptographer.adm.Rectangle'));
 		},
 
 		isFile: function() {

@@ -342,6 +342,14 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<target name="jniheaders" depends="compile" description="Make JNI header files">
 		<mkdir dir="${src.jni}"/>
+		<!-- Remove previously generated headers first, to avoid zombies -->
+		<delete>
+			<fileset dir="${src.jni}">
+				<include name="**/*.h"/>
+				<exclude name="**/aiGlobals.h"/>
+				<exclude name="**/uiGlobals.h"/>
+			</fileset>
+		</delete>
 		<javah destdir="${src.jni}" classpath="${target.classes}">
 			<classpath refid="target.classpath" />
 
@@ -403,32 +411,31 @@ Scriptographer build instructions
 
 			<class name="com.scriptographer.ai.ArtboardList" />
 
-			<class name="com.scriptographer.ui.Notifier" />
-			<class name="com.scriptographer.ui.Dialog" />
-			<class name="com.scriptographer.ui.ModalDialog" />
-			<class name="com.scriptographer.ui.Item" />
-		   	<class name="com.scriptographer.ui.ValueItem" />
-		   	<class name="com.scriptographer.ui.TextValueItem" />
-		   	<class name="com.scriptographer.ui.TextItem" />
-		   	<class name="com.scriptographer.ui.Button" />
-			<class name="com.scriptographer.ui.ToggleItem" />
-			<class name="com.scriptographer.ui.ItemGroup" />
-		   	<class name="com.scriptographer.ui.ImagePane" />
-		   	<class name="com.scriptographer.ui.TextEditItem" />
-
-		   	<class name="com.scriptographer.ui.ListItem" />
-		   	<class name="com.scriptographer.ui.ListEntry" />
-		   	<class name="com.scriptographer.ui.HierarchyListBox" />
-		   	<class name="com.scriptographer.ui.HierarchyListEntry" />
-
-		   	<class name="com.scriptographer.ui.Drawer" />
-		   	<class name="com.scriptographer.ui.Image" />
-		   	<class name="com.scriptographer.ui.Tracker" />
-
 			<class name="com.scriptographer.ui.MenuItem" />
 			<class name="com.scriptographer.ui.MenuGroup" />
-
 			<class name="com.scriptographer.ui.KeyModifiers" />
+
+			<class name="com.scriptographer.adm.Notifier" />
+			<class name="com.scriptographer.adm.Dialog" />
+			<class name="com.scriptographer.adm.ModalDialog" />
+			<class name="com.scriptographer.adm.Item" />
+		   	<class name="com.scriptographer.adm.ValueItem" />
+		   	<class name="com.scriptographer.adm.TextValueItem" />
+		   	<class name="com.scriptographer.adm.TextItem" />
+		   	<class name="com.scriptographer.adm.Button" />
+			<class name="com.scriptographer.adm.ToggleItem" />
+			<class name="com.scriptographer.adm.ItemGroup" />
+		   	<class name="com.scriptographer.adm.ImagePane" />
+		   	<class name="com.scriptographer.adm.TextEditItem" />
+
+		   	<class name="com.scriptographer.adm.ListItem" />
+		   	<class name="com.scriptographer.adm.ListEntry" />
+		   	<class name="com.scriptographer.adm.HierarchyListBox" />
+		   	<class name="com.scriptographer.adm.HierarchyListEntry" />
+
+		   	<class name="com.scriptographer.adm.Drawer" />
+		   	<class name="com.scriptographer.adm.Image" />
+		   	<class name="com.scriptographer.adm.Tracker" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="${src.js}/jni/jni.js">

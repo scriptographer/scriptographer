@@ -102,7 +102,7 @@ public class Raster extends Item {
 	 * Creates a raster item from an UI image.
 	 * @param image the UI image to be converted to a raster item
 	 */
-	public Raster(com.scriptographer.ui.Image image) {
+	public Raster(com.scriptographer.adm.Image image) {
 		// TODO: handle this case directly, without converting back and from
 		// a java BufferedImage, through native code?
 		this(image.getImage());
@@ -162,7 +162,7 @@ public class Raster extends Item {
 	/**
 	 * The size of the raster in pixels.
 	 */
-	public native com.scriptographer.ui.Size getSize();
+	public native Size getSize();
 
 	/**
 	 * @jshide
@@ -172,7 +172,7 @@ public class Raster extends Item {
 		handle = nativeConvert((short) -1, width, height);
 	}
 
-	public void setSize(com.scriptographer.ui.Size size) {
+	public void setSize(com.scriptographer.adm.Size size) {
 		setSize(size.width, size.height);
 	}
 
@@ -180,14 +180,14 @@ public class Raster extends Item {
 	 * The width of the raster in pixels.
 	 */
 	public int getWidth() {
-		return getSize().width;
+		return (int) getSize().width;
 	}
 
 	/**
 	 * The height of the raster in pixels.
 	 */
 	public int getHeight() {
-		return getSize().height;
+		return (int) getSize().height;
 	}
 
 	/**
@@ -301,11 +301,11 @@ public class Raster extends Item {
 	
 	public BufferedImage getSubImage(int x, int y, int width, int height) {
 		if (width == -1 || height == -1) {
-			com.scriptographer.ui.Size size = getSize();
+			Size size = getSize();
 			if (width == -1)
-				width = size.width;
+				width = (int) size.width;
 			if (height == -1)
-				height = size.height;
+				height = (int) size.height;
 		}
 		BufferedImage img = createCompatibleImage(width, height);
 		Graphics2D g2d = img.createGraphics();
