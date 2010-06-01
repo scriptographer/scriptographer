@@ -243,9 +243,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetSize(
 		JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		ADMRect size;
-		sADMDialog->GetLocalRect(dialog, &size);
-		return gEngine->convertSize(env, size.right, size.bottom);
+		ADMRect rect;
+		sADMDialog->GetLocalRect(dialog, &rect);
+		return gEngine->convertSize(env, &rect);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -296,7 +296,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getPosition(
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMRect rect;
 		sADMDialog->GetBoundsRect(dialog, &rect);
-		return gEngine->convertPoint(env, rect.left, rect.top);
+		DEFINE_ADM_POINT(point, rect.left, rect.top);
+		return gEngine->convertPoint(env, &point);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -1239,14 +1240,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getScreenSize(
 #ifdef MAC_ENV
 		GDHandle screen = DMGetFirstScreenDevice(true);  
 		Rect rect = (*screen)->gdRect;
-		return gEngine->convertSize(env, rect.right - rect.left,
-				rect.bottom - rect.top);
+		return gEngine->convertSize(env, &rect);
 #endif
 #ifdef WIN_ENV
 		RECT rect;
 		GetWindowRect(GetDesktopWindow(), &rect);
-		return gEngine->convertSize(env, rect.right - rect.left,
-				rect.bottom - rect.top);
+		return gEngine->convertSize(env, &rect);
 #endif
 	} EXCEPTION_CONVERT(env);
 	return NULL;
