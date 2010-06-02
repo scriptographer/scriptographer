@@ -1,4 +1,5 @@
 var printDetails = true;
+var lineBreak = java.lang.System.getProperty('line.separator');
 
 if (this.echo) {
 	function write() {
@@ -290,6 +291,7 @@ function createJniBodies(srcDir, endsWithMask) {
 		}
 	
 		var functions = classes[cls];
+		var first = true;
 		for (var i in functions) {
 			var func = functions[i];
 			// Convert the signature to a correct java-like comment:
@@ -307,7 +309,8 @@ function createJniBodies(srcDir, endsWithMask) {
 				var javaDecl = new JniTypeReader(ret).readNext() + ' '
 						+ func.javaName + '(' + params.join(', ') + ')';
 
-				var jniDecl = func.declaration + '(';
+				// Add a line break after '('
+				var jniDecl = func.declaration + '(' + lineBreak + '\t\t';
 				for (var i in func.paramTypes) {
 					var param = func.paramTypes[i];
 					jniDecl += param;
@@ -336,13 +339,18 @@ function createJniBodies(srcDir, endsWithMask) {
 					if (body) {
 						append = !(func.paramTypes.join().equals(body.paramTypes.join())
 								&& func.returnType.equals(body.returnType));
-						if (printDetails && !append)
+						if (printDetails && !append) {
+							if (first) write();
+							first = false;
 							write('        Defined: ' + func.jniName);
+						}
 					}
 					// Now remove it and see what remains in the end:
 					delete existingBodies[func.jniName];
 				}
 				if (append) {
+					if (first) write();
+					first = false;
 					write('    New: ' + jniDecl);
 					
 					out.println();
@@ -384,12 +392,9 @@ function createJniBodies(srcDir, endsWithMask) {
 			}
 		}
 		if (existingBodies) {
-			var first = true;
 			for (var n in existingBodies) {
-				if (first) {
-					write();
-					first = false;
-				}
+				if (first) write();
+				first = false;
 				write('    Unused: ' + n);
 			}
 			if (!first)
