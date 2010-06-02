@@ -111,7 +111,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView_
 }
 
 /*
- * Rectangle artworkToView(float x, float y, float width, float height)
+ * com.scriptographer.ai.Rectangle artworkToView(float x, float y, float width, float height)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {

@@ -447,17 +447,17 @@ public:
 	
 	// com.scriptographer.ai.Point <-> AIRealPoint
 	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
-	jobject convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res = NULL) {
-		return convertPoint(env, pt->h, pt->v, res);
+	jobject convertPoint(JNIEnv *env, AIRealPoint *point, jobject res = NULL) {
+		return convertPoint(env, point->h, point->v, res);
 	}
-	AIRealPoint *convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res = NULL);
+	AIRealPoint *convertPoint(JNIEnv *env, jobject point, AIRealPoint *res = NULL);
 
 	// com.scriptographer.ai.Rectangle <-> AIRealRect
 	jobject convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);
 	jobject convertRectangle(JNIEnv *env, AIRealRect *rect, jobject res = NULL) {
 		return convertRectangle(env, rect->left, rect->top, rect->right, rect->bottom, res);
 	}
-	AIRealRect *convertRectangle(JNIEnv *env, jobject rt, AIRealRect *res = NULL);	
+	AIRealRect *convertRectangle(JNIEnv *env, jobject rect, AIRealRect *res = NULL);	
 
 	// com.scriptographer.ai.Size <-> AIRealPoint
 	jobject convertSize(JNIEnv *env, float width, float height, jobject res = NULL);
@@ -475,8 +475,7 @@ public:
 	ADMRect *convertRectangle(JNIEnv *env, jobject rect, ADMRect *res = NULL);	
 
 	// com.scriptographer.adm.Size <-> ADMPoint
-	jobject convertSize(JNIEnv *env, ADMPoint *point, jobject res = NULL);
-	jobject convertSize(JNIEnv *env, ADMRect *rect, jobject res = NULL);
+	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL);
 	ADMPoint *convertSize(JNIEnv *env, jobject size, ADMPoint *res = NULL);
 
 	// java.awt.Color <-> ADMRGBColor

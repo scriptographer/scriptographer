@@ -248,7 +248,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv 
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ADMRect rect;
 		sADMItem->GetLocalRect(item, &rect);
-		return gEngine->convertSize(env, &rect);
+		DEFINE_ADM_POINT(size, rect.right, rect.bottom);
+		return gEngine->convertSize(env, &size);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -259,8 +260,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv 
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetSize(JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
-		DEFINE_ADM_RECT(rt, 0, 0, width, height);
-		sADMItem->SetLocalRect(item, &rt);
+		DEFINE_ADM_RECT(rect, 0, 0, width, height);
+		sADMItem->SetLocalRect(item, &rect);
 	} EXCEPTION_CONVERT(env);
 }
 

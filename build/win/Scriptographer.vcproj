@@ -1282,6 +1282,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Timer.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Tool.cpp"
 						>
 					</File>
@@ -1291,86 +1295,90 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="UI"
+					Name="ADM"
 					>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Button.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Button.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Dialog.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Dialog.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Drawer.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Drawer.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_HierarchyListBox.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_HierarchyListBox.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_HierarchyListEntry.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_HierarchyListEntry.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Image.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Image.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ImagePane.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ImagePane.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Item.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Item.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ItemGroup.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ItemGroup.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ListEntry.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ListEntry.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ListItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ListItem.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ModalDialog.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextEditItem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextItem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextValueItem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ToggleItem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Tracker.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ValueItem.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="UI"
+					>
 					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ModalDialog.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_TextEditItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_TextItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_TextValueItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ToggleItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Tracker.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ValueItem.cpp"
 						>
 					</File>
 				</Filter>
