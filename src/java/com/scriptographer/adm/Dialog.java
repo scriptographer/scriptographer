@@ -51,7 +51,7 @@ import com.scriptographer.sg.Script;
 /**
  * @author lehni
  */
-public abstract class Dialog extends Component {
+public abstract class Dialog extends AdmComponent {
 
 	//	Dialog styles (for Create() call).
 	protected final static int
@@ -1226,7 +1226,7 @@ public abstract class Dialog extends Component {
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, PaletteComponent[] components) {
+	public static Object[] prompt(String title, AdmComponent[] components) {
 		return PromptDialog.prompt(title, components);
 	}
 
@@ -1344,7 +1344,7 @@ public abstract class Dialog extends Component {
 			setInsets(0, 0, 0, 0);
 		}
 
-		public Component getComponent() {
+		public AdmComponent getComponent() {
 			return Dialog.this;
 		}
 

@@ -36,5 +36,5 @@ package com.scriptographer.adm;
  * @author lehni
  */
 interface ComponentWrapper {
-	Component getComponent();
+	AdmComponent getComponent();
 }

@@ -227,8 +227,8 @@ public class Palette extends FloatingDialog implements PropertyObserver,
 		// regarding amount of rows, as needed by the ruler element that uses
 		// two rows when it has a title.
 
-		LinkedHashMap<String, Component> content =
-				new LinkedHashMap<String, Component>();
+		LinkedHashMap<String, AdmComponent> content =
+				new LinkedHashMap<String, AdmComponent>();
 
 		int column = hasLogo ? 1 : 0, row = 0;
 		for (int i = 0; i < components.length; i++) {

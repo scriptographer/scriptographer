@@ -411,7 +411,7 @@ public class PaletteComponent implements ChangeReceiver {
 	}
 
 	protected int addToContent(Dialog dialog,
-			LinkedHashMap<String, Component> content, int column, int row) {
+			LinkedHashMap<String, AdmComponent> content, int column, int row) {
 		Item valueItem = createItem(dialog);
 		String label = getLabel();
 		boolean isRuler = type == ComponentType.RULER;

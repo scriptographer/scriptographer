@@ -39,7 +39,7 @@ import com.scriptographer.ScriptographerException;
 /**
  * @author lehni
  */
-public abstract class Item extends Component {
+public abstract class Item extends AdmComponent {
 	
 	protected ItemType type;
 
@@ -733,7 +733,7 @@ public abstract class Item extends Component {
 	 */
 	class AWTItemComponent extends java.awt.Component implements ComponentWrapper {
 
-		public Component getComponent() {
+		public AdmComponent getComponent() {
 			return Item.this;
 		}
 
@@ -807,7 +807,7 @@ public abstract class Item extends Component {
 	 */
 	class AWTComponentGroupContainer extends AWTContainer {
 
-		public Component getComponent() {
+		public AdmComponent getComponent() {
 			return Item.this;
 		}
 

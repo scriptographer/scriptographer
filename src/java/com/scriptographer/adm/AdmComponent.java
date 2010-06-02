@@ -53,7 +53,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
  *
  * @author lehni
  */
-abstract class Component extends NotificationHandler {
+abstract class AdmComponent extends NotificationHandler {
 
 	/*
 	 *  Fonts and Text Size
@@ -325,11 +325,11 @@ abstract class Component extends NotificationHandler {
 		setMargin(margin);
 	}
 
-	protected void addComponent(Component component) {
+	protected void addComponent(AdmComponent component) {
 		// Do nothing here, only ItemGroup uses it
 	}
 
-	protected void removeComponent(Component component) {
+	protected void removeComponent(AdmComponent component) {
 		// Do nothing here, only ItemGroup uses it
 	}
 
@@ -341,7 +341,7 @@ abstract class Component extends NotificationHandler {
 		return content;
 	}
 
-	public void setContent(Component[] elements) {
+	public void setContent(AdmComponent[] elements) {
 		// The default for setting array elements is a flow layout
 		if (this.getLayout() == null)
 			this.setLayout(new FlowLayout());
@@ -351,7 +351,7 @@ abstract class Component extends NotificationHandler {
 		content.addAll(elements);
 	}
 
-	public void setContent(List<? extends Component> elements) {
+	public void setContent(List<? extends AdmComponent> elements) {
 		// The default for setting array elements is a flow layout
 		if (this.getLayout() == null)
 			this.setLayout(new FlowLayout());
@@ -365,7 +365,7 @@ abstract class Component extends NotificationHandler {
 			"^(north|south|east|west|center|first|last|before|after)$",
 			Pattern.CASE_INSENSITIVE);
 
-	public void setContent(Map<String,? extends Component> elements) {
+	public void setContent(Map<String,? extends AdmComponent> elements) {
 		// Find out what kind of layout we have by checking the keys
 		// in the map:
 		if (this.getLayout() == null) {
@@ -389,28 +389,28 @@ abstract class Component extends NotificationHandler {
 	/**
 	 * @jshide
 	 */
-	public void addToContent(Component component) {
+	public void addToContent(AdmComponent component) {
 		getContent().add(component);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public void addToContent(Component component, String constraints) {
+	public void addToContent(AdmComponent component, String constraints) {
 		getContent().put(constraints, component);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public void addToContent(Component component, int index) {
+	public void addToContent(AdmComponent component, int index) {
 		getContent().add(index, component);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public void removeFromContent(Component component) {
+	public void removeFromContent(AdmComponent component) {
 		getContent().remove(component);
 	}
 	
