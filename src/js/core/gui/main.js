@@ -137,21 +137,25 @@ var mainDialog = new FloatingDialog(
 		return entry;
 	}
 
+	function getScriptDirectories() {
+		return scriptRepositories.collect(function(repository) {
+			if (repository.visible) {
+				var dir = repository.sealed && repository.name == 'Examples'
+						? examplesDirectory
+						: new File(repository.path);
+				if (dir.exists()) {
+					dir.alternateName = repository.name;
+					return dir;
+				}
+			}
+		});
+	}
+
 	function getFiles(list) {
 		var files;
 		if (!list.directory) {
-			// Define root directories
-			files = scriptRepositories.collect(function(repository) {
-				if (repository.visible) {
-					var dir = repository.sealed && repository.name == 'Examples'
-							? examplesDirectory
-							: new File(repository.path);
-					if (dir.exists()) {
-						dir.alternateName = repository.name;
-						return dir;
-					}
-				}
-			});
+			// Return root directories
+			files = getScriptDirectories();
 		} else {
 			files = list.directory.list(function(file) {
 				return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
@@ -375,12 +379,7 @@ var mainDialog = new FloatingDialog(
 	}
 
 	function initAll() {
-		var directories = scriptRepositories.collect(function(repository) {
-			var file = new File(repository.path);
-			if (file.exists())
-				return file;
-		});
-		ScriptographerEngine.setScriptDirectories(directories);
+		ScriptographerEngine.setScriptDirectories(getScriptDirectories());
 		refreshList(null, true);
 	}
 
