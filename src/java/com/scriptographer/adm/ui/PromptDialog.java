@@ -29,13 +29,17 @@
  * $Id:PromptDialog.java 402 2007-08-22 23:24:49Z lehni $
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.adm.ui;
 
 import java.awt.FlowLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.scriptographer.adm.Button;
+import com.scriptographer.adm.ItemGroup;
+import com.scriptographer.adm.ModalDialog;
 import com.scriptographer.adm.layout.TableLayout;
+import com.scriptographer.ui.Component;
 
 /**
  * @author lehni
@@ -44,15 +48,16 @@ import com.scriptographer.adm.layout.TableLayout;
  */
 public class PromptDialog extends ModalDialog {
 
-	private PaletteComponent[] components = null;
+	private Component[] components = null;
 	private Object[] values = null;
 
-	public PromptDialog(String title, PaletteComponent[] components) {
+	public PromptDialog(String title, Component[] components) {
 		setTitle(title);
 		this.components = components;
 		// Add one more row for the buttons.
-		TableLayout layout = Palette.createLayout(this, components, true, 1, 5);
-		
+		TableLayout layout =
+				AdmPaletteProxy.createLayout(this, components, true, 1, 5);
+
 		// Add buttons to the layout
 		ItemGroup buttons = new ItemGroup(this);
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -81,7 +86,7 @@ public class PromptDialog extends ModalDialog {
 			values = new Object[components.length];
 			
 			for (int i = 0; i < components.length; i++) {
-				PaletteComponent item = components[i];
+				Component item = components[i];
 				if (item != null)
 					values[i] = item.getValue();
 			}
@@ -89,7 +94,7 @@ public class PromptDialog extends ModalDialog {
 		return values;
 	}
 
-	public static Object[] prompt(String title, PaletteComponent[] components) {
+	public static Object[] prompt(String title, Component[] components) {
 		/* 
 		// TODO: Remove this code as soon as there is another nice way to store
 		// values in preferences.
@@ -124,8 +129,8 @@ public class PromptDialog extends ModalDialog {
 
 	public static Map<String, Object> prompt(String title,
 			Map<String, Object> components, Map<String, Object> values) {
-		PaletteComponent[] comps =
-				PaletteComponent.getComponents(components, values);
+		Component[] comps =
+				Component.getComponents(components, values);
 		Object[] results = prompt(title, comps);
 		if (results != null) {
 			if (values == null)

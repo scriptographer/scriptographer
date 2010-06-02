@@ -49,7 +49,6 @@ import com.scriptographer.adm.Button;
 import com.scriptographer.adm.ChasingArrows;
 import com.scriptographer.adm.CheckBox;
 import com.scriptographer.adm.Dial;
-import com.scriptographer.adm.Dialog;
 import com.scriptographer.adm.DialogColor;
 import com.scriptographer.adm.DialogGroupInfo;
 import com.scriptographer.adm.Drawer;
@@ -68,7 +67,6 @@ import com.scriptographer.adm.ListBox;
 import com.scriptographer.adm.ListEntry;
 import com.scriptographer.adm.ListItem;
 import com.scriptographer.adm.ModalDialog;
-import com.scriptographer.adm.Palette;
 import com.scriptographer.adm.PopupDialog;
 import com.scriptographer.adm.PopupList;
 import com.scriptographer.adm.PopupMenu;
@@ -134,9 +132,11 @@ import com.scriptographer.ai.ToolEventHandler;
 import com.scriptographer.ai.Tracing;
 import com.scriptographer.sg.Application;
 import com.scriptographer.sg.Scriptographer;
+import com.scriptographer.ui.Dialog;
 import com.scriptographer.ui.Key;
 import com.scriptographer.ui.MenuGroup;
 import com.scriptographer.ui.MenuItem;
+import com.scriptographer.ui.Palette;
 /**
  * @author lehni
  */
@@ -196,14 +196,20 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tool.class,
 		ToolEventHandler.class,
 		Tracing.class,
-
+	
 		// UI, alphabetically
+		Dialog.class,
+		Key.class,
+		MenuGroup.class,
+		MenuItem.class,
+		Palette.class,
+		
+		// ADM, alphabetically
 		Border.class,
 		Button.class,
 		ChasingArrows.class,
 		Dial.class,
 		CheckBox.class,
-		Dialog.class,
 		DialogGroupInfo.class,
 		Drawer.class,
 		FloatingDialog.class,
@@ -217,14 +223,10 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ImageRadioButton.class,
 		ImagePane.class,
 		ItemGroup.class,
-		Key.class,
 		ListBox.class,
 		ListEntry.class,
 		ListItem.class,
-		MenuGroup.class,
-		MenuItem.class,
 		ModalDialog.class,
-		Palette.class,
 		PopupDialog.class,
 		PopupList.class,
 		PopupMenu.class,

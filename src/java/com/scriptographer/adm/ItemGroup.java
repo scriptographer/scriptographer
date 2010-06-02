@@ -50,13 +50,13 @@ public class ItemGroup extends Item implements ComponentGroup {
 	private native void nativeAdd(Item item);
 	private native void nativeRemove(Item item);
 
-	protected void addComponent(AdmComponent component) {
+	protected void addComponent(Component component) {
 		// Add natively only if it's not a fake item such as Spacer
 		if (component.isValid() && component instanceof Item)
 			nativeAdd((Item) component);
 	}
 
-	protected void removeComponent(AdmComponent component) {
+	protected void removeComponent(Component component) {
 		// Remove natively only if it's not a fake item such as Spacer
 		if (component.isValid() && component instanceof Item)
 			nativeRemove((Item) component);

@@ -24,17 +24,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Feb 9, 2008.
+ * File created on Jun 2, 2010.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 /**
- * An interface to allow the various component wrappers to return
- * their component in a standardized way.
- * 
  * @author lehni
+ *
  */
-interface ComponentWrapper {
-	Component getComponent();
+public abstract class PaletteProxy {
+
+	protected Palette palette;
+
+	public PaletteProxy(Palette palette) {
+		this.palette = palette;
+	}
+
+	public abstract void doLayout();
 }

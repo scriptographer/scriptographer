@@ -29,6 +29,7 @@
 
 package com.scriptographer.ui;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.script.Callable;
@@ -37,7 +38,6 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Committable;
 import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.adm.PaletteComponent;
 
 /**
  * @author lehni
@@ -45,12 +45,41 @@ import com.scriptographer.adm.PaletteComponent;
  */
 public class Palette implements PropertyObserver, Committable {
 
+	private String title;
 	private Map<String, Object> values;
 	private Map<String, Object> components;
 	private boolean sizeChanged;
+	private boolean hasLabels;
+
+	private PaletteProxy proxy;
 
 	public Palette(String title, Map<String, Object> components,
 			Map<String, Object> values) {
+		if (values != null) {
+			// Observer all existing properties for changes
+			for (Object key : values.keySet())
+				ScriptEngine.observeChanges(values, key, this);	
+		} else {
+			values = new LinkedHashMap<String, Object>();
+		}
+		if (components == null)
+			components = new LinkedHashMap<String, Object>();
+		this.title = title;
+		this.values = values;
+		this.components = components;
+		Component[] paletteComponents =
+			Component.getComponents(components, values);
+		hasLabels = false;
+		for (Component component : paletteComponents) {
+			if (component != null) {
+				component.palette = this;
+				this.components.put(component.getName(), component);
+				String label = component.getLabel();
+				if (label != null && !"".equals(label))
+					hasLabels = true;
+			}
+		}
+		proxy = UiFactory.getInstance().createPalette(this, paletteComponents);
 	}
 
 	public Palette(String title, Map<String, Object> components) {
@@ -65,24 +94,31 @@ public class Palette implements PropertyObserver, Committable {
 		return components;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public boolean hasLabels() {
+		return hasLabels;
+	}
+
 	public void reset() {
 		for (Object component : components.values()) {
-			if (component instanceof PaletteComponent)
-				((PaletteComponent) component).reset();
+			if (component instanceof Component)
+				((Component) component).reset();
 		}
 	}
 
 	/**
 	 * @jshide
 	 */
-	public PaletteComponent getComponent(String name) {
+	public Component getComponent(String name) {
 		// components only contains PaletteComponent after initialization,
 		// but is not declared in this way as the passed components object
 		// is reused and PaletteComponent are put pack into it. This gives
 		// easy access to them on the Scripting side.
 		Object component = components.get(name);
-		return component instanceof PaletteComponent
-				? (PaletteComponent) component : null;
+		return component instanceof Component ? (Component) component : null;
 	}
 
 	private Callable onChange = null;
@@ -96,8 +132,8 @@ public class Palette implements PropertyObserver, Committable {
 		this.onChange = onChange;
 	}
 
-	protected void onChange(PaletteComponent component, String name,
-			Object value, boolean callback) {
+	protected void onChange(Component component, String name, Object value,
+			boolean callback) {
 		if (!values.containsKey(name)) {
 			// Make sure we observe new fields too. This has to do with the
 			// nature of change observing on JavaScript, where observers can
@@ -127,7 +163,7 @@ public class Palette implements PropertyObserver, Committable {
 
 	public void commit() {
 		if (sizeChanged) {
-			// TODO: Update layout
+			proxy.doLayout();
 			sizeChanged = false;
 		}
 	}
@@ -137,8 +173,7 @@ public class Palette implements PropertyObserver, Committable {
 	 */
 	public void onChangeProperty(Map object, Object key, Object value) {
 		if (!isChanging) {
-			// System.out.println("Changed " + key + " = " + value);
-			PaletteComponent component = getComponent(key.toString());
+			Component component = getComponent(key.toString());
 			if (component != null)
 				component.setValue(value);
 		}

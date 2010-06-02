@@ -32,7 +32,7 @@ package com.scriptographer.ui;
 import java.io.File;
 
 import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.adm.AdmUiFactory;
+import com.scriptographer.adm.ui.AdmUiFactory;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ui.Component;
 
@@ -70,4 +70,7 @@ public abstract class UiFactory {
 			File selectedFile);
 
 	public abstract Object[] prompt(String title, Component[] components);
+
+	public abstract PaletteProxy createPalette(Palette palette,
+			Component[] components);
 }

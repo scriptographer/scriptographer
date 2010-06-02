@@ -27,10 +27,15 @@
  * File created on Aug 27, 2007.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.adm.ui;
 
 import java.util.regex.Pattern;
 
+import com.scriptographer.adm.Button;
+import com.scriptographer.adm.ImagePane;
+import com.scriptographer.adm.ModalDialog;
+import com.scriptographer.adm.Size;
+import com.scriptographer.adm.TextPane;
 import com.scriptographer.adm.layout.TableLayout;
 
 /**
@@ -38,25 +43,25 @@ import com.scriptographer.adm.layout.TableLayout;
  * 
  * @jshide
  */
-public class AlertDialog extends ModalDialog {
-	public AlertDialog(String title, String message) {
-		// Set a name for auto destruction of dialogs...
-		setName("Scriptographer Alert");
+public class ConfirmDialog extends ModalDialog {
+	public ConfirmDialog(String title, String message) {
+		setName("Scriptographer Confirm");
 		setTitle(title);
-		
+	
 		double[][] sizes = {
-			{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
+			{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED,
+				TableLayout.PREFERRED },
 			{ TableLayout.FILL, TableLayout.PREFERRED }
 		};
 
 		TableLayout layout = new TableLayout(sizes);
-		setLayout(layout);
-		setMargin(10);
+		this.setLayout(layout);
+		this.setMargin(10);
 
 		ImagePane logo = new ImagePane(this);
-		logo.setImage(getImage("logo.png"));
+		logo.setImage(AdmUiFactory.getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
-		addToContent(logo, "0, 0, 0, 1, L, T");
+		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
 		TextPane text = new TextPane(this);
 		if (!Pattern.compile("[\n\r]").matcher(message).find()
@@ -65,16 +70,24 @@ public class AlertDialog extends ModalDialog {
 		text.setMinimumSize(240, -1);
 		text.setText(message);
 		text.setMarginBottom(8);
-		addToContent(text, "1, 0, 2, 0, L, C");
-
+		this.addToContent(text, "1, 0, 3, 0, L, C");
+		
+		Button cancelButton = new Button(this);
+		cancelButton.setText("Cancel");
+		cancelButton.setMarginRight(10);
+		this.addToContent(cancelButton, "1, 1, R, T");
+		
 		Button okButton = new Button(this);
 		okButton.setText("  OK  ");
-		addToContent(okButton, "1, 1, R, T");
+		this.addToContent(okButton, "3, 1, R, T");
 
-		setDefaultItem(okButton);
+		this.setDefaultItem(okButton);
+		this.setCancelItem(cancelButton);
 	}
 
-	public static void alert(String title, String message) {
-		new AlertDialog(title, message).doModal();
+	public static boolean confirm(String title, String message) {
+		ConfirmDialog dialog = new ConfirmDialog(title, message);
+		return dialog.doModal() == dialog.getDefaultItem();
 	}
+
 }

@@ -34,7 +34,7 @@ import java.util.Map;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.StringIndexList;
-import com.scriptographer.adm.AdmComponent.AWTContainer;
+import com.scriptographer.adm.Component.AWTContainer;
 
 /**
  * Content handles the interface between the UI components and the
@@ -44,17 +44,19 @@ import com.scriptographer.adm.AdmComponent.AWTContainer;
  * TableLayout and FlowLayout.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
-class Content extends AbstractExtendedList<AdmComponent> implements StringIndexList<AdmComponent> {
+public class Content extends AbstractExtendedList<Component> implements StringIndexList<Component> {
 
-	private AdmComponent component;
+	private Component component;
 
-	protected Content(AdmComponent component) {
+	protected Content(Component component) {
 		this.component = component;
 	}
 
 	public Class<?> getComponentType() {
-		return AdmComponent.class;
+		return Component.class;
 	}
 
 	protected AWTContainer getAWTContainer() {
@@ -62,24 +64,24 @@ class Content extends AbstractExtendedList<AdmComponent> implements StringIndexL
 	}
 
 	protected java.awt.Component getAWTComponent(Object element) {
-		return element instanceof AdmComponent
-			? ((AdmComponent) element).getAWTComponent() : null;
+		return element instanceof Component
+			? ((Component) element).getAWTComponent() : null;
 	}
 
-	protected AdmComponent getComponent(java.awt.Component component) {
+	protected Component getComponent(java.awt.Component component) {
 		return ((ComponentWrapper) component).getComponent();
 	}
 
-	protected void addComponent(AdmComponent element) {
+	protected void addComponent(Component element) {
 		component.addComponent(element);
 	}
 
-	protected void removeComponent(AdmComponent element) {
+	protected void removeComponent(Component element) {
 		component.removeComponent(element);
 	}
 	// Keep track of set constraints in an internal HashMap,
 	// so they can be removed again as well.
-	HashMap<String,AdmComponent> constraints = new HashMap<String,AdmComponent>();
+	HashMap<String,Component> constraints = new HashMap<String,Component>();
 
 	protected String capitalize(String constraint) {
 		return constraint.length() > 0
@@ -88,14 +90,14 @@ class Content extends AbstractExtendedList<AdmComponent> implements StringIndexL
 				: constraint;
 	}
 
-	public AdmComponent get(String name) {
+	public Component get(String name) {
 		name = capitalize(name);
 		return constraints.get(name);
 	}
 
-	public AdmComponent remove(String name) {
+	public Component remove(String name) {
 		name = capitalize(name);
-		AdmComponent element = constraints.get(name);
+		Component element = constraints.get(name);
 		if (element != null) {
 			java.awt.Component component = getAWTComponent(element);
 			// Now search for this component:
@@ -105,7 +107,7 @@ class Content extends AbstractExtendedList<AdmComponent> implements StringIndexL
 				if (comp == component) {
 					container.remove(i);
 					constraints.remove(name);
-					removeComponent((AdmComponent) element);
+					removeComponent((Component) element);
 					return element;
 				}
 			}
@@ -117,44 +119,44 @@ class Content extends AbstractExtendedList<AdmComponent> implements StringIndexL
 		return getAWTContainer().getComponentCount();
 	}
 
-	public AdmComponent set(int index, AdmComponent element) {
-		AdmComponent previous = this.remove(index);
+	public Component set(int index, Component element) {
+		Component previous = this.remove(index);
 		this.add(index, element);
 		return previous;
 	}
 
-	public AdmComponent get(int index) {
+	public Component get(int index) {
 		return getComponent(getAWTContainer().getComponent(index));
 	}
 
-	public AdmComponent add(AdmComponent element) {
+	public Component add(Component element) {
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component);
-			addComponent((AdmComponent) element);
+			addComponent((Component) element);
 			return element;
 		}
 		return null;
 	}
 
-	public AdmComponent add(int index, AdmComponent element) {
+	public Component add(int index, Component element) {
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component, index);
-			addComponent((AdmComponent) element);
+			addComponent((Component) element);
 			return element;
 		}
 		return null;
 	}
 
-	public void addAll(Map<String,? extends AdmComponent> elements) {
-		for (Map.Entry<String,? extends AdmComponent> entry : elements.entrySet())
+	public void addAll(Map<String,? extends Component> elements) {
+		for (Map.Entry<String,? extends Component> entry : elements.entrySet())
 			put(entry.getKey().toString(), entry.getValue());
 	}
 
-	public AdmComponent remove(int index) {
+	public Component remove(int index) {
 		AWTContainer container = getAWTContainer();
-		AdmComponent component = getComponent(container.getComponent(index));
+		Component component = getComponent(container.getComponent(index));
 		container.remove(index);
 		removeComponent(component);
 		return component;
@@ -167,13 +169,13 @@ class Content extends AbstractExtendedList<AdmComponent> implements StringIndexL
 		container.removeAll();
 	}
 
-	public AdmComponent put(String name, AdmComponent element) {
+	public Component put(String name, Component element) {
 		name = capitalize(name);
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
-			AdmComponent previous = this.get(name);
+			Component previous = this.get(name);
 			getAWTContainer().add(component, name);
-			addComponent((AdmComponent) element);
+			addComponent((Component) element);
 			constraints.put(name, element);
 			return previous;
 		}

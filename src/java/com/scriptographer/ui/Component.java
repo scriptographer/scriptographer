@@ -42,6 +42,7 @@ import com.scratchdisk.script.ChangeEmitter;
 import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.script.MapArgumentReader;
 import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionUtils;
 import com.scriptographer.ScriptographerEngine;
 
 /**
@@ -54,7 +55,6 @@ public class Component implements ChangeReceiver {
 	private ComponentType type;
 	private Object defaultValue;
 	private Object options[];
-	private Integer selectedIndex;
 	private boolean visible = true;
 	private boolean enabled = true;
 	private boolean fullSize = false;
@@ -72,9 +72,9 @@ public class Component implements ChangeReceiver {
 	private TextUnits units;
 	private Boolean steppers;
 
-	// Used for scaling slider values
-	// TODO: Move factor to ADM
-	private double factor = 1;
+	protected ComponentProxy proxy;
+	protected Palette palette;
+	private boolean initialized;
 
 	/**
 	 * @jshide
@@ -100,17 +100,12 @@ public class Component implements ChangeReceiver {
 					type = ComponentType.STRING;
 			}
 			if (type != null) {
-				// Set scaling factor for Slider to allow fractional digits
-				// TODO: Move factor to ADM
-				if (type == ComponentType.SLIDER)
-					factor = 1000;
 				// Call setMultiline to set default value for length
 				setMultiline(false);
-				// Tell the framework to set the properties from the map
-				// on the object after creating through ArgumentReader
+				// Tell the framework to set the properties from the map on the
+				// object after creating through ArgumentReader
 				reader.setProperties(this);
-				// Turn on steppers for number components with units by
-				// default
+				// Turn on steppers for number components with units by default
 				if (steppers == null && type == ComponentType.NUMBER
 						&& units != null && units != TextUnits.NONE)
 					setSteppers(true);
@@ -118,6 +113,33 @@ public class Component implements ChangeReceiver {
 		}
 		if (type == null)
 			throw new IllegalArgumentException();
+	}
+
+	protected void initialize() {
+		// Now set all the values again, so the item reflects them:
+		if (!visible)
+			proxy.setVisible(false);
+		if (!enabled)
+			proxy.setEnabled(false);
+		// Calculate a default range for sliders of none was defined
+		if (min == null && max == null && type == ComponentType.SLIDER) {
+			min = 0d;
+			max = defaultValue == null ? 1d
+					: ConversionUtils.toDouble(defaultValue);
+		}
+		// Set these values not straight through proxy but through the public
+		// methods here, since they perform type filtering for us.
+		setRange(min, max);
+		setFractionDigits(fractionDigits);
+		// Setting range internally updates increments, so no need to set it
+		// again here.
+		setMaxLength(maxLength);
+		setOptions(options);
+		setValue(defaultValue);
+		setUnits(units);
+		// Now update the size of the item.
+		updateSize();
+		initialized = true;
 	}
 
 	/**
@@ -186,7 +208,13 @@ public class Component implements ChangeReceiver {
 	}
 
 	protected void updateSize() {
-		// TODO: Implement and call palette.onLayoutChanged() if size changes
+		if (proxy != null)
+			proxy.updateSize();
+	}
+
+	protected void onSizeChanged() {
+		if (initialized && palette != null)
+			palette.onSizeChanged();
 	}
 
 	/*
@@ -198,12 +226,12 @@ public class Component implements ChangeReceiver {
 	}
 
 	public Object getValue() {
-		// TODO: Implement
-		return null;
+		return proxy != null ? proxy.getValue() : defaultValue;
 	}
 
 	public void setValue(Object value) {
-		// TODO: Implement
+		if (proxy == null || !proxy.setValue(value))
+			defaultValue = value;
 	}
 
 	public Object getDefaultValue() {
@@ -261,7 +289,12 @@ public class Component implements ChangeReceiver {
 				|| type == ComponentType.SLIDER) {
 			this.min = min;
 			this.max = max;
-			// TODO: Implement
+			if (proxy != null && proxy.setRange(min, max)) {
+				// Setting range sets increment again as well, as it will
+				// be dynamically calculated based on range in case it was
+				// not set on a fixed value.
+				setIncrement(increment);
+			}
 		}
 	}
 
@@ -311,7 +344,10 @@ public class Component implements ChangeReceiver {
 		if (type == ComponentType.NUMBER
 				|| type == ComponentType.SLIDER) {
 			this.increment = increment;
-			// TODO: Implement
+			// If no increment is defined, use a default value, as calculated
+			// by getIncrement.
+			if (proxy != null)
+				proxy.setIncrement(getIncrement());
 		}
 	}
 
@@ -324,7 +360,8 @@ public class Component implements ChangeReceiver {
 			if (fractionDigits == null)
 				fractionDigits = 3;
 			this.fractionDigits = fractionDigits;
-			// TODO: Implement
+			if (proxy != null)
+				proxy.setFractionDigits(fractionDigits);
 		}
 	}
 	
@@ -337,7 +374,8 @@ public class Component implements ChangeReceiver {
 			if (units == null)
 				units = TextUnits.NONE;
 			this.units = units;
-			// TODO: Implement
+			if (proxy != null)
+				proxy.setUnits(units);
 		}
 	}
 
@@ -347,8 +385,11 @@ public class Component implements ChangeReceiver {
 
 	public void setSteppers(Boolean steppers) {
 		// No support to change this at runtime for now
-		if (type == ComponentType.NUMBER)
+		if (type == ComponentType.NUMBER) {
 			this.steppers = steppers;
+			if (proxy != null)
+				proxy.setSteppers(steppers);
+		}
 	}
 
 	public boolean isVisible() {
@@ -357,18 +398,25 @@ public class Component implements ChangeReceiver {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		// TODO: Implement
+		if (proxy != null)
+			proxy.setVisible(visible);
 	}
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return enabled;
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		// TODO: Implement
+		if (proxy != null)
+			proxy.setEnabled(enabled);
 	}
 
+	/**
+	 * OptionList is a normal ExtendedArrayList that implements ChangeEmitter so
+	 * changes on it get propagated to the Palette object which is a
+	 * ChangeReceiver automatically through mechanisms in the scripting engine.
+	 */
 	private static class OptionList extends ExtendedArrayList<Object> implements
 			ChangeEmitter {
 
@@ -391,12 +439,19 @@ public class Component implements ChangeReceiver {
 			// as options is used inside getValue().
 			Object current = getValue();
 			this.options = options;
-			// TODO: Implement
+			if (proxy != null)
+				proxy.setOptions(options, current);
 		}
 	}
 
+	public Object getOption(int index) {
+		if (options != null && index >= 0 && index < options.length)
+			return options[index];
+		return null;
+	}
+
 	public Integer getSelectedIndex() {
-		return selectedIndex;
+		return proxy != null ? proxy.getSelectedIndex() : null;
 	}
 
 	public void setSelectedIndex(Integer index) {
@@ -407,8 +462,8 @@ public class Component implements ChangeReceiver {
 	protected void setSelectedIndex(Integer index, boolean callback) {
 		if (type == ComponentType.LIST && index != null && index >= 0
 				&& (options == null || index < options.length)) {
-			selectedIndex = index;
-			// TODO: Implement
+			if (proxy != null && proxy.setSelectedIndex(index, callback))
+				onChange(callback);
 		}
 	}
 
@@ -475,7 +530,8 @@ public class Component implements ChangeReceiver {
 		if (type == ComponentType.STRING ||
 				type == ComponentType.NUMBER) {
 			this.maxLength = maxLength;
-			// TODO: Implement
+			if (proxy != null)
+				proxy.setMaxLength(maxLength);
 		}
 	}
 
@@ -545,7 +601,14 @@ public class Component implements ChangeReceiver {
 	}
 
 	protected void onChange(boolean callback) {
-		// TODO: Implement
+		Object value = getValue();
+		// First call onChange on Palette, so values get updated
+		if (palette != null)
+			palette.onChange(this, name, value, callback);
+		// And now call onChange on the item. values will contain the same
+		// new value now too.
+		if (callback && onChange != null)
+			ScriptographerEngine.invoke(onChange, this, value);
 	}
 
 	private Callable onClick;
@@ -622,7 +685,10 @@ public class Component implements ChangeReceiver {
 		return promptItems;
 	}
 
-	protected static Component[] getComponents(
+	/**
+	 * @jshide
+	 */
+	public static Component[] getComponents(
 			Map<String, Object> components, Map<String, Object> values) {
 		ArrayList<Component> promptItems =
 				new ArrayList<Component>();

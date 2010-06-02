@@ -39,7 +39,7 @@ import com.scriptographer.ScriptographerException;
 /**
  * @author lehni
  */
-public abstract class Item extends AdmComponent {
+public abstract class Item extends Component {
 	
 	protected ItemType type;
 
@@ -559,6 +559,10 @@ public abstract class Item extends AdmComponent {
 		return margin.subtract(getNativeMargin());
 	}
 
+	public Border getVisualMargin() {
+		return getMargin().add(getNativeMargin());
+	}
+
 	public void setMargin(int top, int right, int bottom, int left) {
 		margin = new Border(top, right, bottom, left).add(getNativeMargin());
 		if (nativeBounds != null)
@@ -733,7 +737,7 @@ public abstract class Item extends AdmComponent {
 	 */
 	class AWTItemComponent extends java.awt.Component implements ComponentWrapper {
 
-		public AdmComponent getComponent() {
+		public Component getComponent() {
 			return Item.this;
 		}
 
@@ -807,7 +811,7 @@ public abstract class Item extends AdmComponent {
 	 */
 	class AWTComponentGroupContainer extends AWTContainer {
 
-		public AdmComponent getComponent() {
+		public Component getComponent() {
 			return Item.this;
 		}
 
