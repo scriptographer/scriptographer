@@ -135,9 +135,4 @@ public class PromptDialog extends ModalDialog {
 		}
 		return values;
 	}
-
-	public static Map<String, Object> prompt(String title,
-			Map<String, Map> items) {
-		return prompt(title, items, null);
-	}
 }

@@ -51,7 +51,7 @@ public class Component implements ChangeReceiver {
 
 	private String label;
 	private String name; // for preferences
-	private PaletteComponentType type;
+	private ComponentType type;
 	private Object defaultValue;
 	private Object options[];
 	private Integer selectedIndex;
@@ -82,27 +82,27 @@ public class Component implements ChangeReceiver {
 	public Component(ArgumentReader reader)
 			throws IllegalArgumentException {
 		if (reader.isMap()) {
-			type = reader.readEnum("type", PaletteComponentType.class);
+			type = reader.readEnum("type", ComponentType.class);
 			defaultValue = reader.readObject("value");
 			if (type == null) {
 				// Determine type form options and value
 				if (reader.has("options"))
-					type = PaletteComponentType.LIST;
+					type = ComponentType.LIST;
 				else if (reader.has("onClick"))
-					type = PaletteComponentType.BUTTON;
+					type = ComponentType.BUTTON;
 				else if (reader.has("onSelect"))
-					type = PaletteComponentType.MENU_ENTRY;
+					type = ComponentType.MENU_ENTRY;
 				else if (defaultValue instanceof Number)
-					type = PaletteComponentType.NUMBER;
+					type = ComponentType.NUMBER;
 				else if (defaultValue instanceof Boolean)
-					type = PaletteComponentType.CHECKBOX;
+					type = ComponentType.CHECKBOX;
 				else if (defaultValue instanceof String) 
-					type = PaletteComponentType.STRING;
+					type = ComponentType.STRING;
 			}
 			if (type != null) {
 				// Set scaling factor for Slider to allow fractional digits
 				// TODO: Move factor to ADM
-				if (type == PaletteComponentType.SLIDER)
+				if (type == ComponentType.SLIDER)
 					factor = 1000;
 				// Call setMultiline to set default value for length
 				setMultiline(false);
@@ -111,7 +111,7 @@ public class Component implements ChangeReceiver {
 				reader.setProperties(this);
 				// Turn on steppers for number components with units by
 				// default
-				if (steppers == null && type == PaletteComponentType.NUMBER
+				if (steppers == null && type == ComponentType.NUMBER
 						&& units != null && units != TextUnits.NONE)
 					setSteppers(true);
 			}
@@ -123,7 +123,7 @@ public class Component implements ChangeReceiver {
 	/**
 	 * @jshide
 	 */
-	public Component(PaletteComponentType type, String label,
+	public Component(ComponentType type, String label,
 			Object value) {
 		this.label = label;
 		this.type = type;
@@ -136,7 +136,7 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Component(String description, String value) {
-		this(PaletteComponentType.STRING, description, value);
+		this(ComponentType.STRING, description, value);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Component(String description, double value) {
-		this(PaletteComponentType.NUMBER, description, value);
+		this(ComponentType.NUMBER, description, value);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Component(String description, boolean value) {
-		this(PaletteComponentType.CHECKBOX, description, value);
+		this(ComponentType.CHECKBOX, description, value);
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class Component implements ChangeReceiver {
 	 */
 	public Component(String description, Number value, double min,
 			double max, double step) {
-		this(PaletteComponentType.SLIDER, description, value);
+		this(ComponentType.SLIDER, description, value);
 		this.setRange(min, max);
 		this.increment = step;
 	}
@@ -175,7 +175,7 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Component(String description, Object value, Object[] options) {
-		this(PaletteComponentType.LIST, description, value);
+		this(ComponentType.LIST, description, value);
 		this.options = options;
 	}
 	
@@ -193,7 +193,7 @@ public class Component implements ChangeReceiver {
 	 * Beans
 	 */
 
-	public PaletteComponentType getType() {
+	public ComponentType getType() {
 		return type;
 	}
 
@@ -257,8 +257,8 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public void setRange(Double min, Double max) {
-		if (type == PaletteComponentType.NUMBER
-				|| type == PaletteComponentType.SLIDER) {
+		if (type == ComponentType.NUMBER
+				|| type == ComponentType.SLIDER) {
 			this.min = min;
 			this.max = max;
 			// TODO: Implement
@@ -286,8 +286,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	public Double getIncrement() {
-		if (type == PaletteComponentType.NUMBER
-				|| type == PaletteComponentType.SLIDER) {
+		if (type == ComponentType.NUMBER
+				|| type == ComponentType.SLIDER) {
 			// If no increment is defined, calculate a default value, based on
 			// the defined range.
 			if (increment == null) {
@@ -308,8 +308,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setIncrement(Double increment) {
-		if (type == PaletteComponentType.NUMBER
-				|| type == PaletteComponentType.SLIDER) {
+		if (type == ComponentType.NUMBER
+				|| type == ComponentType.SLIDER) {
 			this.increment = increment;
 			// TODO: Implement
 		}
@@ -320,7 +320,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setFractionDigits(Integer fractionDigits) {
-		if (type == PaletteComponentType.NUMBER) {
+		if (type == ComponentType.NUMBER) {
 			if (fractionDigits == null)
 				fractionDigits = 3;
 			this.fractionDigits = fractionDigits;
@@ -333,7 +333,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setUnits(TextUnits units) {
-		if (type == PaletteComponentType.NUMBER) {
+		if (type == ComponentType.NUMBER) {
 			if (units == null)
 				units = TextUnits.NONE;
 			this.units = units;
@@ -347,7 +347,7 @@ public class Component implements ChangeReceiver {
 
 	public void setSteppers(Boolean steppers) {
 		// No support to change this at runtime for now
-		if (type == PaletteComponentType.NUMBER)
+		if (type == ComponentType.NUMBER)
 			this.steppers = steppers;
 	}
 
@@ -386,7 +386,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setOptions(Object[] options) {
-		if (type == PaletteComponentType.LIST) {
+		if (type == ComponentType.LIST) {
 			// Retrieve current value before setting new options,
 			// as options is used inside getValue().
 			Object current = getValue();
@@ -405,7 +405,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	protected void setSelectedIndex(Integer index, boolean callback) {
-		if (type == PaletteComponentType.LIST && index != null && index >= 0
+		if (type == ComponentType.LIST && index != null && index >= 0
 				&& (options == null || index < options.length)) {
 			selectedIndex = index;
 			// TODO: Implement
@@ -454,8 +454,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setLength(Integer length) {
-		if (type == PaletteComponentType.STRING ||
-				type == PaletteComponentType.NUMBER) {
+		if (type == ComponentType.STRING ||
+				type == ComponentType.NUMBER) {
 			this.multiline = false;
 			this.length = length;
 			// Clear width and columns when setting length and vice versa.
@@ -472,8 +472,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setMaxLength(Integer maxLength) {
-		if (type == PaletteComponentType.STRING ||
-				type == PaletteComponentType.NUMBER) {
+		if (type == ComponentType.STRING ||
+				type == ComponentType.NUMBER) {
 			this.maxLength = maxLength;
 			// TODO: Implement
 		}
@@ -484,9 +484,9 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setMultiline(Boolean multiline) {
-		if (type == PaletteComponentType.STRING ||
-				type == PaletteComponentType.NUMBER) {
-			multiline = multiline && type == PaletteComponentType.STRING;
+		if (type == ComponentType.STRING ||
+				type == ComponentType.NUMBER) {
+			multiline = multiline && type == ComponentType.STRING;
 			// Set default values for length / columns, rows
 			if (multiline) {
 				if (rows == null)
@@ -496,7 +496,7 @@ public class Component implements ChangeReceiver {
 				length = null;
 			} else {
 				if (length == null)
-					length = type == PaletteComponentType.STRING ? 16 : 8;
+					length = type == ComponentType.STRING ? 16 : 8;
 				columns = null;
 				rows = null;
 			}
@@ -509,7 +509,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setColumns(Integer columns) {
-		if (type == PaletteComponentType.STRING) {
+		if (type == ComponentType.STRING) {
 			this.multiline = true;
 			this.columns = columns;
 			// Clear width and length when setting columns and vice versa.
@@ -525,7 +525,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	public void setRows(Integer rows) {
-		if (type == PaletteComponentType.STRING) {
+		if (type == ComponentType.STRING) {
 			this.multiline = true;
 			this.rows = rows;
 			// Clear height when setting rows and vice versa.

@@ -1214,26 +1214,13 @@ public abstract class Dialog extends Component {
 		AlertDialog.alert(title, message);
 	}
 
-	public static void alert(String message) {
-		alert("Scriptographer", message);
-	}
-
 	public static boolean confirm(String title, String message) {
 		return ConfirmDialog.confirm(title, message);
 	}
 
-	public static boolean confirm(String message) {
-		return confirm("Scriptographer", message);
-	}
-
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map> components, Map<String, Object> values) {
+			Map<String, Object> components, Map<String, Object> values) {
 		return PromptDialog.prompt(title, components, values);
-	}
-
-	public static Map<String, Object> prompt(String title,
-			Map<String, Map> components) {
-		return prompt(title, components, null);
 	}
 
 	/**
@@ -1241,13 +1228,6 @@ public abstract class Dialog extends Component {
 	 */
 	public static Object[] prompt(String title, PaletteComponent[] components) {
 		return PromptDialog.prompt(title, components);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public static Object[] prompt(String title, Map<String, Object>[] components) {
-		return prompt(title, PaletteComponent.getComponents(components));
 	}
 
 	/*
@@ -1291,50 +1271,14 @@ public abstract class Dialog extends Component {
 		return fileDialog(message, filters, selectedFile, true);
 	}
 
-	public static File fileOpen(String message, String[] filters) {
-		return fileOpen(message, filters, null);
-	}
-
-	public static File fileOpen(String message) {
-		return fileOpen(message, null, null);
-	}
-
-	public static File fileOpen() {
-		return fileOpen(null, null, null);
-	}
-
 	public static File fileSave(String message, String[] filters,
 			File selectedFile) {
 		return fileDialog(message, filters, selectedFile, false);
 	}
 
-	public static File fileSave(String message, String[] filters) {
-		return fileSave(message, filters, null);
-	}
-
-	public static File fileSave(String message) {
-		return fileSave(message, null, null);
-	}
-
-	public static File fileSave() {
-		return fileSave(null, null, null);
-	}
-
 	public static native File chooseDirectory(String message, File selectedDir);
 
-	public static File chooseDirectory(String message) {
-		return chooseDirectory(message, null);
-	}
-
-	public static File chooseDirectory() {
-		return chooseDirectory(null, null);
-	}
-
 	public static native Color chooseColor(Color color);
-
-	public static Color chooseColor() {
-		return chooseColor(null);
-	}
 
 	/**
 	 * @jshide

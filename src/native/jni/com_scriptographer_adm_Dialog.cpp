@@ -39,6 +39,7 @@
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
+
 	// Hide the dialog by default:
 	sADMDialog->Show(dialog, false);
 	

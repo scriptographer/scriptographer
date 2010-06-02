@@ -33,7 +33,6 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.scriptographer.adm.PaletteComponent;
 import com.scriptographer.ai.Color;
 
 /**
@@ -42,7 +41,7 @@ import com.scriptographer.ai.Color;
  */
 public class Dialog {
 	public static void alert(String title, String message) {
-		UIFactory.getInstance().alert(title, message);
+		UiFactory.getInstance().alert(title, message);
 	}
 
 	public static void alert(String message) {
@@ -50,7 +49,7 @@ public class Dialog {
 	}
 
 	public static boolean confirm(String title, String message) {
-		return UIFactory.getInstance().confirm(title, message);
+		return UiFactory.getInstance().confirm(title, message);
 	}
 
 	public static boolean confirm(String message) {
@@ -58,7 +57,7 @@ public class Dialog {
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map> components, Map<String, Object> values) {
+			Map<String, Object> components, Map<String, Object> values) {
 		Component[] comps =
 				Component.getComponents(components, values);
 		Object[] results = prompt(title, comps);
@@ -72,7 +71,7 @@ public class Dialog {
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map> items) {
+			Map<String, Object> items) {
 		return prompt(title, items, null);
 	}
 
@@ -80,13 +79,12 @@ public class Dialog {
 	 * @jshide
 	 */
 	public static Object[] prompt(String title, Component[] components) {
-		return UIFactory.getInstance().prompt(title, components);
+		return UiFactory.getInstance().prompt(title, components);
 	}
 
 	public static File fileOpen(String message, String[] filters,
 			File selectedFile) {
-		// TODO: Implement through a factory
-		return null;
+		return UiFactory.getInstance().fileOpen(message, filters, selectedFile);
 	}
 
 	public static File fileOpen(String message, String[] filters) {
@@ -103,8 +101,7 @@ public class Dialog {
 
 	public static File fileSave(String message, String[] filters,
 			File selectedFile) {
-		// TODO: Implement through a factory
-		return null;
+		return UiFactory.getInstance().fileSave(message, filters, selectedFile);
 	}
 
 	public static File fileSave(String message, String[] filters) {
@@ -119,7 +116,9 @@ public class Dialog {
 		return fileSave(null, null, null);
 	}
 
-	public static native File chooseDirectory(String message, File selectedDir);
+	public static File chooseDirectory(String message, File selectedDir) {
+		return UiFactory.getInstance().chooseDirectory(message, selectedDir);
+	}
 
 	public static File chooseDirectory(String message) {
 		return chooseDirectory(message, null);
@@ -129,7 +128,9 @@ public class Dialog {
 		return chooseDirectory(null, null);
 	}
 
-	public static native Color chooseColor(Color color);
+	public static Color chooseColor(Color color) {
+		return UiFactory.getInstance().chooseColor(color);
+	}
 
 	public static Color chooseColor() {
 		return chooseColor(null);

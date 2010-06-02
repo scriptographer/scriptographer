@@ -24,50 +24,50 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 15, 2008.
+ * File created on Jun 2, 2010.
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.adm;
 
-import java.util.HashMap;
+import java.io.File;
+
+import com.scriptographer.ai.Color;
+import com.scriptographer.ui.Component;
+import com.scriptographer.ui.UiFactory;
 
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
-public enum PaletteComponentType {
-	STRING("string"),
-	NUMBER("number"),
-	TEXT("text"),
-	RULER("ruler"),
-	CHECKBOX("checkbox"),
-	LIST("list"),
-	BUTTON("button"),
-	SLIDER("slider"),
-	COLOR("color"),
-	FONT("font"),
-	MENU_ENTRY("menu-entry"),
-	MENU_SEPARATOR("menu-separator");
+public class AdmUiFactory extends UiFactory {
 
-	protected String name;
-
-	private PaletteComponentType(String name) {
-		this.name = name;
+	public void alert(String title, String message) {
+		Dialog.alert(title, message);
 	}
 
-	/**
-	 * A hash-map for case insensitive retrieval of type objects based on their
-	 * name.
-	 */
-	private static HashMap<String, PaletteComponentType> types =
-		new HashMap<String, PaletteComponentType>();
-
-	static {
-		for (PaletteComponentType type : values())
-			types.put(type.name.toLowerCase(), type);
+	public Color chooseColor(Color color) {
+		return Dialog.chooseColor(color);
 	}
-	
-	public static PaletteComponentType get(String name) {
-		return types.get(name.toLowerCase());
+
+	public File chooseDirectory(String message, File selectedDir) {
+		return Dialog.chooseDirectory(message, selectedDir);
+	}
+
+	public boolean confirm(String title, String message) {
+		return Dialog.confirm(title, message);
+	}
+
+	public File fileOpen(String message, String[] filters, File selectedFile) {
+		return Dialog.fileOpen(message, filters, selectedFile);
+	}
+
+	public File fileSave(String message, String[] filters, File selectedFile) {
+		return Dialog.fileSave(message, filters, selectedFile);
+	}
+
+	public Object[] prompt(String title, Component[] components) {
+		return null;
+		// return Dialog.prompt(title, components);
 	}
 }

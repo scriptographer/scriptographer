@@ -24,23 +24,50 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Jun 1, 2010.
+ * File created on Apr 15, 2008.
  */
 
 package com.scriptographer.ui;
 
+import java.util.HashMap;
 
 /**
  * @author lehni
- * 
- * @jshide
+ *
  */
-public abstract class UIFactory {
-	static UIFactory getInstance() {
-		return null;
+public enum ComponentType {
+	STRING("string"),
+	NUMBER("number"),
+	TEXT("text"),
+	RULER("ruler"),
+	CHECKBOX("checkbox"),
+	LIST("list"),
+	BUTTON("button"),
+	SLIDER("slider"),
+	COLOR("color"),
+	FONT("font"),
+	MENU_ENTRY("menu-entry"),
+	MENU_SEPARATOR("menu-separator");
+
+	protected String name;
+
+	private ComponentType(String name) {
+		this.name = name;
 	}
 
-	public abstract void alert(String title, String message);
-	public abstract boolean confirm(String title, String message);
-	public abstract Object[] prompt(String title, Component[] components);
+	/**
+	 * A hash-map for case insensitive retrieval of type objects based on their
+	 * name.
+	 */
+	private static HashMap<String, ComponentType> types =
+		new HashMap<String, ComponentType>();
+
+	static {
+		for (ComponentType type : values())
+			types.put(type.name.toLowerCase(), type);
+	}
+	
+	public static ComponentType get(String name) {
+		return types.get(name.toLowerCase());
+	}
 }
