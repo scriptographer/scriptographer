@@ -272,13 +272,10 @@ public class Tool extends ToolEventHandler {
 			float y, int pressure, int modifiers) {
 		Tool tool = getTool(handle);
 		ToolEventType type = ToolEventType.get(selector); 
-		if (tool != null && type != null) {
+		if (tool != null && type != null)
 			tool.onHandleEvent(type, new Point(x, y), pressure, modifiers);
-			// Tell the native side to update the cursor
-			if (type == ToolEventType.MOUSE_MOVE)
-				return tool.cursor;
-		}
-		return 0;
+		// Tell the native side to update the cursor
+		return tool.cursor;
 	}
 
 	private static Tool getTool(int handle) {
