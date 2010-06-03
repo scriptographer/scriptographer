@@ -102,7 +102,8 @@ function onMouseDown(event) {
 	var create = true;
 	if (event.modifiers.shift && vectorItem) {
 		vectorStart = end;
-	} else if (event.modifiers.option || end && end.getDistance(event.point) < 10) {
+	} else if (vector && (event.modifiers.option
+			|| end && end.getDistance(event.point) < 10)) {
 		create = false;
 	} else {
 		vectorStart = event.point;
