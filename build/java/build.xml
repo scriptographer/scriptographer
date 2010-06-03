@@ -86,7 +86,7 @@
 			</fileset>
 		</path>
 
-		<property name="scripts.dir" value="${project.dir}/scripts"/>
+		<property name="scripts.dir" value="${src.js}/scripts"/>
 	</target>
 
 
@@ -246,18 +246,12 @@ Scriptographer build instructions
 			<fileset dir="${docs.dir.js}"/>
 		</copy>
 
-		<!-- Scripts -->
-		<copy todir="${target.packages}/Scriptographer/Scripts">
+		<!-- Examples -->
+		<copy todir="${target.packages}/Scriptographer/Examples">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
-				<!-- Exclude My Scripts folder -->
-				<exclude name="**/My Scripts/**"/>
-				<!-- Exclude Tutorials folder for now -->
-				<exclude name="**/Tutorials/**"/>
 			</fileset>
 		</copy>
-		<!-- Make an empty My Scripts folder -->
-		<mkdir dir="${target.packages}/Scriptographer/Scripts/My Scripts"/>
 
 		<!-- License -->
 		<copy todir="${target.packages}/Scriptographer/" file="${docs.dir}/License.txt" />
