@@ -1175,7 +1175,7 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 				throw new StringException(
 						"Pattern contains old-style transform definition.\n"
 						"Please store file and send to sg@scriptographer.com"
-						"along with these values:\n\%f %f %f %f %f %i %f %f %f",
+						"along with these values:\n%f %f %f %f %f %i %f %f %f",
 						p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v,
 						p->rotate, p->reflect, p->reflectAngle, p->shearAngle,
 						p->shearAxis);
