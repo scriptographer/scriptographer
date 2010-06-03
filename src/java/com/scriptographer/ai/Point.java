@@ -797,6 +797,38 @@ public class Point implements ChangeEmitter {
 		return matrix.transform(this);
 	}
 
+	public Point round() {
+		return new Point(Math.round(x), Math.round(y));
+	}
+
+	public Point ceil() {
+		return new Point(Math.ceil(x), Math.ceil(y));
+	}
+
+	public Point floor() {
+		return new Point(Math.floor(x), Math.floor(y));
+	}
+
+	public Point abs() {
+		return new Point(Math.abs(x), Math.abs(y));
+	}
+
+	public static Point min(Point point1, Point point2) {
+		return new Point(
+				Math.min(point1.x, point2.x),
+				Math.min(point1.y, point2.y));
+	}
+
+	public static Point max(Point point1, Point point2) {
+		return new Point(
+				Math.max(point1.x, point2.x),
+				Math.max(point1.y, point2.y));
+	}
+
+	public static Point random() {
+		return new Point(Math.random(), Math.random());
+	}
+
 	protected Point2D toPoint2D() {
 		return new Point2D.Double(x, y);
 	}

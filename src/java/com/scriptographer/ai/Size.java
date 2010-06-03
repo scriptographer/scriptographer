@@ -295,6 +295,38 @@ public class Size implements ChangeEmitter {
 		}
 	}
 
+	public Size round() {
+		return new Size(Math.round(width), Math.round(height));
+	}
+
+	public Size ceil() {
+		return new Size(Math.ceil(width), Math.ceil(height));
+	}
+
+	public Size floor() {
+		return new Size(Math.floor(width), Math.floor(height));
+	}
+
+	public Size abs() {
+		return new Size(Math.abs(width), Math.abs(height));
+	}
+
+	public static Size min(Size size1, Size size2) {
+		return new Size(
+				Math.min(size1.width, size2.width),
+				Math.min(size1.height, size2.height));
+	}
+
+	public static Size max(Size size1, Size size2) {
+		return new Size(
+				Math.max(size1.width, size2.width),
+				Math.max(size1.height, size2.height));
+	}
+
+	public static Size random() {
+		return new Size(Math.random(), Math.random());
+	}
+
 	public String toString() {
 	   	return "{ width: " + width + ", height: " + height + " }";
 	}
