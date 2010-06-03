@@ -1,0 +1,6 @@
+Scriptographer.ncb
+Scriptographer.sln
+Scriptographer.suo
+Scriptographer.vcproj.*
+CS* Debug/
+CS* Release/
