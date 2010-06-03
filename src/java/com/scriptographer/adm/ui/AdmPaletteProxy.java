@@ -95,19 +95,22 @@ public class AdmPaletteProxy extends PaletteProxy {
 			dialog.setMargin(2, -1, 2, -1);
 	}
 
-	public void doLayout() {
-		// Make sure size changes are taken into account and palette is
-		// resized accordingly.
-		Size size = dialog.getPreferredSize();
-		if (!dialog.getSize().equals(size)) {
-			// setSize internally causes doLayout to be called, no need
-			// to call here too.
-			dialog.setSize(dialog.getPreferredSize());
-		} else {
-			// Just call doLayout to realign things, as the total dialog
-			// size has not changed.
-			dialog.doLayout();
+	public void update(boolean sizeChanged) {
+		if (sizeChanged) {
+			// Make sure size changes are taken into account and palette is
+			// resized accordingly.
+			Size size = dialog.getPreferredSize();
+			if (!dialog.getSize().equals(size)) {
+				// setSize internally causes doLayout to be called, no need
+				// to call here too.
+				dialog.setSize(dialog.getPreferredSize());
+			} else {
+				// Just call doLayout to realign things, as the total dialog
+				// size has not changed.
+				dialog.doLayout();
+			}
 		}
+		dialog.update();
 	}
 
 	protected static TableLayout createLayout(Dialog dialog,

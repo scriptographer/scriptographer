@@ -162,10 +162,8 @@ public class Palette implements PropertyObserver, Committable {
 	}
 
 	public void commit() {
-		if (sizeChanged) {
-			proxy.doLayout();
-			sizeChanged = false;
-		}
+		proxy.update(sizeChanged);
+		sizeChanged = false;
 	}
 
 	/**

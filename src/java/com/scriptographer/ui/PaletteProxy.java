@@ -41,5 +41,5 @@ public abstract class PaletteProxy {
 		this.palette = palette;
 	}
 
-	public abstract void doLayout();
+	public abstract void update(boolean sizeChanged);
 }
