@@ -183,7 +183,7 @@ Scriptographer build instructions
 		<antcall target="resources" />
 	</target>
 	
-	<target name="resources" depends="init">
+	<target name="resources" depends="init" description="Generate native resrouce files">
 		<property name="resources.mac" value="${build.mac}/resources" />
 		<property name="resources.win" value="${build.win}/resources" />
 		<property name="resources.meta" value="${src.java}/META-INF/" />
