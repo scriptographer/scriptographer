@@ -20,8 +20,8 @@ new function() {
 
 	function installHandler(name) {
 		var handler = 'onMouse' + name.capitalize();
-		// Inject a onMouse handler that performs all the behind the scene
-		// magic and calls the script's handler at the end, if defined.
+		// Inject a onMouse handler that performs all the behind the scene magic
+		// and calls the script's handler at the end, if defined.
 		var func = tool[handler];
 		if (!func || !func._installed) {
 			tool.inject(new Hash(handler, function(event) {

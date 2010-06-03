@@ -19,9 +19,11 @@ Size.inject({
 Rectangle.inject({
 	toSource: function(simple) {
 		if (simple)
-			return '{ x: ' + this.x + ', y: ' + this.y + ', width: ' + this.width + ', height: ' + this.height + ' }';
+			return '{ x: ' + this.x + ', y: ' + this.y + ', width: '
+					+ this.width + ', height: ' + this.height + ' }';
 		else
-			return 'new Rectangle(' + this.x + ', ' + this.y + ', ' + this.width + ', ' + this.height + ')';
+			return 'new Rectangle(' + this.x + ', ' + this.y + ', '
+					+ this.width + ', ' + this.height + ')';
 	}
 });
 
@@ -79,7 +81,8 @@ Color.inject({
 			var comps = this.components;
 			if (!this.hasAlpha())
 				comps = comps.slice(0, comps.length - 1);
-			return 'new ' + this['class'].simpleName + '(' + comps.join(', ') + ')';
+			return 'new ' + this['class'].simpleName + '('
+					+ comps.join(', ') + ')';
 		}
 	}
 })

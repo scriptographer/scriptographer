@@ -88,8 +88,8 @@ public class Tool extends ToolEventHandler {
 	/**
 	 * @jshide
 	 */
-	public Tool(String name, Image image, EnumSet<ToolOption> options, Tool groupTool,
-			Tool toolsetTool) {
+	public Tool(String name, Image image, EnumSet<ToolOption> options,
+			Tool groupTool, Tool toolsetTool) {
 		this.name = name;
 		defaultImage = image;
 
@@ -122,7 +122,8 @@ public class Tool extends ToolEventHandler {
 		tools.put(handle, this);
 	}
 
-	public Tool(String name, Image image, EnumSet<ToolOption> options, Tool groupTool) {
+	public Tool(String name, Image image, EnumSet<ToolOption> options,
+			Tool groupTool) {
 		this(name, image, options, groupTool, null);
 	}
 
@@ -159,8 +160,8 @@ public class Tool extends ToolEventHandler {
 	}
 
 	/**
-	 * Checks whether the input device of the user has a pressure feature (i.e. a
-	 * drawing tablet)
+	 * Checks whether the input device of the user has a pressure feature (i.e.
+	 * a drawing tablet)
 	 */
 	public native boolean hasPressure();
 

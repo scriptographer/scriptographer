@@ -51,8 +51,10 @@ Process = Base.extend(new function() {
 		start: function() {
 			this.process = this._builder.start();
 			this.output = new java.io.PrintStream(this.process.getOutputStream());
-			this.input = new java.io.BufferedReader(new java.io.InputStreamReader(this.process.getInputStream()));
-			this.error = new java.io.BufferedReader(new java.io.InputStreamReader(this.process.getErrorStream()));
+			this.input = new java.io.BufferedReader(
+					new java.io.InputStreamReader(this.process.getInputStream()));
+			this.error = new java.io.BufferedReader(
+					new java.io.InputStreamReader(this.process.getErrorStream()));
 			updateTimer.call(this);
 		},
 
