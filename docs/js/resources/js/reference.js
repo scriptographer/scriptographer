@@ -10,7 +10,7 @@ var lighterSettings = {
 $document.addEvent('domready', function() {
 	var h = unescape(document.location.hash);
 	if (h) scrollToElement(h.substring(1));
-	var code = $$('pre');
+	var code = $$('.text pre, .reference-class pre');
 	if (code.length) {
 		code.light(lighterSettings).each(function(obj, i) {
 			var start =code[i].getProperty('start');
