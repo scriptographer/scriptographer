@@ -102,35 +102,35 @@ public class Frame extends TextItem implements ComponentGroup {
 		setPadding(ver, hor, ver, hor);
 	}
 
-	public int getLeftPadding() {
+	public int getPaddingLeft() {
 		return padding.left;
 	}
 
-	public void setLeftPadding(int left) {
+	public void setPaddingLeft(int left) {
 		padding.left = left;
 	}
 
-	public int getTopPadding() {
+	public int getPaddingTop() {
 		return padding.top;
 	}
 
-	public void setTopPadding(int top) {
+	public void setPaddingTop(int top) {
 		padding.top = top;
 	}
 
-	public int getRightPadding() {
+	public int getPaddingRight() {
 		return padding.right;
 	}
 
-	public void setRightPadding(int right) {
+	public void setPaddingRight(int right) {
 		padding.right = right;
 	}
 
-	public int getBottomPadding() {
+	public int getPaddingBottom() {
 		return padding.bottom;
 	}
 
-	public void setBottomPadding(int bottom) {
+	public void setPaddingBottom(int bottom) {
 		padding.bottom = bottom;
 	}
 }
