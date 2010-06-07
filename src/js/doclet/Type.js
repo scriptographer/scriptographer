@@ -199,23 +199,27 @@ Type = Base.extend(new function() {
 		isCompatible: function(type) {
 			var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
 			var type1, type2;
-			return this.typeName() == type.typeName() && this.dimension() == type.dimension()
-				|| cd2 && this.subclassOf(cd2) || cd1 && type.subclassOf(cd1)
-				|| this.isNumber() && type.isNumber()
-				|| this.isBoolean() && type.isBoolean()
-				|| this.isMap() && type.isMap()
-				|| this.isPoint() && type.isPoint()
-				|| this.isRectangle() && type.isRectangle()
-				|| this.isFile() && type.isFile()
+			return this.dimension() == type.dimension()
+				&& (this.typeName() == type.typeName()
+					|| cd2 && this.subclassOf(cd2)
+					|| cd1 && type.subclassOf(cd1)
+					|| this.isNumber() && type.isNumber()
+					|| this.isBoolean() && type.isBoolean()
+					|| this.isMap() && type.isMap()
+					|| this.isPoint() && type.isPoint()
+					|| this.isRectangle() && type.isRectangle()
+					|| this.isFile() && type.isFile())
 				// Make sure arrays have compatible types
-				|| this.isArray() && type.isArray() && (
-					cd1 && cd2 && new Type(cd1).isCompatible(new Type(cd2))
+				|| this.isArray() && type.isArray() 
+				&& (cd1 && cd2 && new Type(cd1).isCompatible(new Type(cd2))
 					|| this.typeName() == type.typeName()
-					|| Type.isNumber(this.typeName()) && Type.isNumber(type.typeName())
-				)
-				// Treat arrays and lists the same, as long as the component type is compatible
+					|| Type.isNumber(this.typeName()) 
+					&& Type.isNumber(type.typeName()))
+				// Treat arrays and lists the same, as long as the component
+				// type is compatible
 				|| this.actsAsArray() && type.actsAsArray()
-					&& ((type1 = this.getComponentType()) && (type2 = type.getComponentType())
+					&& ((type1 = this.getComponentType())
+						&& (type2 = type.getComponentType())
 						&& type1.isCompatible(type2));
 		},
 
