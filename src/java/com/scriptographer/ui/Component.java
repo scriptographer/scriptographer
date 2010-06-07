@@ -231,6 +231,13 @@ public class Component implements ChangeReceiver {
 		return type;
 	}
 
+	public void setType(ComponentType type) {
+		if (proxy != null)
+			throw new UnsupportedOperationException(
+					"The component type cannot be changed once it is created");
+		this.type = type;
+	}
+
 	/**
 	 * The value of the component.
 	 */
@@ -251,7 +258,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	/**
-	 * The name of the component as it is referenced in {@link Palette#getComponents}.
+	 * The name of the component as it is referenced in
+	 * {@link Palette#getComponents}.
 	 */
 	public String getName() {
 		return name;
@@ -262,8 +270,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	/**
-	 * Text label that appears on the left hand side of the component
-	 * in the palette.
+	 * Text label that appears on the left hand side of the component in the
+	 * palette.
 	 */
 	public String getLabel() {
 		return label;
@@ -290,6 +298,7 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * Specifies whether the component is visible.
+	 * 
 	 * @return {@true if the component is visible}
 	 */
 	public boolean isVisible() {
@@ -305,6 +314,7 @@ public class Component implements ChangeReceiver {
 	/**
 	 * Specifies whether the component is enabled. When set to {@code false},
 	 * the component is grayed out and does not allow user interaction.
+	 * 
 	 * @return {@true if the component is enabled}
 	 */
 	public boolean isEnabled() {
@@ -320,9 +330,9 @@ public class Component implements ChangeReceiver {
 	/**
 	 * {@grouptitle Size}
 	 * 
-	 * When set to {@code true}, the component is stretched over the width
-	 * of the palette. When no {@link #getLabel()} is set, it also eliminates
-	 * the margin on the left hand side.
+	 * When set to {@code true}, the component is stretched over the width of
+	 * the palette. When no {@link #getLabel()} is set, it also eliminates the
+	 * margin on the left hand side.
 	 */
 	public boolean getFullSize() {
 		return fullSize;
@@ -369,9 +379,10 @@ public class Component implements ChangeReceiver {
 	
 	/**
 	 * {@grouptitle Number / Slider Properties}
-	 * The range for the numeric value as an array in the form: [min, max].
-	 * The first element in the array defines the allowed minimum amount,
-	 * the second the maximum amount, both are included in the range.
+	 * 
+	 * The range for the numeric value as an array in the form: [min, max]. The
+	 * first element in the array defines the allowed minimum amount, the second
+	 * the maximum amount, both are included in the range.
 	 */
 	public double[] getRange() {
 		return hasRange() ? new double[] {
@@ -506,8 +517,8 @@ public class Component implements ChangeReceiver {
 	}
 
 	/**
-	 * Activates little stepping arrows on the side of the input field
-	 * when set to true.
+	 * Activates little stepping arrows on the side of the input field when set
+	 * to true.
 	 */
 	public Boolean getSteppers() {
 		return steppers;
@@ -590,6 +601,7 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * {@grouptitle Text Properties}
+	 * 
 	 * The width of the text field in average amount of characters.
 	 */
 	public Integer getLength() {
