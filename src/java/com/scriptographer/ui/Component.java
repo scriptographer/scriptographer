@@ -203,6 +203,9 @@ public class Component implements ChangeReceiver {
 	
 	// TODO: make constructors for other types
 
+	/**
+	 * Resets the value of the component to {@link #defaultValue}.
+	 */
 	public void reset() {
 		setValue(defaultValue);
 	}
@@ -221,10 +224,16 @@ public class Component implements ChangeReceiver {
 	 * Beans
 	 */
 
+	/**
+	 * The component type.
+	 */
 	public ComponentType getType() {
 		return type;
 	}
 
+	/**
+	 * The value of the component.
+	 */
 	public Object getValue() {
 		return proxy != null ? proxy.getValue() : defaultValue;
 	}
@@ -234,10 +243,16 @@ public class Component implements ChangeReceiver {
 			defaultValue = value;
 	}
 
+	/**
+	 * The first {@link #getValue()} that was set.
+	 */
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
 
+	/**
+	 * The name of the component as it is referenced in {@link Palette#getComponents}.
+	 */
 	public String getName() {
 		return name;
 	}
@@ -246,6 +261,10 @@ public class Component implements ChangeReceiver {
 		this.name = name;
 	}
 
+	/**
+	 * Text label that appears on the left hand side of the component
+	 * in the palette.
+	 */
 	public String getLabel() {
 		return label;
 	}
@@ -268,6 +287,92 @@ public class Component implements ChangeReceiver {
 		setLabel(description);
 	}
 
+
+	/**
+	 * Specifies whether the component is visible.
+	 * @return {@true if the component is visible}
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+		if (proxy != null)
+			proxy.setVisible(visible);
+	}
+
+	/**
+	 * Specifies whether the component is enabled. When set to {@code false},
+	 * the component is grayed out and does not allow user interaction.
+	 * @return {@true if the component is enabled}
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		if (proxy != null)
+			proxy.setEnabled(enabled);
+	}
+
+	/**
+	 * {@grouptitle Size}
+	 * 
+	 * When set to {@code true}, the component is stretched over the width
+	 * of the palette. When no {@link #getLabel()} is set, it also eliminates
+	 * the margin on the left hand side.
+	 */
+	public boolean getFullSize() {
+		return fullSize;
+	}
+
+	public void setFullSize(boolean fit) {
+		this.fullSize = fit;
+		if (fit) {
+			width = null;
+			length = null;
+			columns = null;
+		}
+	}
+
+	/**
+	 * The width of the input field in pixels.
+	 */
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+		// Clear columns and length when setting width and vice versa.
+		fullSize = false;
+		columns = null;
+		length = null;
+		updateSize();
+	}
+
+	/**
+	 * The height of the input field in pixels.
+	 */
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+		// Clear rows when setting height and vice versa.
+		rows = null;
+		updateSize();
+	}
+	
+	/**
+	 * {@grouptitle Number / Slider Properties}
+	 * The range for the numeric value as an array in the form: [min, max].
+	 * The first element in the array defines the allowed minimum amount,
+	 * the second the maximum amount, both are included in the range.
+	 */
 	public double[] getRange() {
 		return hasRange() ? new double[] {
 			min, max
@@ -298,10 +403,16 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean hasRange() {
 		return min != null && max != null;
 	}
 
+	/**
+	 * The minimum amount allowed.
+	 */
 	public Double getMin() {
 		return min;
 	}
@@ -310,6 +421,9 @@ public class Component implements ChangeReceiver {
 		setRange(min, max);
 	}
 
+	/**
+	 * The maximum amount allowed.
+	 */
 	public Double getMax() {
 		return max;
 	}
@@ -318,6 +432,11 @@ public class Component implements ChangeReceiver {
 		setRange(min, max);
 	}
 
+	/**
+	 * The amount the steppers increase / decrease the value. Even when steppers
+	 * are not activated, the user can still use the up/down arrow keys to step
+	 * by the amount defined by increment.
+	 */
 	public Double getIncrement() {
 		if (type == ComponentType.NUMBER
 				|| type == ComponentType.SLIDER) {
@@ -351,6 +470,10 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * The amount of digits after the decimal point. If finer grained values are
+	 * entered, they are rounded to the next allowed number. The default is 3.
+	 */
 	public Integer getFractionDigits() {
 		return fractionDigits;
 	}
@@ -365,6 +488,9 @@ public class Component implements ChangeReceiver {
 		}
 	}
 	
+	/**
+	 * The units to be displayed behind the value.
+	 */
 	public TextUnits getUnits() {
 		return units;
 	}
@@ -379,6 +505,10 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * Activates little stepping arrows on the side of the input field
+	 * when set to true.
+	 */
 	public Boolean getSteppers() {
 		return steppers;
 	}
@@ -390,26 +520,6 @@ public class Component implements ChangeReceiver {
 			if (proxy != null)
 				proxy.setSteppers(steppers);
 		}
-	}
-
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-		if (proxy != null)
-			proxy.setVisible(visible);
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-		if (proxy != null)
-			proxy.setEnabled(enabled);
 	}
 
 	/**
@@ -425,6 +535,11 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * {@grouptitle List Properties}
+	 * 
+	 * The options that the user can choose from in the list component.
+	 */
 	public com.scratchdisk.list.List<Object> getOptions() {
 		return new OptionList(options);
 	}
@@ -444,12 +559,18 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Object getOption(int index) {
 		if (options != null && index >= 0 && index < options.length)
 			return options[index];
 		return null;
 	}
 
+	/**
+	 * The index of the selected value in the {@link #getOptions} array.
+	 */
 	public Integer getSelectedIndex() {
 		return proxy != null ? proxy.getSelectedIndex() : null;
 	}
@@ -467,43 +588,10 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
-	public boolean getFullSize() {
-		return fullSize;
-	}
-
-	public void setFullSize(boolean fit) {
-		this.fullSize = fit;
-		if (fit) {
-			width = null;
-			length = null;
-			columns = null;
-		}
-	}
-
-	public Integer getWidth() {
-		return width;
-	}
-
-	public void setWidth(Integer width) {
-		this.width = width;
-		// Clear columns and length when setting width and vice versa.
-		fullSize = false;
-		columns = null;
-		length = null;
-		updateSize();
-	}
-
-	public Integer getHeight() {
-		return height;
-	}
-
-	public void setHeight(Integer height) {
-		this.height = height;
-		// Clear rows when setting height and vice versa.
-		rows = null;
-		updateSize();
-	}
-
+	/**
+	 * {@grouptitle Text Properties}
+	 * The width of the text field in average amount of characters.
+	 */
 	public Integer getLength() {
 		return length;
 	}
@@ -521,7 +609,9 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
-	
+	/**
+	 * The maximum amount of characters that the text field may contain.
+	 */
 	public Integer getMaxLength() {
 		return maxLength;
 	}
@@ -535,6 +625,9 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * Specifies whether the field shows multiple lines of text.
+	 */
 	public Boolean getMultiline() {
 		return multiline;
 	}
@@ -560,6 +653,9 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * The average amount of characters per line visible in the text area.
+	 */
 	public Integer getColumns() {
 		return columns;
 	}
@@ -576,6 +672,11 @@ public class Component implements ChangeReceiver {
 		}
 	}
 
+	/**
+	 * The amount of visible lines of text in the text area. Due to a bug in
+	 * Illustrator's GUI, values below 6 cause problems with scrollbars on
+	 * Macintosh. The default is 6.
+	 */
 	public Integer getRows() {
 		return rows;
 	}
@@ -592,6 +693,12 @@ public class Component implements ChangeReceiver {
 
 	private Callable onChange;
 
+	/**
+	 * {@grouptitle Callback handlers}
+	 * 
+	 * The function that is called whenever the value of the component changes.
+	 * The function receives the new value as an argument.
+	 */
 	public Callable getOnChange() {
 		return onChange;
 	}
@@ -613,6 +720,9 @@ public class Component implements ChangeReceiver {
 
 	private Callable onClick;
 
+	/**
+	 * The function that is called when a button component is clicked.
+	 */
 	public Callable getOnClick() {
 		return onClick;
 	}
@@ -628,6 +738,9 @@ public class Component implements ChangeReceiver {
 
 	private Callable onSelect;
 
+	/**
+	 * The function that is called when a popup menu entry is selected.
+	 */
 	public Callable getOnSelect() {
 		return onSelect;
 	}
