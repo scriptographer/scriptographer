@@ -653,19 +653,15 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 *     selected: true
 	 * });
 	 * 
-	 * // All hidden Paths contained in the document.
-	 * var hiddenItems = document.getItems({
+	 * // All visible Paths contained in the document.
+	 * var visibleItems = document.getItems({
 	 *     type: Path,
-	 *     hidden: true
+	 *     hidden: false
 	 * });
 	 * </code>
 	 * 
 	 * @param attributes an object containing the various attributes to check
-	 *        for. The key {@code type} defines a single prototype, an array of
-	 *        prototypes or a comma separated {@String} of prototype
-	 *        names to check for. The following keys have {@code Boolean} values
-	 *        to check for the state of the matching items: {@enum
-	 *        ItemAttribute}.
+	 *        for.
 	 */
 	public ItemList getItems(ItemAttributes attributes) {
 		return attributes != null ? attributes.getItems(this) : null;
