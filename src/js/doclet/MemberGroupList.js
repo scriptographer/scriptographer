@@ -54,9 +54,9 @@ MemberGroupList = Base.extend({
 
 	addAt: function(name, member) {
 		var oldGroups = this.groups;
-		// In order to insert into the hash at a certain place, simply create
-		// a new hash, add to it up to this point, then add the member, then
-		// keep adding.
+		// In order to insert into the hash at a certain place, simply create a
+		// new hash, add to it up to this point, then add the member, then keep
+		// adding.
 		this.groups = new Hash();
 		var added = false;
 		oldGroups.each(function(group, key) {
@@ -98,14 +98,16 @@ MemberGroupList = Base.extend({
 	getFlattened: function() {
 		if (!this.flattened) {
 			// Now sort the groups alphabetically
-			var groups = settings.sortMembers ? this.groups.sortBy(function(group) {
-				var name = group.name, ch = name[0];
-				// Swap the case of the first char so the sorting shows
-				// lowercase members first
-				if (ch.isLowerCase()) ch = ch.toUpperCase();
-				else ch = ch.toLowerCase();
-				return ch + name.substring(1);
-			}) : this.groups;
+			var groups = settings.sortMembers
+				? this.groups.sortBy(function(group) {
+					var name = group.name, ch = name[0];
+					// Swap the case of the first char so the sorting shows
+					// lowercase members first
+					if (ch.isLowerCase()) ch = ch.toUpperCase();
+					else ch = ch.toLowerCase();
+					return ch + name.substring(1);
+				})
+				: this.groups;
 			// Flatten the list of groups:
 			this.flattened = groups.each(function(group) {
 				group.appendTo(this);
@@ -118,7 +120,8 @@ MemberGroupList = Base.extend({
 		this.groups.each(function(group) {
 			var name = group.name;
 			// Is this a getter?
-			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1], component = m && m[2];
+			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1],
+					component = m && m[2];
 			if (kind && component) {
 				// Find the bean property name.
 				var property = component;
@@ -128,7 +131,8 @@ MemberGroupList = Base.extend({
 				// property.
 				if (!this.classObject.hasField(property)) {
 					var setterGroup = this.get('set' + component);
-					var bean = new BeanProperty(this.classObject, property, group, setterGroup);
+					var bean = new BeanProperty(this.classObject, property,
+							group, setterGroup);
 					if (bean.isVisible()) {
 						bean.removeMethods(group, setterGroup);
 						this.classObject.add(bean);

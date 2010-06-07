@@ -23,7 +23,8 @@ BeanProperty = SyntheticMember.extend({
 			this.setters = setters;
 			if (setters) {
 				Member.put(setters, this);
-				// Set setter to the one with the documentation, so isVisible uses it too
+				// Set setter to the one with the documentation, so isVisible
+				// uses it too
 				this.setter = setters && (setters.members.find(function(member) {
 					var tags = member.inlineTags();
 					if (tags.length)
@@ -32,7 +33,8 @@ BeanProperty = SyntheticMember.extend({
 			}
 
 			var tags = getter.inlineTags();
-			// Use the setter that was found to have documentation in the loop above
+			// Use the setter that was found to have documentation in the loop
+			// above
 			if (!tags.length && this.setter)
 				tags = this.setter.inlineTags();
 
@@ -40,7 +42,8 @@ BeanProperty = SyntheticMember.extend({
 			this.inlineTagList = [];
 			this.inlineTagList.append(tags);
 			if (!this.setter)
-				this.inlineTagList.push(new Tag(Template.lineBreak + Template.lineBreak + 'Read-only.'))
+				this.inlineTagList.push(new Tag(Template.lineBreak
+						+ Template.lineBreak + 'Read-only.'))
 		}
 	},
 
@@ -88,7 +91,8 @@ BeanProperty = SyntheticMember.extend({
 	},
 
 	getVisible: function() {
-		// SG Convention: Hide read-only is-getter beans and show is-method instead.
+		// SG Convention: Hide read-only is-getter beans and show is-method
+		// instead.
 		if (!this.member || /^is/.test(this.member.name()) && !this.setters)
 			return false;
 		return this.base() && (!this.setters || Member.isVisible(this.setter));

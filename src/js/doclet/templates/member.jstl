@@ -26,8 +26,9 @@
 <% end %>
 </tt>
 
-<%-- $text cannot be rendered as a sub template since we need the inlineTags to be processed right at
-the beginning of the rendering of this template, in order for data.group stuff to be processed and ready above --%>
+<%-- $text cannot be rendered as a sub template since we need the inlineTags to
+be processed right at the beginning of the rendering of this template, in order
+for data.group stuff to be processed and ready above --%>
 <% $text -%>
 <% $doc = this.containingClass() %>
 <% tags doc=$doc tags=param.commentObject.inlineTags() %>
