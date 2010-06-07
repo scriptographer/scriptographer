@@ -137,11 +137,14 @@ public class ItemAttributes {
 	}
 
 	/**
-	 * The type of items to search for. Can be set to a {@code Class}, {@code
-	 * String}, or an {@code Array} of either. Use {@link PathItem} to match
-	 * both {@link Path} and {@link CompoundPath}, and {@link TextItem} to match
-	 * all three types of text items ({@link PointText}, {@link AreaText} and
-	 * {@link PathText}).
+	 * The type of items to search for. It can be set to any of the {@link Item}
+	 * classes, a {@code String} describing the name of such a class, or an
+	 * {@code Array} of either, describing a row of {@link Item} classes to
+	 * match.
+	 * 
+	 * You can use {@link PathItem} to match both {@link Path} and
+	 * {@link CompoundPath}, and {@link TextItem} to match all three types of
+	 * text items ( {@link PointText}, {@link AreaText} and {@link PathText}).
 	 */
 	public Class[] getType() {
 		return types;
