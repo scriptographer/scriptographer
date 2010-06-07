@@ -45,10 +45,17 @@ public class ItemAttributes {
 	private Class[] types;
 	private HashMap<ItemAttribute, Boolean> attributes =
 			new HashMap<ItemAttribute, Boolean>();
-	
+
 	public ItemAttributes() {
 	}
 
+	/**
+	 * This is here so the scripting layer knows which version of
+	 * Document#getItems() to choose from. It performs nothing more than setting
+	 * all properties on the newly produced script wrapper.
+	 * 
+	 * @jshide
+	 */
 	public ItemAttributes(ArgumentReader reader) {
 		reader.setProperties(this);
 	}
