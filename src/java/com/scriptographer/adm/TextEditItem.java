@@ -55,7 +55,8 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	 * @param type
 	 * @param options
 	 */
-	protected TextEditItem(Dialog dialog, ItemType type, EnumSet<TextOption> options) {
+	protected TextEditItem(Dialog dialog, ItemType type,
+			EnumSet<TextOption> options) {
 		super(dialog, type, IntegerEnumUtils.getFlags(options));
 		// -1 == Maximum length.
 		setMaxLength(-1);
@@ -480,42 +481,43 @@ public abstract class TextEditItem<S> extends TextValueItem {
 			// Correct using margins
 			return new Border(-1, this instanceof SpinEdit ? -2 : -1, 1, -1);
 		} else if (ScriptographerEngine.isWindows()) {
-			// Popup-lists on Windows appear to need a 1px margin at the bottom
-			// as they would overlap otherwise.
+			// Popup-lists on Windows appear to need a 1px margin at the
+			// bottom as they would overlap otherwise.
 			if (hasPopupList() || isMultiline())
 				return new Border(0, 0, 1, 0);
 		} 
 		return MARGIN_NONE;
 	}
 
-	protected void nativeSetBounds(int x, int y, int width, int height) {
+	protected Size getSizeCorrection() {
 		if (ScriptographerEngine.isMacintosh()) {
 			// This seems needed on Mac, as all TextEditItems appear 2px smaller
-			// than they are told to, except for SpinEdits. Also if it has a 
-			// popup list, the popup button gets cropped on the 2nd time bounds
-			// are set otherwise.
-			if (!(this instanceof SpinEdit))
-				height += 2;
+			// than they are told to. Also if it has a popup list, the popup
+			// button gets cropped on the 2nd time bounds are set otherwise.
+			return new Size(0, 2);
 		} else if (ScriptographerEngine.isWindows()) {
 			if (!hasPopupList() && !(this instanceof SpinEdit))
-				height += 1;
+				return new Size(0, 1);
 		}
-		super.nativeSetBounds(x, y, width, height);
-		if (hasPopupList()) {
-			PopupList list = getPopupList();
-			if (list != null) {
-				Size size = list.getSize();
-				if (ScriptographerEngine.isMacintosh()) {
-					// On the Mac, the height of popup list buttons are broken
-					// and need to be corrected here.
-					size.height = height;
-				} else if (ScriptographerEngine.isWindows()) {
-					// On Windows, the width of popup list items are set
-					// wrongly and need to be corrected here.
-					size.width = width;
-				}
-				list.setSize(size);
+		return null;
+	}
+
+	protected void updateBounds(int x, int y, int width, int height,
+			boolean sizeChanged) {
+		super.updateBounds(x, y, width, height, sizeChanged);
+		PopupList list = hasPopupList() ? getPopupList() : null;
+		if (list != null) {
+			Size size = list.getSize();
+			if (ScriptographerEngine.isMacintosh()) {
+				// On the Mac, the height of popup list buttons are broken and
+				// need to be corrected here.
+				size.height = height;
+			} else if (ScriptographerEngine.isWindows()) {
+				// On Windows, the width of popup list items are set wrongly and
+				// need to be corrected here.
+				size.width = width;
 			}
+			list.setSize(size);
 		}
 	}
 }

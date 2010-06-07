@@ -45,8 +45,14 @@ public abstract class Item extends Component {
 
 	protected Dialog dialog;
 
+	// The native bounds of the native item, including margin fixes for faulty
+	// size handling by ADM (e.g. TextEditItem)
 	protected Rectangle nativeBounds = null;
+	// The bounds of the items, excluding any margins.
 	protected Rectangle bounds;
+	// The visual margins, containing both user set margins and the values
+	// returned by getNativeMargin() which was introduced to easily compensate
+	// for any native margins required by controls.
 	protected Border margin;
 
 	private String toolTip;
@@ -106,6 +112,18 @@ public abstract class Item extends Component {
 		// size and bounds need to be updated depending on margins and
 		// internalInsets
 		bounds = new Rectangle(nativeBounds).add(margin);
+	}
+
+	protected void initBounds() {
+		if (!sizeSet)
+			setSize(getBestSize());
+		// This is used to fix ADM bugs on CS4 where an item does not update its
+		// native bounds in certain situations (hidden window?) even if it was
+		// asked to do so.
+		Rectangle bounds = nativeGetBounds();
+		if (!bounds.equals(nativeBounds))
+			setNativeBounds(nativeBounds.x, nativeBounds.y,
+						nativeBounds.width, nativeBounds.height);
 	}
 
 	public void destroy() {
@@ -256,7 +274,18 @@ public abstract class Item extends Component {
 
 	protected native Rectangle nativeGetBounds();
 	protected native void nativeSetBounds(int x, int y, int width, int height);
+	
 	protected native void nativeSetSize(int width, int height);
+
+	protected final void setNativeBounds(int x, int y, int width, int height) {
+		nativeBounds.set(x, y, width, height);
+		// Do not change location for children as this messes things up e.g.
+		// for SpinEdit.
+		if (isChild)
+			nativeSetSize(width, height);
+		else
+			nativeSetBounds(x, y, width, height);
+	}
 
 	public Rectangle getBounds() {
 		return new Rectangle(bounds);
@@ -273,7 +302,8 @@ public abstract class Item extends Component {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+	protected void updateBounds(int x, int y, int width, int height,
+			boolean sizeChanged) {
 		if (sizeChanged) {
 			// Set prefSize so getPreferredSize does not return results from
 			// getBestSize()
@@ -284,16 +314,18 @@ public abstract class Item extends Component {
 				minSize = prefSize;
 			sizeSet = true;
 		}
-
 		// Update bounds
 		bounds.set(x, y, width, height);
-
 		// Update bounds in AWT proxy:
 		updateAWTBounds(bounds);
-
-		// updateBounds does all the heavy lifting, except for setting
-		// prefSize, which shouldn't be set when changing location or margins.
+		// updateNativeBounds does all the work with margins.
 		updateNativeBounds(x, y, width, height);
+	}
+
+	protected Size getSizeCorrection() {
+		// Allow subclasses to correct the native size, to fix ADM issues with
+		// layouts. Used in getSizeCorrection.
+		return null;
 	}
 
 	protected void updateNativeBounds(int x, int y, int width, int height) {
@@ -302,26 +334,26 @@ public abstract class Item extends Component {
 		int nativeY = y + margin.top;
 		int nativeWidth = width - margin.left - margin.right;
 		int nativeHeight = height - margin.top - margin.bottom;
+
+		Size fix = getSizeCorrection();
+		if (fix != null) {
+			nativeWidth += fix.width;
+			nativeHeight += fix.height;
+		}
+
 		int deltaX = nativeWidth - nativeBounds.width;
 		int deltaY = nativeHeight - nativeBounds.height;
 
 		boolean sizeChanged = deltaX != 0 || deltaY != 0;
-		if (sizeChanged || nativeBounds.x != nativeX ||
-				nativeBounds.y != nativeY) {
-			// Do not change location for children as this messes things up e.g.
-			// for spin edits
-			if (isChild)
-				nativeSetSize(nativeWidth, nativeHeight);
-			else
-				nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
-			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
+		if (sizeChanged || nativeBounds.x != nativeX
+				|| nativeBounds.y != nativeY) {
+			// Same as setNativeBounds here, only TextEditItem overrides this.
+			setNativeBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
-		// TODO: Move this to updateBounds, and do not rely on nativeBounds?
 		if (sizeChanged) {
 			try {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
-				// TODO: deal with Exception...
 				throw new ScriptographerException(e);
 			}
 		}
@@ -338,7 +370,7 @@ public abstract class Item extends Component {
 
 	protected void updateAWTMargin(Border margin) {
 		if (component != null && this instanceof ComponentGroup)
-			this.getAWTContainer().setInsets(margin.top, margin.left,
+			this.getAWTContainer(true).setInsets(margin.top, margin.left,
 					margin.bottom, margin.right);
 	}
 
@@ -555,12 +587,12 @@ public abstract class Item extends Component {
 		return MARGIN_NONE;
 	}
 
-	public Border getMargin() {
-		return margin.subtract(getNativeMargin());
+	public Border getVisualMargin() {
+		return (Border) margin.clone();
 	}
 
-	public Border getVisualMargin() {
-		return getMargin().add(getNativeMargin());
+	public Border getMargin() {
+		return margin.subtract(getNativeMargin());
 	}
 
 	public void setMargin(int top, int right, int bottom, int left) {
@@ -697,8 +729,8 @@ public abstract class Item extends Component {
 	 * AWT LayoutManager integration:
 	 */
 
-	protected java.awt.Component getAWTComponent() {
-		if (component == null) {
+	protected java.awt.Component getAWTComponent(boolean create) {
+		if (component == null && create) {
 			if (this instanceof ComponentGroup) {
 				component = new AWTComponentGroupContainer();
 			} else {

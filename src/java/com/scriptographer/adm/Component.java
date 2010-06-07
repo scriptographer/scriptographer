@@ -57,10 +57,11 @@ import com.scratchdisk.util.IntegerEnumUtils;
  */
 public abstract class Component extends NotificationHandler {
 
+	protected Component parent;
+
 	/*
 	 *  Fonts and Text Size
 	 */
-
 	protected abstract int nativeGetFont();
 	
 	protected abstract void nativeSetFont(int font);
@@ -240,36 +241,47 @@ public abstract class Component extends NotificationHandler {
 	 * AWT / Layout Bridge
 	 */
 
-	protected abstract java.awt.Component getAWTComponent();
+	protected abstract java.awt.Component getAWTComponent(boolean create);
 
-	protected AWTContainer getAWTContainer() {
-		java.awt.Component component = getAWTComponent();
+	protected AWTContainer getAWTContainer(boolean create) {
+		java.awt.Component component = getAWTComponent(create);
+		if (component == null && !create)
+			return null;
 		if (!(component instanceof AWTContainer))
 			throw new ScriptographerException("Component does not support sub components.");
 		return (AWTContainer) component;
 	}
 
 	public void setLayout(LayoutManager mgr) {
-		this.getAWTContainer().setLayout(mgr);
+		getAWTContainer(true).setLayout(mgr);
 	}
 
 	public LayoutManager getLayout() {
-		return this.getAWTContainer().getLayout();
+		return getAWTContainer(true).getLayout();
+	}
+
+	public boolean usesLayout() {
+		// See if this item or its parent uses a layout.
+		AWTContainer container = getAWTContainer(false);
+		return container != null && container.getLayout() != null
+				|| parent != null && parent.usesLayout();
 	}
 
 	public void doLayout() {
-		this.getAWTContainer().doLayout();
+		AWTContainer container = getAWTContainer(false);
+		if (container != null)
+			container.doLayout();
 	}
 
 	/**
 	 * @jshide
 	 */
 	public void setMargin(int top, int right, int bottom, int left) {
-		this.getAWTContainer().setInsets(top, left, bottom, right);
+		this.getAWTContainer(true).setInsets(top, left, bottom, right);
 	}
 
 	public Border getMargin() {
-		return new Border(this.getAWTContainer().getInsets());
+		return new Border(this.getAWTContainer(true).getInsets());
 	}
 
 	public void setMargin(Border margin) {
@@ -328,11 +340,16 @@ public abstract class Component extends NotificationHandler {
 	}
 
 	protected void addComponent(Component component) {
-		// Do nothing here, only ItemGroup uses it
+		// Do not really add component here, as only ItemGroup uses it.
+		// Do not throw an UnsupportedOperationException though as it is also
+		// used by Frame, which just applies its own layout to the added items
+		// but does not actually nest them inside.
+		component.parent = this;
 	}
 
 	protected void removeComponent(Component component) {
-		// Do nothing here, only ItemGroup uses it
+		// See above.
+		component.parent = null;
 	}
 
 	private Content content = null;

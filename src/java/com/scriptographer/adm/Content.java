@@ -47,7 +47,8 @@ import com.scriptographer.adm.Component.AWTContainer;
  * 
  * @jshide
  */
-public class Content extends AbstractExtendedList<Component> implements StringIndexList<Component> {
+public class Content extends AbstractExtendedList<Component> implements
+		StringIndexList<Component> {
 
 	private Component component;
 
@@ -60,12 +61,12 @@ public class Content extends AbstractExtendedList<Component> implements StringIn
 	}
 
 	protected AWTContainer getAWTContainer() {
-		return component.getAWTContainer();
+		return component.getAWTContainer(true);
 	}
 
 	protected java.awt.Component getAWTComponent(Object element) {
 		return element instanceof Component
-			? ((Component) element).getAWTComponent() : null;
+			? ((Component) element).getAWTComponent(true) : null;
 	}
 
 	protected Component getComponent(java.awt.Component component) {

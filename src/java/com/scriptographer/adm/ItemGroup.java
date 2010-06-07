@@ -29,7 +29,6 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.ScriptographerEngine;
 
 /**
  * A container that groups items logically, so that they can be
@@ -51,12 +50,14 @@ public class ItemGroup extends Item implements ComponentGroup {
 	private native void nativeRemove(Item item);
 
 	protected void addComponent(Component component) {
+		super.addComponent(component);
 		// Add natively only if it's not a fake item such as Spacer
 		if (component.isValid() && component instanceof Item)
 			nativeAdd((Item) component);
 	}
 
 	protected void removeComponent(Component component) {
+		super.removeComponent(component);
 		// Remove natively only if it's not a fake item such as Spacer
 		if (component.isValid() && component instanceof Item)
 			nativeRemove((Item) component);
@@ -85,41 +86,34 @@ public class ItemGroup extends Item implements ComponentGroup {
 	/*
 	 * Override bounds handling so that ItemGroups always have a native size of
 	 * 0. This is required on Windows where ItemGroups otherwise sometimes seem
-	 * to intersect mouse events.
+	 * to intersect mouse events. It is also necessary on Mac, where setting
+	 * ItemGroup bounds to a size seems to also resize all items it contains to
+	 * the same size.
 	 */
 	protected Rectangle nativeGetBounds() {
-		if (ScriptographerEngine.isWindows()) {
-			// If nativeGetBounds returns bounds with a size != 0, we have not
-			// set its size to 0 yet and need to report the real native size
-			// back so initBounds() forces a call of nativeSetBounds, in which
-			// size is then set to 0.
-			Rectangle bounds = super.nativeGetBounds();
-			if (nativeBounds == null || bounds.width > 0 || bounds.height > 0)
-				return bounds;
-			// In any other case, do not use the native bounds but the
-			// internally reflected value.
-			return (Rectangle) nativeBounds.clone();
-		} else {
-			return super.nativeGetBounds();
-		}
+		// If nativeGetBounds returns bounds with a size != 0, we have not
+		// set its size to 0 yet and need to report the real native size
+		// back so initBounds() forces a call of nativeSetBounds, in which
+		// size is then set to 0.
+		Rectangle bounds = super.nativeGetBounds();
+		if (nativeBounds == null || bounds.width > 0 || bounds.height > 0)
+			return bounds;
+		// In any other case, do not use the native bounds but the
+		// internally reflected value.
+		return (Rectangle) nativeBounds.clone();
 	}
 
 	protected void nativeSetBounds(int x, int y, int width, int height) {
-		if (ScriptographerEngine.isWindows()) {
-			super.nativeSetBounds(x, y, 0, 0);
-			// It seems that on CS2 we need to call setSize to really force it
-			// to 0. Always use both to be on the safe side.
-			super.nativeSetSize(0, 0);
-		} else {
-			super.nativeSetBounds(x, y, width, height);
-		}
+		// It seems that on CS2 we need to call setSize to really force it
+		// to 0. Always use both to be on the safe side.
+		// I am not sure why both calls are needed, but not calling
+		// nativeSetSize on Mac seems to hide all grouped items in some
+		// situations, e.g. in the repository editor.
+		super.nativeSetBounds(x, y, 0, 0);
+		super.nativeSetSize(0, 0);
 	}
 
 	protected void nativeSetSize(int width, int height) {
-		if (ScriptographerEngine.isWindows()) {
-			super.nativeSetSize(0, 0);
-		} else {
-			super.nativeSetSize(width, height);
-		}
+		super.nativeSetSize(0, 0);
 	}
 }

@@ -93,9 +93,9 @@ public class ModalDialog extends Dialog {
 		ScriptographerEngine.setProgressVisible(false);
 		try {
 			modal = true;
-			// Before showing the dialog, se need to initialize it, in order
+			// Before showing the dialog, we need to initialize it, in order
 			// to avoid flicker.
-			initialize(true);
+			initialize(true, false);
 			Item item = nativeDoModal();
 			ScriptographerEngine.setProgressVisible(progressVisible);
 			return item;

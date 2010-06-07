@@ -123,6 +123,9 @@ public abstract class Dialog extends Component {
 	// Used to see whether the size where specified before the dialog is
 	// initialized
 	private boolean sizeSet = false;
+	// Used to check if the boundaries (min / max size) are to bet set after
+	// initialization
+	private boolean boundsInitialized = false;
 
 	// For scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
 	// store a reference to the script's preferences object so we can always
@@ -170,7 +173,7 @@ public abstract class Dialog extends Component {
 	 * We fake this through onActivate and a native dialog timer.
 	 * Whatever fires first, triggers initialize
 	 */
-	protected void initialize(boolean setBoundaries) {
+	protected void initialize(boolean setBoundaries, boolean initBounds) {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
@@ -221,6 +224,13 @@ public abstract class Dialog extends Component {
 					nativeSetMinimumSize(minSize.width, minSize.height);
 				if (maxSize != null)
 					nativeSetMaximumSize(maxSize.width, maxSize.height);
+			}
+			// Call initBounds on all items at the first time the dialog is 
+			// shown. This fixes issues on CS4 and above with wrong item bounds.
+			if (initBounds && !boundsInitialized) {
+				for (Item item : items)
+					item.initBounds();
+				boundsInitialized = true;
 			}
 		}
 	}
@@ -280,7 +290,7 @@ public abstract class Dialog extends Component {
 	 */
 	public static void initializeAll() {
 		for (Dialog dialog : dialogs) {
-			dialog.initialize(false);
+			dialog.initialize(false, false);
 			// Work around weird issue of items sometimes not appearing properly
 			// in layouts after reloading the plug-in by just slightly reshaping
 			// the Window, causing the layout to be regenerated again. Simply
@@ -607,7 +617,7 @@ public abstract class Dialog extends Component {
 		try {
 			switch (notifier) {
 			case INITIALIZE:
-				initialize(true);
+				initialize(true, false);
 				break;
 			case DESTROY:
 				if (options.contains(DialogOption.REMEMBER_PLACING))
@@ -617,7 +627,7 @@ public abstract class Dialog extends Component {
 			case WINDOW_ACTIVATE:
 				// See comment for initialize to understand why this is fired
 				// here too
-				initialize(true);
+				initialize(true, false);
 				active = true;
 				onActivate();
 				break;
@@ -626,6 +636,9 @@ public abstract class Dialog extends Component {
 				onDeactivate();
 				break;
 			case WINDOW_SHOW:
+				// See comment for initialize to understand why this is fired
+				// here too
+				initialize(false, true);
 				visible = true;
 				fireOnClose = true;
 				onShow();
@@ -1266,8 +1279,8 @@ public abstract class Dialog extends Component {
 	 * AWT LayoutManager integration:
 	 */
 
-	protected java.awt.Component getAWTComponent() {
-		if (container == null)
+	protected java.awt.Component getAWTComponent(boolean create) {
+		if (container == null && create)
 			container = new AWTDialogContainer();
 		return container;
 	}
