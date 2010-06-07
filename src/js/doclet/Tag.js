@@ -147,7 +147,7 @@ CodeTag = Tag.extend({
 	_names: '@code',
 
 	render: function(param) {
-		return '<tt>' + this.text() + '</tt> ';
+		return '<tt>' + this.text() + '</tt>';
 	}
 });
 
