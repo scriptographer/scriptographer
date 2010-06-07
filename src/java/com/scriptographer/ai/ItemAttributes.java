@@ -37,12 +37,32 @@ import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.ArrayList;
 
 /**
+ * {@code ItemAttributes} objects are used to describe attributes of items to
+ * query for when using the {@link Document#getItems(ItemAttributes)} function.
+ * It serves as a description of a filter appiled to the queried items, defined
+ * by various fields that can either be set to {@code true}, {@code false}, or
+ * {@code null}.
+ * 
+ * Sample code: <code>
+ * // All selected paths and rasters contained in the document.
+ * var selectedItems = document.getItems({ 
+ *     type: [Path, Raster], 
+ *     selected: true
+ * });
+ * 
+ * // All visible Paths contained in the document.
+ * var visibleItems = document.getItems({
+ *     type: Path,
+ *     hidden: false
+ * });
+ * </code>
+ * 
  * @author lehni
- *
  */
 public class ItemAttributes {
 
 	private Class[] types;
+
 	private HashMap<ItemAttribute, Boolean> attributes =
 			new HashMap<ItemAttribute, Boolean>();
 
@@ -50,7 +70,7 @@ public class ItemAttributes {
 	}
 
 	/**
-	 * This is here so the scripting layer knows which version of
+	 * This constructor is here so the scripting layer knows which version of
 	 * Document#getItems() to choose from. It performs nothing more than setting
 	 * all properties on the newly produced script wrapper.
 	 * 
@@ -60,6 +80,13 @@ public class ItemAttributes {
 		reader.setProperties(this);
 	}
 
+	/**
+	 * The method that performs the actual work, called from
+	 * {@link Document#getItems(ItemAttributes)}
+	 * 
+	 * @param document
+	 * @return
+	 */
 	protected ItemList getItems(Document document) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
@@ -109,38 +136,54 @@ public class ItemAttributes {
 		return items;
 	}
 
+	/**
+	 * The type of items to search for. Can be set to a {@code Class}, {@code
+	 * String}, or an {@code Array} of either. Use {@link PathItem} to match
+	 * both {@link Path} and {@link CompoundPath}, and {@link TextItem} to match
+	 * all three types of text items ({@link PointText}, {@link AreaText} and
+	 * {@link PathText}).
+	 */
 	public Class[] getType() {
 		return types;
 	}
 
 	public void setType(Class[] types) {
-		ArrayList<Class> classes = new ArrayList<Class>(Arrays.asList(types));
-		// Filter out classes again that are not inheriting Item.
-		for (int i = classes.size() - 1; i >= 0; i--)
-			if (!Item.class.isAssignableFrom((classes.get(i))))
-				classes.remove(i);
-		this.types = classes.toArray(new Class[classes.size()]);
-	}
-
-	public void setType(Class type) {
-		setType(new Class[] { type });
+		if (types == null) {
+			this.types = null;
+		} else {
+			ArrayList<Class> classes =
+					new ArrayList<Class>(Arrays.asList(types));
+			// Filter out classes again that are not inheriting Item.
+			for (int i = classes.size() - 1; i >= 0; i--)
+				if (!Item.class.isAssignableFrom((classes.get(i))))
+					classes.remove(i);
+			this.types = classes.toArray(new Class[classes.size()]);
+		}
 	}
 
 	public void setType(String[] types) {
-		ArrayList<Class> classes = new ArrayList<Class>();
-		for (String type : types) {
-			// Try loading class from String name.
-			try {
-				classes.add(Class.forName(Item.class.getPackage().getName()
-						+ "." + type));
-			} catch (ClassNotFoundException e) {
+		if (types == null) {
+			this.types = null;
+		} else {
+			ArrayList<Class> classes = new ArrayList<Class>();
+			for (String type : types) {
+				// Try loading class from String name.
+				try {
+					classes.add(Class.forName(Item.class.getPackage().getName()
+							+ "." + type));
+				} catch (ClassNotFoundException e) {
+				}
 			}
+			setType(classes.toArray(new Class[classes.size()]));
 		}
-		setType(classes.toArray(new Class[classes.size()]));
 	}
 
-	public void setType(String types) {
-		setType(types.split("\\s*,\\s*"));
+	public void setType(Class type) {
+		setType(type != null ? new Class[] { type } : null);
+	}
+
+	public void setType(String type) {
+		setType(type != null ? type.split("\\s*,\\s*") : null);
 	}
 
 	private Boolean get(ItemAttribute attribute) {

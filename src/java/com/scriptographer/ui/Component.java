@@ -683,7 +683,7 @@ public class Component implements ChangeReceiver {
 
 	public void setRows(Integer rows) {
 		if (type == ComponentType.STRING) {
-			this.multiline = true;
+			this.multiline = rows > 1;
 			this.rows = rows;
 			// Clear height when setting rows and vice versa.
 			height = null;

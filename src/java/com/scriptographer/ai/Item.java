@@ -350,7 +350,11 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 		// Make sure this item is still valid. It might be a reused art handle
 		// too...
 		if (item != null && !item.isValid()) {
-			// Remove invalid ones so they dont come back.
+			// Remove invalid ones so they dont come back, as their handle was 
+			// now reused in the meantime by a new item. We can do this safely
+			// as getIfWrapped is only used for now valid items, so there is no
+			// way we could go back to the previous item through undoing, as
+			// Illustrator would not have given us the handle otherwise.
 			items.remove(artHandle);
 			item = null;
 		}
@@ -558,7 +562,9 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	protected boolean remove(boolean removeHandle) {
 		if (handle != 0 && (!removeHandle
 				|| nativeRemove(handle, document.handle, dictionaryHandle))) {
-			items.remove(handle);
+			// Do not remove from items since undoing can bring them back, and
+			// we don't want to loose the undo history tracking ionformation for
+			// them: items.remove(handle);
 			deletionVersion = document.historyVersion;
 			// This item's versions need to be updated after the history cycle
 			// is finished.
@@ -1956,6 +1962,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 		newItems = null;
 		for (int i = items.size() - 1; i >= 0; i--) {
 			Item item = items.get(i);
+			// Make sure we're not returning any invalid new items.
 			if (!item.isValid())
 				items.remove(i);
 		}

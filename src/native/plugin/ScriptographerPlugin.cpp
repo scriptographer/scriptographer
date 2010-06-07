@@ -164,90 +164,93 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 	UInt32 kind = GetEventKind(event);
 	bool handled = false;
 	switch (cls) {
-		case kEventClassKeyboard: {
-			// Only interfere with key events when we are not in ADM dialogs
-			WindowRef focus = GetUserFocusWindow();
-			UInt32 features;
-			// Filter out modal dialogs and floating windows
-			if (focus == NULL || focus == ActiveNonFloatingWindow() 
-					&& GetWindowFeatures(focus, &features) == noErr
-					&& !(features & kWindowIsModal)) {
-				switch (kind) {
-					case kEventRawKeyDown:
-					case kEventRawKeyUp:
-					case kEventRawKeyRepeat: {
-						UInt32 keyCode;
-						GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
-						UniChar uniChar;
-						GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
-						UInt32 modifiers;
-						GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
-						if (kind == kEventRawKeyDown && uniChar == '\b') // back space
-							gEngine->onClear();
-						int type = kind == kEventRawKeyDown || kind == kEventRawKeyRepeat
-							? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
-							: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
-						keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
-						handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
-					}
-					break;
-					case kEventRawKeyModifiersChanged: {
-						// TODO: analyse modifiers and send key events for modifier keys as well, 
-						// just like on Windows
-					}
-					break;
-				}
+	case kEventClassKeyboard: {
+		// Only interfere with key events when we are not in ADM dialogs
+		WindowRef focus = GetUserFocusWindow();
+		UInt32 features;
+		// Filter out modal dialogs and floating windows
+		if (focus == NULL || focus == ActiveNonFloatingWindow() 
+				&& GetWindowFeatures(focus, &features) == noErr
+				&& !(features & kWindowIsModal)) {
+			switch (kind) {
+			case kEventRawKeyDown:
+			case kEventRawKeyUp:
+			case kEventRawKeyRepeat: {
+				UInt32 keyCode;
+				GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
+				UniChar uniChar;
+				GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+				UInt32 modifiers;
+				GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
+				// Establish an app context now, so the callback handlers will
+				// have no problems using suites.
+				AppContext context;
+				if (kind == kEventRawKeyDown && uniChar == '\b') // Back space
+					gEngine->onClear();
+				int type = kind == kEventRawKeyDown || kind == kEventRawKeyRepeat
+					? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
+					: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+				keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
+				handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
+			}
+			break;
+			case kEventRawKeyModifiersChanged: {
+				// TODO: Analyse modifiers and send key events for modifier keys
+				// as well, just like on Windows.
+			}
+			break;
 			}
 		}
-		break;
-		case kEventClassMouse: {
-			static bool dragging = false;
-			switch (kind) {
-				case kEventMouseDown: {
-					Point point;
-					GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
-					WindowRef window = NULL;
-					FindWindow(point, &window);
-					WindowClass wndClass;
-					WindowAttributes attributes;
-					if (wndClass != kDocumentWindowClass) {
-						/*
-						ControlPartCode code;
-						SetPortWindowPort(window);
-						GlobalToLocal(&point);
-						ControlRef view = FindControlUnderMouse(point, window, &code);
-						*/
-						HIViewRef view;
-						if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
-							CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
-							if (viewClass != NULL) {
-								// Detect the potential beginning of a window drag and notify the java side of it, so
-								// it can handle ADM / SWT overlays properly.
-								if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
-									CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
-									CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
-									dragging = true;
-									gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
-								}
-								/*
-								const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
-								gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
-								*/
+	}
+	break;
+	case kEventClassMouse: {
+		static bool dragging = false;
+		switch (kind) {
+			case kEventMouseDown: {
+				Point point;
+				GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
+				WindowRef window = NULL;
+				FindWindow(point, &window);
+				WindowClass wndClass;
+				WindowAttributes attributes;
+				if (wndClass != kDocumentWindowClass) {
+					/*
+					ControlPartCode code;
+					SetPortWindowPort(window);
+					GlobalToLocal(&point);
+					ControlRef view = FindControlUnderMouse(point, window, &code);
+					*/
+					HIViewRef view;
+					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
+						CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
+						if (viewClass != NULL) {
+							// Detect the potential beginning of a window drag and notify the java side of it, so
+							// it can handle ADM / SWT overlays properly.
+							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
+								CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
+								CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
+								dragging = true;
+								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
 							}
+							/*
+							const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
+							gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
+							*/
 						}
 					}
 				}
-				break;
-				case kEventMouseUp: {
-					if (dragging) {
-						dragging = false;
-						gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
-					}
-				}
-				break;
 			}
+			break;
+			case kEventMouseUp: {
+				if (dragging) {
+					dragging = false;
+					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
+				}
+			}
+			break;
 		}
-		break;
+	}
+	break;
 	}
 	// Allow overriding of AI key handling by returning true from the handler...
 	return handled ? noErr : (OSStatus) eventNotHandledErr;
@@ -294,9 +297,10 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 			case WM_KEYUP: {
 				if (pMsg->message == WM_KEYDOWN) {
 					// Filter out windows that should not be handled. 
-					// These are any kind of input fields which are detected by WS_TABSTOP.
-					// As the main app window has this set too, check for a lack of WS_CAPTION
-					// which is set on the app window but not the controls.
+					// These are any kind of input fields which are detected by
+					// WS_TABSTOP. As the main app window has this set too,
+					// check for a lack of WS_CAPTION which is set on the app
+					// window but not the controls.
 					WINDOWINFO info;
 					GetWindowInfo(pMsg->hwnd, &info);
 					if ((info.dwStyle & WS_TABSTOP) && !(info.dwStyle & WS_CAPTION))
@@ -309,16 +313,20 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				GetKeyboardState(keyboardState);
 	            bool isDead = false;
 				int type = -1;
-				// If the keyCode / scanCode cannot be translated to a unicode, use
-				// 0xffff, so the key event is still marked as valid in s_keyChars.
-				// When the handler is called, this is then passed as 0.
+				// Establish an app context now, so the callback handlers will
+				// have no problems using suites.
+				AppContext context;
+				// If the keyCode / scanCode cannot be translated to a unicode,
+				// use 0xffff, so the key event is still marked as valid in
+				// s_keyChars. When the handler is called, this is then passed
+				// as 0.
 				WCHAR chr = 0xffff;
 				// If this is a WM_KEYDOWN, see if it translated to another
 				// unicode char, which is then to be used instead.
 				// This appears to be the same behavior as the WM_CHAR message
-				// performs behind the scenes, so we do not need to rely on WM_CHAR
-				// here at all, which simplifies finding matching down / up events
-				// a lot.
+				// performs behind the scenes, so we do not need to rely on
+				// WM_CHAR here at all, which simplifies finding matching
+				// down / up events a lot.
 				if (pMsg->message == WM_KEYDOWN) {
 					WCHAR unicode[16];
 					HKL layout = GetKeyboardLayout(0);
