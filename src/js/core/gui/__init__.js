@@ -65,9 +65,10 @@ if (script.preferences.accepted) {
 	if (!scriptRepositories) {
 		scriptRepositories = [];
 		var dir = Dialog.chooseDirectory(
-				'Please choose your Scriptographer Script Folder. It is recommended\n'
-				+ ' that you keep your scripts in a dedicated folder within your Documents.',
-				userDirectory);
+			'Please choose your Scriptographer Script Folder. We recommend'
+			+ (app.isMacintosh() ? '\n' : ' ')
+			+ 'to keep your scripts in a dedicated folder within your Documents.',
+			userDirectory);
 		if (dir && dir.isDirectory()) {
 			scriptRepositories.push({
 				name: 'My Scripts', path: dir.path, visible: true

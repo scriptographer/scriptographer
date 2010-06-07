@@ -188,7 +188,7 @@ var repositoriesDialog = new ModalDialog(function() {
 
 	function chooseDirectory(directory) {
 		return Dialog.chooseDirectory(
-				'Choose a Scriptographer Script Repository Folder:',
+				'Choose a Scriptographer Script Repository Folder.',
 				directory || userDirectory);
 	}
 
