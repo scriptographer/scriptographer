@@ -56,7 +56,7 @@ public:
 
 	jclass cls_System;
 	jfieldID fid_System_out;
-	
+
 	jclass cls_PrintStream;
 	jmethodID mid_PrintStream_println;
 
@@ -67,51 +67,37 @@ public:
 	jclass cls_String;
 	jmethodID cid_String;
 	jmethodID mid_String_getBytes;
-	
+
 	jclass cls_Number;
 	jmethodID mid_Number_intValue;
 	jmethodID mid_Number_floatValue;
 	jmethodID mid_Number_doubleValue;
-	
+
 	jclass cls_Integer;
 	jmethodID cid_Integer;
-	
+
 	jclass cls_Float;
 	jmethodID cid_Float;
-	
+
 	jclass cls_Double;
 	jmethodID cid_Double;
 
 	jclass cls_Boolean;
 	jmethodID cid_Boolean;
 	jmethodID mid_Boolean_booleanValue;
-	
+
 	jclass cls_File;
 	jmethodID cid_File;
 	jmethodID mid_File_getPath;
-	
+
 	jclass cls_Collection;
 	jmethodID mid_Collection_add;
 
 	jclass cls_Map;
-	jmethodID mid_Map_keySet;
-	jmethodID mid_Map_put;
-	jmethodID mid_Map_get;
-	
-	jclass cls_HashMap;
-	jmethodID cid_HashMap;
-	
+
 	jclass cls_ArrayList;
 	jmethodID cid_ArrayList;
-	
-	jclass cls_Set;
-	jmethodID mid_Set_iterator;
-	
-	jclass cls_Iterator;
-	jmethodID mid_Iterator_hasNext;
-	jmethodID mid_Iterator_next;
-	jmethodID mid_Iterator_remove;
-	
+
 	jclass cls_OutOfMemoryError;
 	
 	jclass cls_awt_Color;

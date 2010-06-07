@@ -719,9 +719,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNI
 }
 
 /*
- * com.scriptographer.ai.ItemList getMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
+ * com.scriptographer.ai.ItemList getMatchingItems(java.lang.Class typeClass, int whichAttrs, int attrs)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(
+		JNIEnv *env, jobject obj, jclass typeClass, jint whichAttrs, jint attrs) {
 	jobject itemSet = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -737,21 +738,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(J
 			}
 			AIArtSpec spec;
 			spec.type = type;
-			spec.whichAttr = 0;
-			spec.attr = 0;
-			// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
-			jobject keySet = env->CallObjectMethod(attributes, gEngine->mid_Map_keySet);
-			jobject iterator = env->CallObjectMethod(keySet, gEngine->mid_Set_iterator);
-			while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
-				jobject key = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
-				jobject value = env->CallObjectMethod(attributes, gEngine->mid_Map_get, key);
-				jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
-				jint set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
-				spec.whichAttr |= flag;
-				if (set)
-					spec.attr |= flag;
-				EXCEPTION_CHECK(env);
-			}
+			spec.whichAttr = whichAttrs;
+			spec.attr = attrs;
 			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
 				itemSet = gEngine->convertItemSet(env, set, layerOnly);
 				sAIArtSet->DisposeArtSet(&set);

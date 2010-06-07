@@ -39,13 +39,11 @@ import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.util.ArrayList;
-import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.script.EnumUtils;
 
 /**
  * The Document item refers to an Illustrator document.
@@ -638,7 +636,123 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * The selected items contained within the document.
 	 */
 	public native ItemList getSelectedItems();
+
+
+	protected native ItemList getMatchingItems(Class type, int whichAttributes,
+			int attributes);
+
+	/**
+	 * Returns all items that match a set of attributes, as specified by the
+	 * passed map. For each of the keys in the map, the demanded value can
+	 * either be true or false.
+	 * 
+	 * Sample code: <code>
+	 * // All selected paths and rasters contained in the document.
+	 * var selectedItems = document.getItems({ 
+	 *     type: [Path, Raster], 
+	 *     selected: true
+	 * });
+	 * 
+	 * // All hidden Paths contained in the document.
+	 * var hiddenItems = document.getItems({
+	 *     type: Path,
+	 *     hidden: true
+	 * });
+	 * </code>
+	 * 
+	 * @param attributes an object containing the various attributes to check
+	 *        for. The key {@code type} defines a single prototype, an array of
+	 *        prototypes or a comma separated {@String} of prototype
+	 *        names to check for. The following keys have {@code Boolean} values
+	 *        to check for the state of the matching items: {@enum
+	 *        ItemAttribute}.
+	 */
+	public ItemList getItems(ItemAttributes attributes) {
+		return attributes != null ? attributes.getItems(this) : null;
+	}
 	
+	/**
+	 * @jshide
+	 */
+	public ItemList getItems(Class type) {
+		ItemAttributes attributes = new ItemAttributes();
+		attributes.setType(type);
+		return getItems(attributes);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public ItemList getItems(Class[] types) {
+		ItemAttributes attributes = new ItemAttributes();
+		attributes.setType(types);
+		return getItems(attributes);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public ItemList getItems(Class[] types, ItemAttributes attributes) {
+		if (attributes != null) {
+			if (types != null)
+				attributes.setType(types);
+			return attributes.getItems(this);
+		}
+		return null;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public ItemList getItems(Class type, ItemAttributes attributes) {
+		if (attributes != null) {
+			if (type != null)
+				attributes.setType(type);
+			return attributes.getItems(this);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the selected items that are instances of one of the passed classes.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Get all selected groups and paths:
+	 * var items = document.getSelectedItems([Group, Path]);
+	 * </code>
+	 * 
+	 * @param types
+	 * 
+	 * @deprecated
+	 */
+	public ItemList getSelectedItems(Class[] types) {
+		if (types == null) {
+			return getSelectedItems();
+		} else {
+			ItemAttributes attributes = new ItemAttributes();
+			attributes.setSelected(true);
+			return getItems(types, attributes);
+		}
+	}
+
+	/**
+	 * Returns the selected items that are an instance of the passed class.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Get all selected rasters:
+	 * var items = document.getSelectedItems(Raster);
+	 * </code>
+	 * 
+	 * @param types
+	 * 
+	 * @deprecated
+	 */
+	public ItemList getSelectedItems(Class type) {
+		return getSelectedItems(new Class[] { type });
+	}
+
 	private Item getCurrentStyleItem() {
 		// This is a bit of a hack: We use a special handle HANDLE_CURRENT_STYLE
 		// to tell the native side that this is in fact the current style, not
@@ -912,7 +1026,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 */
 	public TextStoryList getStories() {
 		// See getStories(int storyHandle, boolean dispose) for explanations:
-		ItemList items = getItems(new Class[] { TextItem.class });
+		ItemList items = getItems(TextItem.class);
 		TextItem item = items.size() > 0 ? (TextItem) items.getFirst() : null;
 		return getStories(item, true);
 	}
@@ -1060,46 +1174,6 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	/**
-	 * Returns the selected items that are instances of one of the passed classes.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * // Get all selected groups and paths:
-	 * var items = document.getSelectedItems([Group, Path]);
-	 * </code>
-	 * 
-	 * @param types
-	 * 
-	 * @jshide
-	 */
-	public ItemList getSelectedItems(Class[] types) {
-		if (types == null) {
-			return getSelectedItems();
-		} else {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
-			map.put(ItemAttribute.SELECTED, true);
-			return getItems(types, map);
-		}
-	}
-
-	/**
-	 * Returns the selected items that are an instance of the passed class.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * // Get all selected rasters:
-	 * var items = document.getSelectedItems(Raster);
-	 * </code>
-	 * 
-	 * @param types
-	 * 
-	 * @jshide
-	 */
-	public ItemList getSelectedItems(Class type) {
-		return getSelectedItems(new Class[] { type });
-	}
-
-	/**
 	 * Returns the selected text as a text range.
 	 */
 	public native TextRange getSelectedTextRange();
@@ -1122,143 +1196,6 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public void deselectAll() {
 		commitCurrentStyle();
 		nativeDeselectAll();
-	}
-
-	private native ItemList getMatchingItems(Class type,
-			HashMap<Integer, Boolean> attributes);
-
-	/**
-	 * @jshide
-	 */
-	public ItemList getItems(Class[] types, Map<Object, Object> attributes) {
-		// Convert the attributes list to a new HashMap containing only
-		// integer -> boolean pairs.
-		HashMap<Integer, Boolean> converted = new HashMap<Integer, Boolean>();
-		if (attributes != null) {
-			for (Map.Entry entry : attributes.entrySet()) {
-				Object key = entry.getKey();
-				if (!(key instanceof ItemAttribute)) {
-					key = EnumUtils.get(ItemAttribute.class, key.toString());
-					if (key == null)
-						throw new ScriptographerException("Undefined attribute: "
-								+ entry.getKey());
-				}
-				converted.put(((ItemAttribute) key).value,
-						ConversionUtils.toBoolean(entry.getValue()));
-			}
-		}
-		ItemList items = new ItemList();
-		for (int i = 0; i < types.length; i++) {
-			Class type = types[i];
-			// Expand PathItem -> Path / CompoundPath
-			if (PathItem.class.equals(type)) {
-				items.addAll(getMatchingItems(Path.class, converted));
-				items.addAll(getMatchingItems(CompoundPath.class, converted));
-			} else {
-				ItemList list = getMatchingItems(type, converted);
-				// Filter out TextItems that do not match the given type.
-				// This is needed since nativeGetMatchingItems returns all
-				// TextItems...
-				// TODO: Move this to the native side maybe?
-				if (TextItem.class.isAssignableFrom(type))
-					for (Item item : list)
-						if (!type.isInstance(item))
-							list.remove(item);
-				items.addAll(list);
-			}
-		}
-		// Filter out matched children when the parent matches too
-		for (int i = items.size() - 1; i >= 0; i--) {
-			Item item = items.get(i);
-			if (items.contains(item.getParent()))
-				items.remove(i);
-		}
-		return items;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public ItemList getItems(Class[] types) {
-		return getItems(types, (Map<Object, Object>) null);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public ItemList getItems(Class type, Map<Object, Object> attributes) {
-		return getItems(new Class[] { type }, attributes);
-	}
-	
-	/**
-	 * @jshide
-	 */
-	public ItemList getItems(Class type) {
-		return getItems(new Class[] { type });
-	}
-
-	/**
-	 * Returns all items that match a set of attributes, as specified by the
-	 * passed map. For each of the keys in the map, the demanded value can
-	 * either be true or false.
-	 * 
-	 * Sample code: <code>
-	 * // All selected paths and rasters contained in the document.
-	 * var selectedItems = document.getItems({ 
-	 *     type: [Path, Raster], 
-	 *     selected: true
-	 * });
-	 * 
-	 * // All hidden Paths contained in the document.
-	 * var hiddenItems = document.getItems({
-	 *     type: Path,
-	 *     hidden: true
-	 * });
-	 * </code>
-	 * 
-	 * @param attributes an object containing the various attributes to check
-	 *        for. The key {@code type} defines a single prototype, an array of
-	 *        prototypes or a comma separated {@String} of prototype
-	 *        names to check for. The following keys have {@code Boolean} values
-	 *        to check for the state of the matching items: {@enum
-	 *        ItemAttribute}.
-	 */
-	public ItemList getItems(Map<Object, Object> attributes) {
-		ArrayList<Class> classes = new ArrayList<Class>();
-		// Convert "type" to class array:
-		Object types = attributes.get("type");
-		if (types != null) {
-			// Support comma separated String lists.
-			if (types instanceof String)
-				types = ((String) types).split(",");
-			if (types instanceof Object[]) {
-				for (Object type : (Object[]) types) {
-					if (type instanceof Class) {
-						classes.add((Class) type);
-					} else if (type instanceof String) {
-						// Try loading class from String name.
-						try {
-							classes.add(Class.forName(
-									Item.class.getPackage().getName()
-									+ "." + type));
-						} catch (ClassNotFoundException e) {
-						}
-					}
-				}
-			} else if (types instanceof Class)
-				classes.add((Class) types);
-		}
-		// Filter out classes again that are not inheriting Item.
-		for (int i = classes.size() - 1; i >= 0; i--)
-			if (!Item.class.isAssignableFrom((classes.get(i))))
-				classes.remove(i);
-		// If no class was specified, match them all through Item.
-		if (classes.isEmpty())
-			classes.add(Item.class);
-		// Remove "type" from the cloned map that's passed to getItems.
-		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
-		clone.remove("type");
-		return getItems(classes.toArray(new Class[classes.size()]), clone);
 	}
 
 	/* TODO: make these

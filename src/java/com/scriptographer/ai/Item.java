@@ -866,11 +866,11 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * @return {@true if the item defines a clip mask}
 	 */
 	public boolean isClipMask() {
-		return getAttribute(ItemAttribute.CLIPMASK);
+		return getAttribute(ItemAttribute.CLIP_MASK);
 	}
 
 	public void setClipMask(boolean clipMask) {
-		setAttribute(ItemAttribute.CLIPMASK, clipMask);
+		setAttribute(ItemAttribute.CLIP_MASK, clipMask);
 		if (clipMask) {
 			PathStyle style = getStyle();
 			style.setFillColor(Color.NONE);

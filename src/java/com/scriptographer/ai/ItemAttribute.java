@@ -49,7 +49,7 @@ public enum ItemAttribute implements IntegerEnum {
 	// Indicates that the object defines a clip mask. This can only be set on
 	// paths), compound paths), and text frame objects. This property can only be
 	// set on an object if the object is already contained within a clip group.
-	CLIPMASK(0x00001000),
+	CLIP_MASK(0x00001000),
 	// Indicates that text is to wrap around the object. This property cannot be
 	// set on an object that is part of compound group), it will return
 	// kBadParameterErr. private final int ATTR_IsTextWrap has to be set to the

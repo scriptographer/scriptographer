@@ -437,32 +437,18 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Boolean = loadClass(env, "java/lang/Boolean");
 	cid_Boolean = getConstructorID(env, cls_Boolean, "(Z)V");
 	mid_Boolean_booleanValue = getMethodID(env, cls_Boolean, "booleanValue", "()Z");
-	
+
 	cls_File = loadClass(env, "java/io/File");
 	cid_File = getConstructorID(env, cls_File, "(Ljava/lang/String;)V");
 	mid_File_getPath = getMethodID(env, cls_File, "getPath", "()Ljava/lang/String;");
 
 	cls_Collection = loadClass(env, "java/util/Collection");
 	mid_Collection_add = getMethodID(env, cls_Collection, "add", "(Ljava/lang/Object;)Z");
-	
+
 	cls_Map = loadClass(env, "java/util/Map");
-	mid_Map_keySet = getMethodID(env, cls_Map, "keySet", "()Ljava/util/Set;");
-	mid_Map_put = getMethodID(env, cls_Map, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-	mid_Map_get = getMethodID(env, cls_Map, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-	
-	cls_HashMap = loadClass(env, "java/util/HashMap");
-	cid_HashMap = getConstructorID(env, cls_HashMap, "()V");
-	
+
 	cls_ArrayList = loadClass(env, "java/util/ArrayList");
 	cid_ArrayList = getConstructorID(env, cls_ArrayList, "()V");
-	
-	cls_Set = loadClass(env, "java/util/Set");
-	mid_Set_iterator = getMethodID(env, cls_Set, "iterator", "()Ljava/util/Iterator;");
-
-	cls_Iterator = loadClass(env, "java/util/Iterator");
-	mid_Iterator_hasNext = getMethodID(env, cls_Iterator, "hasNext", "()Z");
-	mid_Iterator_next = getMethodID(env, cls_Iterator, "next", "()Ljava/lang/Object;");
-	mid_Iterator_remove = getMethodID(env, cls_Iterator, "remove", "()V");
 
 	cls_OutOfMemoryError = loadClass(env, "java/lang/OutOfMemoryError");
 
