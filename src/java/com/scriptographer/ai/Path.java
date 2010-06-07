@@ -688,9 +688,6 @@ public class Path extends PathItem {
 		nativeSetTabletData(TABLET_PRESSURE, data);
 	}
 	
-	/**
-	 * {@grouptitle PostScript-style drawing commands}
-	 */
 	public void moveTo(double x, double y) {
 		getSegments().moveTo(x, y);
 	}
@@ -724,10 +721,6 @@ public class Path extends PathItem {
 		getSegments().arcThrough(middleX, middleY, endX, endY);
 	}
 
-	/**
-	 * Closes the path. If it is closed, Illustrator connects the first and last
-	 * segments.
-	 */
 	public void closePath() {
 		setClosed(true);
 	}

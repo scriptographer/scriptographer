@@ -36,8 +36,6 @@ import java.awt.geom.PathIterator;
 
 /**
  * @author lehni
- *
- * @jshide
  */
 public abstract class PathItem extends Item {
 	/**
@@ -138,6 +136,10 @@ public abstract class PathItem extends Item {
 				end != null ? end.x : 0, end != null ? end.y : 0);
 	}
 
+	/**
+	 * Closes the path. If it is closed, Illustrator connects the first and last
+	 * segments.
+	 */
 	public abstract void closePath();
 
 	/**

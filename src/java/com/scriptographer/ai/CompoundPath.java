@@ -123,9 +123,6 @@ public class CompoundPath extends PathItem {
 		return prevPath;
 	}
 
-	/*
-	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
-	 */
 	public void moveTo(double x, double y) {
 		// moveTo always creates a new path:
 		Path path = new Path();
