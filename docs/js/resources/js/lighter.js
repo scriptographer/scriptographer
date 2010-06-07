@@ -95,7 +95,7 @@ Fuel = Base.extend(Callback, {
 		
 		if (!options.strict) {
 			// Find matches through the complete source code.
-			matches.append(this.builder[options.matchType].bind(this, [lighter.code])());
+			matches.append(this.builder[options.matchType].bind(this, lighter.code)());
 		} else if (delim.start && delim.end) {
 			// Find areas between language delimiters and find matches there.
 			while ((match = delim.start.exec(lighter.code)) != null ) {
@@ -105,7 +105,7 @@ Fuel = Base.extend(Callback, {
 					codeBeg = delim.start.lastIndex;
 					codeEnd = endMatch.index-1;
 					codeSeg = lighter.code.substring(codeBeg, codeEnd);
-					matches.append(this.builder[options.matchType].bind(this, [codeSeg, codeBeg])());
+					matches.append(this.builder[options.matchType].bind(this, codeSeg, codeBeg)());
 					matches.push(new Wick(endMatch[0], 'de2', endMatch.index));
 				}
 			}
@@ -395,7 +395,7 @@ Flame = Base.extend(Callback, {
 		    numCSS  = this.layout['numStyles'].merge(this.layout.numColor),
 		    lineCSS = this.layout['lineStyles'].merge(this.layout.lineColor),
 		    padCSS  = this.layout.left.merge(this.layout.right);
-			this.styleTag = new DomElement("style").setProperty('type','text/css').setProperty('id', 'lighter_' + this.lighter.options.mode).insertInside(DomElement.get('head'));
+			this.styleTag = new HtmlElement("style").setProperty('type','text/css').setProperty('id', 'lighter_' + this.lighter.options.mode).insertInside(DomElement.get('head'));
 		    
 		// General white-space/font styles.
 		this.addCSS(pfx, this.common);
@@ -529,9 +529,9 @@ Lighter = Base.extend(Callback, {
 		// Set builder options.
 		this.builder = new Hash({
 			'pre':    this.createLighter.bind(this),
-			'ol':     this.createLighterWithLines.bind(this, [['ol'], ['li']]),
-			'div':    this.createLighterWithLines.bind(this, [['div'], ['div', 'span'], true, 'span']),
-			'table':  this.createLighterWithLines.bind(this, [['table', 'tbody'], ['tr', 'td'], true, 'td'])
+			'ol':     this.createLighterWithLines.bind(this, ['ol'], ['li']),
+			'div':    this.createLighterWithLines.bind(this, ['div'], ['div', 'span'], true, 'span'),
+			'table':  this.createLighterWithLines.bind(this, ['table', 'tbody'], ['tr', 'td'], true, 'td')
 		});
 
 		// Extract fuel/flame names. Precedence: className > options > standard.
@@ -600,7 +600,7 @@ Lighter = Base.extend(Callback, {
 	 * Lighter creation methods
 	 **************************/
 	createLighter: function() {
-		var lighter = new DomElement('pre', {'class': this.flame.shortName + this.name}),
+		var lighter = new HtmlElement('pre', {'class': this.flame.shortName + this.name}),
 		    pointer = 0;
 		    
 		// If no matches were found, insert code plain text.
@@ -622,14 +622,14 @@ Lighter = Base.extend(Callback, {
 		return lighter;
 	},
 	createLighterWithLines: function(parent, child, addLines, lineType) {
-		var lighter = new DomElement(parent[0], {'class': this.flame.shortName + this.name, 'id': this.id}),
-		    newLine = new DomElement(child[0]),
+		var lighter = new HtmlElement(parent[0], {'class': this.flame.shortName + this.name, 'id': this.id}),
+		    newLine = new HtmlElement(child[0]),
 		    lineNum = 1,
 		    pointer = 0,
 		    text = null;
 		if (parent[0] == "table") lighter.set("cellpadding", 0).set("cellspacing", 0).set("border", 0);    
-		if (parent[1]) lighter = new DomElement(parent[1]).insertInside(lighter);
-		if (child[1])  newLine = new DomElement(child[1]).insertInside(newLine);
+		if (parent[1]) lighter = new HtmlElement(parent[1]).insertInside(lighter);
+		if (child[1])  newLine = new HtmlElement(child[1]).insertInside(newLine);
 		newLine.addClass(this.flame.shortName + 'line');
 		if (addLines) lineNum = this.insertLineNum(newLine, lineNum, lineType);
 		this.fuel.wicks.each(function(match) {
@@ -701,7 +701,7 @@ Lighter = Base.extend(Callback, {
 	/** Helper function to insert new code segment into existing line. */
 	insertAndKeepEl: function(el, text, alias) {
 		if (text.length > 0) {
-			var span = new DomElement('span');
+			var span = new HtmlElement('span');
 			span.set('text', text);
 			if (alias) {span.addClass(this.flame.aliases[alias]);}
 			span.insertInside(el);
@@ -713,14 +713,14 @@ Lighter = Base.extend(Callback, {
 		if (child[1]) el = el.getParent();
 		el.insertInside(group);
 		
-		var newLine = new DomElement(child[0]);
-		if (child[1]) newLine = new DomElement(child[1]).insertInside(newLine);
+		var newLine = new HtmlElement(child[0]);
+		if (child[1]) newLine = new HtmlElement(child[1]).insertInside(newLine);
 		newLine.addClass(this.flame.shortName+'line');
 		return newLine;
 	},
 	/** Helper funciton to insert line number into line. */
 	insertLineNum: function(el, lineNum, lineType) {
-		var newNum = new DomElement(lineType, {
+		var newNum = new HtmlElement(lineType, {
 			'text':  lineNum++,
 			'class': this.flame.shortName+ 'num'
 		});
@@ -748,7 +748,7 @@ Lighter = Base.extend(Callback, {
 
 });
 /** Element Native extensions */
-DomElement.inject({
+HtmlElement.inject({
 	light: function(options) {
 		return new Lighter(this, options);
 	}
@@ -790,7 +790,7 @@ Fuel.js = Fuel.extend({
 		// Keywords Rule Set
 		this.keywords = new Hash({
 			commonKeywords: {
-				csv: "as, break, case, catch, continue, delete, do, else, eval, finally, for, if, in, is, item, instanceof, return, switch, this, throw, try, typeof, void, while, write, with",
+				csv: "as, break, case, catch, continue, delete, do, else, eval, finally, for, if, in, is, instanceof, return, switch, this, throw, try, typeof, void, while, write, with",
 				alias: 'kw1'
 			},
 			langKeywords: {

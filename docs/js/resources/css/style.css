@@ -3,7 +3,7 @@ body {
 	margin: 16px;
 	font-family: "Lucida Grande", Geneva, Verdana, Arial, sans-serif;
 	font-size: 12px;
-	line-height: 18px;
+	line-height: 19px;
 	color: #000;
 	max-width: 540px;
 }
@@ -11,14 +11,14 @@ body {
 select, input, textarea {
 	font-family: "Lucida Grande", Geneva, Verdana, Arial, sans-serif;
 	font-size: 11px;
-	margin: 0px;
+	margin: 0;
 	color: #000;
 }
 
 p tt, pre {
-	font-family: Monaco, Courier, monospace;
-	font-size: 10px;
-	line-height: 18px;
+	font-family: Menlo, Consolas, "Vera Mono", monospace;
+	font-size: 11px;
+	line-height: 19px;
 }
 
 a {
@@ -37,18 +37,18 @@ a:hover {
 }
 
 p {
-	margin: 0 0 18px 0;
+	margin: 0 0 19px 0;
 }
 
 ul {
 	padding: 0;
-	margin: 0 0 18px 16px;
+	margin: 0 0 19px 16px;
 	list-style: disc outside url(../assets/bullet.gif);
 }
 
 ol {
 	padding: 0;
-	margin: 0 0 18px 0;
+	margin: 0 0 19px 0;
 }
 
 .clear {

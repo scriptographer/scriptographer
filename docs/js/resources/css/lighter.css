@@ -1,5 +1,5 @@
 ol.ltLighter {
-	font-family: Monaco, Courier, Monospace;
+	font-family: Menlo, Consolas, "Vera Mono", monospace;
 	font-size: 10px;
 	overflow: auto;
 	white-space: pre-wrap;
@@ -20,16 +20,13 @@ ol.ltLighter {
 
 ol.ltLighter {
 	color: #939393;
-	font-size: 10px;
 	list-style: decimal-leading-zero;
-	background-color: #f2f2f2;
+	background-color: #f4f4f4;
 	margin-left: 0;
 	padding-left: 0;
 }
 
 ol.ltLighter li {
-	border-top: 1px solid #fff;
-	border-bottom: 1px solid #fff;
 	border-left: 1px solid #939393;
 	padding: 0 3px 0 10px;
 	background-color: #fff;
@@ -47,14 +44,12 @@ ol.ltLighter .ltlast {
 }
 
 ol.ltLighter .alt {
-	border-top: 1px solid #eee;
-	border-bottom: 1px solid #eee;
-	background-color: #F4F8FC;
+	background-color: #edf5fc;
 }
 
 ol.ltLighter span {
 	color: black;
-	font-size: 10px;
+	font-size: 11px;
 }
 
 ol.ltLighter .de1 {

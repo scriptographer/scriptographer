@@ -11,8 +11,13 @@ $document.addEvent('domready', function() {
 	var h = unescape(document.location.hash);
 	if (h) scrollToElement(h.substring(1));
 	var code = $$('pre');
-	if (code.length)
-		code.light(lighterSettings);
+	if (code.length) {
+		code.light(lighterSettings).each(function(obj, i) {
+			var start =code[i].getProperty('start');
+			if (start)
+				obj.element.setProperty('start', start);
+		});
+	}
 });
 
 var lastMemberId = null;
@@ -30,7 +35,7 @@ function toggleMember(id, scrollTo) {
 		link.modifyClass('hidden', v);
 		desc.modifyClass('hidden', !v);
 		if (!desc.code && v)
-			desc.code = $$('pre.js', desc).light(lighterSettings);
+			desc.code = $$('pre', desc).light(lighterSettings);
 		if (scrollTo)
 			scrollToMember(id);
 		return false;
