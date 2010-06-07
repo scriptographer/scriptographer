@@ -604,7 +604,7 @@ public abstract class Item extends Component {
 	}
 
 	/* 
-	 * coordinate system transformations
+	 * Coordinate system transformations
 	 * 
 	 */
 	
@@ -645,7 +645,7 @@ public abstract class Item extends Component {
 	}
 
 	/* 
-	 * item display
+	 * Item display
 	 * 
 	 */
 
@@ -679,7 +679,7 @@ public abstract class Item extends Component {
 				nativeGetBackgroundColor());
 	}
 	/* 
-	 * cursor ID accessors
+	 * Cursor accessors
 	 * 
 	 */
 	
@@ -697,7 +697,7 @@ public abstract class Item extends Component {
 	}
 	
 	/*
-	 * tooltips
+	 * Tooltips
 	 * 
 	 */
 	
