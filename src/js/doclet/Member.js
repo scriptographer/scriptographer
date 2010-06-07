@@ -145,20 +145,30 @@ Member = Base.extend({
 
 	renderLink: function(param) {
 		param = param || {};
-		// In case the class is invisible, the current class needs to be used instead
+		// In case the class is invisible, the current class needs to be used
+		// instead
 		var containing = this.containingClass();
 		if (!containing.isVisible() && param.doc.superclass() == containing)
 			containing = param.doc;
 		var sameClass = containing == param.doc;
+		var namePrefix = '';
+		// Add the class name if the link goes accross classes
+		if (!sameClass && !param.shortTitle) {
+			// Java convention:
+			// namePrefix = containing.name() + (this.isStatic() ? '.' : '#');
+			// Scriptographer convention:
+			namePrefix = containing.name();
+			if (!this.isStatic())
+				namePrefix = namePrefix[0].toLowerCase()
+						+ namePrefix.substring(1);
+			namePrefix += '.';
+		}
 		return renderLink({
 			path: containing.qualifiedName(),
 			anchor: this.getId(),
 			toggle: sameClass,
 			title: param.title || code_filter(
-				// Add the class name if the link goes accross classes
-				(!sameClass && !param.shortTitle
-					? containing.name() + (this.isStatic() ? '.' : '#')
-					: '') + this.name() + this.getNameSuffix())
+				namePrefix + this.name() + this.getNameSuffix())
 		});
 	},
 
