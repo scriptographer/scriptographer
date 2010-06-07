@@ -17,17 +17,21 @@ Method = Member.extend(new function() {
 	// Checks wether two 'native' methods are compatible in the JS sense, using
 	// vararg rules.
 	function isCompatible(mem1, mem2) {
-		// Rule 1: Same 'staticness'
+		// Rule 1: Name:
+		if (mem1.name() != mem2.name())
+			return false;
+		// Rule 2: Same 'staticness'
 		if (mem1.isStatic() != mem2.isStatic())
 			return false;
-		// Rule 2: Same return type
+		// Rule 3: Same return type
 		if (mem1.isMethod() && mem1.returnType().qualifiedTypeName()
 			!= mem2.returnType().qualifiedTypeName())
 			return false;
 		var params1 = mem1.parameters();
 		var params2 = mem2.parameters();
 		var count = Math.min(params1.length, params2.length);
-		// Rule 3: If not the same amount of params, the types and names need to be the same:
+		// Rule 4: If not the same amount of params, the types and names need to
+		// be the same:
 		for (var i = 0; i < count; i++) {
 			if (params1[i].name() != params2[i].name()
 				|| !params1[i].paramType().isCompatible(params2[i].paramType()))
@@ -284,7 +288,7 @@ Method = Member.extend(new function() {
 		isCompatible: function(obj) {
 			if (obj instanceof Method) {
 				// Loop through each single 'native' method and call isCompatible
-				// on it agian.
+				// on it again.
 				return obj.members.find(function(mem) {
 					return this.isCompatible(mem);
 				}, this);
