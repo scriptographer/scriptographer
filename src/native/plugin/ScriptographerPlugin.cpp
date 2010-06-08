@@ -530,7 +530,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	};
 	DEFINE_CALLBACK_PROC(appEventHandler);
 	RETURN_ERROR(InstallApplicationEventHandler(
-			NewEventHandlerUPP(CALLBACK_PROC(appEventHandler)),
+			NewEventHandlerUPP((EventHandlerProcPtr) CALLBACK_PROC(appEventHandler)),
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
 	// Install Events
@@ -548,7 +548,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	};
 	DEFINE_CALLBACK_PROC(eventHandler);
 	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(),
-			NewEventHandlerUPP(CALLBACK_PROC(eventHandler)),
+			NewEventHandlerUPP((EventHandlerProcPtr) CALLBACK_PROC(eventHandler)),
 			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV

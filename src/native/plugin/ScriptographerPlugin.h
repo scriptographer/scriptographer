@@ -39,7 +39,8 @@
 
 DLLExport SPAPI int main(char *caller, char *selector, void *message);
 
-// Callback macros for automatically adding CFM glue to the callback methods on CS1 Mac:
+// Callback macros for automatically adding CFM glue to the callback methods on
+// CS Mac
 #ifdef MACHO_CFM_GLUE
 
 #include "MachO_CFM_Glue.h"
@@ -51,14 +52,14 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message);
 #define CALLBACK_PROC(PROC) \
 	PROC##_Proc
 
-#else
+#else // !MACHO_CFM_GLUE
 
 #define DEFINE_CALLBACK_PROC(PROC)
 
 #define CALLBACK_PROC(PROC) \
 	PROC
 
-#endif
+#endif // !MACHO_CFM_GLUE
 
 #define RETURN_ERROR(CALL) error = CALL; \
 	if (error) return error;
