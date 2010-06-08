@@ -35,7 +35,8 @@
 
 		<property name="build.dir" location="${project.dir}/build"/>
 		<property name="build.java" location="${build.dir}/java"/>
-		<!-- build.lib contains libraries for building, not built libs. Built libs go to target.lib -->
+		<!-- build.lib contains libraries for building, not built libs.
+			Built libs go to target.lib -->
 		<property name="build.lib" location="${build.java}/lib"/>
 		<property name="build.mac" location="${build.dir}/mac"/>
 		<property name="build.win" location="${build.dir}/win"/>
@@ -67,7 +68,8 @@
 		<property name="docs.dir.api" value="${docs.dir}/api"/>
 		<property name="docs.dir.js" value="${docs.dir}/js"/>
 		<property name="docs.dir.templates" value="${docs.dir}/templates"/>
-		<!-- This is used for importing comments from the gnu classpath file into the js documentation -->
+		<!-- This is used for importing comments from the gnu classpath file 
+			into the js documentation -->
 		<property name="docs.src" value="${docs.dir}/src"/>
 		
 		<path id="docs.sourcepath" >
@@ -176,31 +178,41 @@ Scriptographer build instructions
 	<!-- Increases the build.number by one. Execute only before publishing   -->
 	<!-- a new version.                                                      -->
 	<!-- =================================================================== -->
-	<target name="buildnumber" depends="init" description="Increase build number">
-		<propertyfile file="build.number" comment="Build Number for Scriptographer Plugin.">
-			  <entry  key="build.number" type="int" default="000" operation="+" pattern="000" />
+	<target name="buildnumber" depends="init"
+			description="Increase build number">
+		<propertyfile file="build.number"
+					comment="Build Number for Scriptographer Plugin.">
+			<entry  key="build.number" type="int" default="000" operation="+"
+				pattern="000" />
 		</propertyfile>
 		<antcall target="resources" />
 	</target>
 	
-	<target name="resources" depends="init" description="Generate native resrouce files">
+	<target name="resources" depends="init"
+			description="Generate native resrouce files">
 		<property name="resources.mac" value="${build.mac}/resources" />
 		<property name="resources.win" value="${build.win}/resources" />
 		<property name="resources.meta" value="${src.java}/META-INF/" />
-		<copy file="${resources.mac}/Info.plist.in" tofile="${resources.mac}/Info.plist" overwrite="true" />
+		<copy file="${resources.mac}/Info.plist.in"
+			tofile="${resources.mac}/Info.plist"
+			overwrite="true" />
 		<replace file="${resources.mac}/Info.plist">
 			<replacefilter token="@version@" value="${version}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 			<replacefilter token="@year@" value="${year}" />
 		</replace>
-		<copy file="${resources.win}/plugin.rc.in" tofile="${resources.win}/plugin.rc" overwrite="true" />
+		<copy file="${resources.win}/plugin.rc.in"
+				tofile="${resources.win}/plugin.rc"
+				overwrite="true" />
 		<replace file="${resources.win}/plugin.rc">
 			<replacefilter token="@version.major@" value="${version.major}" />
 			<replacefilter token="@version.minor@" value="${version.minor}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 			<replacefilter token="@year@" value="${year}" />
 		</replace>
-		<copy file="${resources.meta}/services/com.scriptographer.ScriptographerEngine.in" tofile="${resources.meta}/services/com.scriptographer.ScriptographerEngine" overwrite="true" />
+		<copy file="${resources.meta}/services/com.scriptographer.ScriptographerEngine.in"
+				tofile="${resources.meta}/services/com.scriptographer.ScriptographerEngine"
+				overwrite="true" />
 		<replace file="${resources.meta}/services/com.scriptographer.ScriptographerEngine">
 			<replacefilter token="@version@" value="${version}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
@@ -254,7 +266,8 @@ Scriptographer build instructions
 		</copy>
 
 		<!-- License -->
-		<copy todir="${target.packages}/Scriptographer/" file="${docs.dir}/License.txt" />
+		<copy todir="${target.packages}/Scriptographer/"
+				file="${docs.dir}/License.txt" />
 
 		<!-- Packages -->
 		<antcall target="packages.platform">
@@ -289,7 +302,8 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<!-- Platform Specific Package related Tasks for Mac and Windows         -->
 	<!-- =================================================================== -->
-	<target name="packages.platform" depends="init,packages.platform.mac,packages.platform.win">
+	<target name="packages.platform"
+			depends="init,packages.platform.mac,packages.platform.win">
 	</target>
 
 	<target name="packages.platform.mac" depends="init" if="build.platform.mac">
@@ -334,7 +348,8 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<!-- Produces header files for native JNI methods                        -->
 	<!-- =================================================================== -->
-	<target name="jniheaders" depends="compile" description="Make JNI header files">
+	<target name="jniheaders" depends="compile"
+			description="Make JNI header files">
 		<mkdir dir="${src.jni}"/>
 		<!-- Remove previously generated headers first, to avoid zombies -->
 		<delete>
@@ -434,8 +449,10 @@ Scriptographer build instructions
 		<echo id="echo" level="info" />
 		<script language="javascript" src="${src.js}/jni/jni.js">
 		<![CDATA[
-			// create registerNatives.cpp by parsing the generated files by javah, see jni.js:
-			registerNatives(project.getProperty("src.jni"), project.getProperty("src.jni") + "/registerNatives.cpp");
+			// create registerNatives.cpp by parsing the generated files by
+			// javah, see jni.js:
+			registerNatives(project.getProperty("src.jni"),
+				project.getProperty("src.jni") + "/registerNatives.cpp");
 		]]>
 		</script>
 	</target>
@@ -444,7 +461,8 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<!-- Produces JNI method bodies and cpp files for native JNI methods     -->
 	<!-- =================================================================== -->
-	<target name="jnibodies" depends="jniheaders" description="Make JNI body files">
+	<target name="jnibodies" depends="jniheaders"
+			description="Make JNI body files">
 		<script language="javascript" src="${src.js}/jni/jni.js">
 		<![CDATA[
 			// Create JNI bodies by parsing the generated files by javah,
@@ -480,9 +498,9 @@ Scriptographer build instructions
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
 		<!-- Set classmatch to empty if it's not defined -->
-		<!-- If it's not defined, pass " " instead of "" since on Windows, passing
-	         "" makes ant ignore that line and assume the next line as classmatch
-	         which results in confusion -->
+		<!-- If it's not defined, pass " " instead of "" since on Windows,
+			passing "" makes ant ignore that line and assume the next line as
+			classmatch which results in confusion -->
 		<condition property="classmatch" value="${classmatch}" else=" ">
 			<isset property="classmatch" />
 		</condition>
@@ -499,7 +517,8 @@ Scriptographer build instructions
 				classpathref="docs.classpath">
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
-			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
+			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet"
+					pathref="docs.classpath">
 				<param name="-script" value="${src.js}/doclet/main.js"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-classfilter" value="
@@ -508,9 +527,9 @@ Scriptographer build instructions
 					java.*
 				"/>
 				<param name="-packagesequence" value="
-					com.scriptographer.sg
 					com.scriptographer.ai
 					com.scriptographer.ui
+					com.scriptographer.sg
 					com.scriptographer.test
 					"/>
 				<param name="-methodfilter" value="
@@ -529,7 +548,8 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<!-- Creates the JS API Documentation                                    -->
 	<!-- =================================================================== -->
-	<target name="jsdocs" depends="init" description="Produce JS API Documentation">
+	<target name="jsdocs" depends="init"
+			description="Produce JS API Documentation">
 		<mkdir dir="${docs.dir.js}/packages"/>
 		<antcall target="rhinodoclet">
 			<param name="templates" value="false"/>
@@ -540,7 +560,8 @@ Scriptographer build instructions
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation as Templates for the Server        -->
 	<!-- =================================================================== -->
-	<target name="templatedocs" depends="init" description="Produce JS API Server Templates">
+	<target name="templatedocs" depends="init"
+			description="Produce JS API Server Templates">
 		<antcall target="rhinodoclet">
 			<param name="templates" value="true"/>
 			<param name="destdir" value="${docs.dir.templates}"/>
