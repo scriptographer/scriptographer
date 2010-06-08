@@ -37,11 +37,11 @@ import com.scriptographer.ai.Document;
 
 /*
  * This class is just a dummy to get Javadoc to generate documentation for
- * the global scope
+ * the Global Scope
  */
 
 /**
- * Objects and functions present in the global scope. These can be used anywhere
+ * Objects and functions present in the Global Scope. These can be used anywhere
  * in scripts.
  * 
  * @author lehni
