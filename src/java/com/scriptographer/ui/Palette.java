@@ -98,6 +98,9 @@ public class Palette implements PropertyObserver, Committable {
 		return title;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean hasLabels() {
 		return hasLabels;
 	}
