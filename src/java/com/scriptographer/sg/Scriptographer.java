@@ -57,7 +57,7 @@ public class Scriptographer {
 	/**
 	 * Scriptographer's version description.
 	 */
-	public String getVersion() {
+	public double getVersion() {
 		return ScriptographerEngine.getPluginVersion();
 	}
 

@@ -770,11 +770,11 @@ public class ScriptographerEngine {
 
 	public static native int getApplicationRevision();
 
-	private static String version = null;
+	private static double version = -1;
 	private static int revision = -1;
 
-	public static String getPluginVersion() {
-		if (version == null)
+	public static double getPluginVersion() {
+		if (version == -1)
 			readVersion();
 		return version;
 	}
@@ -789,7 +789,7 @@ public class ScriptographerEngine {
 		String[] lines = ClassUtils.getServiceInformation(
 				ScriptographerEngine.class);
 		if (lines != null) {
-			version = lines[0];
+			version = Double.parseDouble(lines[0]);
 			revision = Integer.parseInt(lines[1]);
 		}
 	}
