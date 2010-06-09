@@ -51,7 +51,9 @@ public abstract class Event {
 	 * Sample code:
 	 * <code>
 	 * function onMouseDown(event) {
-	 *     print(event.modifiers.shift);
+	 *     if(event.modifiers.shift) {
+	 *     	print('The shift key is down');
+	 *     };
 	 * }
 	 * </code>
 	 * 
