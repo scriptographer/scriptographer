@@ -875,12 +875,17 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 		return getAttribute(ItemAttribute.CLIP_MASK);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setClipMask(boolean clipMask) {
 		setAttribute(ItemAttribute.CLIP_MASK, clipMask);
 		if (clipMask) {
 			PathStyle style = getStyle();
 			style.setFillColor(Color.NONE);
 			style.setStrokeColor(Color.NONE);
+			// We need to reflect the clip mask status in the deprectted clip
+			// property too, otherwise the delayed commmit() through the
+			// CommitManager would override whatever we set here.
+			style.clip = clipMask;
 		}
 	}
 

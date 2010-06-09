@@ -51,7 +51,8 @@ import com.scriptographer.Committable;
 
 /**
  * PathStyle is used for changing the visual styles of items contained within an
- * Illustrator document and is returned by {@link Item#getStyle()} and {@link Document#getCurrentStyle}.
+ * Illustrator document and is returned by {@link Item#getStyle()} and
+ * {@link Document#getCurrentStyle}.
  * 
  * All properties of PathStyle are also reflected directly in {@link Item},
  * i.e.: {@link Item#getFillColor()}.
@@ -80,13 +81,15 @@ public class PathStyle extends NativeObject implements Style, Committable {
 	
 	/**
 	 *  Whether or not to use this as a clipping path.
-	 *  @deprecated in Illustrator, but we still need to keep it around to reflect the state
+	 *  @deprecated in Illustrator, but we still need to keep it around to
+	 *  reflect the state
 	 */
 	protected Boolean clip;
 	
 	/**
 	 *  Whether or not to lock the clipping path.
-	 *  @deprecated in Illustrator, but we still need to keep it around to reflect the state
+	 *  @deprecated in Illustrator, but we still need to keep it around to
+	 *  reflect the state
 	 */
 	protected Boolean lockClip;
 
@@ -228,10 +231,13 @@ public class PathStyle extends NativeObject implements Style, Committable {
 		nativeSet(handle, docHandle,
 			fill.color != null && fill.color != Color.NONE ? fill.color : null,
 			fill.color != null, 
-			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
-			stroke.color != null && stroke.color != Color.NONE ? stroke.color : null,
+			fill.overprint != null 
+					? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.color != null && stroke.color != Color.NONE 
+					? stroke.color : null,
 			stroke.color != null,
-			stroke.overprint != null ? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.overprint != null 
+					? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.width != null ? stroke.width.floatValue() : -1,
 			stroke.cap != null ? stroke.cap.value : -1,
 			stroke.join != null ? stroke.join.value : -1,
