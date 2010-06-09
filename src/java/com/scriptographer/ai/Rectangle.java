@@ -234,9 +234,9 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	}
 
 	/**
-	 * The top coordinate of the rectangle. In the AI coordinate
-	 * system, the y axis grows from bottom to top. Note that this
-	 * doesn't move the whole rectangle: the bottom won't move.
+	 * The top coordinate of the rectangle. In the AI coordinate system, the y
+	 * axis grows from bottom to top. Note that this doesn't move the whole
+	 * rectangle: the bottom won't move.
 	 */
 	public double getTop() {
 		return y + height;
@@ -259,9 +259,9 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	}
 
 	/**
-	 * The bottom coordinate of the rectangle. In the AI coordinate
-	 * system, the y axis grows from bottom to top. Note that this doesn't move
-	 * the whole rectangle: the top won't move.
+	 * The bottom coordinate of the rectangle. In the AI coordinate system, the
+	 * y axis grows from bottom to top. Note that this doesn't move the whole
+	 * rectangle: the top won't move.
 	 */
 	public double getBottom() {
 		return y;
@@ -525,7 +525,7 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * 
 	 * @jshide
 	 */
-	public Rectangle unite(double px, double py) {
+	public Rectangle include(double px, double py) {
 		double x1 = Math.min(x, px);
 		double y1 = Math.min(y, py);
 		double x2 = Math.max(x + width, px);
@@ -547,8 +547,22 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * 
 	 * @param point
 	 */
+	public Rectangle include(Point point) {
+		return include(point.x, point.y);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Rectangle unite(double px, double py) {
+		return include(px, py);
+	}
+
+	/**
+	 * @deprecated
+	 */
 	public Rectangle unite(Point point) {
-		return unite(point.x, point.y);
+		return include(point);
 	}
 
 	protected Rectangle2D toRectangle2D() {
