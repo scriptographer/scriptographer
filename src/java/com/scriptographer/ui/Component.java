@@ -252,6 +252,22 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The first {@link #getValue()} that was set.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	number: 30
+	 * };
+	 * var components = { 
+	 * 	number: {
+	 * 		type: 'number'
+	 * 	}
+	 * }; 
+	 * var palette = new Palette('Text', components, values);
+	 * values.number = 60;
+	 * print(components.number.value) // 60
+	 * print(components.number.defaultValue) // 30
+	 * </code>
 	 */
 	public Object getDefaultValue() {
 		return defaultValue;
@@ -299,6 +315,25 @@ public class Component implements ChangeReceiver {
 	/**
 	 * Specifies whether the component is visible.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	number: 10
+	 * };
+	 * var components = {
+	 * 	showNumber: {
+	 * 		type: 'checkbox', label: 'Show',
+	 * 		onChange: function(value) {
+	 * 			components.number.visible = value;
+	 * 		}
+	 * 	},
+	 * 	number: {
+	 * 		type: 'number', label: 'Number',
+	 * 		visible: false
+	 * 	}
+	 * };
+	 * var palette = new Palette('Show / Hide', components, values);
+	 * </code>
 	 * @return {@true if the component is visible}
 	 */
 	public boolean isVisible() {
@@ -314,6 +349,27 @@ public class Component implements ChangeReceiver {
 	/**
 	 * Specifies whether the component is enabled. When set to {@code false},
 	 * the component is grayed out and does not allow user interaction.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	canEdit: false,
+	 * 	text: 'Can you edit me?'
+	 * }
+	 * var components = { 
+	 * 	canEdit: {
+	 * 		type: 'checkbox', label: 'Allow Editing',
+	 * 		onChange: function(value) {
+	 * 			components.text.enabled = value;
+	 * 		}
+	 * 	},
+	 * 	text: { 
+	 * 		type: 'string',
+	 * 		enabled: false
+	 * 	}
+	 * }; 
+	 * var palette = new Palette('Text', components, values);
+	 * </code>
 	 * 
 	 * @return {@true if the component is enabled}
 	 */
@@ -383,6 +439,26 @@ public class Component implements ChangeReceiver {
 	 * The range for the numeric value as an array in the form: [min, max]. The
 	 * first element in the array defines the allowed minimum amount, the second
 	 * the maximum amount, both are included in the range.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	percentage: 50,
+	 * 	angle: 180
+	 * };
+	 * var components = { 
+	 * 	percentage: { 
+	 * 		type: 'slider', label: 'Percentage', 
+	 * 		range: [0, 100]
+	 * 	}, 
+	 * 	angle: { 
+	 * 		type: 'number', label: 'Angle', 
+	 * 		range: [0, 360]
+	 * 	}, 
+	 * };
+	 * 
+	 * var palette = new Palette('Range Examples', components, values);
+	 * </code>
 	 */
 	public double[] getRange() {
 		return hasRange() ? new double[] {
@@ -423,6 +499,20 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The minimum amount allowed.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	size: 5
+	 * };
+	 * var components = {
+	 * 	size: {
+	 * 		type: 'number', label: 'Size',
+	 * 		min: 0, steppers: true
+	 * 	}
+	 * };
+	 * var palette = new Palette('Minimum Value', components, values);
+	 * </code>
 	 */
 	public Double getMin() {
 		return min;
@@ -434,6 +524,20 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The maximum amount allowed.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	size: 5
+	 * };
+	 * var components = {
+	 * 	size: {
+	 * 		type: 'number', label: 'Size',
+	 * 		max: 10, steppers: true
+	 * 	}
+	 * };
+	 * var palette = new Palette('Maximum Value', components, values);
+	 * </code>
 	 */
 	public Double getMax() {
 		return max;
@@ -447,6 +551,21 @@ public class Component implements ChangeReceiver {
 	 * The amount the steppers increase / decrease the value. Even when steppers
 	 * are not activated, the user can still use the up/down arrow keys to step
 	 * by the amount defined by increment.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	percentage: 50
+	 * };
+	 * var components = {
+	 * 	percentage: {
+	 * 		type: 'number',
+	 * 		range: [0, 100],
+	 * 		steppers: true, increment: 10
+	 * 	}
+	 * };
+	 * var palette = new Palette('Increment', components, values);
+	 * </code>
 	 */
 	public Double getIncrement() {
 		if (type == ComponentType.NUMBER
@@ -501,6 +620,32 @@ public class Component implements ChangeReceiver {
 	
 	/**
 	 * The units to be displayed behind the value.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	width: 10,
+	 * 	percentage: 50,
+	 * 	angle: 180
+	 * }
+	 * 
+	 * var components = {
+	 * 	width: {
+	 * 		type: 'number', label: 'Width',
+	 * 		units: 'point'
+	 * 	},
+	 * 	percentage: {
+	 * 		type: 'number', label: 'Percentage',
+	 * 		units: 'percent'
+	 * 	},
+	 * 	angle: {
+	 * 		type: 'number', label: 'Angle',
+	 * 		units: 'degree'
+	 * 	}
+	 * }
+	 * 
+	 * var palette = new Palette('Units Examples', components, values);
+	 * </code>
 	 */
 	public TextUnits getUnits() {
 		return units;
@@ -550,6 +695,20 @@ public class Component implements ChangeReceiver {
 	 * {@grouptitle List Properties}
 	 * 
 	 * The options that the user can choose from in the list component.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	fruit: 'Orange'
+	 * };
+	 * var components = { 
+	 * 	fruit: { 
+	 * 		type: 'list', label: 'Fruit',
+	 * 		options: ['Orange', 'Apple', 'Banana', 'Kiwi']
+	 * 	} 
+	 * };
+	 * var palette = new Palette('List Example', components, values);
+	 * </code>
 	 */
 	public com.scratchdisk.list.List<Object> getOptions() {
 		return new OptionList(options);
@@ -581,6 +740,21 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The index of the selected value in the {@link #getOptions} array.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	fruit: 'Apple'
+	 * };
+	 * var components = { 
+	 * 	fruit: { 
+	 * 		type: 'list', label: 'Fruit',
+	 * 		options: ['Orange', 'Apple', 'Banana', 'Kiwi']
+	 * 	} 
+	 * };
+	 * var palette = new Palette('List Example', components, values);
+	 * print(components.fruit.selectedIndex) // 1
+	 * </code>
 	 */
 	public Integer getSelectedIndex() {
 		return proxy != null ? proxy.getSelectedIndex() : null;
@@ -600,7 +774,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	/**
-	 * {@grouptitle Text Properties}
+	 * {@grouptitle Text and String Properties}
 	 * 
 	 * The width of the text field in average amount of characters.
 	 */
@@ -623,6 +797,22 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The maximum amount of characters that the text field may contain.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var values = {
+	 * 	name: ''
+	 * };
+	 * var components = { 
+	 * 	name: { 
+	 * 		type: 'string', label: 'Name',
+	 * 		editable: true, maxLength: 3
+	 * 	} 
+	 * };
+	 * var palette = new Palette('Max Length', components, values);
+	 * values.name = '123456';
+	 * print(values.name) // '123'
+	 * </code>
 	 */
 	public Integer getMaxLength() {
 		return maxLength;
@@ -639,6 +829,18 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * Specifies whether the field shows multiple lines of text.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = { 
+	 *     text: { 
+	 *         type: 'text', label: 'Text', 
+	 *         value: 'This is a text\nwith multiple lines', 
+	 *         multiline: true
+	 *     } 
+	 * }; 
+	 * var palette = new Palette('Text', components);
+	 * </code>
 	 */
 	public Boolean getMultiline() {
 		return multiline;
@@ -667,6 +869,18 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The average amount of characters per line visible in the text area.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = { 
+	 *     text: { 
+	 *         type: 'string',
+	 *         value: 'This is a string component\nwith 6 rows and 30 columns', 
+	 *         rows: 6, columns: 30
+	 *     } 
+	 * }; 
+	 * var palette = new Palette('Text', components);
+	 * </code>
 	 */
 	public Integer getColumns() {
 		return columns;
@@ -688,6 +902,18 @@ public class Component implements ChangeReceiver {
 	 * The amount of visible lines of text in the text area. Due to a bug in
 	 * Illustrator's GUI, values below 6 cause problems with scrollbars on
 	 * Macintosh. The default is 6.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = { 
+	 *     text: { 
+	 *         type: 'string',
+	 *         value: 'This is a string component\nwith 6 rows and 30 columns', 
+	 *         rows: 6, columns: 30
+	 *     } 
+	 * }; 
+	 * var palette = new Palette('Text', components);
+	 * </code>
 	 */
 	public Integer getRows() {
 		return rows;
@@ -710,6 +936,22 @@ public class Component implements ChangeReceiver {
 	 * 
 	 * The function that is called whenever the value of the component changes.
 	 * The function receives the new value as an argument.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = { 
+	 * 	threshold: { 
+	 * 		type: 'number', label: 'Distance Threshold', 
+	 * 		units: 'point', 
+	 * 		onChange: function(value) { 
+	 * 			print('Threshold was changed to', value); 
+	 * 			tool.distanceThreshold = value; 
+	 * 		} 
+	 * 	} 
+	 * };
+	 * 
+	 * var palette = new Palette('title', components);
+	 * </code>
 	 */
 	public Callable getOnChange() {
 		return onChange;
@@ -734,6 +976,20 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The function that is called when a button component is clicked.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = {
+	 * 	button: { 
+	 * 		type: 'button',
+	 * 		value:'Click Me', label: 'Button',
+	 * 		onClick: function() {
+	 * 			print('You clicked me!');
+	 * 		}
+	 * 	}
+	 * };
+	 * var palette = new Palette('Button Component', components);
+	 * </code>
 	 */
 	public Callable getOnClick() {
 		return onClick;
@@ -752,6 +1008,20 @@ public class Component implements ChangeReceiver {
 
 	/**
 	 * The function that is called when a popup menu entry is selected.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = {
+	 * 	menuEntry: { 
+	 * 		type: 'menu-entry',
+	 * 		value:'Select Me',
+	 * 		onSelect: function() {
+	 * 			print('You selected me!');
+	 * 		}
+	 * 	}
+	 * };
+	 * var values = new Palette('Menu Entry', components);
+	 * </code>
 	 */
 	public Callable getOnSelect() {
 		return onSelect;
