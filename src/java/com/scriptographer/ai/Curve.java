@@ -29,6 +29,8 @@
 
 package com.scriptographer.ai;
 
+import java.util.ArrayList;
+
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.ChangeReceiver;
 
@@ -36,14 +38,13 @@ import com.scratchdisk.script.ChangeReceiver;
  * @author lehni
  */
 public class Curve implements ChangeReceiver {
-	protected SegmentList segments = null;
-	protected int index1;
-	protected int index2;
+	private SegmentList segments = null;
+	private int index1;
+	private int index2;
 	private Segment segment1;
 	private Segment segment2;
-	protected int fetchCount = -1;
-	
-	protected static final double EPSILON = 0.00001;
+
+	protected static final double EPSILON = 10e-5;
 
 	public Curve() {
 		segment1 = new Segment();
@@ -132,31 +133,6 @@ public class Curve implements ChangeReceiver {
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0);
 	}
 
-	public String toString() {
-		updateSegments();
-		StringBuffer buf = new StringBuffer(64);
-		buf.append("{ point1: ").append(segment1.point.toString());
-		if (segment1.handleOut.x != 0 || segment1.handleOut.y != 0)
-			buf.append(", handle1: ").append(segment1.handleOut.toString());
-		if (segment2.handleIn.x != 0 || segment2.handleIn.y != 0)
-			buf.append(", handle2: ").append(segment2.handleIn.toString());
-		buf.append(", point2: ").append(segment2.point.toString());
-		buf.append(" }");
-		return buf.toString();
-	}
-
-	public Object clone() {
-		updateSegments();
-		return new Curve(segment1, segment2);
-	}
-
-	/**
-	 * The path that the curve belongs to.
-	 */
-	public Path getPath() {
-		return segments != null ? segments.path : null;
-	}
-
 	protected void updateSegments() {
 		if (segments != null) {
 			// Make sure the segments are up to date first. The size might have
@@ -193,6 +169,13 @@ public class Curve implements ChangeReceiver {
 	 */
 	public int getIndex() {
 		return index1;
+	}
+
+	/**
+	 * The path that the segment belongs to.
+	 */
+	public Path getPath() {
+		return segments != null ? segments.path : null;
 	}
 
 	/**
@@ -278,7 +261,7 @@ public class Curve implements ChangeReceiver {
 		updateSegments();
 		segment2.handleIn.set(x, y);
 	}
-	
+
 	/**
 	 * The first segment of the curve.
 	 */
@@ -301,7 +284,7 @@ public class Curve implements ChangeReceiver {
 				? segments.get(index1 + 1).getCurve()
 				: null;
 	}
-	
+
 	/**
 	 * The previous curve in the {@link Path#getCurves()} array.
 	 */
@@ -311,20 +294,50 @@ public class Curve implements ChangeReceiver {
 				: null;
 	}
 
-	// TODO: Shall we return reversed curve as new instance instead of modifying
-	// this curve?
+	private static native double nativeGetLength(double p1x, double p1y,
+			double h1x, double h1y, double h2x, double h2y, double p2x,
+			double p2y);
+
 	/**
-	 * Reverses the curve.
+	 * The approximated length of the curve in points.
 	 */
-	public void reverse() {
-		Segment tmp = (Segment) segment1.clone();
-		segment1.setHandleIn(segment2.getHandleOut());
-		segment1.setHandleOut(segment2.getHandleIn());
-		segment1.setPoint(segment2.getPoint());
-		segment2.setHandleIn(tmp.getHandleOut());
-		segment2.setHandleOut(tmp.getHandleIn());
-		segment2.setPoint(tmp.getPoint());
+	public double getLength() {
+		updateSegments();
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
+		return nativeGetLength(
+				point1.x, point1.y,
+				handle1.x + point1.x, handle1.y + point1.y,
+				handle2.x + point2.x, handle2.y + point2.y,
+				point2.x, point2.y
+		);
 	}
+
+	public Rectangle getControlBounds() {
+		updateSegments();
+		return getControlBounds(getCurveValues());
+	}
+
+/*
+	public double getJavaLength() {
+		updateSegments();
+		return getJavaLength(getCurveValues());
+	}
+
+	public static double getJavaLength(double[][] curve) {
+		if (isFlat(curve)) {
+			double x = curve[3][0] - curve[0][0];
+			double y = curve[3][1] - curve[0][1];
+			return Math.sqrt(x * x + y * y);
+		} else {
+			double[][] right = new double[4][];
+			subdivide(curve, curve, right);
+			return getJavaLength(curve) + getJavaLength(right);
+		}
+	}
+*/
 
 	/*
 	 * Instead of using the underlying AI functions and loose time for calling
@@ -338,44 +351,52 @@ public class Curve implements ChangeReceiver {
 	 */
 	public Point getPoint(double parameter) {
 		updateSegments();
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
 		// calculate the polynomial coefficients. caution: handles are relative
 		// to points
-		double dx = segment2.point.x - segment1.point.x;
-		double cx = 3f * segment1.handleOut.x;
-		double bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double dx = point2.x - point1.x;
+		double cx = 3.0 * handle1.x;
+		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
 		double ax = dx - cx - bx;
 
-		double dy = segment2.point.y - segment1.point.y;
-		double cy = 3f * segment1.handleOut.y;
-		double by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double dy = point2.y - point1.y;
+		double cy = 3.0 * handle1.y;
+		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
 		double ay = dy - cy - by;
 		
 		return new Point(
-			((ax * parameter + bx) * parameter + cx) * parameter + segment1.point.x,
-			((ay * parameter + by) * parameter + cy) * parameter + segment1.point.y
+				((ax * parameter + bx) * parameter + cx) * parameter + point1.x,
+				((ay * parameter + by) * parameter + cy) * parameter + point1.y
 		);
 	}
 
 	public Point getTangent(double parameter) {
 		updateSegments();
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
 
 		double t = parameter;
 		// prevent normals of length 0:
-		if (t == 0 && segment1.handleOut.x == 0 && segment1.handleOut.y == 0)
+		if (t == 0 && handle1.x == 0 && handle1.y == 0)
 			t = 0.000000000001;
-		else if (t == 1 && segment2.handleIn.x == 0 && segment2.handleIn.y == 0)
+		else if (t == 1 && handle2.x == 0 && handle2.y == 0)
 			t = 0.999999999999;
 
 		// calculate the polynomial coefficients. caution: handles are relative
 		// to points
-		double dx = segment2.point.x - segment1.point.x;
-		double cx = 3.0 * segment1.handleOut.x;
-		double bx = 3.0 * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double dx = point2.x - point1.x;
+		double cx = 3.0 * handle1.x;
+		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
 		double ax = dx - cx - bx;
 
-		double dy = segment2.point.y - segment1.point.y;
-		double cy = 3.0 * segment1.handleOut.y;
-		double by = 3.0 * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double dy = point2.y - point1.y;
+		double cy = 3.0 * handle1.y;
+		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
 		double ay = dy - cy - by;
 
 		// simply use the derivation of the bezier function
@@ -388,56 +409,127 @@ public class Curve implements ChangeReceiver {
 
 	public Point getNormal(double parameter) {
 		updateSegments();
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
 
 		double t = parameter;
 		// prevent normals of length 0:
-		if (t == 0 && segment1.handleOut.x == 0 && segment1.handleOut.y == 0)
+		if (t == 0 && handle1.x == 0 && handle1.y == 0)
 			t = 0.000000000001;
-		else if (t == 1 && segment2.handleIn.x == 0 && segment2.handleIn.y == 0)
+		else if (t == 1 && handle2.x == 0 && handle2.y == 0)
 			t = 0.999999999999;
 
 		// calculate the polynomial coefficients. caution: handles are relative
 		// to points
-		double dx = segment2.point.x - segment1.point.x;
-		double cx = 3.0 * segment1.handleOut.x;
-		double bx = 3.0 * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double dx = point2.x - point1.x;
+		double cx = 3.0 * handle1.x;
+		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
 		double ax = dx - cx - bx;
 
-		double dy = segment2.point.y - segment1.point.y;
-		double cy = 3.0 * segment1.handleOut.y;
-		double by = 3.0 * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double dy = point2.y - point1.y;
+		double cy = 3.0 * handle1.y;
+		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
 		double ay = dy - cy - by;
 
 		// the normal is simply the rotated tangent:
 		return new Point(
-			(-3.0 * ay * t - 2.0 * by) * t - cy,
-			( 3.0 * ax * t + 2.0 * bx) * t + cx
+				(-3.0 * ay * t - 2.0 * by) * t - cy,
+				( 3.0 * ax * t + 2.0 * bx) * t + cx
 		);
 	}
 
-	private static native double nativeGetLength(double p1x, double p1y,
-			double h1x, double h1y, double h2x, double h2y, double p2x, double p2y);
+	public double getParameter(Point point, double precision) {
+		updateSegments();
+		return getParameter(getCurveValues(), point.x, point.y,
+				precision);
+	}
+
+	public double getParameter(Point point) {
+		return getParameter(point, EPSILON);
+	}
+
+	public double getParameter(double length) {
+		updateSegments();
+		return getParameter(getCurveValues(), length);
+	}
 
 	/**
-	 * The approximated length of the curve in points.
+	 * @deprecated
 	 */
-	public double getLength() {
-		updateSegments();
-		return nativeGetLength(
-				segment1.point.x,
-				segment1.point.y,
-				(segment1.handleOut.x + segment1.point.x),
-				(segment1.handleOut.y + segment1.point.y),
-				(segment2.handleIn.x + segment2.point.x),
-				(segment2.handleIn.y + segment2.point.y),
-				segment2.point.x,
-				segment2.point.y
-		);
+	public double getParameterWithLength(double length) {
+		return getParameter(length);
 	}
 
+	public Point[] getIntersections(Curve other) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		getIntersections(getCurveValues(), other.getCurveValues(), points);
+		return points.toArray(new Point[points.size()]);
+	}
+
+	public Location[] getIntersectionLocations(Curve other) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		getIntersections(getCurveValues(), other.getCurveValues(), points);
+		int amount = points.size();
+		Location[] locations = new HitResult[amount];
+		for (int i = 0; i < amount; i++) {
+			locations[i] = new Location(this, getParameter(points.get(i)));
+		}
+		return locations;
+	}
+
+	private static void getIntersections(double[][] curve1, double[][] curve2,
+			ArrayList<Point> points) {
+		/*
+		Path line = Document.getActiveDocument().createRectangle(
+				getControlBounds(curve1));
+		line.setStrokeColor(java.awt.Color.green);
+		line.setStrokeWidth(1f);
+
+		line = Document.getActiveDocument().createRectangle(
+				getControlBounds(curve2));
+		line.setStrokeColor(java.awt.Color.red);
+		line.setStrokeWidth(1f);
+		*/
+		if (getControlBounds(curve1).intersects(getControlBounds(curve2))) {
+			if (isFlat(curve1) && isFlat(curve2)) {
+				// Treat both curves as lines and see if their parametric
+				// equations interesct.
+				Point point = Line.intersect(
+						curve1[0][0], curve1[0][1],
+						curve1[3][0], curve1[3][1], false,
+						curve2[0][0], curve2[0][1],
+						curve2[3][0], curve2[3][1], false);
+				if (point != null)
+					points.add(point);
+			} else {
+				double curve1Left[][] = new double[4][];
+				double curve1Right[][] = new double[4][];
+				double curve2Left[][] = new double[4][];
+				double curve2Right[][] = new double[4][];
+				subdivide(curve1, curve1Left, curve1Right);
+				subdivide(curve2, curve2Left, curve2Right);
+				getIntersections(curve1Left, curve2Left, points);
+				getIntersections(curve1Left, curve2Right, points);
+				getIntersections(curve1Right, curve2Left, points);
+				getIntersections(curve1Right, curve2Right, points);
+			}
+		}
+	}
+
+	/**
+	 * Checks if this curve is linear, meaning it does not define any curve
+	 * handle.
+
+	 * @return {@true if the curve is linear}
+	 */
 	public boolean isLinear() {
-		return segment1.handleOut.x == 0 && segment1.handleOut.y == 0
-			&& segment2.handleIn.y == 0 && segment2.handleIn.y == 0;
+		updateSegments();
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		return handle1.x == 0 && handle1.y == 0
+				&& handle2.y == 0 && handle2.y == 0;
 	}
 
 	private static native void nativeAdjustThroughPoint(float[] values,
@@ -449,7 +541,8 @@ public class Curve implements ChangeReceiver {
 		float[] values = new float[2 * SegmentList.VALUES_PER_SEGMENT];
 		segment1.getValues(values, 0);
 		segment2.getValues(values, 1);
-		nativeAdjustThroughPoint(values, (float) pt.x, (float) pt.y, (float) parameter);
+		nativeAdjustThroughPoint(values, (float) pt.x, (float) pt.y,
+				(float) parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// Don't mark dirty, commit immediately both as all the values have
@@ -472,6 +565,14 @@ public class Curve implements ChangeReceiver {
 	}
 
 	/**
+	 * Retruns the reversed the curve, without modifying the curve itself.
+	 */
+	public Curve reverse() {
+		updateSegments();
+		return new Curve(segment2.reverse(), segment1.reverse());
+	}
+
+	/**
 	 * Divides the curve into two at the specified position. The curve itself is
 	 * modified and becomes the first part, the second part is returned as a new
 	 * curve. If the modified curve belongs to a path item, the second part is
@@ -486,9 +587,13 @@ public class Curve implements ChangeReceiver {
 		if (parameter > 0 && parameter < 1) {
 			updateSegments();
 			
-			double left[][] = getCurveArray();
+			double left[][] = getCurveValues();
 			double right[][] = new double[4][];
-			split(left, parameter, left, right);
+			// Use faster special algorithm for subdividing in the middle
+			if (parameter == 0.5)
+				subdivide(left, left, right);
+			else
+				subdivide(left, parameter, left, right);
 	
 			// Write back the results:
 			segment1.handleOut.set(left[1][0] - segment1.point.x,
@@ -523,7 +628,8 @@ public class Curve implements ChangeReceiver {
 			// We need a path to be able to access curves
 			if (segments != null && segments.path != null) {
 				result = getNext();
-				// If it's the last one in a closed path, return the first curve instead
+				// If it's the last one in a closed path, return the first curve
+				// instead
 				if (result == null)
 					result = segments.getFirst().getCurve();
 			} else {
@@ -555,84 +661,167 @@ public class Curve implements ChangeReceiver {
 		}
 	}
 
-	// No need to expose these since they are confused with the native HitTest
-	// TODO: Decide if maybe useful under different name?
-	/*
-	public double hitTest(Point point, double precision) {
-		updateSegments();
-		
-		return hitTest(getCurveArray(), point.x, point.y, precision);
-	}
-
-	public double hitTest(Point point) {
-		return hitTest(point, EPSILON);
-	}
-	*/
-
 	public double getPartLength(double fromParameter, double toParameter) {
 		updateSegments();
-		double[][] curve = getCurveArray();
+		double[][] curve = getCurveValues();
 		return getPartLength(curve, fromParameter, toParameter, curve);
 	}
 
-	public double getParameterWithLength(double length) {
-		if (length <= 0)
-			return 0;
-		// updateSegments is not necessary here, as it is called in getLength!
-		double bezierLength = getLength();
-		if (length >= bezierLength)
-			return 1;
-		double[][] curve = getCurveArray();
-		double[][] temp = new double[4][];
-
-		// Let's use the Regula Falsi method to find the right length in 
-		// few iterations. Generally only 4 - 7 are required.
-		double left = 0;
-		double right = 1;
-		double error = 5e-15;
-		double fLeft = getLeftLength(curve, left, temp) - length;
-		double fRight = getLeftLength(curve, right, temp) - length;
-		double res = 0;
-		int n = 0, side = 0;
-		do {
-			res = (fLeft * right - fRight * left) / (fLeft - fRight);
-			if (Math.abs(right - left) < error * Math.abs(right + left))
-				break;
-			double fRes = getLeftLength(curve, res, temp) - length;;
-			if (fRes * fRight > 0) {
-				right = res; fRight = fRes;
-				if (side == -1)
-					fLeft /= 2;
-				side = -1;
-			} else if (fLeft * fRes > 0) {
-				left = res;  fLeft = fRes;
-				if (side == +1)
-					fRight /= 2;
-				side = +1;
-			} else {
-				break;
-			}
-		} while(n++ < 100);
-//		System.out.println("n: " + n + "r: " + res + "f(r): "
-//				+ getLeftLength(curve, res, temp) + ", len: " + length);
-		return res;
+	public Object clone() {
+		updateSegments();
+		return new Curve(segment1, segment2);
 	}
 
-	private double[][] getCurveArray() {
+	public String toString() {
+		updateSegments();
+		StringBuffer buf = new StringBuffer(64);
+		buf.append("{ point1: ").append(segment1.point.toString());
+		if (segment1.handleOut.x != 0 || segment1.handleOut.y != 0)
+			buf.append(", handle1: ").append(segment1.handleOut.toString());
+		if (segment2.handleIn.x != 0 || segment2.handleIn.y != 0)
+			buf.append(", handle2: ").append(segment2.handleIn.toString());
+		buf.append(", point2: ").append(segment2.point.toString());
+		buf.append(" }");
+		return buf.toString();
+	}
+
+	private double[][] getCurveValues() {
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
 		return new double[][] {
-			{ segment1.point.x, segment1.point.y },
-			{ segment1.handleOut.x + segment1.point.x,
-					segment1.handleOut.y + segment1.point.y },
-			{ segment2.handleIn.x + segment2.point.x,
-					segment2.handleIn.y + segment2.point.y },
-			{ segment2.point.x, segment2.point.y } };
+				{ point1.x, point1.y },
+				{ point1.x + handle1.x, point1.y + handle1.y },
+				{ point2.x + handle2.x, point2.y + handle2.y },
+				{ point2.x, point2.y }
+		};
 	}
 	
 	/*
-	 * Low Level Math functions for division and calculation of roots:
+	 * Low Level Math functions for curve subdivision, calculation of roots, etc
 	 */
-	
-	private static void split(double[][] curve, double t, double[][] left,
+
+	private static boolean isFlat(double[][] curve) {
+		/*
+		// Thanks to Kaspar Fischer for the following:
+		// http://www.inf.ethz.ch/personal/fischerk/pubs/bez.pdf
+		double ux = 3.0 * curve[1][0] - 2.0 * curve[0][0] - curve[3][0];
+		ux *= ux;
+		double uy = 3.0 * curve[1][1] - 2.0 * curve[0][1] - curve[3][1];
+		uy *= uy;
+		double vx = 3.0 * curve[2][0] - 2.0 * curve[3][0] - curve[0][0];
+		vx *= vx;
+		double vy = 3.0 * curve[2][1] - 2.0 * curve[3][1] - curve[0][1];
+		vy *= vy;
+		if (ux < vx)
+			ux = vx;
+		if (uy < vy)
+			uy = vy;
+		*/
+		double x0 = curve[0][0];
+		double y0 = curve[0][1];
+		double x1 = curve[1][0];
+		double y1 = curve[1][1];
+		double x2 = curve[2][0];
+		double y2 = curve[2][1];
+		double x3 = curve[3][0];
+		double y3 = curve[3][1];
+		double ux = 3.0 * x1 - 2.0 * x0 - x3;
+		ux *= ux;
+		double uy = 3.0 * y1 - 2.0 * y0 - y3;
+		uy *= uy;
+		double vx = 3.0 * x2 - 2.0 * x3 - x0;
+		vx *= vx;
+		double vy = 3.0 * y2 - 2.0 * y3 - y0;
+		vy *= vy;
+		if (ux < vx)
+			ux = vx;
+		if (uy < vy)
+			uy = vy;
+		return (ux + uy <= 16 * EPSILON * EPSILON); // tolerance is 16 * tol ^ 2
+		/*
+		double Lx = 6 * Math.max(
+				Math.abs(x2 - 2 * x1 + x0),
+				Math.abs(x3 - 2 * x2 + x1)
+		);
+		double Ly = 6 * Math.max(
+				Math.abs(y2 - 2 * y1 + y0),
+				Math.abs(y3 - 2 * y2 + y1)
+		);
+		return Math.sqrt(Math.sqrt(Lx * Lx + Ly * Ly) / 8 * EPSILON);
+		*/
+	}
+
+	private static double getLength(double curve[][]) {
+		return nativeGetLength(
+				curve[0][0], curve[0][1],
+				curve[1][0], curve[1][1],
+				curve[2][0], curve[2][1],
+				curve[3][0], curve[3][1]
+		);
+	}
+
+	private static Rectangle getControlBounds(double[][] curve) {
+		double minX = curve[0][0], maxX = minX, minY = curve[0][1], maxY = minY;
+		for (int i = 1; i < 4; i++) {
+			double[] c = curve[i];
+			double x = c[0], y = c[1];
+			if (x < minX)
+				minX = x;
+			else if (x > maxX)
+				maxX = x;
+			if (y < minY)
+				minY = y;
+			else if (y > maxY)
+				maxY = y;
+		}
+		return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+	}
+
+	/**
+	 * Curve subdivision at t = 0.5.
+	 */
+	private static void subdivide(double[][] curve, double[][] left,
+			double[][] right) {
+		double b0_x = curve[0][0];
+		double b0_y = curve[0][1];
+		double b1_x = curve[1][0];
+		double b1_y = curve[1][1];
+		double b2_x = curve[2][0];
+		double b2_y = curve[2][1];
+		double b3_x = curve[3][0];
+		double b3_y = curve[3][1];
+		double c_x = (b1_x + b2_x) / 2.0;
+		double c_y = (b1_y + b2_y) / 2.0;
+		b1_x = (b0_x + b1_x) / 2.0;
+		b1_y = (b0_y + b1_y) / 2.0;
+		b2_x = (b3_x + b2_x) / 2.0;
+		b2_y = (b3_y + b2_y) / 2.0;
+		double mb1c_x = (b1_x + c_x) / 2.0;
+		double mb1c_y = (b1_y + c_y) / 2.0;
+		double mb2c_x = (b2_x + c_x) / 2.0;
+		double mb2c_y = (b2_y + c_y) / 2.0;
+		c_x = (mb1c_x + mb2c_x) / 2.0;
+		c_y = (mb1c_y + mb2c_y) / 2.0;
+		if (left != null) {
+			left[0] = new double[] { b0_x, b0_y };
+			left[1] = new double[] { b1_x, b1_y };
+			left[2] = new double[] { mb1c_x, mb1c_y };
+			left[3] = new double[] { c_x, c_y };
+		}
+		if (right != null) {
+			right[0] = new double[] { c_x, c_y };
+			right[1] = new double[] { mb2c_x, mb2c_y };
+			right[2] = new double[] { b2_x, b2_y };
+			right[3] = new double[] { b3_x, b3_y };
+		}
+	}
+
+	/**
+	 * Curve subdivision at an arbitrary value for t.
+	 */
+	private static void subdivide(double[][] curve, double t, double[][] left,
 			double[][] right) {
 		double temp[][][] = new double[4][][];
 
@@ -683,18 +872,13 @@ public class Curve implements ChangeReceiver {
 		if (parameter == 0)
 			return 0;
 		if (parameter < 1) {
-			split(curve, parameter, tempCurve, null);
+			subdivide(curve, parameter, tempCurve, null);
 			curve = tempCurve;
 		}
-		return nativeGetLength(
-				curve[0][0], curve[0][1],
-				curve[1][0], curve[1][1],
-				curve[2][0], curve[2][1],
-				curve[3][0], curve[3][1]
-		);
+		return getLength(curve);
 	}
 
-	/*
+	/**
 	 * curve is only modified if it is passed as tempCurve as well. this is
 	 * needed in getParameterWithLength above...
 	 */
@@ -716,6 +900,82 @@ public class Curve implements ChangeReceiver {
 
 		return getLeftLength(curve, toParameter, tempCurve)
 			- getLeftLength(curve, fromParameter, tempCurve);
+	}
+
+	private static double getParameter(double[][] curve, double length) {
+		if (length <= 0)
+			return 0;
+		double bezierLength = getLength(curve);
+		if (length >= bezierLength)
+			return 1;
+		double[][] temp = new double[4][];
+		// Let's use the Regula Falsi method to find the right length in 
+		// few iterations. Generally only 4 - 7 are required.
+		double left = 0;
+		double right = 1;
+		double error = 5e-15;
+		double fLeft = getLeftLength(curve, left, temp) - length;
+		double fRight = getLeftLength(curve, right, temp) - length;
+		double res = 0;
+		int n = 0, side = 0;
+		do {
+			res = (fLeft * right - fRight * left) / (fLeft - fRight);
+			if (Math.abs(right - left) < error * Math.abs(right + left))
+				break;
+			double fRes = getLeftLength(curve, res, temp) - length;;
+			if (fRes * fRight > 0) {
+				right = res; fRight = fRes;
+				if (side == -1)
+					fLeft /= 2;
+				side = -1;
+			} else if (fLeft * fRes > 0) {
+				left = res;  fLeft = fRes;
+				if (side == +1)
+					fRight /= 2;
+				side = +1;
+			} else {
+				break;
+			}
+		} while(n++ < 100);
+//		System.out.println("n: " + n + "r: " + res + "f(r): "
+//				+ getLeftLength(curve, res, temp) + ", len: " + length);
+		return res;
+	}
+
+	private static double getParameter(double[][] curve, double x,
+			double y, double epsilon) {
+		double txs[] = { 0, 0, 0 }; 
+		double tys[] = { 0, 0, 0 };
+		
+		int sx = solveCubicRoots(curve[0][0], curve[1][0], curve[2][0],
+				curve[3][0], x, txs, epsilon);
+		int sy = solveCubicRoots(curve[0][1], curve[1][1], curve[2][1],
+				curve[3][1], y, tys, epsilon);
+
+		int cx = 0;
+		// sx, sy == -1 means infinite solutions:
+		while (cx < sx || sx == -1) {
+			double tx = txs[cx++];
+			if (tx >= 0 && tx <= 1.0 || sx == -1) {
+				int cy = 0;
+				while (cy < sy || sy == -1) {
+					double ty = tys[cy++];
+					if (ty >= 0 && ty <= 1.0 || sy == -1) {
+						if (sx == -1) tx = ty;
+						else if (sy == -1) ty = tx;
+						if (Math.abs(tx - ty) < epsilon) { // tolerance
+							return (tx + ty) * 0.5;
+						}
+					}
+				}
+				// avoid endless loops here:
+				// if sx is infinite and there was no fitting ty, there's no
+				// solution for this bezier
+				if (sx == -1)
+					sx = 0; 
+			}
+		}
+		return -1;
 	}
 
 	private static int solveQuadraticRoots(double a, double b, double c,
@@ -817,42 +1077,5 @@ public class Curve implements ChangeReceiver {
 		double d =                           v1 - v;
 
 		return solveCubicRoots(a, b, c, d, roots, epsilon);
-	}
-	
-	@SuppressWarnings("unused")
-	private static double hitTest(double[][] curve, double x, double y,
-			double epsilon) {
-		double txs[] = { 0, 0, 0 }; 
-		double tys[] = { 0, 0, 0 };
-		
-		int sx = solveCubicRoots(curve[0][0], curve[1][0], curve[2][0],
-				curve[3][0], x, txs, epsilon);
-		int sy = solveCubicRoots(curve[0][1], curve[1][1], curve[2][1],
-				curve[3][1], y, tys, epsilon);
-
-		int cx = 0;
-		// sx, sy == -1 means infinite solutions:
-		while (cx < sx || sx == -1) {
-			double tx = txs[cx++];
-			if (tx >= 0 && tx <= 1.0 || sx == -1) {
-				int cy = 0;
-				while (cy < sy || sy == -1) {
-					double ty = tys[cy++];
-					if (ty >= 0 && ty <= 1.0 || sy == -1) {
-						if (sx == -1) tx = ty;
-						else if (sy == -1) ty = tx;
-						if (Math.abs(tx - ty) < epsilon) { // tolerance
-							return (tx + ty) * 0.5;
-						}
-					}
-				}
-				// avoid endless loops here:
-				// if sx is infinite and there was no fitting ty, there's no
-				// solution for this bezier
-				if (sx == -1)
-					sx = 0; 
-			}
-		}
-		return -1;
 	}
 }

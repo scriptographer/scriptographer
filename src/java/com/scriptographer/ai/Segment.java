@@ -559,6 +559,14 @@ public class Segment implements Committable, ChangeReceiver {
 		}
 	}
 
+	/**
+	 * Retruns the reversed the curve, without modifying the curve itself.
+	 */
+	public Segment reverse() {
+		update(false);
+		return new Segment(point, handleOut, handleIn);
+	}
+
 	public Object clone() {
 		update(false);
 		return new Segment(this);
