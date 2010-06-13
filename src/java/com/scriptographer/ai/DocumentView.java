@@ -156,8 +156,14 @@ public class DocumentView extends DocumentObject {
 	 * redrawn. This rectangle is reset to be empty each time the
 	 * #kAIDocumentViewInvalidRectChangedNotifier is sent.
 	 */
-	public native Rectangle getUpdateRect();
+	public native Rectangle getInvalidBounds();
 
+	/**
+	 * @deprecated
+	 */
+	public Rectangle getUpdateRect() {
+		return getInvalidBounds();
+	}
 	public native void invalidate(float x, float y, float width, float height);
 
 	public void invalidate(Rectangle rect) {

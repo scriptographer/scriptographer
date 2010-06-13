@@ -204,9 +204,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_scrollBy(JNIEnv *
 }
 
 /*
- * com.scriptographer.ai.Rectangle getUpdateRect()
+ * com.scriptographer.ai.Rectangle getInvalidBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getUpdateRect(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getInvalidBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
