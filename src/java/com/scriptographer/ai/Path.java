@@ -520,7 +520,7 @@ public class Path extends PathItem {
 		int length = curves.size();
 		
 		for (int i = 0; i < length; i++) {
-			Curve curve = (Curve) curves.get(i);
+			Curve curve = curves.get(i);
 			double t = curve.getParameter(point, precision);
 			if (t >= 0)
 				return new Location(curve, t);
