@@ -61,6 +61,14 @@ public class Size implements ChangeEmitter {
 	 * Creates a Size object using the x and y coordinates of the given Point
 	 * object.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(50, 50);
+	 * var size = new Size(point);
+	 * print(size.width); // 50
+	 * print(size.height); // 50
+	 * </code>
+	 * 
 	 * @param point
 	 */
 	public Size(Point point) {
@@ -124,8 +132,15 @@ public class Size implements ChangeEmitter {
 
 	/**
 	 * Returns the addition of the width and height of the supplied size to the
-	 * size as a new size.
-	 * The object itself is not modified!
+	 * size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSize = new Size(8, 10);
+	 * var secondSize = new Size(2, 5);
+	 * var result = firstSize + secondSize;
+	 * print(result); // { width: 10.0, height: 15.0 }
+	 * </code>
 	 * 
 	 * @param size The addition of the two sizes as a new size
 	 */
@@ -134,8 +149,15 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the addition of the supplied value to the width and height of the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the addition of the supplied value to the width and height of the
+	 * size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Size(10, 20);
+	 * var result = size + 5;
+	 * print(result); // { width: 15.0, height: 25.0 }
+	 * </code>
 	 * 
 	 * @param value
 	 * @return the addition of the size and the value as a new size
@@ -153,8 +175,15 @@ public class Size implements ChangeEmitter {
 
 	/**
 	 * Returns the subtraction of the width and height of the supplied size from
-	 * the size as a new size.
-	 * The object itself is not modified!
+	 * the size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSize = new Size(8, 10);
+	 * var secondSize = new Size(2, 5);
+	 * var result = firstSize - secondSize;
+	 * print(result); // { width: 6.0, height: 5.0 }
+	 * </code>
 	 * 
 	 * @param size The subtraction of the two sizes as a new size
 	 */
@@ -163,9 +192,15 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the subtraction of the supplied value from the width and
-	 * height of the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the subtraction of the supplied value from the width and height
+	 * of the size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Size(10, 20);
+	 * var result = size - 5;
+	 * print(result); // { width: 5.0, height: 15.0 }
+	 * </code>
 	 * 
 	 * @param value
 	 * @return the subtraction of the value from the size as a new size
@@ -182,9 +217,16 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the multiplication of the width and height of the supplied size with
-	 * the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the multiplication of the width and height of the supplied size
+	 * with the size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSize = new Size(8, 10);
+	 * var secondSize = new Size(2, 5);
+	 * var result = firstSize * secondSize;
+	 * print(result); // { width: 16.0, height: 50.0 }
+	 * </code>
 	 * 
 	 * @param size The multiplication of the two sizes as a new size
 	 */
@@ -193,8 +235,15 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the multiplication of the supplied value with the width and height of the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the multiplication of the supplied value with the width and
+	 * height of the size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Size(10, 20);
+	 * var result = size * 2;
+	 * print(result); // { width: 20.0, height: 40.0 }
+	 * </code>
 	 * 
 	 * @param value
 	 * @return the multiplication of the size by the value as a new size
@@ -211,9 +260,16 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the division of the width and height of the supplied size by
-	 * the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the division of the width and height of the supplied size by the
+	 * size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSize = new Size(8, 10);
+	 * var secondSize = new Size(2, 5);
+	 * var result = firstSize / secondSize;
+	 * print(result); // { width: 4.0, height: 2.0 }
+	 * </code>
 	 * 
 	 * @param size The division of the two sizes as a new size
 	 */
@@ -222,8 +278,15 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the division of the supplied value by the width and height of the size as a new size.
-	 * The object itself is not modified!
+	 * Returns the division of the supplied value by the width and height of the
+	 * size as a new size. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Size(10, 20);
+	 * var result = size / 2;
+	 * print(result); // { width: 5.0, height: 10.0 }
+	 * </code>
 	 * 
 	 * @param value
 	 * @return the division of the size by the value as a new size
@@ -239,10 +302,35 @@ public class Size implements ChangeEmitter {
 		return new Size(this.width % w, this.height % h);
 	}
 
-	public Size modulo(Point point) {
-		return modulo(point.x, point.y);
+	/**
+	 * The modulo operator returns the integer remainders of dividing the size
+	 * by the supplied size as a new size.
+	 * 
+	 * Sample code: <code>
+	 * var size = new Size(12, 6);
+	 * print(size % new Size(5, 2)); // {width: 2, height: 0}
+	 * </code>
+	 * 
+	 * @param size
+	 * @return the integer remainders of dividing the sizes by each other as a
+	 *         new size
+	 */
+	public Size modulo(Size size) {
+		return modulo(size.width, size.height);
 	}
 
+	/**
+	 * The modulo operator returns the integer remainders of dividing the size
+	 * by the supplied value as a new size.
+	 * 
+	 * Sample code: <code>
+	 * var size = new Size(12, 6);
+	 * print(size % 5); // {width: 2, height: 1}
+	 * </code>
+	 * 
+	 * @param value
+	 * @return the integer remainders of dividing the size by the value as a new size
+	 */
 	public Size modulo(double value) {
 		return modulo(value, value);
 	}
@@ -295,6 +383,17 @@ public class Size implements ChangeEmitter {
 		}
 	}
 
+	/**
+	 * Returns a new size with rounded {@link #x} and {@link #y} values. The
+	 * object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var size = new Size(10.2, 10.9);
+	 * var roundSize = size.round();
+	 * print(roundSize); // { width: 10.0, height: 11.0 }
+	 * </code>
+	 */
 	public Size round() {
 		return new Size(Math.round(width), Math.round(height));
 	}
@@ -311,18 +410,61 @@ public class Size implements ChangeEmitter {
 		return new Size(Math.abs(width), Math.abs(height));
 	}
 
+	/**
+	 * Returns a new size object with the smallest {@link #width} and
+	 * {@link #height} of the supplied sizes.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var size1 = new Size(10, 100);
+	 * var size2 = new Size(200, 5);
+	 * var minSize = Size.min(size1, size2);
+	 * print(minSize); // { width: 10.0, height: 5.0 }
+	 * </code>
+	 * 
+	 * @param size1
+	 * @param size2
+	 * @return The newly created size object
+	 */
 	public static Size min(Size size1, Size size2) {
 		return new Size(
 				Math.min(size1.width, size2.width),
 				Math.min(size1.height, size2.height));
 	}
 
+	/**
+	 * Returns a new size object with the largest {@link #width} and
+	 * {@link #height} of the supplied sizes.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var size1 = new Size(10, 100);
+	 * var size2 = new Size(200, 5);
+	 * var maxSize = Size.max(size1, size2);
+	 * print(maxSize); // { width: 200.0, height: 100.0 }
+	 * </code>
+	 * 
+	 * @param size1
+	 * @param size2
+	 * @return The newly created size object
+	 */
 	public static Size max(Size size1, Size size2) {
 		return new Size(
 				Math.max(size1.width, size2.width),
 				Math.max(size1.height, size2.height));
 	}
 
+	/**
+	 * Returns a size object with random {@link #width} and {@link #height}
+	 * values between {@code 0} and {@code 1}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var maxSize = new Size(100, 100);
+	 * var randomSize = Size.random();
+	 * var size = maxSize * randomSize;
+	 * </code>
+	 */
 	public static Size random() {
 		return new Size(Math.random(), Math.random());
 	}

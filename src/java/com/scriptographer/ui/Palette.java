@@ -90,10 +90,16 @@ public class Palette implements PropertyObserver, Committable {
 		return values;
 	}
 
+	/**
+	 * The components that belong to the palette.
+	 */
 	public Map<String, Object> getComponents() {
 		return components;
 	}
 
+	/**
+	 * The title that appears at the top of the palette window.
+	 */
 	public String getTitle() {
 		return title;
 	}
@@ -105,6 +111,9 @@ public class Palette implements PropertyObserver, Committable {
 		return hasLabels;
 	}
 
+	/**
+	 * Resets the values of the components to their {@link Component#getDefaultValue}.
+	 */
 	public void reset() {
 		for (Object component : components.values()) {
 			if (component instanceof Component)
@@ -127,6 +136,11 @@ public class Palette implements PropertyObserver, Committable {
 	private Callable onChange = null;
 	private boolean isChanging = false;
 
+	/**
+	 * The function that is called whenever the value of one of the
+	 * {@link Palette#getComponents()} changes. The function receives the
+	 * component of which the value has changed as an argument.
+	 */
 	public Callable getOnChange() {
 		return onChange;
 	}

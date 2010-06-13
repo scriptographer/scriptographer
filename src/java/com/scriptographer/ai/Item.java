@@ -763,7 +763,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * Sample code:
 	 * <code>
 	 * print(document.selectedItems.length); // 0
-	 * var path = new Path();
+	 * var path = new Path.Circle(new Size(50, 50), 25);
 	 * path.selected = true; // Select the path
 	 * print(document.selectedItems.length) // 1
 	 * </code>
@@ -852,6 +852,9 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 		return !isVisible();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public final void setHidden(boolean hidden) {
 		setVisible(!hidden);
 	}
@@ -936,6 +939,15 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 
 	/**
 	 * The opacity of the item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 } 
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * 
+	 * // Change the opacity of the circle to 50%:
+	 * circle.opacity = 0.5;
+	 * </code>
 	 * 
 	 * @return the opacity of the item as a value between 0 and 1.
 	 */
@@ -1555,7 +1567,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Checks whether the item is editable.
 	 * 
-	 * Returns {@true when neither the item, nor it's parents are locked or
+	 * @return {@true when neither the item, nor it's parents are locked or
 	 * hidden}
 	 */
 	public native boolean isEditable();
@@ -1813,7 +1825,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * {@grouptitle Transform Functions}
 	 * 
-	 * Scales the item by the given values from its center point.
+	 * Scales the item by the given values from its center point, or optionally
+	 * by a supplied point.
 	 * 
 	 * @param sx
 	 * @param sy
@@ -1830,7 +1843,28 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	}
 
 	/**
-	 * Scales the item by the given value from its center point.
+	 * Scales the item by the given value from its center point, or optionally
+	 * by a supplied point.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 } 
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * print(circle.bounds.width); // 20
+	 * 
+	 * // Scale the path by 200% around its center point
+	 * circle.scale(2);
+	 * 
+	 * print(circle.bounds.width); // 40
+	 * </code>
+	 * 
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 } 
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * 
+	 * // Scale the path 200% from its bottom left corner
+	 * circle.scale(2, circle.bounds.bottomLeft);
+	 * </code>
 	 * 
 	 * @param scale the scale factor
 	 * @param center {@default the center point of the item}
@@ -1846,6 +1880,22 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 
 	/**
 	 * Translates (moves) the item by the given offset point.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 } 
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * circle.translate(new Point(5, 10));
+	 * print(circle.position); // {x: 15, y: 20}
+	 * </code>
+	 * 
+	 * Alternatively you can also add to the {@link #getPosition()} of the item:
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 } 
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * circle.position += new Point(5, 10);
+	 * print(circle.position); // {x: 15, y: 20}
+	 * </code>
 	 * 
 	 * @param t
 	 */

@@ -43,6 +43,16 @@ public class Key {
 	}
 
 	/**
+	 * Checks whether the specified key is pressed.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDown(event) {
+	 * 	if(Key.isDown('shift')) {
+	 * 		print('The shift key is currently pressed.')
+	 * 	}
+	 * }
+	 * </code>
 	 * @return {@true if the key is pressed}
 	 */
 	public static boolean isDown(KeyCode key) {

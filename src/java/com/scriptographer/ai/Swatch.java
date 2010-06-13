@@ -56,10 +56,9 @@ public class Swatch extends DocumentObject {
 	 * Sample code:
 	 * <code>
 	 * // create the swatch
-	 * var swatch = new Swatch() {
-	 * 	color: new RGBColor(1, 0, 0),
-	 * 	name: 'Red'
-	 * };
+	 * var swatch = new Swatch();
+	 * swatch.color = new RGBColor(1, 0, 0);
+	 * swatch.name = 'Red';
 	 * 
 	 * // add it to the document's swatch list
 	 * document.swatches.push(swatch);

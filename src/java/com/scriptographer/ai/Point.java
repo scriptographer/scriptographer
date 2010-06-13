@@ -628,8 +628,8 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * The angle from the x axis to the vector in radians,
-	 * measured in counter clockwise direction.
+	 * The angle from the x axis to the vector in radians, measured in counter
+	 * clockwise direction.
 	 */
 	public double getAngle() {
 		// Cache the angle in the internal angle field, so we can return
@@ -649,9 +649,8 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the smaller angle between two vectors in radians.
-	 * The angle is unsigned, no information about rotational
-	 * direction is given.
+	 * Returns the smaller angle between two vectors in radians. The angle is
+	 * unsigned, no information about rotational direction is given.
 	 * 
 	 * @param point
 	 */
@@ -662,9 +661,9 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the angle between two vectors in radians.
-	 * The angle is directional and signed, giving information about
-	 * the rotational direction.
+	 * Returns the angle between two vectors in radians. The angle is
+	 * directional and signed, giving information about the rotational
+	 * direction.
 	 * 
 	 * @param point
 	 */
@@ -797,6 +796,17 @@ public class Point implements ChangeEmitter {
 		return matrix.transform(this);
 	}
 
+	/**
+	 * Returns a new point with rounded {@link #x} and {@link #y} values. The
+	 * object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(10.2, 10.9);
+	 * var roundPoint = point.round();
+	 * print(roundPoint); // { x: 10.0, y: 11.0 }
+	 * </code>
+	 */
 	public Point round() {
 		return new Point(Math.round(x), Math.round(y));
 	}
@@ -813,18 +823,61 @@ public class Point implements ChangeEmitter {
 		return new Point(Math.abs(x), Math.abs(y));
 	}
 
+	/**
+	 * Returns a new point object with the smallest {@link #x} and
+	 * {@link #y} of the supplied points.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point1 = new Point(10, 100);
+	 * var point2 = new Point(200, 5);
+	 * var minPoint = Point.min(point1, point2);
+	 * print(minPoint); // { x: 10.0, y: 5.0 }
+	 * </code>
+	 * 
+	 * @param point1
+	 * @param point2
+	 * @return The newly created point object
+	 */
 	public static Point min(Point point1, Point point2) {
 		return new Point(
 				Math.min(point1.x, point2.x),
 				Math.min(point1.y, point2.y));
 	}
 
+	/**
+	 * Returns a new point object with the largest {@link #x} and
+	 * {@link #y} of the supplied points.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point1 = new Point(10, 100);
+	 * var point2 = new Point(200, 5);
+	 * var maxPoint = Point.max(point1, point2);
+	 * print(maxPoint); // { x: 200.0, y: 100.0 }
+	 * </code>
+	 * 
+	 * @param point1
+	 * @param point2
+	 * @return The newly created point object
+	 */
 	public static Point max(Point point1, Point point2) {
 		return new Point(
 				Math.max(point1.x, point2.x),
 				Math.max(point1.y, point2.y));
 	}
 
+	/**
+	 * Returns a point object with random {@link #x} and {@link #y} values
+	 * between {@code 0} and {@code 1}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var maxPoint = new Point(100, 100);
+	 * var randomPoint = Point.random();
+	 * var point = maxPoint* randomPoint;
+	 * </code>
+	 */
 	public static Point random() {
 		return new Point(Math.random(), Math.random());
 	}

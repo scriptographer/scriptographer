@@ -48,6 +48,25 @@ public class Symbol extends DocumentObject {
 	/**
 	 * Creates a Symbol item.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var circlePath = new Path.Circle(new Point(100, 100), 50);
+	 * 
+	 * var circleSymbol = new Symbol(circlePath);
+	 * circleSymbol.name = 'Circle';
+	 * 
+	 * // The original item is still contained in the document:
+	 * circlePath.remove();
+	 * 
+	 * // The symbol can now also be accessed
+	 * // through document.symbols:
+	 * print(document.symbols['Circle']);
+	 * 
+	 * // To place instances of the symbol in the document:
+	 * var placedCircle = new PlacedSymbol(circleSymbol);
+	 * placedCircle.position = new Point(150, 150);
+	 * </code>
+	 * 
 	 * @param item the source item which is copied as the definition of the
 	 *        symbol
 	 */

@@ -102,6 +102,12 @@ public class Script {
 			ScriptographerEngine.closeProgress();
 	}
 
+	/**
+	 * Specifies whether the script will be kept alive after the user executes
+	 * another script.
+	 * 
+	 * @return {@true if the script will be kept alive}
+	 */
 	public boolean getKeepAlive() {
 		return keepAlive;
 	}

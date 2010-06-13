@@ -949,6 +949,12 @@ public class Document extends NativeObject implements ChangeReceiver {
 
 	/**
 	 * The swatches contained within the document.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSwatch = document.swatches[0];
+	 * var namedSwatch = document.swatches['CMYK Blue'];
+	 * </code>
 	 */
 	public SwatchList getSwatches() {
 		if (swatches == null)
@@ -1170,7 +1176,17 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	/**
-	 * Returns the selected text as a text range.
+	 * The selected text as a text range.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var range = document.selectedTextRange;
+	 * 
+	 * // Check if there is a selected range:
+	 * if(range) {
+	 * 	range.characterStyle.fontSize += 15;
+	 * }
+	 * </code>
 	 */
 	public native TextRange getSelectedTextRange();
 

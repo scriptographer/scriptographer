@@ -39,7 +39,7 @@ import com.scratchdisk.util.ArrayList;
 /**
  * {@code ItemAttributes} objects are used to describe attributes of items to
  * query for when using the {@link Document#getItems(ItemAttributes)} function.
- * It serves as a description of a filter appiled to the queried items, defined
+ * It serves as a description of a filter applied to the queried items, defined
  * by various fields that can either be set to {@code true}, {@code false}, or
  * {@code null}.
  * 
@@ -197,6 +197,21 @@ public class ItemAttributes {
 		attributes.put(attribute, value);
 	}
 
+	/**
+	 * Filters selected items when set to {@code true}, ignores selected items
+	 * when set to {@code false}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var selectedItems = document.getItems({
+	 * 	selected: true
+	 * });
+	 * 
+	 * var unselectedItems = document.getItems({
+	 * 	selected: false
+	 * });
+	 * </code>
+	 */
 	public Boolean getSelected() {
 		return get(ItemAttribute.SELECTED);
 	}
@@ -205,6 +220,21 @@ public class ItemAttributes {
 		set(ItemAttribute.SELECTED, selected);
 	}
 
+	/**
+	 * Filters locked items when set to {@code true}, ignores locked items
+	 * when set to {@code false}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var lockedItems = document.getItems({
+	 * 	locked: true
+	 * });
+	 * 
+	 * var unlockedItems = document.getItems({
+	 * 	locked: false
+	 * });
+	 * </code>
+	 */
 	public Boolean getLocked() {
 		return get(ItemAttribute.LOCKED);
 	}
@@ -213,6 +243,21 @@ public class ItemAttributes {
 		set(ItemAttribute.LOCKED, locked);
 	}
 
+	/**
+	 * Filters hidden items when set to {@code true}, ignores hidden items
+	 * when set to {@code false}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var hiddenItems = document.getItems({
+	 * 	hidden: true
+	 * });
+	 * 
+	 * var visibleItems = document.getItems({
+	 * 	hidden: false
+	 * });
+	 * </code>
+	 */
 	public Boolean getHidden() {
 		return get(ItemAttribute.HIDDEN);
 	}
@@ -229,6 +274,21 @@ public class ItemAttributes {
 		set(ItemAttribute.FULLY_SELECTED, fullySelected);
 	}
 
+	/**
+	 * Filters path items that define a clip mask when set to {@code true},
+	 * ignores them when set to {@code false}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var clipMaskItems = document.getItems({
+	 * 	clipMask: true
+	 * });
+	 * 
+	 * var otherItems = document.getItems({
+	 * 	clipMask: false
+	 * });
+	 * </code>
+	 */
 	public Boolean getClipMask() {
 		return get(ItemAttribute.CLIP_MASK);
 	}
@@ -237,6 +297,21 @@ public class ItemAttributes {
 		set(ItemAttribute.CLIP_MASK, clipMask);
 	}
 
+	/**
+	 * Filters items that are targeted when set to {@code true}, ignores
+	 * targeted items when set to {@code false}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var clipMaskItems = document.getItems({
+	 * 	targeted: true
+	 * });
+	 * 
+	 * var otherItems = document.getItems({
+	 * 	targeted: false
+	 * });
+	 * </code>
+	 */
 	public Boolean getTargeted() {
 		return get(ItemAttribute.TARGETED);
 	}
