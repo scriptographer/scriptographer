@@ -40,7 +40,7 @@ import java.util.Iterator;
  */
 public class EnumUtils {
 
-	protected EnumUtils() {
+	private EnumUtils() {
 	}
 
 	/**

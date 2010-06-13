@@ -35,6 +35,7 @@ package com.scratchdisk.util;
  * @author lehni 
  */
 public class StringUtils {
+
 	private StringUtils() {
 	}
 

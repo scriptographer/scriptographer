@@ -574,31 +574,6 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		arcThrough(middle.x, middle.y, end.x, end.y);
 	}
 
-	private Point getLineIntersection(Point p1, Point v1, Point p2, Point v2) {
-		// Calculate differences
-		double xD1 = v1.x;
-		double yD1 = v1.y;
-		double xD2 = v2.x;
-		double yD2 = v2.y;
-		double xD3 = p1.x - p2.x;
-		double yD3 = p1.y - p2.y;
-		// Calculate the lengths of the two lines
-		double len1 = Math.sqrt(xD1 * xD1 + yD1 * yD1);
-		double len2 = Math.sqrt(xD2 * xD2 + yD2 * yD2);
-		// Calculate angle between the two lines.
-		double deg = (xD1 * xD2 + yD1 * yD2) / (len1 * len2);
-		// If abs(angle) == 1 then the lines are parallel,
-		// so no intersection is possible
-		if (Math.abs(deg) == 1)
-			return null;
-		// Find intersection point between two lines
-		double ua = (xD2 * yD3 - yD2 * xD3) / (yD2 * xD1 - xD2 * yD1);
-		return new Point(
-				p1.x + ua * xD1,
-				p1.y + ua * yD1
-		);
-	}  
-
 	public void arcTo(Point end) {
 		if (size == 0)
 			throw new ScriptographerException("Use a moveTo command first");
@@ -620,7 +595,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 			path.moveTo(middle);
 			path.lineTo(middle.add(normal2.normalize(100)));
 			*/
-			Point center = getLineIntersection(start, normal1, middle, normal2);
+			Point center = Line.intersect(start, start.add(normal1), true,
+					middle, middle.add(normal2), true);
 			if (center != null) {
 				double radius = center.getDistance(start);
 				point = center.add(middle.subtract(center).normalize(radius));

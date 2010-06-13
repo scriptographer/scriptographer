@@ -770,7 +770,7 @@ public class Point implements ChangeEmitter {
 	 */
 
 	public double cross(Point point) {
-		return x * point.y - point.x * y;
+		return x * point.y - y * point.x;
 	}
 
 	/**

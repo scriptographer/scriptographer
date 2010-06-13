@@ -177,18 +177,21 @@ public class DocumentView extends DocumentObject {
 	/**
 	 * Returns a rectangle in artwork coordinates that encloses (at least) the
 	 * portions of the document that have been changed and so need to be
-	 * redrawn.
+	 * redrawn. This rectangle is reset to be empty each time the
+	 * #kAIDocumentViewInvalidRectChangedNotifier is sent.
 	 */
-	public native Rectangle getUpdateRect();
+	public native Rectangle getInvalidBounds();
 
 	/**
-	 * @jshide
+	 * @deprecated
 	 */
+	public Rectangle getUpdateRect() {
+		return getInvalidBounds();
+	}
 	public native void invalidate(float x, float y, float width, float height);
 
 	public void invalidate(Rectangle rect) {
-		invalidate((float) rect.x, (float) rect.y, (float) rect.width,
-				(float) rect.height);
+		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
 	public void invalidate() {

@@ -84,7 +84,8 @@ public class PathText extends TextItem {
 			segment--;
 			param = 1;
 		}
-		return path.getLengthOfPosition(new HitResult(path, segment, param));
+		return path.getLength(
+				new Location(path.getCurves().get(segment), param));
 	}
 
 	private void setOffset(int index, double offset) {
@@ -92,10 +93,10 @@ public class PathText extends TextItem {
 		// Convert offset length to index.parameter value, as required by
 		// native path offset code.
 		Path path = getTextPath();
-		HitResult pos = path.getPositionWithLength(offset);
+		Location loc = path.getLocation(offset);
 		double param;
-		if (pos != null) {
-			param = pos.getIndex() + pos.getParameter();
+		if (loc != null) {
+			param = loc.getIndex() + loc.getParameter();
 		} else {
 			param = index == 0 ? 0 : path.getLength();
 		}

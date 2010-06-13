@@ -39,35 +39,18 @@ import com.scriptographer.script.EnumUtils;
  * 
  * @author lehni
  */
-public class HitResult {
+public class HitResult extends Location {
 	protected static final float DEFAULT_TOLERANCE = 2.0f;
 	
 	private HitType type;
-	private Curve curve;
 	private Item item;
-	private Point point;
-	private double parameter;
-	private Segment segment = null;
-	private TextRange textRange = null;
+	private TextRange textRange;
 
 	protected HitResult(HitType type, Curve curve, double parameter,
 			Point point) {
+		super(curve, parameter, point);
 		this.type = type;
-		this.curve = curve;
 		this.item = curve.getPath();
-		this.parameter = parameter;
-		this.point = point;
-	}
-	
-	public HitResult(Curve curve, double parameter) {
-		// Passing null for point only calls curve.getPoint(t) if the point is
-		// requested, see HitTest
-		this(parameter > 0 && parameter < 1 ? HitType.CURVE : HitType.ANCHOR,
-				curve, parameter, null);
-	}
-
-	public HitResult(Path path, int index, double parameter) {
-		this(path.getCurves().get(index), parameter);
 	}
 
 	/**
@@ -75,8 +58,8 @@ public class HitResult {
 	 */
 	protected HitResult(int docHandle, int type, Item item, int index,
 			double parameter, Point point, int textRangeHandle) {
+		super(null, parameter, point);
 		this.type = IntegerEnumUtils.get(HitType.class, type);
-		curve = null;
 		if (item instanceof Path && type < HitType.FILL.value) {
 			Path path = (Path) item;
 			CurveList curves = path.getCurves();
@@ -104,8 +87,6 @@ public class HitResult {
 			}
 		}
 		this.item = item;
-		this.parameter = parameter;
-		this.point = point;
 		// Always wrap textRange even if the user does not request it, so
 		// reference gets released in the end through GC.
 		if (textRangeHandle != 0) {
@@ -119,64 +100,18 @@ public class HitResult {
 	}
 
 	/**
+	 * Describes the type of the hit result.
+	 * For example, if you hit an anchor point, the type would be 'anchor'.
+	 */
+	public HitType getType() {
+		return type;
+	}
+
+	/**
 	 * The item which was hit.
 	 */
 	public Item getItem() {
 		return item;
-	}
-
-	/**
-	 * The curve which was hit, if any.
-	 */
-	public Curve getCurve() {
-		return curve;
-	}
-	
-	/**
-	 * The segment of the curve that was hit and that is closer to the hit
-	 * point.
-	 */
-	public Segment getSegment() {
-		if (segment == null) {
-			// Determine the segment closest to the hit point
-			if (parameter == 0) {
-				segment = curve.getSegment1();
-			} else if (parameter == 1) {
-				segment = curve.getSegment2();
-			} else if (parameter == -1) {
-				return null;
-			} else {
-				// Determine the closest segment by comparing curve lengths
-				Curve rightCurve = ((Curve) curve.clone()).divide(parameter);
-				segment = rightCurve.getLength() > curve.getLength() / 2
-						? curve.getSegment1()
-						: curve.getSegment2();
-			}
-		}
-		return segment;
-	}
-
-	/**
-	 * The index of the curve which was hit, if any.
-	 */
-	public int getIndex() {
-		if (curve != null)
-			return curve.getIndex();
-		else
-			return -1;
-	}
-	
-	public Double getParameter() {
-		return parameter != -1 ? parameter : null;
-	}
-	
-	/**
-	 * The point which was hit.
-	 */
-	public Point getPoint() {
-		if (point == null && curve != null)
-			point = curve.getPoint(parameter);
-		return point;
 	}
 
 	/**
@@ -186,19 +121,12 @@ public class HitResult {
 		return textRange;
 	}
 
-	/**
-	 * Describes the type of the hit result.
-	 * For example, if you hit an anchor point, the type would be 'anchor'.
-	 */
-	public HitType getType() {
-		return type;
-	}
-	
 	public String toString() {
 		StringBuffer buf = new StringBuffer(32);
 		buf.append("{ type: ").append(EnumUtils.getScriptName(type)); 
 		buf.append(", item: ").append(item);
-		if (point != null || curve != null)
+		Point point = getPoint();
+		if (point != null)
 			buf.append(", point: ").append(getPoint());
 		if (curve != null)
 			buf.append(", index: ").append(getIndex());

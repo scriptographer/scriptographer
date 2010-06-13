@@ -232,7 +232,7 @@ public class Segment implements Committable, ChangeReceiver {
 	 * are floats except the last one which is a boolean, but aligns like float
 	 * too.
 	 * We use double precision for all calculations but still have to store
-	 * as floats, since that's what Illustrator uses. Calculations in SG
+	 * as floats, since that's what Illustrator uses. Calculations in Sg
 	 * will be much more precise though.
 	 * 
 	 * Warning: This does not call markDirty(). This needs to be taken care of
@@ -242,23 +242,27 @@ public class Segment implements Committable, ChangeReceiver {
 	 * @param valueIndex
 	 */
 	protected void setValues(float[] values, int valueIndex) {
-		point.x = values[valueIndex];
-		point.y = values[valueIndex + 1];
-		handleIn.x = values[valueIndex + 2] - point.x;
-		handleIn.y = values[valueIndex + 3] - point.y;
-		handleOut.x = values[valueIndex + 4] - point.x;
-		handleOut.y = values[valueIndex + 5] - point.y;
+		float x = values[valueIndex];
+		float y = values[valueIndex + 1];
+		point.x = x;
+		point.y = y;
+		handleIn.x = values[valueIndex + 2] - x;
+		handleIn.y = values[valueIndex + 3] - y;
+		handleOut.x = values[valueIndex + 4] - x;
+		handleOut.y = values[valueIndex + 5] - y;
 		corner = values[valueIndex + 6] != 0;
 	}
 
 	protected void getValues(float[] values, int valueIndex) {
-		values[valueIndex] = (float) point.x;
-		values[valueIndex + 1] = (float) point.y;
-		values[valueIndex + 2] = (float) (handleIn.x + point.x);
-		values[valueIndex + 3] = (float) (handleIn.y + point.y);
-		values[valueIndex + 4] = (float) (handleOut.x + point.x);
-		values[valueIndex + 5] = (float) (handleOut.y + point.y);
-		// don't care about the exact value for true, as long as it's != 0 it
+		double x = point.x;
+		double y = point.y;
+		values[valueIndex] = (float) x;
+		values[valueIndex + 1] = (float) y;
+		values[valueIndex + 2] = (float) (handleIn.x + x);
+		values[valueIndex + 3] = (float) (handleIn.y + y);
+		values[valueIndex + 4] = (float) (handleOut.x + x);
+		values[valueIndex + 5] = (float) (handleOut.y + y);
+		// Don't care about the exact value for true, as long as it's != 0 it
 		// works:
 		values[valueIndex + 6] = corner ? 1f : 0f;
 	}
@@ -557,6 +561,14 @@ public class Segment implements Committable, ChangeReceiver {
 				markDirty(DIRTY_SELECTION);
 			}
 		}
+	}
+
+	/**
+	 * Retruns the reversed the curve, without modifying the curve itself.
+	 */
+	public Segment reverse() {
+		update(false);
+		return new Segment(point, handleOut, handleIn);
 	}
 
 	public Object clone() {
