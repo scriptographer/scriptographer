@@ -540,11 +540,11 @@ public class Curve implements ChangeReceiver {
 
 		float[] values = new float[2 * SegmentList.VALUES_PER_SEGMENT];
 		segment1.getValues(values, 0);
-		segment2.getValues(values, 1);
+		segment2.getValues(values, SegmentList.VALUES_PER_SEGMENT);
 		nativeAdjustThroughPoint(values, (float) pt.x, (float) pt.y,
 				(float) parameter);
 		segment1.setValues(values, 0);
-		segment2.setValues(values, 1);
+		segment2.setValues(values, SegmentList.VALUES_PER_SEGMENT);
 		// Don't mark dirty, commit immediately both as all the values have
 		// been modified:
 		Path path = getPath();
