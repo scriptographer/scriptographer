@@ -84,8 +84,7 @@ public class PathText extends TextItem {
 			segment--;
 			param = 1;
 		}
-		return path.getLength(
-				new Location(path.getCurves().get(segment), param));
+		return path.getLength(new CurveLocation(path, segment, param));
 	}
 
 	private void setOffset(int index, double offset) {
@@ -93,7 +92,7 @@ public class PathText extends TextItem {
 		// Convert offset length to index.parameter value, as required by
 		// native path offset code.
 		Path path = getTextPath();
-		Location loc = path.getLocation(offset);
+		CurveLocation loc = path.getLocation(offset);
 		double param;
 		if (loc != null) {
 			param = loc.getIndex() + loc.getParameter();

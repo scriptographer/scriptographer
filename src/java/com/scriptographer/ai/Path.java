@@ -391,7 +391,7 @@ public class Path extends PathItem {
 		return split(getLocation(length));
 	}
 
-	public Path split(Location position) {
+	public Path split(CurveLocation position) {
 		return split(position.getIndex(), position.getParameter());
 	}
 
@@ -515,7 +515,7 @@ public class Path extends PathItem {
 		getSegments().smooth(isClosed());
 	}
 
-	public Location getLocation(Point point, double precision) {
+	public CurveLocation getLocation(Point point, double precision) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
@@ -523,18 +523,18 @@ public class Path extends PathItem {
 			Curve curve = curves.get(i);
 			double t = curve.getParameter(point, precision);
 			if (t >= 0)
-				return new Location(curve, t);
+				return new CurveLocation(curve, t);
 		}
 		return null;
 	}
 
-	public Location getLocation(Point point) {
+	public CurveLocation getLocation(Point point) {
 		return getLocation(point, Curve.EPSILON);
 	}
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?
-	public Location getLocation(double length) {
+	public CurveLocation getLocation(double length) {
 		CurveList curves = getCurves();
 		double currentLength = 0;
 		for (int i = 0, l = curves.size(); i < l; i++) {
@@ -544,14 +544,14 @@ public class Path extends PathItem {
 			if (currentLength >= length) {
 				// found the segment within which the length lies
 				double t = curve.getParameter(length - startLength);
-				return new Location(curve, t);
+				return new CurveLocation(curve, t);
 			}
 		}
 		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
 		if (length <= getLength()) {
 			Curve curve = curves.getLast();
-			return new Location(curve, 1);
+			return new CurveLocation(curve, 1);
 		} else {
 			return null;
 		}
@@ -560,11 +560,11 @@ public class Path extends PathItem {
 	/**
 	 * @deprecated
 	 */
-	public Location getPositionWithLength(double length) {
+	public CurveLocation getPositionWithLength(double length) {
 		return getLocation(length);
 	}
 
-	public double getLength(Location location) {
+	public double getLength(CurveLocation location) {
 		int index = location.getIndex();
 		if (index != -1) {
 			double length = 0;
@@ -583,7 +583,7 @@ public class Path extends PathItem {
 	/**
 	 * @deprecated
 	 */
-	public double getLengthOfPosition(Location location) {
+	public double getLengthOfPosition(CurveLocation location) {
 		return getLength(location);
 	}
 
@@ -591,7 +591,7 @@ public class Path extends PathItem {
 	 * Returns the point of the path at the given length.
 	 */
 	public Point getPoint(double length) {
-		Location loc = getLocation(length);
+		CurveLocation loc = getLocation(length);
 		if (loc != null)
 			return loc.getPoint();
 		return null;
@@ -601,7 +601,7 @@ public class Path extends PathItem {
 	 * Returns the tangent to the path at the given length as a vector point.
 	 */
 	public Point getTangent(double length) {
-		Location loc = getLocation(length);
+		CurveLocation loc = getLocation(length);
 		if (loc != null)
 			return loc.getCurve().getTangent(loc.getParameter());
 		return null;
@@ -611,7 +611,7 @@ public class Path extends PathItem {
 	 * Returns the normal to the path at the given length as a vector point.
 	 */
 	public Point getNormal(double length) {
-		Location loc = getLocation(length);
+		CurveLocation loc = getLocation(length);
 		if (loc != null)
 			return loc.getCurve().getNormal(loc.getParameter());
 		return null;

@@ -39,7 +39,7 @@ import com.scriptographer.script.EnumUtils;
  * 
  * @author lehni
  */
-public class HitResult extends Location {
+public class HitResult extends CurveLocation {
 	protected static final float DEFAULT_TOLERANCE = 2.0f;
 	
 	private HitType type;

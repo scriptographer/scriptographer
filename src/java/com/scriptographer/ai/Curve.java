@@ -468,13 +468,13 @@ public class Curve implements ChangeReceiver {
 		return points.toArray(new Point[points.size()]);
 	}
 
-	public Location[] getIntersectionLocations(Curve other) {
+	public CurveLocation[] getIntersectionLocations(Curve other) {
 		ArrayList<Point> points = new ArrayList<Point>();
 		getIntersections(getCurveValues(), other.getCurveValues(), points);
 		int amount = points.size();
-		Location[] locations = new HitResult[amount];
+		CurveLocation[] locations = new HitResult[amount];
 		for (int i = 0; i < amount; i++) {
-			locations[i] = new Location(this, getParameter(points.get(i)));
+			locations[i] = new CurveLocation(this, getParameter(points.get(i)));
 		}
 		return locations;
 	}
