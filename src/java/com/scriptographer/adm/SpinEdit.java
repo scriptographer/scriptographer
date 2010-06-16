@@ -120,6 +120,14 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 		return editItem;
 	}
 
+	protected void onInitialize() {
+		// If SpinEdits are immediately disabled, their buttons will still
+		// appear enabled. Setting the enabled property again right after
+		// initialization resolves this issue.
+		setEnabled(isEnabled());
+		super.onInitialize();
+	}
+
 	private int xDiff = -1;
 
 	protected void updateBounds(int x, int y, int width, int height,
