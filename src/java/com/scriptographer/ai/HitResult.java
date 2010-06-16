@@ -130,6 +130,7 @@ public class HitResult extends CurveLocation {
 			buf.append(", point: ").append(getPoint());
 		if (curve != null)
 			buf.append(", index: ").append(getIndex());
+		double parameter = getParameter();
 		if (parameter != -1)
 			buf.append(", parameter: ").append(parameter);
 		buf.append(" }");

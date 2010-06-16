@@ -36,7 +36,7 @@ package com.scriptographer.ai;
  */
 public class CurveLocation {
 	protected Curve curve;
-	protected double parameter;
+	private double parameter;
 	private Point point;
 	private Segment segment;
 
@@ -96,6 +96,9 @@ public class CurveLocation {
 	}
 	
 	public Double getParameter() {
+		if (parameter == -1 && point != null) {
+			parameter = curve.getParameter(point);
+		}
 		return parameter != -1 ? parameter : null;
 	}
 	

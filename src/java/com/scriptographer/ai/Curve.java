@@ -462,60 +462,21 @@ public class Curve implements ChangeReceiver {
 		return getParameter(length);
 	}
 
-	public Point[] getIntersections(Curve other) {
-		ArrayList<Point> points = new ArrayList<Point>();
-		getIntersections(getCurveValues(), other.getCurveValues(), points);
-		return points.toArray(new Point[points.size()]);
+	public CurveLocation getLocation(Point point) {
+		double param = getParameter(point);
+		return param != -1 ? new CurveLocation(this, param, point) : null;
 	}
 
-	public CurveLocation[] getIntersectionLocations(Curve other) {
-		ArrayList<Point> points = new ArrayList<Point>();
-		getIntersections(getCurveValues(), other.getCurveValues(), points);
-		int amount = points.size();
-		CurveLocation[] locations = new HitResult[amount];
-		for (int i = 0; i < amount; i++) {
-			locations[i] = new CurveLocation(this, getParameter(points.get(i)));
-		}
-		return locations;
+	public CurveLocation getLocation(double length) {
+		double param = getParameter(length);
+		return param != -1 ? new CurveLocation(this, param, null) : null;
 	}
 
-	private static void getIntersections(double[][] curve1, double[][] curve2,
-			ArrayList<Point> points) {
-		/*
-		Path line = Document.getActiveDocument().createRectangle(
-				getControlBounds(curve1));
-		line.setStrokeColor(java.awt.Color.green);
-		line.setStrokeWidth(1f);
-
-		line = Document.getActiveDocument().createRectangle(
-				getControlBounds(curve2));
-		line.setStrokeColor(java.awt.Color.red);
-		line.setStrokeWidth(1f);
-		*/
-		if (getControlBounds(curve1).intersects(getControlBounds(curve2))) {
-			if (isFlat(curve1) && isFlat(curve2)) {
-				// Treat both curves as lines and see if their parametric
-				// equations interesct.
-				Point point = Line.intersect(
-						curve1[0][0], curve1[0][1],
-						curve1[3][0], curve1[3][1], false,
-						curve2[0][0], curve2[0][1],
-						curve2[3][0], curve2[3][1], false);
-				if (point != null)
-					points.add(point);
-			} else {
-				double curve1Left[][] = new double[4][];
-				double curve1Right[][] = new double[4][];
-				double curve2Left[][] = new double[4][];
-				double curve2Right[][] = new double[4][];
-				subdivide(curve1, curve1Left, curve1Right);
-				subdivide(curve2, curve2Left, curve2Right);
-				getIntersections(curve1Left, curve2Left, points);
-				getIntersections(curve1Left, curve2Right, points);
-				getIntersections(curve1Right, curve2Left, points);
-				getIntersections(curve1Right, curve2Right, points);
-			}
-		}
+	public CurveLocation[] getIntersections(Curve other) {
+		ArrayList<CurveLocation> intersections = new ArrayList<CurveLocation>();
+		getIntersections(this, getCurveValues(), other.getCurveValues(),
+				intersections);
+		return intersections.toArray(new CurveLocation[intersections.size()]);
 	}
 
 	/**
@@ -684,8 +645,12 @@ public class Curve implements ChangeReceiver {
 		buf.append(" }");
 		return buf.toString();
 	}
+	
+	/*
+	 * Low Level Math functions for curve subdivision, calculation of roots, etc
+	 */
 
-	private double[][] getCurveValues() {
+	protected double[][] getCurveValues() {
 		Point point1 = segment1.point;
 		Point handle1 = segment1.handleOut;
 		Point handle2 = segment2.handleIn;
@@ -697,92 +662,11 @@ public class Curve implements ChangeReceiver {
 				{ point2.x, point2.y }
 		};
 	}
-	
-	/*
-	 * Low Level Math functions for curve subdivision, calculation of roots, etc
-	 */
-
-	private static boolean isFlat(double[][] curve) {
-		/*
-		// Thanks to Kaspar Fischer for the following:
-		// http://www.inf.ethz.ch/personal/fischerk/pubs/bez.pdf
-		double ux = 3.0 * curve[1][0] - 2.0 * curve[0][0] - curve[3][0];
-		ux *= ux;
-		double uy = 3.0 * curve[1][1] - 2.0 * curve[0][1] - curve[3][1];
-		uy *= uy;
-		double vx = 3.0 * curve[2][0] - 2.0 * curve[3][0] - curve[0][0];
-		vx *= vx;
-		double vy = 3.0 * curve[2][1] - 2.0 * curve[3][1] - curve[0][1];
-		vy *= vy;
-		if (ux < vx)
-			ux = vx;
-		if (uy < vy)
-			uy = vy;
-		*/
-		double x0 = curve[0][0];
-		double y0 = curve[0][1];
-		double x1 = curve[1][0];
-		double y1 = curve[1][1];
-		double x2 = curve[2][0];
-		double y2 = curve[2][1];
-		double x3 = curve[3][0];
-		double y3 = curve[3][1];
-		double ux = 3.0 * x1 - 2.0 * x0 - x3;
-		ux *= ux;
-		double uy = 3.0 * y1 - 2.0 * y0 - y3;
-		uy *= uy;
-		double vx = 3.0 * x2 - 2.0 * x3 - x0;
-		vx *= vx;
-		double vy = 3.0 * y2 - 2.0 * y3 - y0;
-		vy *= vy;
-		if (ux < vx)
-			ux = vx;
-		if (uy < vy)
-			uy = vy;
-		return (ux + uy <= 16 * EPSILON * EPSILON); // tolerance is 16 * tol ^ 2
-		/*
-		double Lx = 6 * Math.max(
-				Math.abs(x2 - 2 * x1 + x0),
-				Math.abs(x3 - 2 * x2 + x1)
-		);
-		double Ly = 6 * Math.max(
-				Math.abs(y2 - 2 * y1 + y0),
-				Math.abs(y3 - 2 * y2 + y1)
-		);
-		return Math.sqrt(Math.sqrt(Lx * Lx + Ly * Ly) / 8 * EPSILON);
-		*/
-	}
-
-	private static double getLength(double curve[][]) {
-		return nativeGetLength(
-				curve[0][0], curve[0][1],
-				curve[1][0], curve[1][1],
-				curve[2][0], curve[2][1],
-				curve[3][0], curve[3][1]
-		);
-	}
-
-	private static Rectangle getControlBounds(double[][] curve) {
-		double minX = curve[0][0], maxX = minX, minY = curve[0][1], maxY = minY;
-		for (int i = 1; i < 4; i++) {
-			double[] c = curve[i];
-			double x = c[0], y = c[1];
-			if (x < minX)
-				minX = x;
-			else if (x > maxX)
-				maxX = x;
-			if (y < minY)
-				minY = y;
-			else if (y > maxY)
-				maxY = y;
-		}
-		return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-	}
 
 	/**
 	 * Curve subdivision at t = 0.5.
 	 */
-	private static void subdivide(double[][] curve, double[][] left,
+	protected static void subdivide(double[][] curve, double[][] left,
 			double[][] right) {
 		double b0_x = curve[0][0];
 		double b0_y = curve[0][1];
@@ -821,7 +705,7 @@ public class Curve implements ChangeReceiver {
 	/**
 	 * Curve subdivision at an arbitrary value for t.
 	 */
-	private static void subdivide(double[][] curve, double t, double[][] left,
+	protected static void subdivide(double[][] curve, double t, double[][] left,
 			double[][] right) {
 		double temp[][][] = new double[4][][];
 
@@ -867,42 +751,106 @@ public class Curve implements ChangeReceiver {
 		}
 	}
 
-	private static double getLeftLength(double curve[][], double parameter,
-			double tempCurve[][]) {
-		if (parameter == 0)
-			return 0;
-		if (parameter < 1) {
-			subdivide(curve, parameter, tempCurve, null);
-			curve = tempCurve;
-		}
-		return getLength(curve);
+	protected static double getLength(double curve[][]) {
+		return nativeGetLength(
+				curve[0][0], curve[0][1],
+				curve[1][0], curve[1][1],
+				curve[2][0], curve[2][1],
+				curve[3][0], curve[3][1]
+		);
 	}
 
-	/**
-	 * curve is only modified if it is passed as tempCurve as well. this is
-	 * needed in getParameterWithLength above...
-	 */
-	private static double getPartLength(double curve[][], double fromParameter,
-			double toParameter, double tempCurve[][]) {
-		if (fromParameter > toParameter) {
-			double temp = fromParameter;
-			fromParameter = toParameter;
-			toParameter = temp;
-		} else if (fromParameter == toParameter) {
-			return 0;
+	protected static void getIntersections(Curve curve, double[][] curve1,
+			double[][] curve2, ArrayList<CurveLocation> intersections) {
+		/*
+		Path line = Document.getActiveDocument().createRectangle(
+				getControlBounds(curve1));
+		line.setStrokeColor(java.awt.Color.green);
+		line.setStrokeWidth(1f);
+
+		line = Document.getActiveDocument().createRectangle(
+				getControlBounds(curve2));
+		line.setStrokeColor(java.awt.Color.red);
+		line.setStrokeWidth(1f);
+		*/
+		if (getControlBounds(curve1).intersects(getControlBounds(curve2))) {
+			if (isSufficientlyFlat(curve1) && isSufficientlyFlat(curve2)) {
+				// Treat both curves as lines and see if their parametric
+				// equations interesct.
+				Point point = Line.intersect(
+						curve1[0][0], curve1[0][1],
+						curve1[3][0], curve1[3][1], false,
+						curve2[0][0], curve2[0][1],
+						curve2[3][0], curve2[3][1], false);
+				// We need to provide the original left curve reference to the
+				// #getIntersections() calls as it is required for the returned
+				// CurveLocation instances.
+				// Passing -1 for parameter leads to lazy determination of
+				// parameter values in CurveLocation#getParameter() only once
+				// they are requested. This allows the use of CurveLocation
+				// without slow-downs in comparisson to simply returning points
+				// as long as only CurveLocation#getPoint() is called.
+				if (point != null)
+					intersections.add(new CurveLocation(curve, -1, point));
+			} else {
+				double curve1Left[][] = new double[4][];
+				double curve1Right[][] = new double[4][];
+				double curve2Left[][] = new double[4][];
+				double curve2Right[][] = new double[4][];
+				subdivide(curve1, curve1Left, curve1Right);
+				subdivide(curve2, curve2Left, curve2Right);
+				getIntersections(curve, curve1Left, curve2Left, intersections);
+				getIntersections(curve, curve1Left, curve2Right, intersections);
+				getIntersections(curve, curve1Right, curve2Left, intersections);
+				getIntersections(curve, curve1Right, curve2Right, intersections);
+			}
 		}
-
-		if (fromParameter < 0)
-			fromParameter = 0;
-
-		if (toParameter > 1)
-			toParameter = 1;
-
-		return getLeftLength(curve, toParameter, tempCurve)
-			- getLeftLength(curve, fromParameter, tempCurve);
 	}
 
-	private static double getParameter(double[][] curve, double length) {
+	private static boolean isSufficientlyFlat(double[][] curve) {
+		// Thanks to Kaspar Fischer for the following:
+		// http://www.inf.ethz.ch/personal/fischerk/pubs/bez.pdf
+		double x0 = curve[0][0];
+		double y0 = curve[0][1];
+		double x1 = curve[1][0];
+		double y1 = curve[1][1];
+		double x2 = curve[2][0];
+		double y2 = curve[2][1];
+		double x3 = curve[3][0];
+		double y3 = curve[3][1];
+		double ux = 3.0 * x1 - 2.0 * x0 - x3;
+		ux *= ux;
+		double uy = 3.0 * y1 - 2.0 * y0 - y3;
+		uy *= uy;
+		double vx = 3.0 * x2 - 2.0 * x3 - x0;
+		vx *= vx;
+		double vy = 3.0 * y2 - 2.0 * y3 - y0;
+		vy *= vy;
+		if (ux < vx)
+			ux = vx;
+		if (uy < vy)
+			uy = vy;
+		return ux + uy <= 16 * EPSILON * EPSILON; // tolerance is 16 * tol ^ 2
+	}
+
+	private static Rectangle getControlBounds(double[][] curve) {
+		double minX = curve[0][0], maxX = minX, minY = curve[0][1], maxY = minY;
+		for (int i = 1; i < 4; i++) {
+			double[] c = curve[i];
+			double x = c[0], y = c[1];
+			if (x < minX)
+				minX = x;
+			else if (x > maxX)
+				maxX = x;
+			if (y < minY)
+				minY = y;
+			else if (y > maxY)
+				maxY = y;
+		}
+		return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+	}
+
+	protected static double getParameter(double[][] curve, double length) {
 		if (length <= 0)
 			return 0;
 		double bezierLength = getLength(curve);
@@ -942,7 +890,42 @@ public class Curve implements ChangeReceiver {
 		return res;
 	}
 
-	private static double getParameter(double[][] curve, double x,
+	private static double getLeftLength(double curve[][], double parameter,
+			double tempCurve[][]) {
+		if (parameter == 0)
+			return 0;
+		if (parameter < 1) {
+			subdivide(curve, parameter, tempCurve, null);
+			curve = tempCurve;
+		}
+		return getLength(curve);
+	}
+
+	/**
+	 * curve is only modified if it is passed as tempCurve as well. this is
+	 * needed in getParameterWithLength above...
+	 */
+	private static double getPartLength(double curve[][], double fromParameter,
+			double toParameter, double tempCurve[][]) {
+		if (fromParameter > toParameter) {
+			double temp = fromParameter;
+			fromParameter = toParameter;
+			toParameter = temp;
+		} else if (fromParameter == toParameter) {
+			return 0;
+		}
+
+		if (fromParameter < 0)
+			fromParameter = 0;
+
+		if (toParameter > 1)
+			toParameter = 1;
+
+		return getLeftLength(curve, toParameter, tempCurve)
+			- getLeftLength(curve, fromParameter, tempCurve);
+	}
+
+	protected static double getParameter(double[][] curve, double x,
 			double y, double epsilon) {
 		double txs[] = { 0, 0, 0 }; 
 		double tys[] = { 0, 0, 0 };
