@@ -49,11 +49,11 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 	DEFINE_CALLBACK_PROC(Item_onNotify);
 	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
 
-	// Call onNotify with kADMInitializeWindowNotifier
+	// Call onNotify with kADMInitializeNotifier
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getItemObject(item);
-		gEngine->callOnNotify(obj, kADMInitializeWindowNotifier);
+		gEngine->callOnNotify(obj, kADMInitializeNotifier);
 	} EXCEPTION_CATCH_REPORT(env);
 	return kNoErr;
 }

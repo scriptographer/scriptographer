@@ -42,8 +42,6 @@ import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ai.Color;
-import com.scriptographer.ai.Timer;
-import com.scriptographer.script.RunnableCallable;
 import com.scriptographer.sg.Script;
 
 /**
@@ -378,37 +376,6 @@ public abstract class Dialog extends Component {
 				setPosition(bounds.getPoint());
 			}
 		}
-	}
-
-	private class RunnableTimer extends Timer {
-		Runnable runnable;
-
-		RunnableTimer(Runnable runnable) {
-			super(0, false);
-			this.runnable = runnable; 
-		}
-
-		protected boolean onExecute() {
-			runnable.run();
-			// Do not redraw document
-			return false;
-		}
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean invokeLater(Runnable runnable) {
-		try {
-			new RunnableTimer(runnable);
-			return true;
-		} catch (Throwable e) {
-			return false;
-		}
-	}
-
-	public boolean invokeLater(Callable function) {
-		return invokeLater(new RunnableCallable(function, this));
 	}
 
 	/*

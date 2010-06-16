@@ -29,6 +29,9 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.script.Callable;
+import com.scriptographer.ai.Timer;
+import com.scriptographer.script.RunnableCallable;
 import com.scriptographer.ui.NativeObject;
 
 /**
@@ -50,7 +53,52 @@ abstract class NotificationHandler extends NativeObject {
 	public abstract boolean defaultTrack(Tracker tracker);
 	public abstract void defaultDraw(Drawer drawer);
 
-	protected final void onNotify(String notifier) {
-		onNotify(Notifier.get(notifier));
+	protected final void onNotify(String name) {
+		Notifier notifier = Notifier.get(name);
+		// Use invokeLater to call onInitialize, so it is called after the
+		// native onInit callback.
+		if (notifier == Notifier.INITIALIZE) {
+			invokeLater(new Runnable() {
+				public void run() {
+					onNotify(Notifier.INITIALIZE);
+				}
+			});
+		} else {
+			onNotify(notifier);
+		}
+	}
+
+	private class RunnableTimer extends Timer {
+		Runnable runnable;
+
+		RunnableTimer(Runnable runnable) {
+			super(0, false);
+			this.runnable = runnable; 
+		}
+
+		protected boolean onExecute() {
+			runnable.run();
+			// Do not redraw document
+			return false;
+		}
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean invokeLater(Runnable runnable) {
+		try {
+			new RunnableTimer(runnable);
+			return true;
+		} catch (Throwable e) {
+			return false;
+		}
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean invokeLater(Callable function) {
+		return invokeLater(new RunnableCallable(function, this));
 	}
 }

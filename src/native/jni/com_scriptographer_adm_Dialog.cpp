@@ -62,22 +62,13 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	
 	// Execute a one-shot timer right after creation of the dialog,
 	// to run initialize()
-	DEFINE_CALLBACK_PROC(Dialog_onInitialize);
-	sADMDialog->CreateTimer(dialog, 0, 0,
-			(ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInitialize), NULL, 0);
-	return kNoErr;
-}
-
-ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) {
-	// Clear timer
-	sADMDialog->AbortTimer(dialog, timerID);
-	// Call onNotify with NOTIFIER_INITIALIZE
+	// Call onNotify with kADMInitializeNotifier
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callOnNotify(obj, kADMInitializeWindowNotifier);
+		gEngine->callOnNotify(obj, kADMInitializeNotifier);
 	} EXCEPTION_CATCH_REPORT(env);
-	return true;
+	return kNoErr;
 }
 
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {

@@ -71,7 +71,7 @@ public enum Notifier {
 	PRE_CLIPBOARD_UNDO("ADM Pre Clipboard Undo Notifier"),
 	POST_CLIPBOARD_UNDO("ADM Post Clipboard Undo Notifier"),
 	// Pseudo notifiers: 
-	INITIALIZE("ADM Initialize Window Notifier"),
+	INITIALIZE("ADM Initialize Notifier"),
 	DESTROY("ADM Destroy Notifier");
 
 	protected String name;

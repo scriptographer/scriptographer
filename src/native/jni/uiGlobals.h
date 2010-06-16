@@ -26,7 +26,6 @@
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
-ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID);
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog);
 void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier); 
 void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier);
@@ -56,7 +55,7 @@ ASBoolean ASAPI HierarchyListEntry_onTrack(ADMListEntryRef entry, ADMTrackerRef 
 void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer);
 
 // Pseudo notifiers: 
-#define kADMInitializeWindowNotifier "ADM Initialize Window Notifier"
+#define kADMInitializeNotifier "ADM Initialize Notifier"
 #define kADMDestroyNotifier "ADM Destroy Notifier"
 
 #define DEFINE_ADM_POINT(PT, X, Y) \

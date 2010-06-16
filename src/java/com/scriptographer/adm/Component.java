@@ -36,13 +36,13 @@ import java.awt.LayoutManager;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ScriptographerException;
-import com.scriptographer.adm.layout.TableLayout;
 import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerException;
+import com.scriptographer.adm.layout.TableLayout;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
