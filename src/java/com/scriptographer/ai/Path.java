@@ -32,6 +32,7 @@ package com.scriptographer.ai;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
 
 import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
@@ -615,6 +616,27 @@ public class Path extends PathItem {
 		if (loc != null)
 			return loc.getCurve().getNormal(loc.getParameter());
 		return null;
+	}
+
+	public CurveLocation[] getIntersections(Path other) {
+		// First check the bounds of the two paths. If they don't intersect,
+		// we don't need to iterate through the whole path.
+		if (!getBounds().intersects(other.getBounds()))
+			return new CurveLocation[0];
+		ArrayList<CurveLocation> locations = new ArrayList<CurveLocation>();
+		CurveList curves1 = getCurves(), curves2 = other.getCurves();
+		int length1 = curves1.size(), length2 = curves2.size();
+		double[][][] curvesValues2 = new double[length2][][];
+		for (int i = 0; i < length2; i++)
+			curvesValues2[i] = curves2.get(i).getCurveValues();
+		for (int i = 0; i < length1; i++) {
+			Curve curve = curves.get(i);
+			double[][] curveValues = curve.getCurveValues();
+			for (int j = 0; j < length2; j++)
+				Curve.getIntersections(curve, curveValues, curvesValues2[j],
+						locations);
+		}
+		return locations.toArray(new CurveLocation[locations.size()]);
 	}
 
 	/*
