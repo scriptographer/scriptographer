@@ -35,6 +35,8 @@ import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 
+import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.ScriptographerException;
@@ -242,5 +244,15 @@ public class CompoundPath extends PathItem {
 			return path;
 		}
 		return this;
+	}
+
+	protected List<Curve> getAllCurves() {
+		Item child = getFirstChild();
+		ExtendedArrayList<Curve> curves = new ExtendedArrayList<Curve>();
+		while (child != null) {
+			curves.addAll(((Path )child).getCurves());
+			child = child.getNextSibling();
+		}
+		return curves;
 	}
 }

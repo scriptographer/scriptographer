@@ -33,6 +33,9 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
+
+import com.scratchdisk.list.List;
 
 /**
  * @author lehni
@@ -274,5 +277,37 @@ public abstract class PathItem extends Item {
 		CompoundPath compoundPath = new CompoundPath(area);
 		compoundPath.setStyle(this.getStyle());
 		return compoundPath.simplify();
+	}
+
+	/**
+	 * Returns all curves contained in the Item. For {@link Path} items this is
+	 * the same as {@link Path#getCurves}, for {@link CompoundPath} items it
+	 * returns the curves of all the {@link Path} items contained inside.
+	 */
+	protected abstract List<Curve> getAllCurves();
+
+	/**
+	 * Returns all interesections between two {@link Path} items in an array.
+	 * {@link CompoundPath} items are support too.
+	 */
+	public CurveLocation[] getIntersections(PathItem other) {
+		// First check the bounds of the two paths. If they don't intersect,
+		// we don't need to iterate through the whole path.
+		if (!getBounds().intersects(other.getBounds()))
+			return new CurveLocation[0];
+		ArrayList<CurveLocation> locations = new ArrayList<CurveLocation>();
+		List<Curve> curves1 = getAllCurves(), curves2 = other.getAllCurves();
+		int length1 = curves1.size(), length2 = curves2.size();
+		double[][][] curvesValues2 = new double[length2][][];
+		for (int i = 0; i < length2; i++)
+			curvesValues2[i] = curves2.get(i).getCurveValues();
+		for (int i = 0; i < length1; i++) {
+			Curve curve = curves1.get(i);
+			double[][] curveValues = curve.getCurveValues();
+			for (int j = 0; j < length2; j++)
+				Curve.getIntersections(curve, curveValues, curvesValues2[j],
+						locations);
+		}
+		return locations.toArray(new CurveLocation[locations.size()]);
 	}
 }
