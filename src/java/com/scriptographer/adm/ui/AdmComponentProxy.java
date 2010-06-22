@@ -399,7 +399,7 @@ public class AdmComponentProxy extends ComponentProxy {
 			ListEntry selected = null;
 			int index = selectedIndex != null ? selectedIndex : 0;
 			for (int i = 0, l = list.size(); i < l && selected == null; i++) {
-				Object option = component.getOption(index);
+				Object option = component.getOption(i);
 				if (ConversionUtils.equals(value, option))
 					index = i;
 			}
