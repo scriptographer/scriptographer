@@ -54,11 +54,8 @@ public class PromptDialog extends ModalDialog {
 	public PromptDialog(String title, Component[] components) {
 		setTitle(title);
 		this.components = components;
-		// Add one more row for the buttons.
-		TableLayout layout =
-				AdmPaletteProxy.createLayout(this, components, true, 1, 5);
 
-		// Add buttons to the layout
+		// Create row of buttons
 		ItemGroup buttons = new ItemGroup(this);
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 		buttons.setMarginTop(8);
@@ -71,8 +68,14 @@ public class PromptDialog extends ModalDialog {
 		Button okButton = new Button(this);
 		okButton.setText("  OK  ");
 		buttons.addToContent(okButton);
+		
+		// Add one more row for the buttons to the layout.
+		TableLayout layout =
+				AdmPaletteProxy.createLayout(this, components, true, 1, 5);
 
 		int numRows = layout.getNumRow();
+
+		// Add row of buttons to the layout
 		addToContent(buttons, "1, " + (numRows - 1) + ", 2, "
 				+ (numRows - 1) + ", right, top");
 
