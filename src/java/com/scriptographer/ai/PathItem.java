@@ -298,9 +298,13 @@ public abstract class PathItem extends Item {
 		ArrayList<CurveLocation> locations = new ArrayList<CurveLocation>();
 		List<Curve> curves1 = getAllCurves(), curves2 = other.getAllCurves();
 		int length1 = curves1.size(), length2 = curves2.size();
+		// Convert curves2 to curve values, as we're looping through them for
+		// each curve in curves1.
 		double[][][] curvesValues2 = new double[length2][][];
 		for (int i = 0; i < length2; i++)
 			curvesValues2[i] = curves2.get(i).getCurveValues();
+		// Now loop through each curve in curves1 and get intersections with
+		// the curves in curves2.
 		for (int i = 0; i < length1; i++) {
 			Curve curve = curves1.get(i);
 			double[][] curveValues = curve.getCurveValues();
