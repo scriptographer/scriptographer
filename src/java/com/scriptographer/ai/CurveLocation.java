@@ -35,23 +35,30 @@ package com.scriptographer.ai;
  *
  */
 public class CurveLocation {
-	protected Curve curve;
+	private Curve curve;
 	private double parameter;
 	private Point point;
 	private Segment segment;
 
+	protected CurveLocation() {
+	}
+
 	protected CurveLocation(Curve curve, double parameter, Point point) {
-		this.curve = curve;
-		this.parameter = parameter;
-		this.point = point;
+		init(curve, parameter, point);
 	}
 
 	public CurveLocation(Curve curve, double parameter) {
-		this(curve, parameter, null);
+		init(curve, parameter, null);
 	}
 
 	public CurveLocation(Path path, int index, double parameter) {
-		this(path.getCurves().get(index), parameter, null);
+		init(path.getCurves().get(index), parameter, null);
+	}
+
+	protected void init(Curve curve, double parameter, Point point) {
+		this.curve = curve;
+		this.parameter = parameter;
+		this.point = point;
 	}
 
 	/**

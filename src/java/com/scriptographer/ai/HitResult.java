@@ -58,8 +58,8 @@ public class HitResult extends CurveLocation {
 	 */
 	protected HitResult(int docHandle, int type, Item item, int index,
 			double parameter, Point point, int textRangeHandle) {
-		super(null, parameter, point);
 		this.type = IntegerEnumUtils.get(HitType.class, type);
+		Curve curve = null;
 		if (item instanceof Path && type < HitType.FILL.value) {
 			Path path = (Path) item;
 			CurveList curves = path.getCurves();
@@ -86,16 +86,13 @@ public class HitResult extends CurveLocation {
 					parameter = 0;
 			}
 		}
+		init(curve, parameter, point);
 		this.item = item;
 		// Always wrap textRange even if the user does not request it, so
 		// reference gets released in the end through GC.
 		if (textRangeHandle != 0) {
 			textRange = new TextRange(textRangeHandle,
 					Document.wrapHandle(docHandle));
-			/*
-			int start = textRange.getStart();
-			textRange.setRange(start, start + 1);
-			*/
 		}
 	}
 
@@ -128,10 +125,11 @@ public class HitResult extends CurveLocation {
 		Point point = getPoint();
 		if (point != null)
 			buf.append(", point: ").append(getPoint());
+		Curve curve = getCurve();
 		if (curve != null)
 			buf.append(", index: ").append(getIndex());
-		double parameter = getParameter();
-		if (parameter != -1)
+		Double parameter = getParameter();
+		if (parameter != null)
 			buf.append(", parameter: ").append(parameter);
 		buf.append(" }");
 		return buf.toString();
