@@ -34,6 +34,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.wst.jsdt.debug.rhino.debugger.RhinoDebugger;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -86,7 +87,8 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 				return context;
 			}
 
-			protected void observeInstructionCount(Context cx, int instructionCount) {
+			protected void observeInstructionCount(Context cx,
+					int instructionCount) {
 				RhinoEngine.this.observeInstructionCount(cx, instructionCount);
 			}
 		};
@@ -95,9 +97,16 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 
 		// The debugger needs to be created before the context, otherwise
 		// notification won't work
-//		debugger = new Debugger();
-//		debugger.setScopeProvider(this);
-//		debugger.attachTo(contextFactory);
+		String rhinoDebug = System.getProperty("rhino.debug");
+		if (rhinoDebug != null) {
+			try {
+				RhinoDebugger debugger = new RhinoDebugger(rhinoDebug);
+				debugger.start();
+				contextFactory.addListener(debugger);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		context = contextFactory.enterContext();
 		topLevel = this.makeTopLevel(context);

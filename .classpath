@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="build/java/build/lib/jython.jar" sourcepath="/Jython/src"/>
 	<classpathentry kind="lib" path="build/java/build/lib/js.jar"/>
+	<classpathentry kind="lib" path="build/java/build/lib/debugger.jar"/>
 	<classpathentry kind="output" path="build/java/build/classes"/>
 </classpath>

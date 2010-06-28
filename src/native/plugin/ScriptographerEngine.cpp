@@ -302,14 +302,6 @@ void ScriptographerEngine::init() {
 		}
 	}
 
-#ifdef _DEBUG
-	// Start JVM in debug mode, for remote debuggin on port 8000
-	options.add("-Xdebug");
-	options.add("-Xnoagent");
-	options.add("-Djava.compiler=NONE");
-	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
-#endif // _DEBUG
-
 	options.fillArgs(&args);
 	args.ignoreUnrecognized = true;
 	JNIEnv *env = NULL;
