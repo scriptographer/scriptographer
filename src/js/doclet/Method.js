@@ -119,9 +119,11 @@ Method = Member.extend(new function() {
 			return true;
 		},
 
-		remove: function(method) {
+		remove: function(method, replaceMember) {
 			if (this.members.remove(method)) {
 				Member.remove(method, this);
+				if (replaceMember)
+					Member.put(method, replaceMember);
 				if (this.member == method)
 					this.member = this.members.first;
 				if (this.member) {

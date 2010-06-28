@@ -94,12 +94,12 @@ MemberGroup = Base.extend({
 	 * Since these can be groups of JS style compatible methods, their members
 	 * need to be iterated as well.
 	 */
-	removeMethod: function(method) {
+	removeMethod: function(method, replaceMember) {
 		if (method && method instanceof Method) {
 			method.members.each(function(meth) {
 				this.members.each(function(member) {
 					if (member instanceof Method)
-						member.remove(meth)
+						member.remove(meth, replaceMember);
 				});
 			}, this);
 		}
@@ -109,10 +109,10 @@ MemberGroup = Base.extend({
 	 * Removes all methods and sub-methods contained in the given group by
 	 * looping through its members and passing them to removeMethod.
 	 */
-	removeMethods: function(group) {
+	removeMethods: function(group, replaceMember) {
 		if (group && group instanceof MemberGroup) {
 			group.members.each(function(member) {
-				this.removeMethod(member);
+				this.removeMethod(member, replaceMember);
 			}, this);
 		}
 	},

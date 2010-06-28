@@ -210,7 +210,12 @@ Member = Base.extend({
 					Member.put(mem, obj);
 				});
 			} else {
-				this.members[Member.getId(member)] = obj;
+				var id = Member.getId(member);
+				// Only put this member in the lookup table if there was not
+				// already one with the same id, to avoid replacing through
+				// wrong overridden sub-class methods.
+				if (!this.members[id])
+					this.members[id] = obj;
 			}
 		},
 

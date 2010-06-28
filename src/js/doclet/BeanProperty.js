@@ -49,9 +49,9 @@ BeanProperty = SyntheticMember.extend({
 
 	removeMethods: function(getterGroup, setterGroup) {
 		if (getterGroup)
-			getterGroup.removeMethod(this.member);
+			getterGroup.removeMethod(this.member, this);
 		if (setterGroup)
-			setterGroup.removeMethods(this.setters);
+			setterGroup.removeMethods(this.setters, this);
 	},
 
 	firstSentenceTags: function() {
