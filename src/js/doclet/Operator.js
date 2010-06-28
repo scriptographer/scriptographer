@@ -60,6 +60,7 @@ Operator = SyntheticMember.extend(new function() {
 				// be uppercae and constants.
 				return method.parameters().length == 1 && !method.isStatic() && (
 						/^(add|subtract|multiply|divide|modulo)$/.test(method.name())
+						&& (!(tag = method.tags('jsoperator')[0]) || tag.text() != 'none')
 						&& method.containingClass().isCompatible(new Type(method.returnType()))
 					) || ( // equals
 						method.name() == 'equals'
