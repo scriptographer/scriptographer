@@ -41,7 +41,7 @@ import com.scratchdisk.list.Lists;
  * @author lehni
  */
 public class Group extends Item {
-	
+
 	protected Group(int handle, int docHandle, boolean created) {
 		super(handle, docHandle, created);
 	}

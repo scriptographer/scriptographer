@@ -61,7 +61,7 @@ import com.scriptographer.adm.Image;
  * @jsreference {@type field} {@name document} {@reference Item#document} {@after data}
  */
 public class Item extends DocumentObject implements Style, ChangeReceiver {
-	
+
 	/**
 	 * The internal version. this is used for internally reflected data, such as
 	 * segmentList, pathStyle, and so on. Every time an object gets modified,
@@ -70,35 +70,33 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * against this variable
 	 */
 	protected int version = 0;
-	
+
 	/**
 	 * Handle history, to keep track of version / handle pairs in a stack.
 	 */
 	protected Stack<HandleHistoryEntry> handleHistory = null;
 
 	/**
-	 * The history version at the time of the creation of this item. This is used for
-	 * isValid checks. If historyVersion is below creationVersion, the item does not
-	 * exist anymore and is invalid (happens through undo's). Set to -1 if
-	 * creation version is unknown, for existing items that are wrapped, rather
-	 * than newly created.
-	 * These version values include both branch and level information.
-	 * See Document.
+	 * The history version at the time of the creation of this item. This is
+	 * used for isValid checks. If historyVersion is below creationVersion, the
+	 * item does not exist anymore and is invalid (happens through undo's). Set
+	 * to -1 if creation version is unknown, for existing items that are
+	 * wrapped, rather than newly created. These version values include both
+	 * branch and level information. See Document.
 	 */
 	protected long creationVersion;
 
 	/**
-	 * The history version at which this item was removed. Set to an invalid value
-	 * as long as it is not removed. This is used in isValid checks.
+	 * The history version at which this item was removed. Set to an invalid
+	 * value as long as it is not removed. This is used in isValid checks.
 	 */
 	protected long deletionVersion = Long.MAX_VALUE;
 
 	/**
 	 * Then history version of the last modification of this item. Refetching is
-	 * needed for any item for which the current historyVersion is between between
-	 * creationVersion and modificationVersion.
-	 * These version values include both branch and level information.
-	 * See Document.
+	 * needed for any item for which the current historyVersion is between
+	 * between creationVersion and modificationVersion. These version values
+	 * include both branch and level information. See Document.
 	 */
 	protected long modificationVersion;
 
