@@ -29,6 +29,11 @@
 
 package com.scriptographer.ai;
 
+/**
+ * @author lehni
+ *
+ * @jshide
+ */
 public class Line {
 	private Point point1;
 	private Point point2;

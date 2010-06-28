@@ -303,7 +303,7 @@ public class ItemAttributes {
 	 * 
 	 * Sample code:
 	 * <code>
-	 * var clipMaskItems = document.getItems({
+	 * var targetedItems = document.getItems({
 	 * 	targeted: true
 	 * });
 	 * 

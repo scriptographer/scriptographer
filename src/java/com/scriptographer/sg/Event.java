@@ -56,8 +56,6 @@ public abstract class Event {
 	 *     };
 	 * }
 	 * </code>
-	 * 
-	 * @return
 	 */
 	public KeyModifiers getModifiers() {
 		return new KeyModifiers(modifiers);

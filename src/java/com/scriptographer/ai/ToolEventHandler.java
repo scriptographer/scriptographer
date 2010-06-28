@@ -178,7 +178,7 @@ public class ToolEventHandler extends NativeObject {
 	 * contains information about the mouse event.
 	 * 
 	 * This function can also be called periodically while the mouse doesn't
-	 * move by setting the {@link #getEventInterval()}
+	 * move by setting the {@link Tool#getEventInterval()}
 	 * 
 	 * Sample code:
 	 * <code>

@@ -384,8 +384,8 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns a new size with rounded {@link #x} and {@link #y} values. The
-	 * object itself is not modified!
+	 * Returns a new size with rounded {@link #width} and {@link #height}
+	 * values. The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>

@@ -542,6 +542,8 @@ public class Curve implements ChangeReceiver {
 	 * @param parameter the position at which to split the curve as a value
 	 *        between 0 and 1 {@default 0.5}
 	 * @return the second part of the divided curve
+	 * 
+	 * @jsoperator none
 	 */
 	public Curve divide(double parameter) {
 		Curve result = null;
