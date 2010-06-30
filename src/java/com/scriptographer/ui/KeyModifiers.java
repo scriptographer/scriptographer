@@ -86,7 +86,7 @@ public class KeyModifiers {
 	 * @return {@true if the command key is pressed}
 	 */
 	public boolean getCommand() {
-		return (modifiers & CONTROL) != 0;
+		return (modifiers & COMMAND) != 0;
 	}
 
 	/**
