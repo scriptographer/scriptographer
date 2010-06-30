@@ -551,7 +551,7 @@ var mainDialog = new FloatingDialog(
 			this.text = (mainDialog.visible ? 'Hide' : 'Show')
 					+ ' Main Palette';
 		}
-	}.setCommand('M', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
+	}.setCommand('`', MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		onSelect: function() {
@@ -561,7 +561,7 @@ var mainDialog = new FloatingDialog(
 			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
 					+ ' Console Palette';
 		}
-	}.setCommand('C', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
+	}.setCommand('`', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		text: 'About...',
@@ -662,8 +662,8 @@ var mainDialog = new FloatingDialog(
 	}
 
 	global.onKeyDown = function(event) {
-		if (event.character == '`'
-				&& !event.modifiers.command && !event.modifiers.shift) {
+		if (event.character == '`' && !event.modifiers.command
+				&& !event.modifiers.shift && !event.modifiers.control) {
 			tool.selected = true;
 			return true;
 		}
