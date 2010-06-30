@@ -52,7 +52,7 @@ function onMouseDrag(event) {
 		step.length = step.length / 2;
 	} else {
 		// otherwise set the length of the step vector to half of minDistance
-		step.length = values.threshold / 2;
+		step.length = values.minDistance / 2;
 	}
 	
 	// the top point: the middle point + the step rotated by -90 degrees
