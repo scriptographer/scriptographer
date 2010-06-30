@@ -315,7 +315,6 @@ public class Drawer extends NativeObject {
 	 * SWT Bridge
 	 */
 
-	@SuppressWarnings("unused")
 	private native void nativeDrawImage(int imageHandle, int x, int y);
 
 /*

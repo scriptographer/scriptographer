@@ -186,7 +186,6 @@ public class Annotator extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static void onDraw(int handle, int portHandle, int viewHandle, int docHandle) {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
@@ -195,7 +194,6 @@ public class Annotator extends NativeObject {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private static void onInvalidate(int handle) {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {

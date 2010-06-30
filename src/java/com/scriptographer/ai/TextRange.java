@@ -56,7 +56,6 @@ public class TextRange extends DocumentObject implements Committable,
 	// to cash glyph run references, once their
 	// found. these values need to be cleared in
 	// setStart, setEnd ,setRange and finalize
-	@SuppressWarnings("unused")
 	private int glyphRuns;
 	
 	protected TextStory story = null;

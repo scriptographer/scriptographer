@@ -267,7 +267,6 @@ public class Tool extends ToolEventHandler {
 	 * To be called from the native environment. Returns the cursor
 	 * id to be set, if any.
 	 */
-	@SuppressWarnings("unused")
 	private static int onHandleEvent(int handle, String selector, float x,
 			float y, int pressure, int modifiers) {
 		Tool tool = getTool(handle);

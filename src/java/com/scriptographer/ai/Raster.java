@@ -59,7 +59,6 @@ import com.scratchdisk.util.NetUtils;
 public class Raster extends Item {
 
 	// native pointer to an attached data struct:
-	@SuppressWarnings("unused")
 	private int data = 0;
 
 	protected Raster(int handle, int docHandle, boolean created) {

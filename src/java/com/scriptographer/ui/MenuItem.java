@@ -260,7 +260,6 @@ public class MenuItem extends NativeObject{
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static void onSelect(int handle) {
 		MenuItem item = getItem(handle);
 		if (item != null)
@@ -270,7 +269,6 @@ public class MenuItem extends NativeObject{
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static void onUpdate(int handle, int inArtwork, int isSelected,
 			int isTrue) {
 		MenuItem item = getItem(handle);

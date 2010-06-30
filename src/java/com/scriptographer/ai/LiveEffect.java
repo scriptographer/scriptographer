@@ -444,7 +444,6 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static void onEditParameters(int handle, int dataHandle) {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
@@ -455,7 +454,6 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static int onCalculate(int handle, Item item, int dataHandle) {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
@@ -514,7 +512,6 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static int onGetInputType(int handle, int itemHandle,
 			int parametersHandle) {
 		// For improved performance of onGetInputType, we do not wrap the handle

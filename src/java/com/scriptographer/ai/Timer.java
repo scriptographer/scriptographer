@@ -129,7 +129,6 @@ public class Timer extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	@SuppressWarnings("unused")
 	private static boolean onExecute(int handle) {
 		Timer timer = getTimer(handle);
 		if (timer != null) {

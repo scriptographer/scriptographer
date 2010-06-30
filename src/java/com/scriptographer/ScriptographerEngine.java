@@ -638,7 +638,6 @@ public class ScriptographerEngine {
 	/**
 	 * To be called from the native environment.
 	 */
-	@SuppressWarnings("unused")
 	private static boolean onHandleKeyEvent(int type, int keyCode,
 			char character, int modifiers) {
 		// TODO: There is currently no way to use these callbacks in a Java-only
