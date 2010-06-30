@@ -392,8 +392,8 @@ public class Path extends PathItem {
 		return split(getLocation(length));
 	}
 
-	public Path split(CurveLocation position) {
-		return split(position.getIndex(), position.getParameter());
+	public Path split(CurveLocation location) {
+		return split(location.getIndex(), location.getParameter());
 	}
 
 	public Path split(int index, double parameter) {
