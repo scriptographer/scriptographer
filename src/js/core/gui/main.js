@@ -662,10 +662,19 @@ var mainDialog = new FloatingDialog(
 	}
 
 	global.onKeyDown = function(event) {
-		if (event.character == '`' && !event.modifiers.command
-				&& !event.modifiers.shift && !event.modifiers.control) {
-			tool.selected = true;
-			return true;
+		if (event.character == '`') {
+			if (event.modifiers.command) {
+				if (event.modifiers.shift) {
+					consoleDialog.visible = !consoleDialog.visible;
+					return true;
+				} else {
+					mainDialog.visible = !mainDialog.visible;
+					return true;
+				}
+			} else if (!event.modifiers.shift && !event.modifiers.control) {
+				tool.selected = true;
+				return true;
+			}
 		}
 	}
 
