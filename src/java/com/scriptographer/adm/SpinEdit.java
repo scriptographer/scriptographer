@@ -136,7 +136,7 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 		if (ScriptographerEngine.isMacintosh()) {
 			TextEdit edit = getTextEdit();
 			if (xDiff == -1)
-				xDiff = edit.getPosition().x + getPosition().x;
+				xDiff = edit.getPosition().x - getPosition().x;
 			edit.setSize(width - xDiff, height);
 		}
 	}
