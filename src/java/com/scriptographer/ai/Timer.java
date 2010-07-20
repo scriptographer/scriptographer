@@ -134,25 +134,29 @@ public class Timer extends NativeObject {
 		if (timer != null) {
 			try {
 				Document document = Document.getActiveDocument();
-				if (document != null) {
-					// Produce a normal undo cycle if in the previous cycle we
-					// have created or removed items. Otherwise just merge the
-					// changes of this cycle with the previous one.
-					// It is important to create new cycles when such changes
-					// happen, as they affect the live span of items within the
-					// undo history, and if all cycles were merged, the history
-					// tracking code in Document would not be able to track 
-					// their life span.
-					document.setUndoType(document.hasCreatedState()
-							|| document.hasRemovedState()
-									? Document.UNDO_STANDARD
-									: Document.UNDO_MERGE);
-					document.clearChangedStates();
-				}
-				if (timer.onExecute())
-					return true;
+				// Produce a normal undo cycle if in the previous cycle we have
+				// created or removed items. Otherwise just merge the changes of
+				// this cycle with the previous one.
+				// It is important to create new cycles when such changes
+				// happen, as they affect the live span of items within the undo
+				// history, and if all cycles were merged, the history tracking
+				// code in Document would not be able to track their life span.
+				int undoType = document == null || document.hasCreatedState()
+						|| document.hasRemovedState() 
+								? Document.UNDO_STANDARD
+								: Document.UNDO_MERGE;
+				// Clear changed states now to track for new changes in
+				// onExecute()
 				if (document != null)
-					return document.hasChangedSates();
+					document.clearChangedStates();
+				boolean changed = timer.onExecute()
+						|| document != null && document.hasChangedSates();
+				// Only change undo type if the document have actually changed.
+				// This prevents issues with situations where Timers are used
+				// for ADM interface stuff, e.g. invokeLater().
+				if (document != null && changed)
+					document.setUndoType(undoType);
+				return changed;
 			} finally {
 				// Simulate one shot timers by aborting:
 				if (!timer.periodic)
