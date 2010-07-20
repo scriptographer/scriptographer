@@ -41,9 +41,9 @@ public final class Pathfinder {
 	private Pathfinder() {
 	}
 
-	public static final float DEFAULT_PRECISION = 10f;
-	public static final boolean DEFAULT_REMOVE_POINTS = false;
-	public static final boolean DEFAULT_EXTRACT_UNPAINTED = false;
+	private static final float DEFAULT_PRECISION = 10f;
+	private static final boolean DEFAULT_REMOVE_POINTS = false;
+	private static final boolean DEFAULT_EXTRACT_UNPAINTED = false;
 
 	// Unite
 
