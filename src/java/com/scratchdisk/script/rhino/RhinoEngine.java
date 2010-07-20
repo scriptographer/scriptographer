@@ -61,7 +61,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	protected Context context;
 	protected RhinoWrapFactory wrapFactory;
 	private RhinoScope globalScope;
-//	protected Debugger debugger = null;
+	private RhinoDebugger debugger;
 
 	public RhinoEngine(RhinoWrapFactory wrapFactory) {
 		super("JavaScript", "js");
@@ -100,7 +100,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		String rhinoDebug = System.getProperty("rhino.debug");
 		if (rhinoDebug != null) {
 			try {
-				RhinoDebugger debugger = new RhinoDebugger(rhinoDebug);
+				debugger = new RhinoDebugger(rhinoDebug);
 				debugger.start();
 				contextFactory.addListener(debugger);
 			} catch (Exception e) {

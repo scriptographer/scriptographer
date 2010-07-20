@@ -50,6 +50,19 @@ public abstract class ScriptEngine {
 	private HashMap<File, Script> scriptCache =
 		new HashMap<File, Script>();
 
+	public ScriptEngine(String name, String extension) {
+		addName(name);
+		addExtension(extension);
+	}
+
+	public void addExtension(String extension) {
+		enginesByExtension.put(extension, this);
+	}
+
+	public void addName(String name) {
+		enginesByName.put(name, this);
+	}
+
 	public static void loadEngines() {
 		// Do not call loadEngines immediately, as we want the scripting engines
 		// to be instantiated in the same thread as from where they are used...
@@ -67,19 +80,6 @@ public abstract class ScriptEngine {
 			loaded = true;
 		}
 		ArgumentConverter.loadConverters();
-	}
-
-	public ScriptEngine(String name, String extension) {
-		addName(name);
-		addExtension(extension);
-	}
-
-	public void addExtension(String extension) {
-		enginesByExtension.put(extension, this);
-	}
-
-	public void addName(String name) {
-		enginesByName.put(name, this);
 	}
 
 	public static ScriptEngine getEngineByName(String name) {
