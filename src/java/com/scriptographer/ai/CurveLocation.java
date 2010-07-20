@@ -29,10 +29,19 @@
 
 package com.scriptographer.ai;
 
-
 /**
+ * CurveLocation objects describe a location on {@Curve} objects, as
+ * defined by the curve {@link #getParameter()}, a value between {@code 0}
+ * (beginning of the curve) and {@code 1} (end of the curve). If the curve is
+ * part of a {@link Path} item, its {@link #getIndex()} inside the
+ * {@link Path#getCurves()} list is also provided.
+ * 
+ * The class is in use in many places, such as {@link Path#getLocation(double)},
+ * {@link Path#getLength(CurveLocation)}, {@link Path#getPoint(double)},
+ * {@link Path#split(CurveLocation)},
+ * {@link PathItem#getIntersections(PathItem)}, etc.
+ * 
  * @author lehni
- *
  */
 public class CurveLocation {
 	private Curve curve;
@@ -62,8 +71,7 @@ public class CurveLocation {
 	}
 
 	/**
-	 * The segment of the curve that was hit and that is closer to the hit
-	 * point.
+	 * The segment of the curve which is closer to the described location.
 	 */
 	public Segment getSegment() {
 		if (segment == null) {
@@ -86,14 +94,15 @@ public class CurveLocation {
 	}
 
 	/**
-	 * The curve which was hit, if any.
+	 * The curve by which the location is defined.
 	 */
 	public Curve getCurve() {
 		return curve;
 	}
 
 	/**
-	 * The index of the curve which was hit, if any.
+	 * The index of the curve within the {@link Path#getCurves()} list, if the
+	 * curve is part of a {@link Path} item.
 	 */
 	public int getIndex() {
 		if (curve != null)
@@ -102,6 +111,11 @@ public class CurveLocation {
 			return -1;
 	}
 	
+	/**
+	 * The curve parameter, as used by various bezier curve calculations. It is
+	 * value between {@code 0} (beginning of the curve) and {@code 1} (end of
+	 * the curve).
+	 */
 	public Double getParameter() {
 		if (parameter == -1 && point != null) {
 			parameter = curve.getParameter(point);
@@ -110,7 +124,8 @@ public class CurveLocation {
 	}
 	
 	/**
-	 * The point which was hit.
+	 * The point which is defined by the {@link #getCurve()} and
+	 * {@link #getParameter()}.
 	 */
 	public Point getPoint() {
 		if (point == null && curve != null)
@@ -119,7 +134,7 @@ public class CurveLocation {
 	}
 
 	/**
-	 * The item which was hit.
+	 * The item this curve belongs to, if any.
 	 */
 	public Item getItem() {
 		return curve.getPath();

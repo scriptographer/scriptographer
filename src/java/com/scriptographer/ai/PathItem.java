@@ -287,8 +287,9 @@ public abstract class PathItem extends Item {
 	protected abstract List<Curve> getAllCurves();
 
 	/**
-	 * Returns all interesections between two {@link Path} items in an array.
-	 * {@link CompoundPath} items are support too.
+	 * Returns all interesections between two {@link Path} items in an array of
+	 * {@link CurveLocation} objects. {@link CompoundPath} items are support
+	 * too.
 	 */
 	public CurveLocation[] getIntersections(PathItem other) {
 		// First check the bounds of the two paths. If they don't intersect,
