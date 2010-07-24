@@ -335,11 +335,10 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 	public native E getSelectedEntry();
 
 	public void setSelectedEntry(E entry) {
-		if (entry.getList() == this) {
-			for (E prev : getSelectedEntries())
-				prev.setSelected(false);
+		for (E prev : getSelectedEntries())
+			prev.setSelected(false);
+		if (entry != null && entry.getList() == this)
 			entry.setSelected(true);
-		}
 	}
 
 	/**
