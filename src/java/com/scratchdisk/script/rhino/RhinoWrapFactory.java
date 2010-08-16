@@ -155,8 +155,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			new IdentityHashMap<Class, IdentityHashMap<Class, Integer>>();
 
 	/**
-	 * getConversionWeight is defined here to only calculate the weight per from
-	 * - to - class pair once, after that it is cached in the conversionTable
+	 * getConversionWeight is defined here to only calculate the weight per
+	 * from-to class pair once, after that it is cached in the conversionTable
 	 * and retrieved from there. calculateConversionWeight is used instead for
 	 * the calculations.
 	 */

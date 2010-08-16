@@ -47,11 +47,13 @@ import com.scriptographer.script.EnumUtils;
  * @author lehni
  *
  */
-public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFactory {
+public class RhinoWrapFactory extends
+		com.scratchdisk.script.rhino.RhinoWrapFactory {
 
-	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
-		// By default, Rhino converts chars to integers. In Scriptographer,
-		// we want a string of length 1:
+	public Object wrap(Context cx, Scriptable scope, Object obj,
+			Class<?> staticType) {
+		// By default, Rhino converts chars to integers. In Scriptographer, we
+		// want a string of length 1:
  	   if (staticType == Character.TYPE)
 			return obj.toString();
 		else if (obj instanceof Enum)
@@ -64,9 +66,9 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			new IdentityHashMap<Class, Function>();
 	
 	/**
-	 * Maps a Java class to a JavaScript prototype, so this can be used
-	 * instead for wrapping of returned java types. So far this is only
-	 * used for java.io.File in Scriptographer.
+	 * Maps a Java class to a JavaScript prototype, so this can be used instead
+	 * for wrapping of returned java types. So far this is only used for
+	 * java.io.File in Scriptographer.
 	 */
 	public void mapJavaClass(Class cls, Function ctor) {
 		mappedJavaClasses.put(cls, ctor);
@@ -92,8 +94,9 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 				// Do not go through Context.javaToJS as this would again 
 				// end up here in wrapCustom for a native object.
 				// Just wrap it as an ExtendedJavaObject.
-				return ctor.construct(cx, scope, new Object[] { 
-					new ExtendedJavaObject(scope, javaObj, javaObj.getClass(), false)
+				return ctor.construct(cx, scope, new Object[] {
+					new ExtendedJavaObject(scope, javaObj, javaObj.getClass(),
+							false)
 				});
 			}
 		}
@@ -124,7 +127,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		if (res == null) {
 			if (unwrapped instanceof String) {
 				if (Enum.class.isAssignableFrom(type)) {
-					return EnumUtils.get((Class<Enum>) type, (String) unwrapped);
+					return EnumUtils.get((Class<Enum>) type,
+							(String) unwrapped);
 				} else if (type.isArray()) {
 					// Convert a string to an array by splitting into words
 					// and trying to convert each to the desired type
@@ -139,9 +143,11 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 					}
 					return values;
 				}
-			} else if (unwrapped instanceof java.awt.Color && Color.class.equals(type)) {
+			} else if (unwrapped instanceof java.awt.Color
+					&& Color.class.equals(type)) {
 				return new RGBColor((java.awt.Color) unwrapped);
-			} else if (unwrapped instanceof Color && java.awt.Color.class.equals(type)) {
+			} else if (unwrapped instanceof Color
+					&& java.awt.Color.class.equals(type)) {
 				return ((Color) unwrapped).toAWTColor();
 			}
 		}
@@ -151,20 +157,21 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public boolean shouldAddBean(Class<?> cls, boolean isStatic,
 			MemberBox getter, MemberBox setter) {
 		Package pkg = cls.getPackage();
-		// Only control adding of beans if we're inside com.scriptographer packages. Outside,
-		// we always add the bean. Inside, we add it except if it's a read-only bean of which
-		// the getter name starts with is, to force isMethodName() style methods to be called
-		// as methods.
-		return getter != null
-				&& !(pkg != null && pkg.getName().startsWith("com.scriptographer."))
+		// Only control adding of beans if we're inside com.scriptographer
+		// packages. Outside, we always add the bean. Inside, we add it except
+		// if it's a read-only bean of which the getter name starts with is, to
+		// force isMethodName() style methods to be called as methods.
+		return getter != null && !(pkg != null
+				&& pkg.getName().startsWith("com.scriptographer."))
 				|| setter != null || !getter.getName().startsWith("is");
 	}
 
 	public boolean shouldRemoveGetterSetter(Class<?> cls, boolean isStatic,
 			MemberBox getter, MemberBox setter) {
 		Package pkg = cls.getPackage();
-		// Only remove getter / setters of beans that were added within com.scriptographer
-		// packages. Outside we use the old convention of never removing them.
+		// Only remove getter / setters of beans that were added within
+		// com.scriptographer packages. Outside we use the old convention of
+		// never removing them.
 		return pkg != null && pkg.getName().startsWith("com.scriptographer.");
 	}
 }
