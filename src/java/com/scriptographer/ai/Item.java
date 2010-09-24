@@ -1407,14 +1407,12 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * End of Style
 	 */
 
-	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
-		return document.nativeHitTest(point,
-				(type != null ? type : HitRequest.ALL).value,
-				tolerance, this);
+	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
+		return document.hitTest(point, request, tolerance, this);
 	}
 
-	public HitResult hitTest(Point point, HitRequest type) {
-		return hitTest(point, type, HitResult.DEFAULT_TOLERANCE);
+	public HitResult hitTest(Point point, HitRequest request) {
+		return hitTest(point, request, HitResult.DEFAULT_TOLERANCE);
 	}
 
 	public HitResult hitTest(Point point) {

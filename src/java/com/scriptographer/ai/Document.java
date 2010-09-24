@@ -1560,8 +1560,15 @@ public class Document extends NativeObject implements ChangeReceiver {
 				numQuarterTurns, clockwiseFromOutside);
 	}
 	
-	protected native HitResult nativeHitTest(Point point, int request,
+	private native HitResult nativeHitTest(Point point, int request,
 			float tolerance, Item item);
+
+	protected HitResult hitTest(Point point, HitRequest request,
+			float tolerance, Item item) {
+		return nativeHitTest(point,
+				(request != null ? request : HitRequest.ALL).value,
+				tolerance, item);
+	}
 
 	/**
 	 * @param point
@@ -1571,9 +1578,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 *        guaranteed {@default 2}
 	 */
 	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
-		return nativeHitTest(point,
-				(request != null ? request : HitRequest.ALL).value,
-				tolerance, null);
+		return hitTest(point, request, tolerance, null);
 	}
 
 	public HitResult hitTest(Point point, HitRequest request) {
