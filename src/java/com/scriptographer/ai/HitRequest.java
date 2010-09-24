@@ -42,11 +42,19 @@ public enum HitRequest implements IntegerEnum {
 	 */
 	ALL(0),
 	/**
-	 * Only hits on bezier points.
+	 * Only hits on curve anchor points.
+	 */
+	ANCHORS(1),
+	/**
+	 * @deprecated
 	 */
 	POINTS(1),
 	/**
 	 * Only first or last bezier point hits on path.
+	 */
+	END_ANCHORS(2),
+	/**
+	 * @deprecated
 	 */
 	END_POINTS(2),
 	/**
@@ -60,6 +68,10 @@ public enum HitRequest implements IntegerEnum {
 	/**
 	 * Only hits on text objects.
 	 */
+	TEXT_ITEMS(5),
+	/**
+	 * @deprecated
+	 */
 	TEXTS(5),
 	/**
 	 * Only hits already-selected objects.
@@ -68,24 +80,28 @@ public enum HitRequest implements IntegerEnum {
 	/**
 	 * Only hits paintable objects (non-guide paths & text)
 	 */
+	ALL_EXCEPT_GUIDES(7),
+	/**
+	 * @deprecated
+	 */
 	PAINTABLES(7),
 	/**
 	 * Same as all but doesn't test against object fills
 	 */
 	ALL_EXCEPT_FILLS(8),
 	/**
-	 * Same as paint but doesn't test against object fills
-	 */
-	PAINTABLES_EXCEPT_FILLS(9),
-	/**
 	 * Same as all but doesn't test against direction line end points (the in and
 	 * out handles of a bezier)
 	 */
 	ALL_EXCEPT_HANDLES(10),
 	/**
-	 * Same as paint but no locked objects
+	 * Same as paintables but doesn't test against object fills
 	 */
-	PAINTABLES_EXCEPT_LOCKED(11);
+	ALL_EXCEPT_GUIDES_AND_FILLS(9),
+	/**
+	 * Same as paintables but no locked objects
+	 */
+	ALL_EXCEPT_GUIDES_AND_LOCKED(11);
 
 	protected int value;
 
