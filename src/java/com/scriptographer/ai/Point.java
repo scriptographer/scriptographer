@@ -814,11 +814,10 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns a new point with the absolute values of the specified {@link #x} and {@link #y} values. The
-	 * object itself is not modified!
+	 * Returns a new point with the absolute values of the specified {@link #x}
+	 * and {@link #y} values. The object itself is not modified!
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var point = new Point(-5, 10);
 	 * var absPoint = point.abs();
 	 * print(absPoint); // { x: 5.0, y: 10.0 }
@@ -836,7 +835,6 @@ public class Point implements ChangeEmitter {
 	 * @param point
 	 * @return the dot product of the two points
 	 */
-
 	public double dot(Point point) {
 		return x * point.x + y * point.y;
 	}
@@ -846,7 +844,6 @@ public class Point implements ChangeEmitter {
 	 * @param point
 	 * @return the cross product of the two points
 	 */
-
 	public double cross(Point point) {
 		return x * point.y - y * point.x;
 	}
