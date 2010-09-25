@@ -291,13 +291,13 @@ public abstract class PathItem extends Item {
 	 * {@link CurveLocation} objects. {@link CompoundPath} items are support
 	 * too.
 	 */
-	public CurveLocation[] getIntersections(PathItem other) {
+	public CurveLocation[] getIntersections(PathItem path) {
 		// First check the bounds of the two paths. If they don't intersect,
 		// we don't need to iterate through the whole path.
-		if (!getBounds().intersects(other.getBounds()))
+		if (!getBounds().intersects(path.getBounds()))
 			return new CurveLocation[0];
 		ArrayList<CurveLocation> locations = new ArrayList<CurveLocation>();
-		List<Curve> curves1 = getAllCurves(), curves2 = other.getAllCurves();
+		List<Curve> curves1 = getAllCurves(), curves2 = path.getAllCurves();
 		int length1 = curves1.size(), length2 = curves2.size();
 		// Convert curves2 to curve values, as we're looping through them for
 		// each curve in curves1.
