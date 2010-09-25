@@ -84,6 +84,8 @@ public class Tool extends ToolEventHandler {
 
 	private String name;
 
+	private String defaultTooltip;
+
 
 	/**
 	 * @jshide
@@ -157,6 +159,8 @@ public class Tool extends ToolEventHandler {
 		initialize();
 		if (defaultImage != null)
 			setImage(defaultImage);
+		if (defaultTooltip != null)
+			setTooltip(defaultTooltip);
 	}
 
 	/**
@@ -209,7 +213,13 @@ public class Tool extends ToolEventHandler {
 	 */
 	public native String getTooltip();
 
-	public native void setTooltip(String text);
+	private native void nativeSetTooltip(String text);
+
+	public void setTooltip(String text) {
+		if (defaultTooltip == null)
+			defaultTooltip = text;
+		nativeSetTooltip(text);
+	}
 
 	private native int nativeGetOptions();
 

@@ -213,9 +213,9 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Tool_getTooltip(JNIEnv *env
 }
 
 /*
- * void setTooltip(java.lang.String text)
+ * void nativeSetTooltip(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setTooltip(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetTooltip(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		if (text != NULL) {
 			AIToolHandle tool = gEngine->getToolHandle(env, obj);
