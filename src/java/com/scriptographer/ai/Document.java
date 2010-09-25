@@ -1435,6 +1435,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * @param center the center point of the circle
 	 * @param radius the radius of the circle
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public Path createCircle(Point center, float radius) {
 		return createOval(new Rectangle(center.subtract(radius, radius), center
