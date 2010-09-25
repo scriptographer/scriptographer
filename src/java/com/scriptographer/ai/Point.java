@@ -484,7 +484,235 @@ public class Point implements ChangeEmitter {
 		}
 	}
 
+	public Point transform(Matrix matrix) {
+		return matrix.transform(this);
+	}
+	
 	/**
+	 * Returns the distance between the point and another point.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5, 10);
+	 * 
+	 * var distance = firstPoint.getDistance(5, 20);
+	 * 
+	 * print(distance); // 10
+	 * </code>
+	 * @param px
+	 * @param py
+	 * 
+	 * @jshide
+	 */
+	public double getDistance(double px, double py) {
+		px -= x;
+		py -= y;
+		return Math.sqrt(px * px + py * py);
+	}
+
+	/**
+	 * {@grouptitle Distance & Length}
+	 * 
+	 * Returns the distance between the point and another point.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5, 10);
+	 * var secondPoint = new Point(5, 20);
+	 * 
+	 * var distance = firstPoint.getDistance(secondPoint);
+	 * 
+	 * print(distance); // 10
+	 * </code>
+	 * 
+	 * @param px
+	 * @param py
+	 */
+	public double getDistance(Point point) {
+		return getDistance(point.x, point.y);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public double getDistanceSquared(double px, double py) {
+		px -= x;
+		py -= y;
+		return px * px + py * py;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public double getDistanceSquared(Point point) {
+		return getDistanceSquared(point.x, point.y);
+	}
+	
+	/**
+	 * The length of the vector that is represented by this point's coordinates.
+	 * Each point can be interpreted as a vector that points from the origin
+	 * ({@code x = 0},{@code y = 0}) to the point's location.
+	 * Setting the length changes the location but keeps the vector's angle.
+	 */
+	public double getLength() {
+		return Math.sqrt(x * x + y * y);
+	}
+
+	public void setLength(double length) {
+		if (isZero()) {
+			// Use angle now to set x and y
+			if (angle != null) {
+				double a = angle;
+				x = Math.cos(a) * length;
+				y = Math.sin(a) * length;
+			} else {
+				// Assume angle = 0
+				x = length;
+				// y is already 0
+			}
+		} else {
+			double scale = length / getLength();
+			if (scale == 0.0) {
+				// Calculate angle now, so it will be preserved even when
+				// x and y are 0.
+				getAngle();
+			}
+			x *= scale;
+			y *= scale;
+		}
+	}
+
+	public Point normalize(double length) {
+		double len = getLength();
+		// Prevent division by 0
+		double scale = len != 0 ? length / len : 0;
+		Point res = new Point(x * scale, y * scale);
+		// Preserve angle.
+		res.angle = angle;
+		return res;
+	}
+
+	public Point normalize() {
+		return normalize(1);
+	}
+	
+	/**
+	 * The angle from the x axis to the vector in radians, measured in counter
+	 * clockwise direction.
+	 */
+	public double getAngle() {
+		// Cache the angle in the internal angle field, so we can return
+		// that next time and also preserve the angle if length is set to 0.
+		if (angle == null)
+			angle = Math.atan2(y, x);
+		return angle;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
+		if (!isZero()) {
+			double length = getLength();
+			x = Math.cos(angle) * length;
+			y = Math.sin(angle) * length;
+		}
+	}
+
+	/**
+     * {@grouptitle Angle & Rotation}
+	 * 
+	 * Returns the smaller angle between two vectors in radians. The angle is
+	 * unsigned, no information about rotational direction is given.
+	 * 
+	 * @param point
+	 */
+	public double getAngle(Point point) {
+		double div = getLength() * point.getLength();
+		if (div == 0) return Double.NaN;
+		else return Math.acos(this.dot(point) / div);
+	}
+
+	/**
+	 * Returns the angle between two vectors in radians. The angle is
+	 * directional and signed, giving information about the rotational
+	 * direction.
+	 * 
+	 * @param point
+	 */
+	public double getDirectedAngle(Point point) {
+		double angle = this.getAngle() - point.getAngle();
+		if (angle < -Math.PI)
+			return angle + Math.PI * 2;
+		else if (angle > Math.PI)
+			return angle - Math.PI * 2;
+		return angle;
+	}
+
+	/**
+	 * Rotates the point by the given angle.
+	 * The object itself is not modified.
+	 * 
+	 * @param angle the rotation angle in radians
+	 * @return the rotated point
+	 */
+	public Point rotate(double angle) {
+		double s = Math.sin(angle);
+		double c = Math.cos(angle);
+		return new Point(
+				x * c - y * s,
+				y * c + x * s
+ 		);
+	}
+
+	/**
+	 * Rotates the point around a center point.
+	 * The object itself is not modified.
+	 * 
+	 * @param angle the rotation angle in radians
+	 * @param center the center point of the rotation
+	 * @return the rotated point
+	 */
+	public Point rotate(double angle, Point center) {
+		return rotate(angle,
+				center != null ? center.x : 0,
+				center != null ? center.y : 0
+		);
+	}
+
+	/**
+	 * Rotates the point around a center point.
+	 * The object itself is not modified.
+	 * 
+	 * @param angle the rotation angle in radians
+	 * @param x the x coordinate of the center point
+	 * @param y the y coordinate of the center point
+	 * @return the rotated point
+	 * 
+	 * @jshide
+	 */
+	public Point rotate(double angle, double x, double y) {
+		return subtract(x, y).rotate(angle).add(x, y);
+	}
+	
+	/**
+	 * Returns the interpolation point between the point and another point.
+	 * The object itself is not modified!
+	 * 
+	 * @param point
+	 * @param t the position between the two points as a value between 0 and 1
+	 * @return the interpolation point
+	 * 
+	 * @jshide
+	 */
+	public Point interpolate(Point point, double t) {
+		return new Point(
+			x * (1f - t) + point.x * t,
+			y * (1f - t) + point.y * t
+		);
+	}
+
+	/**
+	 * {@grouptitle Tests}
+	 * 
 	 * Checks whether the point is inside the boundaries of the rectangle.	
 	 * 
 	 * @param rect the rectangle to check against
@@ -535,225 +763,75 @@ public class Point implements ChangeEmitter {
 		return Double.isNaN(x) || Double.isNaN(y);
 	}
 	
+	
 	/**
-	 * Returns the distance between the point and another point.
+	 * {@grouptitle Math Functions}
+	 * 
+	 * Returns a new point with rounded {@link #x} and {@link #y} values. The
+	 * object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
-	 * var firstPoint = new Point(5, 10);
-	 * 
-	 * var distance = firstPoint.getDistance(5, 20);
-	 * 
-	 * print(distance); // 10
+	 * var point = new Point(10.2, 10.9);
+	 * var roundPoint = point.round();
+	 * print(roundPoint); // { x: 10.0, y: 11.0 }
 	 * </code>
-	 * @param px
-	 * @param py
-	 * 
-	 * @jshide
 	 */
-	public double getDistance(double px, double py) {
-		px -= x;
-		py -= y;
-		return Math.sqrt(px * px + py * py);
+	public Point round() {
+		return new Point(Math.round(x), Math.round(y));
 	}
 
 	/**
-	 * Returns the distance between the point and another point.
+	 * Returns a new point with the nearest greater non-fractional values to the
+	 * specified {@link #x} and {@link #y} values. The object itself is not
+	 * modified!
 	 * 
 	 * Sample code:
 	 * <code>
-	 * var firstPoint = new Point(5, 10);
-	 * var secondPoint = new Point(5, 20);
-	 * 
-	 * var distance = firstPoint.getDistance(secondPoint);
-	 * 
-	 * print(distance); // 10
+	 * var point = new Point(10.2, 10.9);
+	 * var ceilPoint = point.ceil();
+	 * print(ceilPoint); // { x: 11.0, y: 11.0 }
 	 * </code>
+	 */
+	public Point ceil() {
+		return new Point(Math.ceil(x), Math.ceil(y));
+	}
+
+	/**
+	 * Returns a new point with the nearest smaller non-fractional values to the
+	 * specified {@link #x} and {@link #y} values. The object itself is not
+	 * modified!
 	 * 
-	 * @param px
-	 * @param py
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(10.2, 10.9);
+	 * var floorPoint = point.floor();
+	 * print(floorPoint); // { x: 10.0, y: 10.0 }
+	 * </code>
 	 */
-	public double getDistance(Point point) {
-		return getDistance(point.x, point.y);
+	public Point floor() {
+		return new Point(Math.floor(x), Math.floor(y));
 	}
 
 	/**
-	 * @jshide
-	 */
-	public double getDistanceSquared(double px, double py) {
-		px -= x;
-		py -= y;
-		return px * px + py * py;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public double getDistanceSquared(Point point) {
-		return getDistanceSquared(point.x, point.y);
-	}
-
-	/**
-	 * The length of the vector that is represented by this point's coordinates.
-	 * Each point can be interpreted as a vector that points from the origin
-	 * ({@code x = 0},{@code y = 0}) to the point's location.
-	 * Setting the length changes the location but keeps the vector's angle.
-	 */
-	public double getLength() {
-		return Math.sqrt(x * x + y * y);
-	}
-
-	public void setLength(double length) {
-		if (isZero()) {
-			// Use angle now to set x and y
-			if (angle != null) {
-				double a = angle;
-				x = Math.cos(a) * length;
-				y = Math.sin(a) * length;
-			} else {
-				// Assume angle = 0
-				x = length;
-				// y is already 0
-			}
-		} else {
-			double scale = length / getLength();
-			if (scale == 0.0) {
-				// Calculate angle now, so it will be preserved even when
-				// x and y are 0.
-				getAngle();
-			}
-			x *= scale;
-			y *= scale;
-		}
-	}
-
-	/**
-	 * The angle from the x axis to the vector in radians, measured in counter
-	 * clockwise direction.
-	 */
-	public double getAngle() {
-		// Cache the angle in the internal angle field, so we can return
-		// that next time and also preserve the angle if length is set to 0.
-		if (angle == null)
-			angle = Math.atan2(y, x);
-		return angle;
-	}
-
-	public void setAngle(double angle) {
-		this.angle = angle;
-		if (!isZero()) {
-			double length = getLength();
-			x = Math.cos(angle) * length;
-			y = Math.sin(angle) * length;
-		}
-	}
-
-	/**
-	 * Returns the smaller angle between two vectors in radians. The angle is
-	 * unsigned, no information about rotational direction is given.
+	 * Returns a new point with the absolute values of the specified {@link #x} and {@link #y} values. The
+	 * object itself is not modified!
 	 * 
-	 * @param point
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(-5, 10);
+	 * var absPoint = point.abs();
+	 * print(absPoint); // { x: 5.0, y: 10.0 }
+	 * </code>
 	 */
-	public double getAngle(Point point) {
-		double div = getLength() * point.getLength();
-		if (div == 0) return Double.NaN;
-		else return Math.acos(this.dot(point) / div);
+	public Point abs() {
+		return new Point(Math.abs(x), Math.abs(y));
 	}
 
+	
 	/**
-	 * Returns the angle between two vectors in radians. The angle is
-	 * directional and signed, giving information about the rotational
-	 * direction.
+	 * {@grouptitle Vectorial Math Functions}
 	 * 
-	 * @param point
-	 */
-	public double getDirectedAngle(Point point) {
-		double angle = this.getAngle() - point.getAngle();
-		if (angle < -Math.PI)
-			return angle + Math.PI * 2;
-		else if (angle > Math.PI)
-			return angle - Math.PI * 2;
-		return angle;
-	}
-
-	/**
-	 * Returns the interpolation point between the point and another point.
-	 * The object itself is not modified!
-	 * 
-	 * @param point
-	 * @param t the position between the two points as a value between 0 and 1
-	 * @return the interpolation point
-	 * 
-	 * @jshide
-	 */
-	public Point interpolate(Point point, double t) {
-		return new Point(
-			x * (1f - t) + point.x * t,
-			y * (1f - t) + point.y * t
-		);
-	}
-
-	public Point normalize(double length) {
-		double len = getLength();
-		// Prevent division by 0
-		double scale = len != 0 ? length / len : 0;
-		Point res = new Point(x * scale, y * scale);
-		// Preserve angle.
-		res.angle = angle;
-		return res;
-	}
-
-	public Point normalize() {
-		return normalize(1);
-	}
-
-	/**
-	 * Rotates the point by the given angle.
-	 * The object itself is not modified.
-	 * 
-	 * @param angle the rotation angle in radians
-	 * @return the rotated point
-	 */
-	public Point rotate(double angle) {
-		double s = Math.sin(angle);
-		double c = Math.cos(angle);
-		return new Point(
-				x * c - y * s,
-				y * c + x * s
- 		);
-	}
-
-	/**
-	 * Rotates the point around a center point.
-	 * The object itself is not modified.
-	 * 
-	 * @param angle the rotation angle in radians
-	 * @param center the center point of the rotation
-	 * @return the rotated point
-	 */
-	public Point rotate(double angle, Point center) {
-		return rotate(angle,
-				center != null ? center.x : 0,
-				center != null ? center.y : 0
-		);
-	}
-
-	/**
-	 * Rotates the point around a center point.
-	 * The object itself is not modified.
-	 * 
-	 * @param angle the rotation angle in radians
-	 * @param x the x coordinate of the center point
-	 * @param y the y coordinate of the center point
-	 * @return the rotated point
-	 * 
-	 * @jshide
-	 */
-	public Point rotate(double angle, double x, double y) {
-		return subtract(x, y).rotate(angle).add(x, y);
-	}
-
-	/**
 	 * Returns the dot product of the point and another point.
 	 * @param point
 	 * @return the dot product of the two points
@@ -791,38 +869,7 @@ public class Point implements ChangeEmitter {
 			);
 		}
 	}
-
-	public Point transform(Matrix matrix) {
-		return matrix.transform(this);
-	}
-
-	/**
-	 * Returns a new point with rounded {@link #x} and {@link #y} values. The
-	 * object itself is not modified!
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var point = new Point(10.2, 10.9);
-	 * var roundPoint = point.round();
-	 * print(roundPoint); // { x: 10.0, y: 11.0 }
-	 * </code>
-	 */
-	public Point round() {
-		return new Point(Math.round(x), Math.round(y));
-	}
-
-	public Point ceil() {
-		return new Point(Math.ceil(x), Math.ceil(y));
-	}
-
-	public Point floor() {
-		return new Point(Math.floor(x), Math.floor(y));
-	}
-
-	public Point abs() {
-		return new Point(Math.abs(x), Math.abs(y));
-	}
-
+	
 	/**
 	 * Returns a new point object with the smallest {@link #x} and
 	 * {@link #y} of the supplied points.
@@ -875,7 +922,9 @@ public class Point implements ChangeEmitter {
 	 * <code>
 	 * var maxPoint = new Point(100, 100);
 	 * var randomPoint = Point.random();
-	 * var point = maxPoint* randomPoint;
+	 * 
+	 * // A point between {x:0, y:0} and {x:100, y:100}:
+	 * var point = maxPoint * randomPoint;
 	 * </code>
 	 */
 	public static Point random() {
