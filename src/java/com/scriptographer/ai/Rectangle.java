@@ -409,7 +409,7 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * Returns {@true if the rectangle is empty}
 	 */
 	public boolean isEmpty() {
-		return width <= 0 || height <= 0;
+		return width == 0 || height == 0;
 	}
 
 	/**
@@ -435,10 +435,8 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * @jshide
 	 */
 	public boolean contains(double x, double y) {
-		return x >= this.x &&
-			y >= this.y &&
-			x <= this.x + width &&
-			y <= this.y + height;
+		return x >= this.x  && y >= this.y
+				&& x <= this.x + width && y <= this.y + height;
 	}
 	
 	/**
@@ -450,11 +448,9 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 *         specified rectangle}
 	 */
 	public boolean contains(Rectangle rect) {
-	return !isEmpty() 
-			&& rect.width > 0 && rect.height > 0
-			&& rect.x >= x && rect.y >= y
-			&& rect.x + rect.width <= x + width
-			&& rect.y + rect.height <= y + height;
+		return rect.x >= x && rect.y >= y
+				&& rect.x + rect.width <= x + width
+				&& rect.y + rect.height <= y + height;
 	}
 
 	/**
@@ -466,11 +462,10 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 *         intersect each other}
 	 */
 	public boolean intersects(Rectangle rect) {
-		return !isEmpty() && rect.width > 0 && rect.height > 0 &&
-			rect.x + rect.width > this.x &&
-			rect.y + rect.height > this.y &&
-			rect.x < this.x + this.width &&
-			rect.y < this.y + this.height;
+		return rect.x + rect.width > this.x
+				&& rect.y + rect.height > this.y
+				&& rect.x < this.x + this.width
+				&& rect.y < this.y + this.height;
 	}
 
 	/**
