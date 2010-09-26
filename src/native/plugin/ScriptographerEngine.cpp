@@ -923,12 +923,26 @@ void ScriptographerEngine::updateCoordinateSystem() {
 	sAIDocument->GetDocumentRulerOrigin(&m_documentOrigin);
 #if kPluginInterfaceVersion >= kAI15
 	using namespace ai;
-	AIErr error = kNoErr;
 	ArtboardList artboards;
-	ArtboardID index;
-	error = artboards.GetActive(index);
-	ArtboardProperties artboard = artboards.GetArtboardProperties(index);
-	artboard.GetRulerOrigin(m_artboardOrigin);
+	if (artboards.IsValid()) {
+		ArtboardID index;
+		if (!artboards.GetActive(index)) {
+			ArtboardProperties artboard = artboards.GetArtboardProperties(index);
+			// Artboard Origin is returned relative to the Artboard Bounds, so
+			// Add it up
+			AIRealRect rect;
+			artboard.GetPosition(rect);
+			AIRealPoint origin;
+			artboard.GetRulerOrigin(origin);
+			m_artboardOrigin.h = rect.left + origin.h;
+			m_artboardOrigin.v = rect.top - origin.v;
+			// Document Origin on CS5 is returned relative to the active
+			// artboard, so add its origin to it for the absolute value.
+			m_documentOrigin.h += m_artboardOrigin.h;
+			m_documentOrigin.v += m_artboardOrigin.v;
+			int i = 0;
+		}
+	}
 #elif kPluginInterfaceVersion >= kAI13
 	ASInt32 index = 0;
 	AICropAreaPtr area = NULL;
