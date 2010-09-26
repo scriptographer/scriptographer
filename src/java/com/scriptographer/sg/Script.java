@@ -42,6 +42,7 @@ public class Script {
 	private Preferences prefs = null;
 	private boolean keepAlive = false;
 	private boolean showProgress = true;
+	private CoordinateSystem system = CoordinateSystem.DEFAULT;
 	protected boolean coreScript = false;
 
 	/**
@@ -114,6 +115,16 @@ public class Script {
 
 	public void setKeepAlive(boolean keepAlive) {
 		this.keepAlive  = keepAlive;
+	}
+
+	public CoordinateSystem getCoordinateSystem() {
+		return system;
+	}
+
+	public void setCoordinateSystem(CoordinateSystem system) {
+		this.system = system != null ? system : CoordinateSystem.DEFAULT;
+		ScriptographerEngine.setTopDownCoordinates(
+				this.system == CoordinateSystem.TOP_DOWN);
 	}
 
 	/**

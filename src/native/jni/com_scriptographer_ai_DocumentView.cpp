@@ -43,7 +43,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getBounds(JNIE
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
 		sAIDocumentView->GetDocumentViewBounds(view, &rect);
-		return gEngine->convertRectangle(env, &rect);
+		return gEngine->convertRectangle(env, kDocumentCoordinates, &rect);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -56,7 +56,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getCenter(JNIE
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealPoint point;
 		sAIDocumentView->GetDocumentViewCenter(view, &point);
-		return gEngine->convertPoint(env, &point);
+		return gEngine->convertPoint(env, kDocumentCoordinates, &point);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -67,6 +67,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getCenter(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setCenter(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// TODO: Convert
 		DEFINE_POINT(point, x, y);
 		sAIDocumentView->SetDocumentViewCenter(view, &point);
 	} EXCEPTION_CONVERT(env);
@@ -95,17 +96,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setZoom(JNIEnv *e
 	} EXCEPTION_CONVERT(env);
 }
 
-
 /*
  * Point artworkToView(float x, float y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// TODO: Convert
 		DEFINE_POINT(pointIn, x, y);
 		AIRealPoint pointOut;
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &pointIn, &pointOut);
-		return gEngine->convertPoint(env, &pointOut);
+		return gEngine->convertPoint(env, kCurrentCoordinates, &pointOut);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -116,12 +117,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView_
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// TODO: Convert
 		DEFINE_POINT(bottomLeftIn, x, y);
 		DEFINE_POINT(topRightIn, x + width, y + height);
 		AIRealPoint bottomLeftOut, topRightOut;
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &bottomLeftIn, &bottomLeftOut);
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &topRightIn, &topRightOut);
-		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
+		return gEngine->convertRectangle(env, kCurrentCoordinates,
+				bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -132,10 +135,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView_
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// TODOL Convert
 		DEFINE_POINT(pointIn, x, y);
 		AIRealPoint pointOut;
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &pointIn, &pointOut);
-		return gEngine->convertPoint(env, &pointOut);
+		return gEngine->convertPoint(env, kDocumentCoordinates, &pointOut);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -146,12 +150,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork_
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// TODO: Convert
 		DEFINE_POINT(bottomLeftIn, x, y);
 		DEFINE_POINT(topRightIn, x + width, y + height);
 		AIRealPoint bottomLeftOut, topRightOut;
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &bottomLeftIn, &bottomLeftOut);
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &topRightIn, &topRightOut);
-		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
+		return gEngine->convertRectangle(env, kDocumentCoordinates, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -211,7 +216,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getInvalidBoun
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
 		sAIDocumentView->GetDocumentViewInvalidRect(view, &rect);
-		return gEngine->convertRectangle(env, &rect);
+		return gEngine->convertRectangle(env, kDocumentCoordinates, &rect);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -363,7 +368,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getMousePoint(
 		// the rest of the conversion is easy: 
 		AIRealPoint point;
 		sAIDocumentView->ViewPointToArtworkPoint(view, &pt, &point);
-		return gEngine->convertPoint(env, &point);
+		return gEngine->convertPoint(env, kDocumentCoordinates, &point);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

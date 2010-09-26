@@ -62,7 +62,6 @@
 #define MAPVK_VK_TO_VSC_EX 4
 #endif
 
-
 #endif // WIN_ENV
 
 // JNI

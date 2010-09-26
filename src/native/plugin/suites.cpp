@@ -150,6 +150,10 @@ extern "C" {
 #if kPluginInterfaceVersion >= kAI13
 	AICropAreaSuite					*sAICropArea;
 #endif // kPluginInterfaceVersion >= kAI13
+
+#if kPluginInterfaceVersion >= kAI15
+	AIArtboardSuite					*sAIArtboard;
+#endif // kPluginInterfaceVersion >= kAI15
 }
 
 // The startup and postStartup array contains all the suites which
@@ -371,6 +375,10 @@ ImportSuite postStartup[] = {
 	
 #if kPluginInterfaceVersion >= kAI13
 	kAICropAreaSuite, kAICropAreaSuiteVersion, &sAICropArea, sizeof(AICropAreaSuite),
+#endif
+
+#if kPluginInterfaceVersion >= kAI15
+	kAIArtboardSuite, kAIArtboardSuiteVersion, &sAIArtboard, sizeof(AIArtboardSuite),
 #endif
 
 	NULL, 0, NULL, 0

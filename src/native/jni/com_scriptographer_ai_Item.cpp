@@ -667,7 +667,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getBounds(JNIEnv *env,
 		Item_commit(env, art);
 		AIRealRect rt;
 		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
-		return gEngine->convertRectangle(env, &rt);
+		return gEngine->convertRectangle(env, kArtboardCoordinates, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -682,7 +682,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getStrokeBounds(JNIEnv
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
 		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kExcludeGuideBounds, &rt);
-		return gEngine->convertRectangle(env, &rt);
+		return gEngine->convertRectangle(env, kArtboardCoordinates, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -697,7 +697,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getControlBounds(JNIEn
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
 		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kControlBounds | kExcludeGuideBounds, &rt);
-		return gEngine->convertRectangle(env, &rt);
+		return gEngine->convertRectangle(env, kArtboardCoordinates, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -715,7 +715,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPosition(JNIEnv *en
 		// TODO: maybe find a way to define and store reg points per art objects?
 		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 		DEFINE_POINT(pt, (rt.left + rt.right) / 2.0, (rt.top + rt.bottom) / 2.0);
-		return gEngine->convertPoint(env, &pt);
+		return gEngine->convertPoint(env, kArtboardCoordinates, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -1030,7 +1030,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &mx);
 /*
 		// Modify the matrix so that it 'acts' on the center of the selected object
 		// TODO: Introduce reg points?

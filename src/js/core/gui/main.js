@@ -289,11 +289,17 @@ var mainDialog = new FloatingDialog(
 		var scr = ScriptographerEngine.compile(entry.file);
 		if (scr) {
 			var scope = entry.scope = scr.engine.createScope();
-			if (handler instanceof ToolEventHandler)
+			if (handler instanceof ToolEventHandler) {
 				scope.put('tool', handler, true);
+			}
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.file, scope);
+			if (handler instanceof ToolEventHandler) {
+				// Tell tool about the script it is associated with, so it
+				// can get coordinate system information from it.
+				handler.script = scope.get('script');
+			}
 			// Now copy over handlers from the scope and set them on the tool,
 			// to allow them to be defined globally.
 			// Support deprecated onOptions too, by converting it to

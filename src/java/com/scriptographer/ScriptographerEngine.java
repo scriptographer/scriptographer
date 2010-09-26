@@ -52,6 +52,7 @@ import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Timer;
+import com.scriptographer.sg.CoordinateSystem;
 import com.scriptographer.sg.Script;
 import com.scriptographer.ui.KeyCode;
 import com.scriptographer.ui.KeyEvent;
@@ -61,6 +62,9 @@ import com.scriptographer.ui.MenuItem;
  * @author lehni
  */
 public class ScriptographerEngine {
+
+	public static boolean topDownCoordinates = false;
+
 	private static File pluginDir = null;
 	private static File coreDir = null;
 	private static File[] scriptDirectories = null;
@@ -378,6 +382,7 @@ public class ScriptographerEngine {
 		return null;
 	}
 
+	private static boolean previousTopDownCoordinates;
 
 	/**
 	 * To be called before AI functions are executed as scripts
@@ -389,6 +394,12 @@ public class ScriptographerEngine {
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
 		Script script = scope != null ? (Script) scope.get("script") : null;
+		// Set script coordinates orientation on each execution.
+		previousTopDownCoordinates = topDownCoordinates;
+		setTopDownCoordinates(CoordinateSystem.TOP_DOWN == (script != null
+				? script.getCoordinateSystem()
+				: CoordinateSystem.DEFAULT));
+	
 		// Only call Document.beginExecution if it has not already
 		// been called through the UI notification callback.
 		if (scriptStack.empty()) {
@@ -403,7 +414,8 @@ public class ScriptographerEngine {
 			// Put a script object in the scope to offer the user
 			// access to information about it.
 			if (script == null) {
-				script = new Script(file, file.getPath().startsWith(coreDir.getPath()));
+				script = new Script(file, file.getPath().startsWith(
+						coreDir.getPath()));
 				scope.put("script", script, true);
 			}
 		}
@@ -438,10 +450,21 @@ public class ScriptographerEngine {
 			} catch(Throwable t) {
 				ScriptographerEngine.reportError(t);
 			}
+			setTopDownCoordinates(previousTopDownCoordinates);
 			Dictionary.releaseInvalid();
 			Document.endExecution();
 			closeProgress();
 		}
+	}
+
+	private native static void nativeSetTopDownCoordinates(
+			boolean topDownCoordinates);
+
+	public static void setTopDownCoordinates(boolean topDown) {
+		topDownCoordinates = topDown;
+		// Always call setCoordinateSystem, even if topDown is the same as
+		// topDownCoordinates, as even a switch of artboards might require it.
+		nativeSetTopDownCoordinates(topDown);
 	}
 
 	/**

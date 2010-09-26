@@ -33,6 +33,7 @@
 // for com_scriptographer_ai_Item_TYPE_LAYER:
 #include "com_scriptographer_ai_Item.h"
 #include "uiGlobals.h"
+#include "aiGlobals.h"
 
 #ifdef WIN_ENV
 #include "loadJava.h"
@@ -41,8 +42,6 @@
 #if defined(MAC_ENV)
 #define MAC_THREAD
 #endif
-
-#include "aiGlobals.h"
 
 ScriptographerEngine *gEngine = NULL;
 
@@ -120,6 +119,9 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 		delete exc;
 		throw new StringException("Unable to create ScriptographerEngine.");
 	}
+	m_documentOrigin.h = m_documentOrigin.v = 0;
+	m_artboardOrigin.h = m_artboardOrigin.v = 0;
+	m_topDownCoordinates = false;
 	gEngine = this;
 }
 
@@ -493,7 +495,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
-	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFII)I");
+	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;DDII)I");
 
 	cls_ai_Point = loadClass(env, "com/scriptographer/ai/Point");
 	cid_ai_Point = getConstructorID(env, cls_ai_Point, "(DD)V");
@@ -916,9 +918,59 @@ jdouble ScriptographerEngine::convertDouble(JNIEnv *env, jobject value) {
 	return callDoubleMethod(env, value, mid_Number_doubleValue);
 }
 
+void ScriptographerEngine::updateCoordinateSystem() {
+	// Get the global document origin
+	sAIDocument->GetDocumentRulerOrigin(&m_documentOrigin);
+#if kPluginInterfaceVersion >= kAI15
+	using namespace ai;
+	AIErr error = kNoErr;
+	ArtboardList artboards;
+	ArtboardID index;
+	error = artboards.GetActive(index);
+	ArtboardProperties artboard = artboards.GetArtboardProperties(index);
+	artboard.GetRulerOrigin(m_artboardOrigin);
+#elif kPluginInterfaceVersion >= kAI13
+	ASInt32 index = 0;
+	AICropAreaPtr area = NULL;
+	if (!sAICropArea->GetActive(&index) && !sAICropArea->Get(index, &area)) {
+		m_artboardOrigin.h = area->m_CropAreaRect.left;
+		m_artboardOrigin.v = m_topDownCoordinates
+			? area->m_CropAreaRect.top : area->m_CropAreaRect.bottom;
+	} else {
+		// In case of error
+		m_artboardOrigin.h = 0;
+		m_artboardOrigin.v = 0;
+	}
+#else // kPluginInterfaceVersion < kAI13
+	// There are no Artboards, use global document origin instead?
+	// Or document crop box?
+	m_artboardOrigin = m_documentOrigin;
+	/*
+	VS
+	AIRealRect rect;
+	sAIDocument->GetDocumentCropBox(&rect);
+	m_artboardOrigin.h = rect.left;
+	m_artboardOrigin.v = m_topDownCoordinates
+		? rect.top : rect.bottom;
+	*/
+#endif // kPluginInterfaceVersion >= kAI13
+}
+
 // com.scriptographer.ai.Point <-> AIRealPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env,
+jobject ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 		AIReal x, AIReal y, jobject res) {
+	switch (system) {
+	case kDocumentCoordinates:
+		x -= m_documentOrigin.h;
+		y -= m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x -= m_artboardOrigin.h;
+		y -= m_artboardOrigin.v;
+		break;
+	}
+	if (m_topDownCoordinates)
+		y = -y;
 	if (res == NULL) {
 		return newObject(env, cls_ai_Point, cid_ai_Point,
 				(jdouble) x, (jdouble) y);
@@ -932,48 +984,168 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 // This handles 2 types of points: com.scriptographer.ai.Point,
 // com.scriptographer.adm.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
-		jobject point, AIRealPoint *res) {
+		CoordinateSystem system, jobject point, AIRealPoint *res) {
+	AIReal x, y;
+	if (env->IsInstanceOf(point, cls_ai_Point)) {
+		x = env->GetDoubleField(point, fid_ai_Point_x);
+		y = env->GetDoubleField(point, fid_ai_Point_y);
+	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
+		x = env->GetIntField(point, fid_adm_Point_x);
+		y = env->GetIntField(point, fid_adm_Point_y);
+	}
+	if (m_topDownCoordinates)
+		y = -y;
+	switch (system) {
+	case kDocumentCoordinates:
+		x += m_documentOrigin.h;
+		y += m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x += m_artboardOrigin.h;
+		y += m_artboardOrigin.v;
+		break;
+	}
 	if (res == NULL)
 		res = new AIRealPoint;
-	if (env->IsInstanceOf(point, cls_ai_Point)) {
-		res->h = env->GetDoubleField(point, fid_ai_Point_x);
-		res->v = env->GetDoubleField(point, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
-		res->h = env->GetIntField(point, fid_adm_Point_x);
-		res->v = env->GetIntField(point, fid_adm_Point_y);
-	}
+	res->h = x;
+	res->v = y;
 	EXCEPTION_CHECK(env);
 	return res;
 }
 
+/**
+ * Coordinate System Conversion for raw segment point coordinates. Directly
+ * modifies the point values in the float array.
+ */
+void ScriptographerEngine::convertSegments(AIReal *data, int count,
+		CoordinateSystem system, bool from) {
+	AIReal x, y;
+	switch (system) {
+	case kDocumentCoordinates:
+		x = m_documentOrigin.h;
+		y = m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x = m_artboardOrigin.h;
+		y = m_artboardOrigin.v;
+		break;
+	}
+	// Conversion needed at all?
+	if (x != 0 || y != 0 || m_topDownCoordinates) {
+		if (from) {
+			x = -x;
+			y = -y;
+		}
+		jfloat *ptr = data;
+		if (m_topDownCoordinates) {
+			// We need to flip y coordinates both ways.
+			if (from) {
+				for (int i = 0; i < count; i++) {
+					// Convert point values for each segment
+					for (int j = 0; j < 3; j++) {
+						*(ptr++) = *ptr + x;
+						// When reading from, first calculate value, then flip
+						*(ptr++) = -(*ptr + y);
+					}
+					// Skip boolean value
+					ptr++;
+				}
+			} else {
+				for (int i = 0; i < count; i++) {
+					// Convert point values for each segment
+					for (int j = 0; j < 3; j++) {
+						*(ptr++) = *ptr + x;
+						// When writing to, first flip, then write value
+						*(ptr++) = -(*ptr) + y;
+					}
+					// Skip boolean value
+					ptr++;
+				}
+			}
+		} else {
+			// Just add x and y offset
+			for (int i = 0; i < count; i++) {
+				// Convert point values for each segment
+				for (int j = 0; j < 3; j++) {
+					*(ptr++) = *ptr + x;
+					*(ptr++) = *ptr + y;
+				}
+				// Skip boolean value
+				ptr++;
+			}
+		}
+	}
+}
+
 // com.scriptographer.ai.Rectangle <-> AIRealRect
 
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, 
-		AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
+		CoordinateSystem system, AIReal left, AIReal top,
+		AIReal right, AIReal bottom, jobject res) {
+	AIReal x = left;
+	AIReal width = right - left;
+	AIReal y, height;
+	if (m_topDownCoordinates) {
+		y = top;
+		height = bottom - top;
+	} else {
+		y = bottom;
+		height = top - bottom;
+	}
+	switch (system) {
+	case kDocumentCoordinates:
+		x -= m_documentOrigin.h;
+		y -= m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x -= m_artboardOrigin.h;
+		y -= m_artboardOrigin.v;
+		break;
+	}
+	if (m_topDownCoordinates)
+		y = -y;
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
 		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle,
-				(jdouble) left, (jdouble) bottom,
-				(jdouble) (right - left),
-				(jdouble) (top - bottom));
+				(jdouble) x, (jdouble) y, (jdouble) width, (jdouble) height);
 	} else {
 		callVoidMethod(env, res, mid_ai_Rectangle_set,
-				(jdouble) left, (jdouble) bottom,
-				(jdouble) (right - left),
-				(jdouble) (top - bottom));
+				(jdouble) x, (jdouble) y, (jdouble) width, (jdouble) height);
 		return res;
 	}
 }
 
 AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
-		jobject rect, AIRealRect *res) {
+		CoordinateSystem system, jobject rect, AIRealRect *res) {
 	// AIRealRects are upside down, top and bottom are switched!
+	AIReal x = env->GetDoubleField(rect, fid_ai_Rectangle_x);
+	AIReal y =  env->GetDoubleField(rect, fid_ai_Rectangle_y);
+	AIReal width = env->GetDoubleField(rect, fid_ai_Rectangle_width);
+	AIReal height = env->GetDoubleField(rect, fid_ai_Rectangle_height);
+	if (m_topDownCoordinates)
+		y = -y;
+	switch (system) {
+	case kDocumentCoordinates:
+		x += m_documentOrigin.h;
+		y += m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x += m_artboardOrigin.h;
+		y += m_artboardOrigin.v;
+		break;
+	}
 	if (res == NULL)
 		res = new AIRealRect;
-	res->left =  env->GetDoubleField(rect, fid_ai_Rectangle_x);
-	res->bottom =  env->GetDoubleField(rect, fid_ai_Rectangle_y);
-	res->right = res->left + env->GetDoubleField(rect, fid_ai_Rectangle_width);
-	res->top = res->bottom + env->GetDoubleField(rect, fid_ai_Rectangle_height);
+	res->left = x;
+	res->right = x + width;
+
+	if (m_topDownCoordinates) {
+		res->top = y;
+		res->bottom = y - height;
+	} else {
+		res->bottom = y;
+		res->top = y + height;
+	}
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -998,6 +1170,82 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
 	res->h = env->GetDoubleField(size, fid_ai_Size_width);
 	res->v = env->GetDoubleField(size, fid_ai_Size_height);
 	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
+jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
+		CoordinateSystem system, AIRealMatrix *mt, jobject res) {
+	AIReal x, y;
+	switch (system) {
+	case kDocumentCoordinates:
+		x = m_documentOrigin.h;
+		y = m_documentOrigin.v;
+		break;
+	case kArtboardCoordinates:
+		x = m_artboardOrigin.h;
+		y = m_artboardOrigin.v;
+		break;
+	default:
+		x = y = 0;
+	}
+	AIRealMatrix matrix;
+	// The initialisation does the same as these two together:
+	// sAIRealMath->AIRealMatrixSetTranslate(&matrix, x, y);
+	// sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
+	if (m_topDownCoordinates)
+		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, -1, x, -y);
+	else 
+		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, 1, x, y);
+	sAIRealMath->AIRealMatrixConcat(&matrix, mt, &matrix);
+	if (m_topDownCoordinates)
+		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
+	sAIRealMath->AIRealMatrixConcatTranslate(&matrix, -x, -y);
+	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
+		(jdouble) matrix.a, (jdouble) matrix.b,
+		(jdouble) matrix.c, (jdouble) matrix.d,
+		(jdouble) matrix.tx, (jdouble) matrix.ty);
+}
+
+AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
+		CoordinateSystem system, jobject mt, AIRealMatrix *res) {
+	// TODO: use same conversion as Gradient where the native side calls a java
+	// function on Matrix to call back into native side with values.
+	AIRealMatrix matrix = {
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleX),
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getShearY),
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getShearX),
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleY),
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateX),
+		env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateY)
+	};
+	EXCEPTION_CHECK(env);
+	if (res == NULL)
+		res = new AIRealMatrix;
+	AIReal x, y;
+	switch (system) {
+	case kArtboardCoordinates:
+		x = m_artboardOrigin.h;
+		y = m_artboardOrigin.v;
+		break;
+	case kDocumentCoordinates:
+		x = m_documentOrigin.h;
+		y = m_documentOrigin.v;
+		break;
+	default:
+		x = y = 0;
+	}
+	// The initialisation does the same as these two together:
+	// sAIRealMath->AIRealMatrixSetTranslate(res, -x, -y);
+	// sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
+	if (m_topDownCoordinates)
+		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, -1, -x, y);
+	else 
+		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, 1, -x, -y);
+	sAIRealMath->AIRealMatrixConcat(res, &matrix, res);
+	if (m_topDownCoordinates)
+		sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
+	sAIRealMath->AIRealMatrixConcatTranslate(res, x, y);
 	return res;
 }
 
@@ -1134,9 +1382,9 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 			AIGradientStyle *b = &srcCol->c.b;
 			return newObject(env, cls_ai_GradientColor, cid_ai_GradientColor,
 				(jint) b->gradient,
-				gEngine->convertPoint(env, &b->gradientOrigin),
+				gEngine->convertPoint(env, kArtboardCoordinates, &b->gradientOrigin),
 				(jfloat) b->gradientAngle, (jfloat) b->gradientLength,
-				gEngine->convertMatrix(env, &b->matrix),
+				gEngine->convertMatrix(env, kArtboardCoordinates, &b->matrix),
 				(jfloat) b->hiliteAngle, (jfloat) b->hiliteLength);
 		}
 		case kPattern: {
@@ -1160,7 +1408,8 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 			}
 			return newObject(env, cls_ai_PatternColor, cid_ai_PatternColor,
 					(jint) p->pattern,
-					gEngine->convertMatrix(env, &p->transform));
+					gEngine->convertMatrix(env, kArtboardCoordinates,
+							&p->transform));
 		}
 		case kNoneColor: {
 			return obj_ai_Color_NONE;
@@ -1358,31 +1607,6 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol,
 	return NULL;
 }
 
-// AIRealMatrix <-> com.scriptoggrapher.ai.Matrix
-jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt,
-		jobject res) {
-	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
-		(jdouble) mt->a, (jdouble) mt->b,
-		(jdouble) mt->c, (jdouble) mt->d,
-		(jdouble) mt->tx, (jdouble) mt->ty);
-}
-
-AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt,
-		AIRealMatrix *res) {
-	if (res == NULL)
-		res = new AIRealMatrix;
-	// TODO: use same conversion as Gradient where the native side calls a java
-	// function on Matrix to call back into native side with values.
-	res->a = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleX);
-	res->b = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearY);
-	res->c = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearX);
-	res->d = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleY);
-	res->tx = env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateX);
-	res->ty = env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateY);
-	EXCEPTION_CHECK(env);
-	return res;
-}
-
 // AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
 
 jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style,
@@ -1558,10 +1782,8 @@ void ScriptographerEngine::commit(JNIEnv *env) {
 void ScriptographerEngine::resumeSuspendedDocuments() {
 	for (int i = m_suspendedDocuments.size() - 1; i >= 0; i--) {
 		AIDocumentHandle doc = m_suspendedDocuments.get(i);
-		if (doc != gWorkingDoc) {
-			sAIDocumentList->Activate(doc, false);
-			gWorkingDoc = doc;
-		}
+		if (doc != gWorkingDoc)
+			Document_activate(doc, true);
 		sAIDocument->ResumeTextReflow();
 		AIDictionaryRef dict = NULL;
 		// remove dictionary entry
@@ -1622,10 +1844,8 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env,
 	AIDocumentHandle doc =
 			(AIDocumentHandle) getAIObjectHandle(env, obj, "document");
 	// Switch to this document if necessary
-	if (activate && doc && doc != gWorkingDoc) {
-		sAIDocumentList->Activate(doc, false);
-		gWorkingDoc = doc;
-	}
+	if (activate && doc && doc != gWorkingDoc)
+		Document_activate(doc, true);
 	return doc;
 }
 
@@ -1658,10 +1878,8 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env,
 				*doc = docHandle;
 			// Switch to this document if necessary
 			if (activateDoc) {
-				if (docHandle != gWorkingDoc) {
-					sAIDocumentList->Activate(docHandle, false);
-					gWorkingDoc = docHandle;
-				}
+				if (docHandle != gWorkingDoc)
+					Document_activate(docHandle, true);
 				// If it's a text object, suspend the text flow now
 				// text flow of all suspended documents is resumed at the end
 				// by gEngine->resumeSuspendedDocuments()
@@ -2106,7 +2324,7 @@ ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector,
 		jint cursorId = callStaticIntMethod(env, cls_ai_Tool,
 				mid_ai_Tool_onHandleEvent,
 				(jint) message->tool, convertString(env, selector),
-				(jfloat) message->cursor.h, (jfloat) message->cursor.v,
+				(jdouble) message->cursor.h, (jdouble) message->cursor.v,
 				(jint) message->pressure,
 				(jint) (message->event != NULL ? message->event->modifiers : 0));
 		if (cursorId)
@@ -2175,7 +2393,6 @@ ASErr ScriptographerEngine::LiveEffect_onGetInputType(
 	return kExceptionErr;
 }
 
-	
 /**
  * AI MenuItem
  *

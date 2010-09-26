@@ -34,6 +34,7 @@ import java.util.EnumSet;
 
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.adm.Image;
 
@@ -277,15 +278,28 @@ public class Tool extends ToolEventHandler {
 	 * To be called from the native environment. Returns the cursor
 	 * id to be set, if any.
 	 */
-	private static int onHandleEvent(int handle, String selector, float x,
-			float y, int pressure, int modifiers) {
+	private static int onHandleEvent(int handle, String selector,
+			double x, double y, int pressure, int modifiers) {
 		Tool tool = getTool(handle);
 		ToolEventType type = ToolEventType.get(selector); 
-		if (tool != null && type != null)
-			tool.onHandleEvent(type, new Point(x, y), pressure, modifiers);
+		if (tool != null && type != null) {
+			// Make sure we use the right coordinate system before converting
+			// the point. It is a bit a shame we have to introduce a local
+			// convertPoint(x, y) function for this, but that's the only
+			// easy way to use the native side's coordinate system handling
+			// on the point and respect the tools / script's context correctly
+			ScriptographerEngine.setCoordinateSystem(tool.script != null
+					? tool.script.getCoordinateSystem() : null);
+			tool.onHandleEvent(type, convertPoint(x, y), pressure, modifiers);
+		}
 		// Tell the native side to update the cursor
 		return tool.cursor;
 	}
+
+	/*
+	 * See the comment above in onHandleEvent
+	 */
+	private static native Point convertPoint(double x, double y);
 
 	private static Tool getTool(int handle) {
 		return tools.get(handle);

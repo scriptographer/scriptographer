@@ -45,6 +45,16 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ScriptographerEngine_nativeRel
 }
 
 /*
+ * void nativeSetTopDownCoordinates(boolean topDownCoordinates)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetTopDownCoordinates(
+		JNIEnv *env, jclass cls, jboolean topDownCoordinates) {
+	try {
+		gEngine->setTopDownCoordinates(topDownCoordinates);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * boolean launch(java.lang.String filename)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(JNIEnv *env, jclass cls, jstring filename) {

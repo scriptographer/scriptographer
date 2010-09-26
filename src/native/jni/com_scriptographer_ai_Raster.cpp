@@ -470,7 +470,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getMatrix(JNIEnv *en
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix m;
 		sAIRaster->GetRasterMatrix(art, &m);
-		return gEngine->convertMatrix(env, &m);
+		return gEngine->convertMatrix(env, kArtboardCoordinates, &m);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -482,7 +482,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, 
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &mx);
 		sAIRaster->SetRasterMatrix(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }

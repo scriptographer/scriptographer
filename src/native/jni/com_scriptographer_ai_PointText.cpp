@@ -60,7 +60,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PointText_getPoint(JNIEnv *
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AIRealPoint anchor;
 		if (!sAITextFrame->GetPointTextAnchor(text, &anchor))
-			return gEngine->convertPoint(env, &anchor);		
+			return gEngine->convertPoint(env, kArtboardCoordinates, &anchor);		
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

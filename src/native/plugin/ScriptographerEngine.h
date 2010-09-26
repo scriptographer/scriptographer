@@ -28,6 +28,22 @@
 #include "jniMacros.h"
 #include "exceptions.h"
 
+enum CoordinateSystem {
+	/**
+	 * Use document (page) coordinate system.
+	 */
+	kDocumentCoordinates,
+	/**
+	 * Use artboard coordinate system.
+	 */
+	kArtboardCoordinates,
+	
+	/**
+	 * Use the coordinate system.
+	 */
+	kCurrentCoordinates
+};
+
 class ScriptographerEngine {
 private:
     JavaVM* m_javaVM;
@@ -40,6 +56,11 @@ private:
 	MPQueueID m_requestQueue;
 	MPQueueID m_responseQueue;
 #endif
+
+	// Coordinate System Stuff
+	AIRealPoint m_documentOrigin;
+	AIRealPoint m_artboardOrigin;
+	bool m_topDownCoordinates;
 
 public:
 	AIDictKey m_artHandleKey;
@@ -415,6 +436,13 @@ public:
 	CFStringRef convertString_CFString(JNIEnv *env, jstring jstr);
 #endif
 
+	void updateCoordinateSystem();
+
+	void setTopDownCoordinates(bool topDownCoordinates) {
+		m_topDownCoordinates = topDownCoordinates;
+		updateCoordinateSystem();
+	}
+
 	// java.lang.Boolean <-> jboolean
 	jobject convertBoolean(JNIEnv *env, jboolean value);	
 	jboolean convertBoolean(JNIEnv *env, jobject value);
@@ -432,18 +460,21 @@ public:
 	jdouble convertDouble(JNIEnv *env, jobject value);
 	
 	// com.scriptographer.ai.Point <-> AIRealPoint
-	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
-	jobject convertPoint(JNIEnv *env, AIRealPoint *point, jobject res = NULL) {
-		return convertPoint(env, point->h, point->v, res);
+	jobject convertPoint(JNIEnv *env, CoordinateSystem system, AIReal x, AIReal y, jobject res = NULL);	
+	jobject convertPoint(JNIEnv *env, CoordinateSystem system, AIRealPoint *point, jobject res = NULL) {
+		return convertPoint(env, system, point->h, point->v, res);
 	}
-	AIRealPoint *convertPoint(JNIEnv *env, jobject point, AIRealPoint *res = NULL);
+	AIRealPoint *convertPoint(JNIEnv *env, CoordinateSystem system, jobject point, AIRealPoint *res = NULL);
+
+	// Segment array point conversion
+	void convertSegments(AIReal *data, int count, CoordinateSystem system, bool from);
 
 	// com.scriptographer.ai.Rectangle <-> AIRealRect
-	jobject convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);
-	jobject convertRectangle(JNIEnv *env, AIRealRect *rect, jobject res = NULL) {
-		return convertRectangle(env, rect->left, rect->top, rect->right, rect->bottom, res);
+	jobject convertRectangle(JNIEnv *env, CoordinateSystem system, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);
+	jobject convertRectangle(JNIEnv *env, CoordinateSystem system, AIRealRect *rect, jobject res = NULL) {
+		return convertRectangle(env, system, rect->left, rect->top, rect->right, rect->bottom, res);
 	}
-	AIRealRect *convertRectangle(JNIEnv *env, jobject rect, AIRealRect *res = NULL);	
+	AIRealRect *convertRectangle(JNIEnv *env, CoordinateSystem system, jobject rect, AIRealRect *res = NULL);	
 
 	// com.scriptographer.ai.Size <-> AIRealPoint
 	jobject convertSize(JNIEnv *env, float width, float height, jobject res = NULL);
@@ -451,6 +482,10 @@ public:
 		return convertSize(env, size->h, size->v, res);
 	}
 	AIRealPoint *convertSize(JNIEnv *env, jobject size, AIRealPoint *res = NULL);
+
+	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
+	jobject convertMatrix(JNIEnv *env, CoordinateSystem system, AIRealMatrix *mt, jobject res = NULL);
+	AIRealMatrix *convertMatrix(JNIEnv *env, CoordinateSystem system, jobject mt, AIRealMatrix *res = NULL);
 
 	// com.scriptographer.adm.Point <-> ADMPoint
 	jobject convertPoint(JNIEnv *env, ADMPoint *point, jobject res = NULL);
@@ -479,10 +514,6 @@ public:
 
 	// AIColor <-> AIColor
 	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = -1.0f, AIReal *dstAlpha = NULL);
-
-	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
-	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);
-	AIRealMatrix *convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res = NULL);
 
 	// com.scriptoggrapher.ai.FillStyle <-> AIFillStyle
 	jobject convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res = NULL);

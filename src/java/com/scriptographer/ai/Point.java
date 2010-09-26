@@ -33,6 +33,7 @@ import java.awt.geom.Point2D;
 
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.ChangeEmitter;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -634,12 +635,19 @@ public class Point implements ChangeEmitter {
 	public double getAngle() {
 		// Cache the angle in the internal angle field, so we can return
 		// that next time and also preserve the angle if length is set to 0.
+		// TODO: This won't work if we switch coordinates in the meantime!?
 		if (angle == null)
 			angle = Math.atan2(y, x);
-		return angle;
+		// Flip angles in top down coordinate system, to keep angles counter-
+		// clockwise
+		return ScriptographerEngine.topDownCoordinates ? -angle : angle;
 	}
 
 	public void setAngle(double angle) {
+		// Flip angles in top down coordinate system, to keep angles counter-
+		// clockwise
+		if (ScriptographerEngine.topDownCoordinates)
+			angle = -angle;
 		this.angle = angle;
 		if (!isZero()) {
 			double length = getLength();
@@ -715,6 +723,10 @@ public class Point implements ChangeEmitter {
 	 * @return the rotated point
 	 */
 	public Point rotate(double angle) {
+		// Flip angles in top down coordinate system, to keep angles counter-
+		// clockwise
+		if (ScriptographerEngine.topDownCoordinates)
+			angle = -angle;
 		double s = Math.sin(angle);
 		double c = Math.cos(angle);
 		return new Point(

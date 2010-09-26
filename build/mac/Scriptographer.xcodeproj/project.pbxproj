@@ -401,6 +401,7 @@
 		91C8B9051049C27C002882FE /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9031049C27C002882FE /* IText.cpp */; };
 		91C8B9061049C27C002882FE /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9041049C27C002882FE /* IThrowException.cpp */; };
 		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
+		91EB4A61124E4C3400725314 /* IAIArtboards.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EB4A60124E4C3400725314 /* IAIArtboards.cpp */; };
 		91F1E7D90D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
 		91F1E7DB0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
 		91F1E7DD0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
@@ -500,6 +501,7 @@
 		91D4E9580A252070002888A3 /* stdPrefix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdPrefix.h; path = prefix/stdPrefix.h; sourceTree = "<group>"; };
 		91D4EDA40A255937002888A3 /* Scriptographer.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = Scriptographer.rsrc; path = resources/Scriptographer.rsrc; sourceTree = "<group>"; };
 		91E56C2A0B396EE0004AED6E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		91EB4A60124E4C3400725314 /* IAIArtboards.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIArtboards.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIArtboards.cpp"; sourceTree = SOURCE_ROOT; };
 		91EF09BF0A20A2CD00F0EF9A /* uiGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = uiGlobals.h; path = jni/uiGlobals.h; sourceTree = "<group>"; };
 		91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = aiGlobals.h; path = jni/aiGlobals.h; sourceTree = "<group>"; };
 		91EF0A470A20A2CD00F0EF9A /* exceptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = exceptions.h; sourceTree = "<group>"; };
@@ -699,6 +701,7 @@
 		91C8B8FD1049C221002882FE /* CS5 */ = {
 			isa = PBXGroup;
 			children = (
+				91EB4A60124E4C3400725314 /* IAIArtboards.cpp */,
 				91C8B8FF1049C255002882FE /* IAIFilePath.cpp */,
 				91C8B9001049C255002882FE /* IAIUnicodeString.cpp */,
 				91C8B9031049C27C002882FE /* IText.cpp */,
@@ -1473,6 +1476,7 @@
 				912161DA11B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
 				912161DB11B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp in Sources */,
 				912161DC11B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp in Sources */,
+				91EB4A61124E4C3400725314 /* IAIArtboards.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

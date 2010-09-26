@@ -82,7 +82,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 		if (sAICropArea->Get(index, &area))
 			throw new StringException("Cannot get artboard");
 		gEngine->callVoidMethod(env, artboard, gEngine->mid_ai_Artboard_set,
-				gEngine->convertRectangle(env, &area->m_CropAreaRect),
+				gEngine->convertRectangle(env, kDocumentCoordinates, &area->m_CropAreaRect),
 				area->m_bShowCenter, area->m_bShowCrossHairs,
 				area->m_bShowSafeAreas, area->m_fPAR
 		);
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 		AIRealRect rect;
 		sAIDocument->GetDocumentCropBox(&rect);
 		gEngine->callVoidMethod(env, artboard, gEngine->mid_ai_Artboard_set,
-			gEngine->convertRectangle(env, &rect),
+			gEngine->convertRectangle(env, kDocumentCoordinates, &rect),
 			// TODO: Find out if these can be simulated somehow too?
 			false, false, false, 1.0f
 		);
@@ -105,7 +105,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 #define DEFINE_CROPAREA() \
 	AICropArea area; \
 	memset(&area, 0, sizeof(AICropArea)); \
-	gEngine->convertRectangle(env, bounds, &area.m_CropAreaRect); \
+	gEngine->convertRectangle(env, kDocumentCoordinates, bounds, &area.m_CropAreaRect); \
 	area.m_fPAR = pixelAspectRatio; \
 	area.m_bShowCenter = showCenter; \
 	area.m_bShowCrossHairs = showCrossHairs; \
@@ -182,7 +182,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(JNI
 #else // kPluginInterfaceVersion < kAI13
 		if (index == 0) {
 			AIRealRect rect;
-			gEngine->convertRectangle(env, bounds, &rect);
+			gEngine->convertRectangle(env, kDocumentCoordinates, bounds, &rect);
 			return !sAIDocument->SetDocumentCropBox(&rect);
 		}
 #endif // kPluginInterfaceVersion < kAI13 

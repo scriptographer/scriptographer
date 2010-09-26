@@ -161,12 +161,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 					case PointType: {
 						AIRealPoint point;
 						if (converted = !sAIEntry->ToRealPoint(entry, &point))
-							res = gEngine->convertPoint(env, &point);
+							res = gEngine->convertPoint(env, kArtboardCoordinates, &point);
 					} break;
 					case MatrixType: {
 						AIRealMatrix matrix;
+						// TODO: What coordinate system to convert to here???
 						if (converted = !sAIEntry->ToRealMatrix(entry, &matrix))
-							res = gEngine->convertMatrix(env, &matrix);
+							res = gEngine->convertMatrix(env, kDocumentCoordinates, &matrix);
 					} break;
 					case FillStyleType: {
 						AIFillStyle fill;
@@ -275,11 +276,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
 							   env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
 						AIRealPoint point;
-						gEngine->convertPoint(env, value, &point);
+						gEngine->convertPoint(env, kArtboardCoordinates, value, &point);
 						entry = sAIEntry->FromRealPoint(&point);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Matrix)) {
 						AIRealMatrix matrix;
-						gEngine->convertMatrix(env, value, &matrix);
+						// TODO: What coordinate system to convert to here???
+						gEngine->convertMatrix(env, kDocumentCoordinates, value, &matrix);
 						entry = sAIEntry->FromRealMatrix(&matrix);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_FillStyle)) {
 						AIFillStyle style;

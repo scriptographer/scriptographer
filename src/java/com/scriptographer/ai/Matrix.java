@@ -33,6 +33,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
+import com.scriptographer.ScriptographerEngine;
+
 /**
  * Matrix represents an affine transformation between two coordinate spaces in 2
  * dimensions. Such a transform preserves the "straightness" and "parallelness"
@@ -321,7 +323,10 @@ public class Matrix {
 	}
 
 	public Matrix rotate(double angle) {
-		transform.rotate(angle);
+		// Flip angles in top down coordinate system, to keep angles counter-
+		// clockwise
+		transform.rotate(ScriptographerEngine.topDownCoordinates ? -angle
+				: angle);
 		return this;
 	}
 
@@ -335,7 +340,10 @@ public class Matrix {
 	 * @return a reference to the matrix
 	 */
 	public Matrix rotate(double angle, Point center) {
-		transform.rotate(angle,
+		// Flip angles in top down coordinate system, to keep angles counter-
+		// clockwise
+		transform.rotate(ScriptographerEngine.topDownCoordinates ? -angle
+				: angle,
 				center != null ? center.getX() : 0,
 				center != null ? center.getY() : 0);
 		return this;

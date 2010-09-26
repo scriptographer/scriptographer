@@ -284,3 +284,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetRolloverImage(JN
 		sAITool->SetToolRolloverIcon(tool, (ADMIconRef) iconHandle);
 	} EXCEPTION_CONVERT(env);
 }
+
+/*
+ * com.scriptographer.ai.Point convertPoint(double x, double y)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_convertPoint(
+		JNIEnv *env, jclass cls, jdouble x, jdouble y) {
+	try {
+		return gEngine->convertPoint(env, kArtboardCoordinates, x, y);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}

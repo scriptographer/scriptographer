@@ -528,7 +528,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 			Item.removeIfWrapped(artHandles, false);
 	}
 
-	private static native void nativeBeginExecution(int[] values);
+	private static native void nativeBeginExecution(int[] returnValues);
 
 	/**
 	 * Called before AI functions are executed.
@@ -540,11 +540,11 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public static void beginExecution() {
 		// Use an array as a simple way to receive values back from the native
 		// side.
-		int[] values = new int[3]; // docHandle, undoLevel, redoLevel
-		nativeBeginExecution(values);
-		Document document = wrapHandle(values[0]);
+		int[] returnValues = new int[3]; // docHandle, undoLevel, redoLevel
+		nativeBeginExecution(returnValues);
+		Document document = wrapHandle(returnValues[0]);
 		if (document != null) {
-			document.setHistoryLevels(values[1], values[2], true);
+			document.setHistoryLevels(returnValues[1], returnValues[2], true);
 		}
 	}
 

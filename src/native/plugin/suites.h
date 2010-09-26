@@ -145,6 +145,11 @@
 #include "AICropArea.h"
 #endif // kPluginInterfaceVersion >= kAI13
 
+#if kPluginInterfaceVersion >= kAI15
+#include "AIArtboard.h"
+#include "IAIArtboards.hpp"
+#endif // kPluginInterfaceVersion >= kAI15
+
 #if kPluginInterfaceVersion <= kAI11
 #define kTabletTypeCount 1
 #endif // kPluginInterfaceVersion <= kAI11
@@ -393,3 +398,7 @@ extern "C" AITracingIPSuite					*sAITracingIP;
 #if kPluginInterfaceVersion >= kAI13
 extern "C" AICropAreaSuite					*sAICropArea;
 #endif // kPluginInterfaceVersion >= kAI13
+
+#if kPluginInterfaceVersion >= kAI15
+extern "C" AIArtboardSuite					* sAIArtboard;
+#endif // kPluginInterfaceVersion >= kAI15

@@ -1905,8 +1905,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * @param angle the rotation angle in radians
 	 * @see Matrix#rotate(double, Point)
 	 */
-	public void rotate(double angle, Point anchor) {
-		transform(new Matrix().rotate(angle, anchor));
+	public void rotate(double angle, Point center) {
+		transform(new Matrix().rotate(angle, center));
 	}
 
 	/**

@@ -27,6 +27,7 @@
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_TextRange.h"
 
 /*
@@ -117,7 +118,7 @@ public:
 		sAIRealMath->AIRealMatrixConcat(&m_matrix, &textMatrix, &matrix);
 		sAIHardSoft->AIRealMatrixSoften(&matrix);
 		// Weird... Is ATE upside down? This seems to help, but why?
-		matrix.ty *= -1;
+		matrix.ty = -matrix.ty;
 		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
 		return matrix;
 	}
@@ -176,7 +177,7 @@ public:
 				if (origin != NULL) {
 					AIRealPoint pt;
 					sAIRealMath->AIRealMatrixXformPoint(&matrix, origin, &pt);
-					point = gEngine->convertPoint(env, &pt);
+					point = gEngine->convertPoint(env, kArtboardCoordinates, &pt);
 				} else {
 					point = NULL;
 				}
@@ -199,7 +200,7 @@ public:
 				if (origin != NULL) {
 					ASRealMatrix glyphMatrix = runMatrix;
 					sAIRealMath->AIRealMatrixConcatTranslate(&glyphMatrix, origin->h, origin->v);
-					matrix = gEngine->convertMatrix(env, &glyphMatrix);
+					matrix = gEngine->convertMatrix(env, kArtboardCoordinates, &glyphMatrix);
 				} else {
 					matrix = NULL;
 				}

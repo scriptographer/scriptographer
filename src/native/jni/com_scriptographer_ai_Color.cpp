@@ -94,10 +94,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv
 	try {
 		AIGradientStyle *style = (AIGradientStyle *) pointer;
 		style->gradient = (AIGradientHandle) handle;
-		gEngine->convertPoint(env, origin, &style->gradientOrigin);
+		gEngine->convertPoint(env, kArtboardCoordinates, origin, &style->gradientOrigin);
 		style->gradientAngle = angle;
 		style->gradientLength = length; 
-		gEngine->convertMatrix(env, matrix, &style->matrix);
+		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &style->matrix);
 		style->hiliteAngle = hiliteAngle;
 		style->hiliteLength = hiliteLength;
 	} EXCEPTION_CONVERT(env);
@@ -121,6 +121,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetPattern(JNIEnv 
 		style->reflectAngle = 0;
 		style->shearAngle = 0;
 		style->shearAxis = 0;
-		gEngine->convertMatrix(env, matrix, &style->transform);
+		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &style->transform);
 	} EXCEPTION_CONVERT(env);
 }

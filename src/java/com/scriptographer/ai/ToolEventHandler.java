@@ -31,6 +31,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.sg.Script;
 
 /**
  * @author lehni
@@ -48,7 +49,6 @@ public class ToolEventHandler extends NativeObject {
 	protected int count;
 	protected int downCount;
 	protected double pressure;
-
 
 	protected ToolEventHandler(int handle) {
 		super(handle);
@@ -78,6 +78,7 @@ public class ToolEventHandler extends NativeObject {
 		onMouseUp = null;
 		onMouseDrag = null;
 		onMouseMove = null;
+		script = null;
 	}
 
 	/**
@@ -468,5 +469,15 @@ public class ToolEventHandler extends NativeObject {
 
 	public void onHandleEvent(ToolEventType type, Point pt) {
 		onHandleEvent(type, pt, 128, 0);
+	}
+
+	protected Script script;
+
+	public Script getScript() {
+		return script;
+	}
+
+	public void setScript(Script script) {
+		this.script = script;
 	}
 }

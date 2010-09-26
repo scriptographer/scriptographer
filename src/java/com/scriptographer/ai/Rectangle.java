@@ -34,6 +34,7 @@ import java.awt.geom.Rectangle2D;
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.ChangeEmitter;
 import com.scratchdisk.script.ChangeReceiver;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
@@ -239,11 +240,21 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * rectangle: the bottom won't move.
 	 */
 	public double getTop() {
-		return y + height;
+		if (ScriptographerEngine.topDownCoordinates) {
+			return y;
+		} else {
+			return y + height;
+		}
 	}
 	
 	public void setTop(double top) {
-		height = top - y;
+		if (ScriptographerEngine.topDownCoordinates) {
+			// bottom should not move
+			height -= top - y;
+			y = top;
+		} else {
+			height = top - y;
+		}
 	}
 
 	/**
@@ -264,13 +275,21 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 * rectangle: the top won't move.
 	 */
 	public double getBottom() {
-		return y;
+		if (ScriptographerEngine.topDownCoordinates) {
+			return y + height;
+		} else {
+			return y;
+		}
 	}
 	
 	public void setBottom(double bottom) {
-		// top should not move
-		height -= bottom - y;
-		y = bottom;
+		if (ScriptographerEngine.topDownCoordinates) {
+			height = bottom - y;
+		} else {
+			// top should not move
+			height -= bottom - y;
+			y = bottom;
+		}
 	}
 
 	private double getCenterX() {
