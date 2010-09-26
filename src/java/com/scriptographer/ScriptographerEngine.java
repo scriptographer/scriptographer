@@ -396,9 +396,8 @@ public class ScriptographerEngine {
 		Script script = scope != null ? (Script) scope.get("script") : null;
 		// Set script coordinates orientation on each execution.
 		previousTopDownCoordinates = topDownCoordinates;
-		setTopDownCoordinates(CoordinateSystem.TOP_DOWN == (script != null
-				? script.getCoordinateSystem()
-				: CoordinateSystem.DEFAULT));
+		setCoordinateSystem(script != null ? script.getCoordinateSystem()
+				: null);
 	
 		// Only call Document.beginExecution if it has not already
 		// been called through the UI notification callback.
@@ -460,11 +459,16 @@ public class ScriptographerEngine {
 	private native static void nativeSetTopDownCoordinates(
 			boolean topDownCoordinates);
 
-	public static void setTopDownCoordinates(boolean topDown) {
+	protected static void setTopDownCoordinates(boolean topDown) {
 		topDownCoordinates = topDown;
 		// Always call setCoordinateSystem, even if topDown is the same as
 		// topDownCoordinates, as even a switch of artboards might require it.
 		nativeSetTopDownCoordinates(topDown);
+	}
+
+	public static void setCoordinateSystem(CoordinateSystem system) {
+		setTopDownCoordinates((system != null ? system
+				: CoordinateSystem.DEFAULT) == CoordinateSystem.TOP_DOWN);
 	}
 
 	/**

@@ -123,8 +123,7 @@ public class Script {
 
 	public void setCoordinateSystem(CoordinateSystem system) {
 		this.system = system != null ? system : CoordinateSystem.DEFAULT;
-		ScriptographerEngine.setTopDownCoordinates(
-				this.system == CoordinateSystem.TOP_DOWN);
+		ScriptographerEngine.setCoordinateSystem(this.system);
 	}
 
 	/**
