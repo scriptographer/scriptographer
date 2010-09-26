@@ -203,7 +203,6 @@ var mainDialog = new FloatingDialog(
 				}
 				if (entry.populated)
 					refreshList(entry.childList, false);
-				entries.push(entry);
 			}
 		}, []);
 		// Remove the deleted files.
