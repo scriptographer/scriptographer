@@ -1,3 +1,6 @@
+script.coordinateSystem = 'top-down';
+script.angleUnits = 'degrees';
+
 ////////////////////////////////////////////////////////////////////////////////
 // Interface
 
@@ -5,7 +8,7 @@ var values = {
 };
 
 var components = {
-	ruler0: { label: 'Vector', type: 'ruler' },
+//	ruler0: { label: 'As Vector', type: 'ruler' },
 	length: {
 		label: 'Length', type: 'number', units: 'point', length: 10
 	},
@@ -19,7 +22,7 @@ var components = {
 	fixAngle: {
 		label: 'Fix', type: 'checkbox'
 	},
-	ruler1: { label: 'Point', type: 'ruler' },
+	ruler1: { label: 'Coordinates', type: 'ruler' },
 	x: {
 		label: 'X', type: 'number', units: 'point', length: 10
 	},
@@ -29,7 +32,7 @@ var components = {
 	ruler2: { label: 'Instructions', type: 'ruler' },
 	instructions: {
 		type: 'text', fullSize: true,
-		value: 'SHIFT = Add Vector\nALT = Modify Vector'
+		value: 'SHIFT = Add New Vector\nALT = Modify Last Vector'
 	}
 }
 
@@ -37,8 +40,6 @@ var palette = new Palette('Vektor', components, values);
 
 palette.onChange = function(component) {
 	var name = component.name, value = component.value;
-	if (name == 'angle')
-		value = value.toRadians(0);
 	if (vector) {
 		// Update Vector
 		vector[name] = value;
@@ -73,9 +74,9 @@ function drawVector() {
 	vectorItem = new Group([
 		new Path([vectorStart, end]),
 		new Path([
-			end + arrowStep.rotate((135).toRadians()),
+			end + arrowStep.rotate(135),
 			end,
-			end + arrowStep.rotate((-135).toRadians())
+			end + arrowStep.rotate(-135)
 		])
 	]);
 	vectorItem.style = {
@@ -88,8 +89,7 @@ function drawVector() {
 	values.x = vector.x;
 	values.y = vector.y;
 	values.length = vector.length;
-	values.angle = vector.angle.toDegrees();
-//	palette.update();
+	values.angle = vector.angle;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
