@@ -604,19 +604,15 @@ public class Point implements ChangeEmitter {
 	public double getAngle() {
 		// Cache the angle in the internal angle field, so we can return
 		// that next time and also preserve the angle if length is set to 0.
-		// TODO: This won't work if we switch coordinates in the meantime!?
 		if (angle == null)
 			angle = Math.atan2(y, x);
-		// Flip angles in top down coordinate system, to keep angles counter-
-		// clockwise
-		return ScriptographerEngine.topDownCoordinates ? -angle : angle;
+		return ScriptographerEngine.anglesInDegrees ? 180.0 * angle / Math.PI
+				: angle;
 	}
 
 	public void setAngle(double angle) {
-		// Flip angles in top down coordinate system, to keep angles counter-
-		// clockwise
-		if (ScriptographerEngine.topDownCoordinates)
-			angle = -angle;
+		if (ScriptographerEngine.anglesInDegrees)
+			angle = angle * Math.PI / 180.0;
 		this.angle = angle;
 		if (!isZero()) {
 			double length = getLength();
@@ -663,10 +659,8 @@ public class Point implements ChangeEmitter {
 	 * @return the rotated point
 	 */
 	public Point rotate(double angle) {
-		// Flip angles in top down coordinate system, to keep angles counter-
-		// clockwise
-		if (ScriptographerEngine.topDownCoordinates)
-			angle = -angle;
+		if (ScriptographerEngine.anglesInDegrees)
+			angle = angle * Math.PI / 180.0;
 		double s = Math.sin(angle);
 		double c = Math.cos(angle);
 		return new Point(

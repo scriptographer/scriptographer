@@ -33,6 +33,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * The CharacterStyle object represents the character style of a text item ({@link TextItem#getCharacterStyle()})
@@ -334,8 +335,23 @@ public class CharacterStyle extends PathStyle {
 	 * 
 	 * @return the rotation in radians
 	 */
-	public native Float getRotation();
-	public native void setRotation(Float rotation);
+	public Float getRotation() {
+		Float rotation = nativeGetRotation();
+		// Rotation is internall in degrees
+		if (rotation != null && !ScriptographerEngine.anglesInDegrees)
+			return (float) (rotation * Math.PI / 180.0);
+		return rotation;
+	}
+
+	public void setRotation(Float rotation) {
+		// Rotation is internall in degrees
+		if (rotation != null && !ScriptographerEngine.anglesInDegrees)
+			rotation =(float) (rotation * 180.0 / Math.PI);
+		nativeSetRotation(rotation);
+	}
+
+	private native Float nativeGetRotation();
+	private native void nativeSetRotation(Float rotation);
 
 	/**
 	 * The kerning between two characters in thousands of em.

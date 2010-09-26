@@ -317,42 +317,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setBaselineShif
 }
 
 /*
- * java.lang.Float getRotation()
+ * java.lang.Float nativeGetRotation()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getRotation(JNIEnv *env, jobject obj) {
-//	CHARACTERSTYLE_GET_FLOAT(CharacterRotation)
-	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
-		ATEBool8 isAssigned;
-		AIReal value;
-		if (!sCharFeatures->GetCharacterRotation(features, &isAssigned, &value) && isAssigned) {
-			// Convert degrees to radians
-			value = value * PI / 180.0;
-			return gEngine->newObject(env, gEngine->cls_Float, gEngine->cid_Float, (jfloat) value);
-		}
-	} EXCEPTION_CONVERT(env);
-	return NULL;
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetRotation(JNIEnv *env, jobject obj) {
+	CHARACTERSTYLE_GET_FLOAT(CharacterRotation)
 }
 
 /*
- * void setRotation(java.lang.Float value)
+ * void nativeSetRotation(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setRotation(JNIEnv *env, jobject obj, jobject value) {
-	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
-		ASErr err;
-		if (value == NULL) {
-			err = sCharFeatures->ClearCharacterRotation(features);
-		} else {
-			jfloat val = gEngine->callFloatMethod(env, value, gEngine->mid_Number_floatValue);
-			// Convert radians to degrees
-			val = val / 180.0 * PI;
-			err = sCharFeatures->SetCharacterRotation(features, (ASReal) val);
-		}
-		if (!err)
-			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_CharacterStyle_markSetStyle);
-	} EXCEPTION_CONVERT(env);
-
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetRotation(JNIEnv *env, jobject obj, jobject value) {
+	CHARACTERSTYLE_SET_FLOAT(CharacterRotation)
 }
 
 /*

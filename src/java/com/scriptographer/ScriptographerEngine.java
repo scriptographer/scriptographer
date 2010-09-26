@@ -52,6 +52,7 @@ import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Timer;
+import com.scriptographer.sg.AngleUnits;
 import com.scriptographer.sg.CoordinateSystem;
 import com.scriptographer.sg.Script;
 import com.scriptographer.ui.KeyCode;
@@ -62,8 +63,6 @@ import com.scriptographer.ui.MenuItem;
  * @author lehni
  */
 public class ScriptographerEngine {
-
-	public static boolean topDownCoordinates = false;
 
 	private static File pluginDir = null;
 	private static File coreDir = null;
@@ -90,6 +89,11 @@ public class ScriptographerEngine {
 
 		"onStop"
 	};
+
+	// Flags to be used by the AI package, for coordinate systems and angle
+	// units.
+	public static boolean topDownCoordinates = false;
+	public static boolean anglesInDegrees = true;
 
 	// App Events. Their numbers need to match calbackNames indices.
 	public static final int EVENT_APP_STARTUP = 0;
@@ -398,6 +402,7 @@ public class ScriptographerEngine {
 		previousTopDownCoordinates = topDownCoordinates;
 		setCoordinateSystem(script != null ? script.getCoordinateSystem()
 				: null);
+		setAngleUnits(script != null ? script.getAngleUnits() : null);
 	
 		// Only call Document.beginExecution if it has not already
 		// been called through the UI notification callback.
@@ -469,6 +474,11 @@ public class ScriptographerEngine {
 	public static void setCoordinateSystem(CoordinateSystem system) {
 		setTopDownCoordinates((system != null ? system
 				: CoordinateSystem.DEFAULT) == CoordinateSystem.TOP_DOWN);
+	}
+
+	public static void setAngleUnits(AngleUnits angleUnits) {
+		anglesInDegrees = (angleUnits != null ? angleUnits
+				: AngleUnits.DEFAULT) == AngleUnits.DEGREES;
 	}
 
 	/**

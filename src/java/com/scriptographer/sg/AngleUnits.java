@@ -33,10 +33,10 @@ package com.scriptographer.sg;
  * @author lehni
  *
  */
-public enum CoordinateSystem {
-	TOP_DOWN,
-	BOTTOM_UP;
+public enum AngleUnits {
+	DEGREES,
+	RADIANS;
 
-	// Bottom-up for now
-	public static final CoordinateSystem DEFAULT = BOTTOM_UP;
+	// Radians for now
+	public static final AngleUnits DEFAULT = RADIANS;
 }

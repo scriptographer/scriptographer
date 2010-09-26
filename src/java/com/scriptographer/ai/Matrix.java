@@ -323,9 +323,8 @@ public class Matrix {
 	}
 
 	public Matrix rotate(double angle) {
-		// Flip angles in top down coordinate system, to keep angles counter-
-		// clockwise
-		transform.rotate(ScriptographerEngine.topDownCoordinates ? -angle
+		transform.rotate(ScriptographerEngine.anglesInDegrees 
+				? angle * Math.PI / 180.0
 				: angle);
 		return this;
 	}
@@ -340,9 +339,8 @@ public class Matrix {
 	 * @return a reference to the matrix
 	 */
 	public Matrix rotate(double angle, Point center) {
-		// Flip angles in top down coordinate system, to keep angles counter-
-		// clockwise
-		transform.rotate(ScriptographerEngine.topDownCoordinates ? -angle
+		transform.rotate(ScriptographerEngine.anglesInDegrees 
+				? angle * Math.PI / 180.0
 				: angle,
 				center != null ? center.getX() : 0,
 				center != null ? center.getY() : 0);

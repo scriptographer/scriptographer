@@ -43,6 +43,7 @@ public class Script {
 	private boolean keepAlive = false;
 	private boolean showProgress = true;
 	private CoordinateSystem system = CoordinateSystem.DEFAULT;
+	private AngleUnits angleUnits = AngleUnits.DEFAULT;
 	protected boolean coreScript = false;
 
 	/**
@@ -124,6 +125,15 @@ public class Script {
 	public void setCoordinateSystem(CoordinateSystem system) {
 		this.system = system != null ? system : CoordinateSystem.DEFAULT;
 		ScriptographerEngine.setCoordinateSystem(this.system);
+	}
+
+	public AngleUnits getAngleUnits() {
+		return angleUnits;
+	}
+
+	public void setAngleUnits(AngleUnits units) {
+		this.angleUnits = units != null ? units : AngleUnits.DEFAULT;
+		ScriptographerEngine.setAngleUnits(this.angleUnits);
 	}
 
 	/**
