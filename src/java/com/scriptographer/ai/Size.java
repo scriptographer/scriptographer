@@ -384,6 +384,8 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
+	 * {@grouptitle Math Functions}
+	 * 
 	 * Returns a new size with rounded {@link #width} and {@link #height}
 	 * values. The object itself is not modified!
 	 * 
@@ -398,14 +400,49 @@ public class Size implements ChangeEmitter {
 		return new Size(Math.round(width), Math.round(height));
 	}
 
+	/**
+	 * Returns a new size with the nearest greater non-fractional values to the
+	 * specified {@link #width} and {@link #height} values. The object itself is not
+	 * modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var size = new Size(10.2, 10.9);
+	 * var ceilSize = size.ceil();
+	 * print(ceilSize); // { width: 11.0, height: 11.0 }
+	 * </code>
+	 */
 	public Size ceil() {
 		return new Size(Math.ceil(width), Math.ceil(height));
 	}
 
+	/**
+	 * Returns a new size with the nearest smaller non-fractional values to the
+	 * specified {@link #width} and {@link #height} values. The object itself is
+	 * not modified!
+	 * 
+	 * Sample code: <code>
+	 * var size = new Size(10.2, 10.9);
+	 * var floorSize = size.floor();
+	 * print(floorSize); // { width: 10.0, height: 10.0 }
+	 * </code>
+	 */
 	public Size floor() {
 		return new Size(Math.floor(width), Math.floor(height));
 	}
 
+	/**
+	 * Returns a new size with the absolute values of the specified
+	 * {@link #width} and {@link #height} values. The object itself is not
+	 * modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var size = new Size(-5, 10);
+	 * var absSize = size.abs();
+	 * print(absSize); // { width: 5.0, height: 10.0 }
+	 * </code>
+	 */
 	public Size abs() {
 		return new Size(Math.abs(width), Math.abs(height));
 	}

@@ -485,55 +485,8 @@ public class Point implements ChangeEmitter {
 		}
 	}
 
-	/**
-	 * Checks whether the point is inside the boundaries of the rectangle.	
-	 * 
-	 * @param rect the rectangle to check against
-	 * @return {@true if the point is inside the rectangle}
-	 */
-	public boolean isInside(Rectangle rect) {
-		return rect.contains(this);
-	}
-
-	/**
-	 * Checks if the point is within a given distance of another point.
-	 * 
-	 * @param point the point to check against
-	 * @param tolerance the maximum distance allowed
-	 * @return {@true if it is within the given distance}
-	 */
-	public boolean isClose(Point point, double tolerance) {
-		return getDistance(point) < tolerance;
-	}
-
-	/**
-	 * Checks if the vector represented by this point is parallel (collinear) to
-	 * another vector.
-	 * 
-	 * @param point the vector to check against
-	 * @return {@true if it is parallel}
-	 */
-	public boolean isParallel(Point point) {
-		return Math.abs(x / point.x - y / point.y) < 0.00001;
-	}
-
-	/**
-	 * Checks if this point has both the x and y coordinate set to 0. 
-	 * 
-	 * @return {@true if both x and y are 0}
-	 */
-	public boolean isZero() {
-		return x == 0 && y == 0;
-	}
-
-	/**
-	 * Checks if this point has an undefined value for at least one of its
-	 * coordinates.
-	 * 
-	 * @return {@true if either x or y are not a number}
-	 */
-	public boolean isNaN() {
-		return Double.isNaN(x) || Double.isNaN(y);
+	public Point transform(Matrix matrix) {
+		return matrix.transform(this);
 	}
 	
 	/**
@@ -559,6 +512,8 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
+	 * {@grouptitle Distance & Length}
+	 * 
 	 * Returns the distance between the point and another point.
 	 * 
 	 * Sample code:
@@ -593,7 +548,7 @@ public class Point implements ChangeEmitter {
 	public double getDistanceSquared(Point point) {
 		return getDistanceSquared(point.x, point.y);
 	}
-
+	
 	/**
 	 * The length of the vector that is represented by this point's coordinates.
 	 * Each point can be interpreted as a vector that points from the origin
@@ -628,6 +583,20 @@ public class Point implements ChangeEmitter {
 		}
 	}
 
+	public Point normalize(double length) {
+		double len = getLength();
+		// Prevent division by 0
+		double scale = len != 0 ? length / len : 0;
+		Point res = new Point(x * scale, y * scale);
+		// Preserve angle.
+		res.angle = angle;
+		return res;
+	}
+
+	public Point normalize() {
+		return normalize(1);
+	}
+	
 	/**
 	 * The angle from the x axis to the vector in radians, measured in counter
 	 * clockwise direction.
@@ -657,6 +626,8 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
+     * {@grouptitle Angle & Rotation}
+	 * 
 	 * Returns the smaller angle between two vectors in radians. The angle is
 	 * unsigned, no information about rotational direction is given.
 	 * 
@@ -682,37 +653,6 @@ public class Point implements ChangeEmitter {
 		else if (angle > Math.PI)
 			return angle - Math.PI * 2;
 		return angle;
-	}
-
-	/**
-	 * Returns the interpolation point between the point and another point.
-	 * The object itself is not modified!
-	 * 
-	 * @param point
-	 * @param t the position between the two points as a value between 0 and 1
-	 * @return the interpolation point
-	 * 
-	 * @jshide
-	 */
-	public Point interpolate(Point point, double t) {
-		return new Point(
-			x * (1f - t) + point.x * t,
-			y * (1f - t) + point.y * t
-		);
-	}
-
-	public Point normalize(double length) {
-		double len = getLength();
-		// Prevent division by 0
-		double scale = len != 0 ? length / len : 0;
-		Point res = new Point(x * scale, y * scale);
-		// Preserve angle.
-		res.angle = angle;
-		return res;
-	}
-
-	public Point normalize() {
-		return normalize(1);
 	}
 
 	/**
@@ -764,13 +704,149 @@ public class Point implements ChangeEmitter {
 	public Point rotate(double angle, double x, double y) {
 		return subtract(x, y).rotate(angle).add(x, y);
 	}
+	
+	/**
+	 * Returns the interpolation point between the point and another point.
+	 * The object itself is not modified!
+	 * 
+	 * @param point
+	 * @param t the position between the two points as a value between 0 and 1
+	 * @return the interpolation point
+	 * 
+	 * @jshide
+	 */
+	public Point interpolate(Point point, double t) {
+		return new Point(
+			x * (1f - t) + point.x * t,
+			y * (1f - t) + point.y * t
+		);
+	}
 
 	/**
+	 * {@grouptitle Tests}
+	 * 
+	 * Checks whether the point is inside the boundaries of the rectangle.	
+	 * 
+	 * @param rect the rectangle to check against
+	 * @return {@true if the point is inside the rectangle}
+	 */
+	public boolean isInside(Rectangle rect) {
+		return rect.contains(this);
+	}
+
+	/**
+	 * Checks if the point is within a given distance of another point.
+	 * 
+	 * @param point the point to check against
+	 * @param tolerance the maximum distance allowed
+	 * @return {@true if it is within the given distance}
+	 */
+	public boolean isClose(Point point, double tolerance) {
+		return getDistance(point) < tolerance;
+	}
+
+	/**
+	 * Checks if the vector represented by this point is parallel (collinear) to
+	 * another vector.
+	 * 
+	 * @param point the vector to check against
+	 * @return {@true if it is parallel}
+	 */
+	public boolean isParallel(Point point) {
+		return Math.abs(x / point.x - y / point.y) < 0.00001;
+	}
+
+	/**
+	 * Checks if this point has both the x and y coordinate set to 0. 
+	 * 
+	 * @return {@true if both x and y are 0}
+	 */
+	public boolean isZero() {
+		return x == 0 && y == 0;
+	}
+
+	/**
+	 * Checks if this point has an undefined value for at least one of its
+	 * coordinates.
+	 * 
+	 * @return {@true if either x or y are not a number}
+	 */
+	public boolean isNaN() {
+		return Double.isNaN(x) || Double.isNaN(y);
+	}
+	
+	
+	/**
+	 * {@grouptitle Math Functions}
+	 * 
+	 * Returns a new point with rounded {@link #x} and {@link #y} values. The
+	 * object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(10.2, 10.9);
+	 * var roundPoint = point.round();
+	 * print(roundPoint); // { x: 10.0, y: 11.0 }
+	 * </code>
+	 */
+	public Point round() {
+		return new Point(Math.round(x), Math.round(y));
+	}
+
+	/**
+	 * Returns a new point with the nearest greater non-fractional values to the
+	 * specified {@link #x} and {@link #y} values. The object itself is not
+	 * modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(10.2, 10.9);
+	 * var ceilPoint = point.ceil();
+	 * print(ceilPoint); // { x: 11.0, y: 11.0 }
+	 * </code>
+	 */
+	public Point ceil() {
+		return new Point(Math.ceil(x), Math.ceil(y));
+	}
+
+	/**
+	 * Returns a new point with the nearest smaller non-fractional values to the
+	 * specified {@link #x} and {@link #y} values. The object itself is not
+	 * modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(10.2, 10.9);
+	 * var floorPoint = point.floor();
+	 * print(floorPoint); // { x: 10.0, y: 10.0 }
+	 * </code>
+	 */
+	public Point floor() {
+		return new Point(Math.floor(x), Math.floor(y));
+	}
+
+	/**
+	 * Returns a new point with the absolute values of the specified {@link #x}
+	 * and {@link #y} values. The object itself is not modified!
+	 * 
+	 * Sample code: <code>
+	 * var point = new Point(-5, 10);
+	 * var absPoint = point.abs();
+	 * print(absPoint); // { x: 5.0, y: 10.0 }
+	 * </code>
+	 */
+	public Point abs() {
+		return new Point(Math.abs(x), Math.abs(y));
+	}
+
+	
+	/**
+	 * {@grouptitle Vectorial Math Functions}
+	 * 
 	 * Returns the dot product of the point and another point.
 	 * @param point
 	 * @return the dot product of the two points
 	 */
-
 	public double dot(Point point) {
 		return x * point.x + y * point.y;
 	}
@@ -780,7 +856,6 @@ public class Point implements ChangeEmitter {
 	 * @param point
 	 * @return the cross product of the two points
 	 */
-
 	public double cross(Point point) {
 		return x * point.y - y * point.x;
 	}
@@ -803,38 +878,7 @@ public class Point implements ChangeEmitter {
 			);
 		}
 	}
-
-	public Point transform(Matrix matrix) {
-		return matrix.transform(this);
-	}
-
-	/**
-	 * Returns a new point with rounded {@link #x} and {@link #y} values. The
-	 * object itself is not modified!
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var point = new Point(10.2, 10.9);
-	 * var roundPoint = point.round();
-	 * print(roundPoint); // { x: 10.0, y: 11.0 }
-	 * </code>
-	 */
-	public Point round() {
-		return new Point(Math.round(x), Math.round(y));
-	}
-
-	public Point ceil() {
-		return new Point(Math.ceil(x), Math.ceil(y));
-	}
-
-	public Point floor() {
-		return new Point(Math.floor(x), Math.floor(y));
-	}
-
-	public Point abs() {
-		return new Point(Math.abs(x), Math.abs(y));
-	}
-
+	
 	/**
 	 * Returns a new point object with the smallest {@link #x} and
 	 * {@link #y} of the supplied points.
@@ -887,7 +931,9 @@ public class Point implements ChangeEmitter {
 	 * <code>
 	 * var maxPoint = new Point(100, 100);
 	 * var randomPoint = Point.random();
-	 * var point = maxPoint* randomPoint;
+	 * 
+	 * // A point between {x:0, y:0} and {x:100, y:100}:
+	 * var point = maxPoint * randomPoint;
 	 * </code>
 	 */
 	public static Point random() {
