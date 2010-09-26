@@ -52,7 +52,7 @@ var mainDialog = new FloatingDialog(
 			var expanded = entry.expanded;
 			// This might change entry.expanded state
 			entry.defaultTrack(tracker);
-			if (!entry.populated && !expanded && entry.expanded)
+			if (!expanded && entry.expanded)
 				entry.populate();
 			// Detect doubleclicks on files and folders.
 			if (tracker.action == Tracker.ACTION_BUTTON_UP &&
@@ -173,7 +173,7 @@ var mainDialog = new FloatingDialog(
 		}
 		// Do only refresh populated lists
 		if (list.parentEntry && !list.parentEntry.populated)
-			return null;
+			return [];
 		// Get new listing of the directory, then match with already inserted 
 		// files. Create a lookup object for easily finding and tracking of
 		// already inserted files.	
@@ -203,6 +203,7 @@ var mainDialog = new FloatingDialog(
 				}
 				if (entry.populated)
 					refreshList(entry.childList, false);
+				entries.push(entry);
 			}
 		}, []);
 		// Remove the deleted files.
@@ -211,13 +212,9 @@ var mainDialog = new FloatingDialog(
 		});
 		// Files now only contains new files that are not inserted yet.
 		// Look through them and insert in the right paces.
-		var added = files.each(function(info) {
-			this.push(addFile(list, info.file, info.index));
-		}, []);
-		return {
-			removed: removed,
-			added: added
-		}
+		files.each(function(info) {
+			addFile(list, info.file, info.index);
+		});
 	}
 
 	function createScript() {
@@ -239,19 +236,42 @@ var mainDialog = new FloatingDialog(
 				'All Files', '*.*'
 			], file);
 			   // Add it to the list as well:
-			if (file && file.createNewFile()) {
+			if (file) {
+				if (file.exists())
+					file.remove();
+				file.open(); 
+				file.writeln("\
+// In Scriptographer 2.9, we introduced a new top-down coordinate system and\n\
+// angle units in degrees as a more intuitive alternative to radians.\n\
+// \n\
+// As these will become the standard setting in the future, we set these values\n\
+// values here for you, to encourage their use in your new script:\n\
+\n\
+script.coordinateSystem = 'top-down';\n\
+script.angleUnits = 'degrees';\n\
+\n\
+// Read more about this transition on our website:\n\
+// \n\
+// http://scriptographer.org/news/why\n\
+");
+				file.close();
 				// Use refreshList to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
-				var res = refreshList(list, false);
-				if (res) {
-					res.added.each(function(newEntry) {
-						if (newEntry.file == file) {
-							if (entry)
-								entry.selected = false;
-							newEntry.selected = true;
-						}
-					});
-				}
+				// Make sure the list is populated first, so refreshList
+				// actually processes it.
+				list.parentEntry.populate();
+				refreshList(list, false);
+				list.each(function(other) {
+					if (other.file == file) {
+						if (entry && entry.isValid())
+							entry.selected = false;
+						other.selected = true;
+						// The list was already populated and refreshed, just
+						// expand it now to show the new entry
+						list.parentEntry.expanded = true;
+						throw Base.stop;
+					}
+				});
 			}
 		}
 	}
