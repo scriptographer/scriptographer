@@ -474,11 +474,11 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 	public void curveThrough(Point middle, Point end, double t) {
 		Point start = getLast().getPoint();
-		double otherT = 1 - t;
 		// handle = (middle - (1 - t)^2 * start - t^2 * end) / (2 * (1 - t) * t)
+		double t1 = 1 - t;
 		Point handle = middle.subtract(
-				start.multiply(otherT * otherT)).subtract(
-						end.multiply(t * t)).divide(2.0 * t * otherT);
+				start.multiply(t1 * t1)).subtract(
+						end.multiply(t * t)).divide(2.0 * t * t1);
 		if (handle.isNaN())
 			throw new ScriptographerException(
 					"Cannot put a curve through points with t=" + t);

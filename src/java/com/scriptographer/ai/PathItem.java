@@ -95,9 +95,12 @@ public abstract class PathItem extends Item {
 			double endX, double endY);
 
 	public void curveTo(Point handle1, Point handle2, Point end) {
-		curveTo(handle1 != null ? handle1.x : 0, handle1 != null ? handle1.y : 0,
-				handle2 != null ? handle2.x : 0, handle2 != null ? handle2.y : 0,
-				end != null ? end.x : 0, end != null ? end.y : 0);
+		curveTo(handle1 != null ? handle1.x : 0,
+				handle1 != null ? handle1.y : 0,
+				handle2 != null ? handle2.x : 0,
+				handle2 != null ? handle2.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0);
 	}
 
 	public abstract void curveTo(double handleX, double handleY,
@@ -163,7 +166,7 @@ public abstract class PathItem extends Item {
 	 * @deprecated
 	 */
 	public void arcTo(double middleX, double middleY, double endX, double endY) {
-		curveTo(middleX, middleY, endX, endY);
+		arcThrough(middleX, middleY, endX, endY);
 	}
 
 	/**
