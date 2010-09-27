@@ -940,7 +940,6 @@ void ScriptographerEngine::updateCoordinateSystem() {
 			// artboard, so add its origin to it for the absolute value.
 			m_documentOrigin.h += m_artboardOrigin.h;
 			m_documentOrigin.v += m_artboardOrigin.v;
-			int i = 0;
 		}
 	}
 #elif kPluginInterfaceVersion >= kAI13
