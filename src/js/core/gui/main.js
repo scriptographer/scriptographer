@@ -187,9 +187,9 @@ var mainDialog = new FloatingDialog(
 		// need to be removed, and refresh already populated ones.
 		var removed = list.each(function(entry) {
 			if (force || !files[entry.file.path]) {
-				// Don't remove right away since that would mess up the each loop.
-				// Instead. we collect them in the removed array, to be removed
-				// in a seperate loop after.
+				// Don't remove right away since that would mess up the each
+				// loop Instead. we collect them in the removed array, to be
+				// removed in a seperate loop after.
 				this.push(entry);
 			} else {
 				delete files[entry.file.path];
@@ -238,23 +238,7 @@ var mainDialog = new FloatingDialog(
 			if (file) {
 				if (file.exists())
 					file.remove();
-				file.open(); 
-				file.writeln("\
-////////////////////////////////////////////////////////////////////////////////\n\
-// Note from the Scriptographer.org Team\n\
-//\n\
-// In Scriptographer 2.9, we introduced a new top-down coordinate system and\n\
-// degrees for angle units as an easier alternative to radians.\n\
-// \n\
-// As these will become the standard setting in the future, we set the values\n\
-// here for you, to encourage their use in your new script. Read more about this\n\
-// transition on our website:\n\
-// http://scriptographer.org/tutorials/geometry/the-coordinate-system/\n\
-\n\
-script.coordinateSystem = 'top-down';\n\
-script.angleUnits = 'degrees';\n\
-");
-				file.close();
+				file.create();
 				// Use refreshList to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
 				// Make sure the list is populated first, so refreshList
