@@ -90,6 +90,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
 		gCreationDoc = NULL;
 		
 		long undoLevel = 0, redoLevel = 0;
+		sAIUndo->CountTransactions(&undoLevel, &redoLevel);
 		// Return values through int array, for performance
 		jint data[] = {
 			(jint) gWorkingDoc,
