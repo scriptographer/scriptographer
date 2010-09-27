@@ -83,7 +83,7 @@ function executeRaster(createDot, multiple) {
 		for (var x = 0; x < raster.width; x++) {
 			app.updateProgress(y * raster.width + x + 1, pixelCount);
 			var radius = raster.getPixel(x, y).gray;
-			var obj = createDot(x, raster.height - y, multiple ? dots : dots[0], radius);
+			var obj = createDot(x, y, multiple ? dots : dots[0], radius);
 			if (obj) {
 				obj.position += origin;
 				group.appendTop(obj);
