@@ -37,6 +37,6 @@ public enum AngleUnits {
 	DEGREES,
 	RADIANS;
 
-	// Radians for now
-	public static final AngleUnits DEFAULT = RADIANS;
+	// The new default units for angles in Scriptographer are degrees.
+	public static final AngleUnits DEFAULT = DEGREES;
 }
