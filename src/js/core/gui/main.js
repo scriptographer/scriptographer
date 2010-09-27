@@ -240,18 +240,19 @@ var mainDialog = new FloatingDialog(
 					file.remove();
 				file.open(); 
 				file.writeln("\
+////////////////////////////////////////////////////////////////////////////////\n\
+// Note from the Scriptographer.org Team\n\
+//\n\
 // In Scriptographer 2.9, we introduced a new top-down coordinate system and\n\
-// angle units in degrees as a more intuitive alternative to radians.\n\
+// degrees for angle units as an easier alternative to radians.\n\
 // \n\
-// As these will become the standard setting in the future, we set these values\n\
-// values here for you, to encourage their use in your new script:\n\
+// As these will become the standard setting in the future, we set the values\n\
+// here for you, to encourage their use in your new script. Read more about this\n\
+// transition on our website:\n\
+// http://scriptographer.org/tutorials/geometry/the-coordinate-system/\n\
 \n\
 script.coordinateSystem = 'top-down';\n\
 script.angleUnits = 'degrees';\n\
-\n\
-// Read more about this transition on our website:\n\
-// \n\
-// http://scriptographer.org/news/why\n\
 ");
 				file.close();
 				// Use refreshList to make sure the new item appears in the
