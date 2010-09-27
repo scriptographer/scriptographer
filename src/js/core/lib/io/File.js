@@ -550,7 +550,7 @@ File = Base.extend(new function() {
 				return ok;
 			} else {
 				// Copy the file with FileChannels:
-				file.createNewFile();
+				file.create();
 				var src = new java.io.FileInputStream(this.getPath()).getChannel();
 				var dst = new java.io.FileOutputStream(file.getPath()).getChannel();
 				var amount = dst.transferFrom(src, 0, src.size());
@@ -664,14 +664,16 @@ File = Base.extend(new function() {
 			return File.getContentType(this.getName());
 		},
 
-		createNewFile: function() {
+		create: function() {
+			// returns boolean
 			return this._file.createNewFile();
 		},
 
 		/**
-		 * Create a new empty temporary file in the this directory, or in the directory
-		 * containing this file.
-		 * @param {String} prefix the prefix of the temporary file; must be at least three characters long
+		 * Create a new empty temporary file in the this directory, or in the
+		 * directory containing this file.
+		 * @param {String} prefix the prefix of the temporary file; must be at
+		 *        least three characters long
 		 * @param {String} suffix the suffix of the temporary file; may be null
 		 * @return {File} the temporary file 
 		 */
