@@ -1104,15 +1104,9 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 		CoordinateSystem system, AIReal left, AIReal top,
 		AIReal right, AIReal bottom, jobject res) {
 	AIReal x = left;
+	AIReal y = m_topDownCoordinates ? top : bottom;
 	AIReal width = right - left;
-	AIReal y, height;
-	if (m_topDownCoordinates) {
-		y = top;
-		height = bottom - top;
-	} else {
-		y = bottom;
-		height = top - bottom;
-	}
+	AIReal height = top - bottom;
 	switch (system) {
 	case kDocumentCoordinates:
 		x -= m_documentOrigin.h;
@@ -1421,7 +1415,7 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 					|| p->shearAxis != 0) {
 				throw new StringException(
 						"Pattern contains old-style transform definition.\n"
-						"Please store file and send to sg@scriptographer.com"
+						"Please store file and send to team@scriptographer.com"
 						"along with these values:\n%f %f %f %f %f %i %f %f %f",
 						p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v,
 						p->rotate, p->reflect, p->reflectAngle, p->shearAngle,
