@@ -92,7 +92,7 @@ public class ScriptographerEngine {
 
 	// Flags to be used by the AI package, for coordinate systems and angle
 	// units.
-	public static boolean topDownCoordinates = false;
+	public static boolean topDownCoordinates = true;
 	public static boolean anglesInDegrees = true;
 
 	// App Events. Their numbers need to match calbackNames indices.

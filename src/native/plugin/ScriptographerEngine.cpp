@@ -121,7 +121,7 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 	}
 	m_documentOrigin.h = m_documentOrigin.v = 0;
 	m_artboardOrigin.h = m_artboardOrigin.v = 0;
-	m_topDownCoordinates = false;
+	m_topDownCoordinates = true;
 	gEngine = this;
 }
 
@@ -934,8 +934,16 @@ void ScriptographerEngine::updateCoordinateSystem() {
 			artboard.GetPosition(rect);
 			AIRealPoint origin;
 			artboard.GetRulerOrigin(origin);
-			m_artboardOrigin.h = rect.left + origin.h;
-			m_artboardOrigin.v = rect.top - origin.v;
+			// If we are in bottom up coordinates and the origin is set to the
+			// top left corner (default setting), fake a new origin at the
+			// bottom left corner.
+			if (m_topDownCoordinates || origin.v != 0 || origin.v != 0) {
+				m_artboardOrigin.h = rect.left + origin.h;
+				m_artboardOrigin.v = rect.top - origin.v;
+			} else {
+				m_artboardOrigin.h = rect.left;
+				m_artboardOrigin.v = rect.bottom;
+			}
 			// Document Origin on CS5 is returned relative to the active
 			// artboard, so add its origin to it for the absolute value.
 			m_documentOrigin.h += m_artboardOrigin.h;

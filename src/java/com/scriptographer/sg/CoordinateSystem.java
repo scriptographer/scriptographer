@@ -37,6 +37,6 @@ public enum CoordinateSystem {
 	TOP_DOWN,
 	BOTTOM_UP;
 
-	// Bottom-up for now
-	public static final CoordinateSystem DEFAULT = BOTTOM_UP;
+	// The new default coordinates system in Scriptographer top-down.
+	public static final CoordinateSystem DEFAULT = TOP_DOWN;
 }
