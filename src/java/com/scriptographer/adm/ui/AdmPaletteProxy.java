@@ -69,14 +69,18 @@ public class AdmPaletteProxy extends PaletteProxy {
 
 		double version = ScriptographerEngine.getApplicationVersion();
 		boolean upperCase = false;
-		int extraWidth = 32;
-		if (version >= 14) { // CS4 and above
+		int extraWidth;
+		if (version >= 15) { // CS4 and above
+			upperCase = true;
+			extraWidth = 67;
+		} else if (version >= 14) { // CS4 and above
 			upperCase = true;
 			extraWidth = 64;
 		} else if (version >= 13) { // CS3
 			extraWidth = 82;
 		} else {
 			// TODO: Test / Implement
+			extraWidth = 32;
 		}
 		// Calculate title size. Temporarily set bold font
 		dialog.setFont(DialogFont.PALETTE_BOLD);
