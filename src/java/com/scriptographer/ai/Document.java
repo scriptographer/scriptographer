@@ -310,7 +310,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 		history.put(historyBranch.branch, historyBranch);
 	}
 
-	private void setHistoryLevels(int undoLevel, int redoLevel, boolean checkLevel) {
+	private void setHistoryLevels(int undoLevel, int redoLevel,
+			boolean checkLevel) {
 		if (undoLevel != this.undoLevel || redoLevel != this.redoLevel) {
 			boolean updateItems = false;
 			if (checkLevel && undoLevel > this.undoLevel) {
@@ -373,8 +374,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	protected boolean isValidVersion(long version) {
-		// We first need to check that document handle is not 0, because if it is
-		// all items inside are invalid. handle is set to 0 in onClosed().
+		// We first need to check that document handle is not 0, because if it
+		// is all items inside are invalid. handle is set to 0 in onClosed().
 		if (handle == 0)
 			return false;
 		if (version == -1 || !trackUndoHistory)
