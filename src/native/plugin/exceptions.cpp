@@ -54,7 +54,7 @@ void ScriptographerException::report(JNIEnv *env) {
 	delete str;
 }
 
-StringException::StringException(char *message, ...) {
+StringException::StringException(const char *message, ...) {
 	m_message = new char[1024];
 	va_list args;
 	va_start(args, message);
@@ -68,6 +68,14 @@ void StringException::convert(JNIEnv *env) {
 
 char *StringException::toString(JNIEnv *env) {
 	return strdup(m_message);
+}
+
+JObjectException::JObjectException(JNIEnv *env, const char *message, jobject object)
+		: StringException("") {
+	char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(
+			object, gEngine->mid_Object_toString));
+	sprintf(m_message, message, str);
+	delete str;
 }
 
 ASErrException::ASErrException(ASErr error) {

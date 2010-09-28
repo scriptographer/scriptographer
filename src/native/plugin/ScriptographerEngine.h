@@ -467,7 +467,7 @@ public:
 	AIRealPoint *convertPoint(JNIEnv *env, CoordinateSystem system, jobject point, AIRealPoint *res = NULL);
 
 	// Segment array point conversion
-	void convertSegments(AIReal *data, int count, CoordinateSystem system, bool from);
+	void convertSegments(JNIEnv *env, AIReal *data, int count, CoordinateSystem system, bool from);
 
 	// com.scriptographer.ai.Rectangle <-> AIRealRect
 	jobject convertRectangle(JNIEnv *env, CoordinateSystem system, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);

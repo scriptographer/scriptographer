@@ -35,17 +35,22 @@ public:
 };
 
 class StringException: public ScriptographerException {
-private:
+protected:
 	char *m_message;
 	
 public:
-	StringException(char *message, ...);
+	StringException(const char *message, ...);
 	void convert(JNIEnv *env);
 	char *toString(JNIEnv *env);
 	
 	~StringException() throw() {
 		delete m_message;
 	}
+};
+
+class JObjectException: public StringException {
+public:
+	JObjectException(JNIEnv *env, const char *message, jobject object);
 };
 
 class ASErrException: public ScriptographerException {

@@ -68,6 +68,12 @@ int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyl
 
 jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
+#define VALID_COORDINATE(coord) \
+	(!isnan(coord) && !isinf(coord))
+
+#define THROW_INVALID_COORDINATES(env, object) \
+	throw new JObjectException(env, "Invalid coordinates: %s", object);
+
 #define DEFINE_SEGMENT(NAME, PTX, PTY, INX, INY, OUTX, OUTY, CORNER) \
 	AIPathSegment NAME; \
 	NAME.p.h = PTX; \

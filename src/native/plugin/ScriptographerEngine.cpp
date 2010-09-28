@@ -1006,7 +1006,7 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 // com.scriptographer.adm.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
 		CoordinateSystem system, jobject point, AIRealPoint *res) {
-	AIReal x, y;
+	jdouble x, y;
 	if (env->IsInstanceOf(point, cls_ai_Point)) {
 		x = env->GetDoubleField(point, fid_ai_Point_x);
 		y = env->GetDoubleField(point, fid_ai_Point_y);
@@ -1014,6 +1014,10 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
 		x = env->GetIntField(point, fid_adm_Point_x);
 		y = env->GetIntField(point, fid_adm_Point_y);
 	}
+	// Illustrator crashes when it receives nan coordinates. So Set them 
+	// to 0 before passing them to the native code.
+	if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y))
+		THROW_INVALID_COORDINATES(env, point);
 	if (m_topDownCoordinates)
 		y = -y;
 	switch (system) {
@@ -1038,35 +1042,33 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
  * Coordinate System Conversion for raw segment point coordinates. Directly
  * modifies the point values in the float array.
  */
-void ScriptographerEngine::convertSegments(AIReal *data, int count,
+void ScriptographerEngine::convertSegments(JNIEnv *env, AIReal *data, int count,
 		CoordinateSystem system, bool from) {
-	AIReal x, y;
+	AIReal xOrigin, yOrigin;
 	switch (system) {
 	case kDocumentCoordinates:
-		x = m_documentOrigin.h;
-		y = m_documentOrigin.v;
+		xOrigin = m_documentOrigin.h;
+		yOrigin = m_documentOrigin.v;
 		break;
 	case kArtboardCoordinates:
-		x = m_artboardOrigin.h;
-		y = m_artboardOrigin.v;
+		xOrigin = m_artboardOrigin.h;
+		yOrigin = m_artboardOrigin.v;
 		break;
 	}
-	// Conversion needed at all?
-	if (x != 0 || y != 0 || m_topDownCoordinates) {
-		if (from) {
-			x = -x;
-			y = -y;
-		}
+	// Check if a conversion is needed at all?
+	if (xOrigin != 0 || yOrigin != 0 || m_topDownCoordinates) {
 		jfloat *ptr = data;
 		if (m_topDownCoordinates) {
-			// We need to flip y coordinates both ways.
+			// We need to flip coordinates both ways. When reading from Ai, we
+			// first subtract the yOrigin from the value and flip after.
+			// When writing to Ai, we first negate the value and then add
+			// yOrigin.
 			if (from) {
 				for (int i = 0; i < count; i++) {
 					// Convert point values for each segment
 					for (int j = 0; j < 3; j++) {
-						*(ptr++) = *ptr + x;
-						// When reading from, first calculate value, then flip
-						*(ptr++) = -(*ptr + y);
+						*(ptr++) = *ptr - xOrigin;
+						*(ptr++) = -(*ptr - yOrigin);
 					}
 					// Skip boolean value
 					ptr++;
@@ -1075,24 +1077,44 @@ void ScriptographerEngine::convertSegments(AIReal *data, int count,
 				for (int i = 0; i < count; i++) {
 					// Convert point values for each segment
 					for (int j = 0; j < 3; j++) {
-						*(ptr++) = *ptr + x;
-						// When writing to, first flip, then write value
-						*(ptr++) = -(*ptr) + y;
+						AIReal x = *ptr;
+						AIReal y = *(ptr + 1);
+						if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y))
+							THROW_INVALID_COORDINATES(env, gEngine->convertPoint(
+									env, kCurrentCoordinates, x, y));
+						*(ptr++) = x + xOrigin;
+						*(ptr++) = -y + yOrigin;
 					}
 					// Skip boolean value
 					ptr++;
 				}
 			}
 		} else {
-			// Just add x and y offset
-			for (int i = 0; i < count; i++) {
-				// Convert point values for each segment
-				for (int j = 0; j < 3; j++) {
-					*(ptr++) = *ptr + x;
-					*(ptr++) = *ptr + y;
+			if (from) {
+				for (int i = 0; i < count; i++) {
+					// Convert point values for each segment
+					for (int j = 0; j < 3; j++) {
+						*(ptr++) = *ptr - xOrigin;
+						*(ptr++) = *ptr - yOrigin;
+					}
+					// Skip boolean value
+					ptr++;
 				}
-				// Skip boolean value
-				ptr++;
+			} else {
+				for (int i = 0; i < count; i++) {
+					// Convert point values for each segment
+					for (int j = 0; j < 3; j++) {
+						AIReal x = *ptr;
+						AIReal y = *(ptr + 1);
+						if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y))
+							THROW_INVALID_COORDINATES(env, gEngine->convertPoint(
+									env, kCurrentCoordinates, x, y));
+						*(ptr++) = x + xOrigin;
+						*(ptr++) = y + yOrigin;
+					}
+					// Skip boolean value
+					ptr++;
+				}
 			}
 		}
 	}
@@ -1133,10 +1155,13 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
 		CoordinateSystem system, jobject rect, AIRealRect *res) {
 	// AIRealRects are upside down, top and bottom are switched!
-	AIReal x = env->GetDoubleField(rect, fid_ai_Rectangle_x);
-	AIReal y =  env->GetDoubleField(rect, fid_ai_Rectangle_y);
-	AIReal width = env->GetDoubleField(rect, fid_ai_Rectangle_width);
-	AIReal height = env->GetDoubleField(rect, fid_ai_Rectangle_height);
+	jdouble x = env->GetDoubleField(rect, fid_ai_Rectangle_x);
+	jdouble y =  env->GetDoubleField(rect, fid_ai_Rectangle_y);
+	jdouble width = env->GetDoubleField(rect, fid_ai_Rectangle_width);
+	jdouble height = env->GetDoubleField(rect, fid_ai_Rectangle_height);
+	if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y)
+			|| !VALID_COORDINATE(width) || !VALID_COORDINATE(height))
+		THROW_INVALID_COORDINATES(env, rect);
 	if (m_topDownCoordinates)
 		y = -y;
 	switch (system) {
@@ -1182,8 +1207,12 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
 		jobject size, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
-	res->h = env->GetDoubleField(size, fid_ai_Size_width);
-	res->v = env->GetDoubleField(size, fid_ai_Size_height);
+	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
+	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
+	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
+		THROW_INVALID_COORDINATES(env, size);
+	res->h = width;
+	res->v = height;
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -1191,31 +1220,31 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
 // com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
 		CoordinateSystem system, AIRealMatrix *mt, jobject res) {
-	AIReal x, y;
+	AIReal xOrigin, yOrigin;
 	switch (system) {
 	case kDocumentCoordinates:
-		x = m_documentOrigin.h;
-		y = m_documentOrigin.v;
+		xOrigin = m_documentOrigin.h;
+		yOrigin = m_documentOrigin.v;
 		break;
 	case kArtboardCoordinates:
-		x = m_artboardOrigin.h;
-		y = m_artboardOrigin.v;
+		xOrigin = m_artboardOrigin.h;
+		yOrigin = m_artboardOrigin.v;
 		break;
 	default:
-		x = y = 0;
+		xOrigin = yOrigin = 0;
 	}
 	AIRealMatrix matrix;
 	// The initialisation does the same as these two together:
-	// sAIRealMath->AIRealMatrixSetTranslate(&matrix, x, y);
+	// sAIRealMath->AIRealMatrixSetTranslate(&matrix, xOrigin, yOrigin);
 	// sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
 	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, -1, x, -y);
+		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, -1, xOrigin, -yOrigin);
 	else 
-		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, 1, x, y);
+		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, 1, xOrigin, yOrigin);
 	sAIRealMath->AIRealMatrixConcat(&matrix, mt, &matrix);
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
-	sAIRealMath->AIRealMatrixConcatTranslate(&matrix, -x, -y);
+	sAIRealMath->AIRealMatrixConcatTranslate(&matrix, -xOrigin, -yOrigin);
 	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
 		(jdouble) matrix.a, (jdouble) matrix.b,
 		(jdouble) matrix.c, (jdouble) matrix.d,
@@ -1234,33 +1263,37 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 		env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateX),
 		env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateY)
 	};
+	if (!VALID_COORDINATE(matrix.a) || !VALID_COORDINATE(matrix.b)
+			|| !VALID_COORDINATE(matrix.c) || !VALID_COORDINATE(matrix.d)
+			|| !VALID_COORDINATE(matrix.tx) || !VALID_COORDINATE(matrix.ty))
+		THROW_INVALID_COORDINATES(env, mt);
 	EXCEPTION_CHECK(env);
 	if (res == NULL)
 		res = new AIRealMatrix;
-	AIReal x, y;
+	AIReal xOrigin, yOrigin;
 	switch (system) {
 	case kArtboardCoordinates:
-		x = m_artboardOrigin.h;
-		y = m_artboardOrigin.v;
+		xOrigin = m_artboardOrigin.h;
+		yOrigin = m_artboardOrigin.v;
 		break;
 	case kDocumentCoordinates:
-		x = m_documentOrigin.h;
-		y = m_documentOrigin.v;
+		xOrigin = m_documentOrigin.h;
+		yOrigin = m_documentOrigin.v;
 		break;
 	default:
-		x = y = 0;
+		xOrigin = yOrigin = 0;
 	}
 	// The initialisation does the same as these two together:
-	// sAIRealMath->AIRealMatrixSetTranslate(res, -x, -y);
+	// sAIRealMath->AIRealMatrixSetTranslate(res, -xOrigin, -yOrigin);
 	// sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
 	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, -1, -x, y);
+		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, -1, -xOrigin, yOrigin);
 	else 
-		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, 1, -x, -y);
+		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, 1, -xOrigin, -yOrigin);
 	sAIRealMath->AIRealMatrixConcat(res, &matrix, res);
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-	sAIRealMath->AIRealMatrixConcatTranslate(res, x, y);
+	sAIRealMath->AIRealMatrixConcatTranslate(res, xOrigin, yOrigin);
 	return res;
 }
 
@@ -1415,7 +1448,7 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 					|| p->shearAxis != 0) {
 				throw new StringException(
 						"Pattern contains old-style transform definition.\n"
-						"Please store file and send to team@scriptographer.com"
+						"Please store file and send to team@scriptographer.org"
 						"along with these values:\n%f %f %f %f %f %i %f %f %f",
 						p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v,
 						p->rotate, p->reflect, p->reflectAngle, p->shearAngle,
