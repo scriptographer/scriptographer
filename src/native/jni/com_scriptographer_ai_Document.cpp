@@ -53,30 +53,34 @@ AIDocumentHandle gActiveDoc = NULL;
 // the first usage.
 AIDocumentHandle gCreationDoc = NULL;
 
-void Document_activate(AIDocumentHandle doc, bool activate, bool focus) {
+bool Document_activate(AIDocumentHandle doc, bool activate, bool focus) {
 	if (doc == NULL) {
 		// If Document_activate() is called, with doc == NULL
 		// we switch to gCreationDoc if set, gActiveDoc otherwise
 		// This should only be happening during the creation of new items.
 		doc = gCreationDoc != NULL ? gCreationDoc : gActiveDoc;
 	}
+	// Erase it again...
+	gCreationDoc = NULL;
 	if (gWorkingDoc != doc) {
 		if (activate)
 			sAIDocumentList->Activate(doc, focus);
 		gWorkingDoc = doc;
+		// Update the coordinate system
+		gEngine->updateCoordinateSystem();
+		return true;
 	}
-	// Erase it again...ai
-	gCreationDoc = NULL;
-	// Now update the coordinate system
-	gEngine->updateCoordinateSystem();
+	return false;
 }
 
 /*
- * void nativeBeginExecution(int[] returnValues)
+ * void nativeBeginExecution(boolean topDownCoordinates, int[] returnValues)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
-		JNIEnv *env, jclass cls, jintArray returnValues) {
+		JNIEnv *env, jclass cls, jboolean topDownCoordinates, jintArray returnValues) {
 	try {
+		// Set the current coordinate system
+		gEngine->setTopDownCoordinates(topDownCoordinates);
 		// Fetch the current working document, so it can
 		// be set again if it was changed by document
 		// handling code in the native environment in the end.
@@ -85,7 +89,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
 		// function switches all the time).
 		AIDocumentHandle doc = NULL;
 		sAIDocument->GetDocument(&doc);
-		Document_activate(doc, false);
+		if (!Document_activate(doc, false)) {
+			// If document was activated, updateCoordinateSystem() was already
+			// called. Only call it here if that wasn't the case.
+			gEngine->updateCoordinateSystem();
+		}
 		gActiveDoc = doc;
 		gCreationDoc = NULL;
 		

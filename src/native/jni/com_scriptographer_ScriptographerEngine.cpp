@@ -51,6 +51,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetTop
 		JNIEnv *env, jclass cls, jboolean topDownCoordinates) {
 	try {
 		gEngine->setTopDownCoordinates(topDownCoordinates);
+		gEngine->updateCoordinateSystem();
 	} EXCEPTION_CONVERT(env);
 }
 

@@ -45,7 +45,7 @@ void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool chi
 
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 
-void Document_activate(AIDocumentHandle doc = NULL, bool activate = true, bool focus = false);
+bool Document_activate(AIDocumentHandle doc = NULL, bool activate = true, bool focus = false);
 
 short Path_getBezierCount(AIArtHandle art);
 

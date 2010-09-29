@@ -386,8 +386,6 @@ public class ScriptographerEngine {
 		return null;
 	}
 
-	private static boolean previousTopDownCoordinates;
-
 	/**
 	 * To be called before AI functions are executed as scripts
 	 */
@@ -398,18 +396,24 @@ public class ScriptographerEngine {
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
 		Script script = scope != null ? (Script) scope.get("script") : null;
-		// Set script coordinates orientation on each execution.
-		previousTopDownCoordinates = topDownCoordinates;
-		setCoordinateSystem(script != null ? script.getCoordinateSystem()
-				: null);
-		setAngleUnits(script != null ? script.getAngleUnits() : null);
-	
-		// Only call Document.beginExecution if it has not already
-		// been called through the UI notification callback.
-		if (scriptStack.empty()) {
-			Document.beginExecution();
-			// Disable output to the console while the script is
-			// executed as it won't get updated anyway
+
+		// Only call Document.beginExecution for the first script in the call
+		// stack. Exclude core scripts from the stack, so UI stuff does not
+		// cause beginExecution() calls.
+		boolean coreScript = script != null && script.isCoreScript();
+		if (!coreScript && scriptStack.empty()) {
+			// Set script coordinate system and angle units on each execution,
+			// at the beginning of the script stack.
+			anglesInDegrees = AngleUnits.DEGREES == (script != null
+					? script.getAngleUnits()
+					: AngleUnits.DEFAULT);
+			topDownCoordinates = CoordinateSystem.TOP_DOWN == (script != null 
+					? script.getCoordinateSystem()
+					: CoordinateSystem.DEFAULT);
+			// Pass topDownCoordinates value to the client side as well
+			Document.beginExecution(topDownCoordinates);
+			// Disable output to the console while the script is executed as it
+			// won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 		}
 		if (file != null) {
@@ -433,7 +437,8 @@ public class ScriptographerEngine {
 		}
 		// Push script even if it is null, as we're always popping again in
 		// endExecution.
-		scriptStack.push(script);
+		if (!coreScript)
+			scriptStack.push(script);
 	}
 
 	public static void beginExecution() {
@@ -454,7 +459,6 @@ public class ScriptographerEngine {
 			} catch(Throwable t) {
 				ScriptographerEngine.reportError(t);
 			}
-			setTopDownCoordinates(previousTopDownCoordinates);
 			Dictionary.releaseInvalid();
 			Document.endExecution();
 			closeProgress();
@@ -465,20 +469,19 @@ public class ScriptographerEngine {
 			boolean topDownCoordinates);
 
 	protected static void setTopDownCoordinates(boolean topDown) {
-		topDownCoordinates = topDown;
-		// Always call setCoordinateSystem, even if topDown is the same as
-		// topDownCoordinates, as even a switch of artboards might require it.
-		nativeSetTopDownCoordinates(topDown);
+		//if (topDown ^ topDownCoordinates) {
+			topDownCoordinates = topDown;
+			nativeSetTopDownCoordinates(topDown);
+		//}
 	}
 
 	public static void setCoordinateSystem(CoordinateSystem system) {
-		setTopDownCoordinates((system != null ? system
-				: CoordinateSystem.DEFAULT) == CoordinateSystem.TOP_DOWN);
+//		System.out.println("System: " + system);
+		setTopDownCoordinates(system == CoordinateSystem.TOP_DOWN);
 	}
 
 	public static void setAngleUnits(AngleUnits angleUnits) {
-		anglesInDegrees = (angleUnits != null ? angleUnits
-				: AngleUnits.DEFAULT) == AngleUnits.DEGREES;
+		anglesInDegrees = angleUnits == AngleUnits.DEGREES;
 	}
 
 	/**

@@ -317,15 +317,17 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			throws ScriptException {
 		if (script != null) {
 			// Temporarily override script with the new one, so includes in
-			// other directories work
-			com.scriptographer.sg.Script prevScript =
+			// other directories work. Also pass it as the parent script to
+			// the newly created script, so it can inherit coordinate system
+			// / angle unit settings.
+			com.scriptographer.sg.Script parent =
 					(com.scriptographer.sg.Script) scope.get("script");
 			try {
 				scope.put("script", new com.scriptographer.sg.Script(
-						script.getFile(), prevScript), true);
+						script.getFile(), parent), true);
 				script.execute(scope);
 			} finally {
-				scope.put("script", prevScript, true);
+				scope.put("script", parent, true);
 			}
 		}
 	}

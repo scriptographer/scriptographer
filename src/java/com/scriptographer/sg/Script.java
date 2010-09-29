@@ -45,6 +45,7 @@ public class Script {
 	private CoordinateSystem system = CoordinateSystem.DEFAULT;
 	private AngleUnits angleUnits = AngleUnits.DEFAULT;
 	protected boolean coreScript = false;
+	private Script parent = null;
 
 	/**
 	 * @jshide
@@ -57,8 +58,9 @@ public class Script {
 	/**
 	 * @jshide
 	 */
-	public Script(File file, Script previous) {
-		this(file, previous.coreScript);
+	public Script(File file, Script parent) {
+		this(file, parent.coreScript);
+		this.parent = parent;
 	}
 
 	/**
@@ -118,22 +120,39 @@ public class Script {
 		this.keepAlive  = keepAlive;
 	}
 
+	/*
+	 * Redirect to parent script for both CoordinateSystem and AngleUnits, so
+	 * there can only be one standard within one 'inlcude' chain...
+	 */
+
 	public CoordinateSystem getCoordinateSystem() {
+		if (parent != null)
+			return parent.getCoordinateSystem();
 		return system;
 	}
 
 	public void setCoordinateSystem(CoordinateSystem system) {
-		this.system = system != null ? system : CoordinateSystem.DEFAULT;
-		ScriptographerEngine.setCoordinateSystem(this.system);
+		if (parent != null) {
+			parent.setCoordinateSystem(system);
+		} else {
+			this.system = system != null ? system : CoordinateSystem.DEFAULT;
+			ScriptographerEngine.setCoordinateSystem(this.system);
+		}
 	}
 
 	public AngleUnits getAngleUnits() {
+		if (parent != null)
+			return parent.getAngleUnits();
 		return angleUnits;
 	}
 
 	public void setAngleUnits(AngleUnits units) {
-		this.angleUnits = units != null ? units : AngleUnits.DEFAULT;
-		ScriptographerEngine.setAngleUnits(this.angleUnits);
+		if (parent != null) {
+			parent.setAngleUnits(units);
+		} else {
+			this.angleUnits = units != null ? units : AngleUnits.DEFAULT;
+			ScriptographerEngine.setAngleUnits(this.angleUnits);
+		}
 	}
 
 	/**

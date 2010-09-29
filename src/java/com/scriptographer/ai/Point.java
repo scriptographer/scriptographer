@@ -606,7 +606,8 @@ public class Point implements ChangeEmitter {
 		// that next time and also preserve the angle if length is set to 0.
 		if (angle == null)
 			angle = Math.atan2(y, x);
-		return ScriptographerEngine.anglesInDegrees ? 180.0 * angle / Math.PI
+		return ScriptographerEngine.anglesInDegrees
+				? 180.0 * angle / Math.PI
 				: angle;
 	}
 
@@ -632,7 +633,12 @@ public class Point implements ChangeEmitter {
 	public double getAngle(Point point) {
 		double div = getLength() * point.getLength();
 		if (div == 0) return Double.NaN;
-		else return Math.acos(this.dot(point) / div);
+		else {
+			double angle = Math.acos(this.dot(point) / div);
+			return ScriptographerEngine.anglesInDegrees
+					? 180.0 * angle / Math.PI
+					: angle;
+		}
 	}
 
 	/**
@@ -644,10 +650,11 @@ public class Point implements ChangeEmitter {
 	 */
 	public double getDirectedAngle(Point point) {
 		double angle = this.getAngle() - point.getAngle();
-		if (angle < -Math.PI)
-			return angle + Math.PI * 2;
-		else if (angle > Math.PI)
-			return angle - Math.PI * 2;
+		double bounds = ScriptographerEngine.anglesInDegrees ? 180.0 : Math.PI;
+		if (angle < -bounds)
+			return angle + bounds * 2;
+		else if (angle > bounds)
+			return angle - bounds * 2;
 		return angle;
 	}
 

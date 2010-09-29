@@ -440,7 +440,6 @@ public:
 
 	void setTopDownCoordinates(bool topDownCoordinates) {
 		m_topDownCoordinates = topDownCoordinates;
-		updateCoordinateSystem();
 	}
 
 	// java.lang.Boolean <-> jboolean

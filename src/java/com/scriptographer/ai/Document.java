@@ -529,20 +529,22 @@ public class Document extends NativeObject implements ChangeReceiver {
 			Item.removeIfWrapped(artHandles, false);
 	}
 
-	private static native void nativeBeginExecution(int[] returnValues);
+	private static native void nativeBeginExecution(boolean topDownCoordinates,
+			int[] returnValues);
 
 	/**
 	 * Called before AI functions are executed.
+	 * @param system 
 	 * 
 	 * @return The current undo level
 	 * 
 	 * @jshide
 	 */
-	public static void beginExecution() {
+	public static void beginExecution(boolean topDownCoordinates) {
 		// Use an array as a simple way to receive values back from the native
 		// side.
 		int[] returnValues = new int[3]; // docHandle, undoLevel, redoLevel
-		nativeBeginExecution(returnValues);
+		nativeBeginExecution(topDownCoordinates, returnValues);
 		Document document = wrapHandle(returnValues[0]);
 		if (document != null) {
 			document.setHistoryLevels(returnValues[1], returnValues[2], true);
