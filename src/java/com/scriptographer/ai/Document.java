@@ -530,7 +530,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	private static native void nativeBeginExecution(boolean topDownCoordinates,
-			int[] returnValues);
+			boolean updateCoordinates, int[] returnValues);
 
 	/**
 	 * Called before AI functions are executed.
@@ -540,15 +540,16 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * 
 	 * @jshide
 	 */
-	public static void beginExecution(boolean topDownCoordinates) {
+	public static void beginExecution(boolean topDownCoordinates,
+			boolean updateCoordinates) {
 		// Use an array as a simple way to receive values back from the native
 		// side.
 		int[] returnValues = new int[3]; // docHandle, undoLevel, redoLevel
-		nativeBeginExecution(topDownCoordinates, returnValues);
+		nativeBeginExecution(topDownCoordinates, updateCoordinates,
+				returnValues);
 		Document document = wrapHandle(returnValues[0]);
-		if (document != null) {
+		if (document != null)
 			document.setHistoryLevels(returnValues[1], returnValues[2], true);
-		}
 	}
 
 	/**

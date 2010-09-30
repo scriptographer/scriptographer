@@ -32,6 +32,7 @@ package com.scriptographer.sg;
 import java.io.File;
 
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.ToolHandler;
 
 /**
  * @author lehni
@@ -46,6 +47,7 @@ public class Script {
 	private AngleUnits angleUnits = AngleUnits.DEFAULT;
 	protected boolean coreScript = false;
 	private Script parent = null;
+	private ToolHandler toolHandler;
 
 	/**
 	 * @jshide
@@ -167,5 +169,26 @@ public class Script {
 	 */
 	public boolean isCoreScript() {
 		return coreScript;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setToolHandler(ToolHandler handler) {
+		toolHandler = handler;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public ToolHandler getToolHandler() {
+		return toolHandler;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean isToolScript() {
+		return toolHandler != null;
 	}
 }

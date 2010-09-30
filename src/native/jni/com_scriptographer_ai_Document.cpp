@@ -42,15 +42,15 @@
 // execution, the previous active document is restored (see endExecution)
 AIDocumentHandle gWorkingDoc = NULL;
 // gActiveDoc points to the document that the user has chosen to be working in.
-// this can differ from gWorkingDoc, because if code works on more than one document
-// at a time, documents are dynamically switched whenever needed, and gWorkingDoc
-// keeps track of the one we are currently working in. gActiveDoc keeps track of the
-// one activated by the user (at the start the same as gWorkingDoc, then depending
-// on calls of Document.activate)
+// this can differ from gWorkingDoc, because if code works on more than one
+// document at a time, documents are dynamically switched whenever needed, and
+// gWorkingDoc  keeps track of the one we are currently working in. gActiveDoc
+// keeps track of the one activated by the user (at the start the same as
+// gWorkingDoc, then depending on calls of Document.activate)
 AIDocumentHandle gActiveDoc = NULL;
-// gCreationDoc is only set when an object needs to be created in another document
-// than the currently active one. It's set in Document.activate and erased after
-// the first usage.
+// gCreationDoc is only set when an object needs to be created in another
+// document than the currently active one. It's set in Document.activate and
+// erased after the first usage.
 AIDocumentHandle gCreationDoc = NULL;
 
 bool Document_activate(AIDocumentHandle doc, bool activate, bool focus) {
@@ -74,10 +74,12 @@ bool Document_activate(AIDocumentHandle doc, bool activate, bool focus) {
 }
 
 /*
- * void nativeBeginExecution(boolean topDownCoordinates, int[] returnValues)
+ * void nativeBeginExecution(boolean topDownCoordinates,
+ *		boolean updateCoordinates, int[] returnValues)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
-		JNIEnv *env, jclass cls, jboolean topDownCoordinates, jintArray returnValues) {
+		JNIEnv *env, jclass cls, jboolean topDownCoordinates,
+		jboolean updateCoordinates, jintArray returnValues) {
 	try {
 		// Set the current coordinate system
 		gEngine->setTopDownCoordinates(topDownCoordinates);
@@ -89,9 +91,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
 		// function switches all the time).
 		AIDocumentHandle doc = NULL;
 		sAIDocument->GetDocument(&doc);
-		if (!Document_activate(doc, false)) {
-			// If document was activated, updateCoordinateSystem() was already
-			// called. Only call it here if that wasn't the case.
+		if (!Document_activate(doc, false) || updateCoordinates) {
+			// If document was activated / switched, updateCoordinateSystem()
+			// was already called. Only call it here if that wasn't the case,
+			// or if the coordinate system was flipped.
 			gEngine->updateCoordinateSystem();
 		}
 		gActiveDoc = doc;
@@ -112,7 +115,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(
 /*
  * void endExecution()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_endExecution(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_endExecution(
+		JNIEnv *env, jclass cls) {
 	try {
 		gEngine->resumeSuspendedDocuments();
 		if (gActiveDoc != gWorkingDoc)
@@ -123,33 +127,39 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_endExecution(JNIEnv *
 /*
  * int nativeGetActiveDocumentHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetActiveDocumentHandle(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetActiveDocumentHandle(
+		JNIEnv *env, jclass cls) {
 	return (jint) gActiveDoc;
 }
 
 /*
  * int nativeGetWorkingDocumentHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetWorkingDocumentHandle(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetWorkingDocumentHandle(
+		JNIEnv *env, jclass cls) {
 	return (jint) gWorkingDoc;
 }
 
 /*
  * int nativeCreate(java.io.File file, int colorModel, int dialogStatus)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_io_File_2II(JNIEnv *env, jclass cls, jobject file, jint colorModel, jint dialogStatus) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_io_File_2II(
+		JNIEnv *env, jclass cls, jobject file, jint colorModel, jint dialogStatus) {
 	AIDocumentHandle doc = NULL;
 	try {
 		SPPlatformFileSpecification fileSpec;
 		if (gEngine->convertFile(env, file, &fileSpec) != NULL) {
 #if kPluginInterfaceVersion < kAI12
-			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
+			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel,
+					(ActionDialogStatus) dialogStatus, &doc);
 #else
 			ai::FilePath filePath(fileSpec);
 	#if kPluginInterfaceVersion < kAI13
-			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
+			sAIDocumentList->Open(filePath, (AIColorModel) colorModel,
+					(ActionDialogStatus) dialogStatus, &doc);
 	#else
-			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, true, &doc);
+			sAIDocumentList->Open(filePath, (AIColorModel) colorModel,
+					(ActionDialogStatus) dialogStatus, true, &doc);
 	#endif
 #endif
 		}
@@ -160,20 +170,25 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 }
 
 /*
- * int nativeCreate(java.lang.String title, float width, float height, int colorModel, int dialogStatus)
+ * int nativeCreate(java.lang.String title, float width, float height,
+ *		int colorModel, int dialogStatus)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(
+		JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height,
+		jint colorModel, jint dialogStatus) {
 	AIDocumentHandle doc = NULL;
 	AIColorModel model = (AIColorModel) colorModel;
 	char *str = NULL;
 	try {
 #if kPluginInterfaceVersion < kAI12
 		str = gEngine->convertString(env, title);
-		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
+		sAIDocumentList->New(str, &model, &width, &height,
+				(ActionDialogStatus) dialogStatus, &doc);
 #else
 		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, title);
 #if kPluginInterfaceVersion < kAI13
-		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
+		sAIDocumentList->New(str, &model, &width, &height,
+				(ActionDialogStatus) dialogStatus, &doc);
 #else // kPluginInterfaceVersion >= kAI13
 		AINewDocumentPreset params;
 		params.docTitle = str;
@@ -187,13 +202,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		params.docRasterResolution = kAIRasterResolutionScreen;
 		ai::UnicodeString preset("");
 #if kPluginInterfaceVersion >= kAI14
-		// TODO: Add additional version that allow configuration of art boards for CS4?
+		// TODO: Add additional version that allow configuration of art boards
+		// for CS4?
 		params.docNumArtboards = 1;
 		params.docArtboardLayout = kAIArtboardLayoutGridByRow;
 		params.docArtboardSpacing = 0;
 		params.docArtboardRowsOrCols = 1;
 #endif // kPluginInterfaceVersion >= kAI14
-		sAIDocumentList->New(preset, &params, (ActionDialogStatus) dialogStatus, &doc);
+		sAIDocumentList->New(preset, &params,
+				(ActionDialogStatus) dialogStatus, &doc);
 #endif // kPluginInterfaceVersion >= kAI13 
 		if (doc != NULL)
 			Document_activate(doc, false);
@@ -207,7 +224,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 /*
  * void nativeActivate(boolean focus, boolean forCreation)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeActivate(JNIEnv *env, jobject obj, jboolean focus, jboolean forCreation) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeActivate(
+		JNIEnv *env, jobject obj, jboolean focus, jboolean forCreation) {
 	try {
 		// Do not switch yet as we may want to focus the document too:
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
@@ -223,7 +241,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeActivate(JNIEnv
 /*
  * com.scriptographer.ai.Layer getActiveLayer()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(
+		JNIEnv *env, jobject obj) {
 	jobject layerObj = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -240,7 +259,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(JNI
 /*
  * int getActiveViewHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveViewHandle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveViewHandle(
+		JNIEnv *env, jobject obj) {
 	AIDocumentViewHandle view = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -255,7 +275,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveViewHandle(J
 /*
  * int getActiveSymbolHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveSymbolHandle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveSymbolHandle(
+		JNIEnv *env, jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -269,7 +290,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveSymbolHandle
 /*
  * int getActiveArtboardIndex()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardIndex(
+		JNIEnv *env, jobject obj) {
 #if kPluginInterfaceVersion >= kAI13
 	try {
 		// Cause the doc switch if necessary
@@ -287,7 +309,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardInde
 /*
  * void setActiveArtboardIndex(int index)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardIndex(JNIEnv *env, jobject obj, jint index) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardIndex(
+		JNIEnv *env, jobject obj, jint index) {
 #if kPluginInterfaceVersion >= kAI13
 	try {
 		// Cause the doc switch if necessary
@@ -300,7 +323,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardInde
 /*
  * com.scriptographer.ai.Point getPageOrigin()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getPageOrigin(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getPageOrigin(
+		JNIEnv *env, jobject obj) {
 	jobject origin = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -316,7 +340,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getPageOrigin(JNIE
 /*
  * void setPageOrigin(com.scriptographer.ai.Point origin)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setPageOrigin(JNIEnv *env, jobject obj, jobject origin) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setPageOrigin(
+		JNIEnv *env, jobject obj, jobject origin) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -330,7 +355,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setPageOrigin(JNIEnv 
 /*
  * com.scriptographer.ai.Point getRulerOrigin()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getRulerOrigin(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getRulerOrigin(
+		JNIEnv *env, jobject obj) {
 	jobject origin = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -346,7 +372,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getRulerOrigin(JNI
 /*
  * void setRulerOrigin(com.scriptographer.ai.Point origin)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(JNIEnv *env, jobject obj, jobject origin) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(
+		JNIEnv *env, jobject obj, jobject origin) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -360,7 +387,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(JNIEnv
 /*
  * com.scriptographer.ai.Size getSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(
+		JNIEnv *env, jobject obj) {
 	jobject size = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -377,7 +405,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *en
 /*
  * void setSize(double width, double height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, jobject obj, jdouble width, jdouble height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env,
+		jobject obj, jdouble width, jdouble height) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -393,7 +422,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, 
 /*
  * int nativeGetColormodel()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetColormodel(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetColormodel(
+		JNIEnv *env, jobject obj) {
 	short model = kDocUnknownColor;
 	try {
 		// Cause the doc switch if necessary
@@ -406,7 +436,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetColormodel(J
 /*
  * void nativeSetColormodel(int model)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetColormodel(JNIEnv *env, jobject obj, jint model) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetColormodel(
+		JNIEnv *env, jobject obj, jint model) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -417,7 +448,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetColormodel(J
 /*
  * boolean isModified()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(
+		JNIEnv *env, jobject obj) {
 	ASBoolean modified = false;
 	try {
 		// Cause the doc switch if necessary
@@ -431,7 +463,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv
 /*
  * void setModified(boolean modified)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setModified(JNIEnv *env, jobject obj, jboolean modified) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setModified(
+		JNIEnv *env, jobject obj, jboolean modified) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -443,7 +476,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setModified(JNIEnv *e
 /*
  * java.io.File getFile()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(
+		JNIEnv *env, jobject obj) {
 	jobject file = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -466,7 +500,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 /*
  * void nativePrint(int status)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativePrint(JNIEnv *env, jobject obj, jint status) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativePrint(
+		JNIEnv *env, jobject obj, jint status) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		sAIDocumentList->Print(doc, (ActionDialogStatus) status);
@@ -476,7 +511,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativePrint(JNIEnv *e
 /*
  * void save()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_save(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_save(JNIEnv *env,
+		jobject obj) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		sAIDocumentList->Save(doc);
@@ -486,7 +522,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_save(JNIEnv *env, job
 /*
  * boolean nativeWrite(java.io.File file, int formatHandle, boolean ask)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEnv *env, jobject obj, jobject file, jint formatHandle, jboolean ask) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(
+		JNIEnv *env, jobject obj, jobject file, jint formatHandle, jboolean ask) {
 	jboolean ret = false;
 	try {
 		// Cause the doc switch if necessary
@@ -498,8 +535,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEn
 		long formatOptions;
 
 		if (formatHandle != 0) {
-			sAIFileFormat->GetFileFormatName((AIFileFormatHandle) formatHandle, &formatName);
-			sAIFileFormat->GetFileFormatOptions((AIFileFormatHandle) formatHandle, &formatOptions);
+			sAIFileFormat->GetFileFormatName(
+				(AIFileFormatHandle) formatHandle, &formatName);
+			sAIFileFormat->GetFileFormatOptions(
+				(AIFileFormatHandle) formatHandle, &formatOptions);
 		}
 
 		if (formatName == NULL) {
@@ -515,10 +554,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEn
 		SPPlatformFileSpecification fileSpec;
 		if (gEngine->convertFile(env, file, &fileSpec) != NULL) {
 #if kPluginInterfaceVersion < kAI12
-			ret = !sAIDocument->WriteDocumentWithOptions(&fileSpec, formatName, formatOptions, ask);
+			ret = !sAIDocument->WriteDocumentWithOptions(&fileSpec, formatName,
+				formatOptions, ask);
 #else
 			ai::FilePath filePath(fileSpec);
-			ret = !sAIDocument->WriteDocumentWithOptions(filePath, formatName, formatOptions, ask);
+			ret = !sAIDocument->WriteDocumentWithOptions(filePath, formatName,
+				formatOptions, ask);
 #endif
 		}
 	} EXCEPTION_CONVERT(env);
@@ -529,7 +570,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEn
 /*
  * void close()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env,
+		jobject obj) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		sAIDocumentList->Close(doc);
@@ -539,11 +581,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env, jo
 /*
  * void redraw()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env,
+		jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		// TODO: Add a commmit command that only commits all items of the document
+		// TODO: Add a commmit command that only commits all items of the
+		// document
 		gEngine->commit(env);
 		sAIDocument->RedrawDocument();
 	} EXCEPTION_CONVERT(env);
@@ -552,7 +596,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
 /*
  * void undo()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env,
+		jobject obj) {
 	try {
 #if kPluginInterfaceVersion >= kAI13
 		// Cause the doc switch if necessary
@@ -566,7 +611,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, job
 /*
  * void redo()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env,
+		jobject obj) {
 	try {
 #if kPluginInterfaceVersion >= kAI13
 		// Cause the doc switch if necessary
@@ -580,15 +626,18 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env, job
 /*
  * void invalidate(float x, float y, float width, float height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(
+		JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width,
+		jfloat height) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
-		// use the DocumentView's function SetDocumentViewInvalidDocumentRect that fits
-		// much better here.
-		// Acording to DocumentView.h, we don't need to pass a view handle, as this
-		// document is now the current one anyhow and its view is on top of the others:	
+		// use the DocumentView's function SetDocumentViewInvalidDocumentRect
+		// that fits much better here.
+		// Acording to DocumentView.h, we don't need to pass a view handle, as
+		// this document is now the current one anyhow and its view is on top of
+		// the others:	
 		DEFINE_RECT(rect, x, y, width, height);
 		sAIDocumentView->SetDocumentViewInvalidDocumentRect(NULL, &rect);
 	} EXCEPTION_CONVERT(env);
@@ -597,7 +646,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *en
 /*
  * void copy()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env,
+		jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -609,7 +659,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env, job
 /*
  * void cut()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env,
+		jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -621,7 +672,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env, jobj
 /*
  * void paste()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env,
+		jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -633,7 +685,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 /*
  * com.scriptographer.ai.Item place(java.io.File file, boolean linked)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env, jobject obj, jobject file, jboolean linked) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
+		jobject obj, jobject file, jboolean linked) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		AIArtHandle art = PlacedFile_place(env, doc, file, linked);
@@ -647,7 +700,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
 /*
  * boolean hasSelectedItems()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
+		JNIEnv *env, jobject obj) {
 	jboolean selected = false;
 	try {
 		// Cause the doc switch if necessary
@@ -660,7 +714,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
 /*
  * com.scriptographer.ai.ItemList getSelectedItems()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(
+		JNIEnv *env, jobject obj) {
 	jobject itemSet = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -677,7 +732,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 /*
  * void nativeSelectAll()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(
+		JNIEnv *env, jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -699,14 +755,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(JNIEn
 /*
  * com.scriptographer.ai.TextRange getSelectedTextRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedTextRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedTextRange(
+		JNIEnv *env, jobject obj) {
 	try {
 		using namespace ATE;
 		AIBoolean value;
 		TextRangesRef rangesRef;
 		if (!sAIDocument->HasTextFocus(&value) && value
 				&& !sAIDocument->HasTextCaret(&value) && !value
-				&& !sAIDocument->GetTextSelection(&rangesRef) && rangesRef != NULL) {
+				&& !sAIDocument->GetTextSelection(&rangesRef)
+				&& rangesRef != NULL) {
 			ITextRanges ranges(rangesRef);
 			if (ranges.GetSize() > 0) {
 				ITextRange first = ranges.GetFirst();
@@ -723,7 +781,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedTextRan
 /*
  * void nativeDeselectAll()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(
+		JNIEnv *env, jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -732,10 +791,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNI
 }
 
 /*
- * com.scriptographer.ai.ItemList getMatchingItems(java.lang.Class typeClass, int whichAttrs, int attrs)
+ * com.scriptographer.ai.ItemList getMatchingItems(java.lang.Class typeClass,
+ *		int whichAttrs, int attrs)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(
-		JNIEnv *env, jobject obj, jclass typeClass, jint whichAttrs, jint attrs) {
+		JNIEnv *env, jobject obj, jclass typeClass, jint whichAttrs,
+		jint attrs) {
 	jobject itemSet = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -763,9 +824,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(
 }
 
 /*
- * com.scriptographer.ai.Path nativeCreateRectangle(com.scriptographer.ai.Rect rect)
+ * com.scriptographer.ai.Path nativeCreateRectangle(
+ *		com.scriptographer.ai.Rect rect)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectangle(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectangle(
+		JNIEnv *env, jobject obj, jobject rect) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -775,7 +838,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectan
 		AIRealRect rt;
 		gEngine->convertRectangle(env, kArtboardCoordinates, rect, &rt);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &art);
+		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right,
+				false, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -784,7 +848,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectan
 /*
  * com.scriptographer.ai.Path nativeCreateRoundRectangle(com.scriptographer.ai.Rectangle rect, com.scriptographer.ai.Size size)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jobject size) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRoundRectangle(
+		JNIEnv *env, jobject obj, jobject rect, jobject size) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -796,16 +861,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRoundR
 		gEngine->convertRectangle(env, kArtboardCoordinates, rect, &rt);
 		gEngine->convertSize(env, size, &pt);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, pt.h, pt.v, false, &art);
+		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom,
+				rt.right, pt.h, pt.v, false, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Path nativeCreateOval(com.scriptographer.ai.Rectangle rect, boolean circumscribed)
+ * com.scriptographer.ai.Path nativeCreateOval(
+ *		com.scriptographer.ai.Rectangle rect, boolean circumscribed)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateOval(JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateOval(
+		JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -816,18 +884,23 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateOval(J
 		gEngine->convertRectangle(env, kArtboardCoordinates, rect, &rt);
 		AIArtHandle art = NULL;
 		if (circumscribed)
-			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
+			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left,
+					rt.bottom, rt.right, false, &art);
 		else
-			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
+			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left,
+					rt.bottom, rt.right, false, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Path nativeCreateRegularPolygon(com.scriptographer.ai.Point center, int numSides, float radius)
+ * com.scriptographer.ai.Path nativeCreateRegularPolygon(
+ *		com.scriptographer.ai.Point center, int numSides, float radius)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRegularPolygon(JNIEnv *env, jobject obj, jobject center, jint numSides, jfloat radius) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRegularPolygon(
+		JNIEnv *env, jobject obj, jobject center, jint numSides,
+		jfloat radius) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -837,16 +910,21 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRegula
 		AIRealPoint pt;
 		gEngine->convertPoint(env, kArtboardCoordinates, center, &pt);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &art);
+		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius,
+				false, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Path nativeCreateStar(com.scriptographer.ai.Point center, int numPoints, float radius1, float radius2)
+ * com.scriptographer.ai.Path nativeCreateStar(
+ *		com.scriptographer.ai.Point center, int numPoints, float radius1,
+ *		float radius2)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateStar(JNIEnv *env, jobject obj, jobject center, jint numPoints, jfloat radius1, jfloat radius2) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateStar(
+		JNIEnv *env, jobject obj, jobject center, jint numPoints,
+		jfloat radius1, jfloat radius2) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -856,16 +934,23 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateStar(J
 		AIRealPoint pt;
 		gEngine->convertPoint(env, kArtboardCoordinates, center, &pt);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &art);
+		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2,
+				false, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Path nativeCreateSpiral(com.scriptographer.ai.Point firstArcCenter, com.scriptographer.ai.Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside)
+ * com.scriptographer.ai.Path nativeCreateSpiral(
+ *		com.scriptographer.ai.Point firstArcCenter,
+ *		com.scriptographer.ai.Point start, float decayPercent,
+ *		int numQuarterTurns, boolean clockwiseFromOutside)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateSpiral(JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateSpiral(
+		JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start,
+		jfloat decayPercent, jint numQuarterTurns,
+		jboolean clockwiseFromOutside) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -873,19 +958,25 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateSpiral
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint ptCenter, ptStart;
-		gEngine->convertPoint(env, kArtboardCoordinates, firstArcCenter, &ptCenter);
+		gEngine->convertPoint(env, kArtboardCoordinates, firstArcCenter,
+				&ptCenter);
 		gEngine->convertPoint(env, kArtboardCoordinates, start, &ptStart);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &art);
+		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent,
+				numQuarterTurns, clockwiseFromOutside, &art);
 		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.HitResult nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Item art)
+ * com.scriptographer.ai.HitResult nativeHitTest(
+ *		com.scriptographer.ai.Point point, int type, float tolerance,
+ *		com.scriptographer.ai.Item art)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject item) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(
+		JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance,
+		jobject item) {
 	jobject hitTest = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -903,50 +994,61 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 		
 		AIHitRef hit;
 		AIHitRequest request = (AIHitRequest) type;
-		// bugfix for illustrator: does not seem to support kNearestPointOnPathHitRequest
+		// Bugfix for illustrator: does not seem to support
+		// kNearestPointOnPathHitRequest
 		if (type == kNearestPointOnPathHitRequest)
 			request = kAllNoFillHitRequest;
 		if (!sAIHitTest->HitTestEx(handle, &pt, tolerance, request, &hit)) {
 			AIToolHitData toolHit;
-			if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
+			if (sAIHitTest->IsHit(hit)
+					&& !sAIHitTest->GetHitData(hit, &toolHit)) {
 				int hitType = toolHit.type;
 				TextRangeRef textRange = NULL;
 				// Support for hittest on text frames:
 				if (Item_getType(toolHit.object) == kTextFrameArt) {
 					int textPart = sAITextFrameHit->GetPart(hit);
-					// fake HIT values for Text, added from AITextPart + 10
+					// Fake HIT values for Text, added from AITextPart + 10
 					if (textPart != kAITextNowhere)
 						hitType = textPart + 10;
 					if (hitType >= 0)
 						sAITextFrame->DoTextFrameHit(hit, &textRange);
 				} else if (type == kNearestPointOnPathHitRequest) {
-					// filter out to simulate kNearestPointOnPathHitRequest that does not work properly
+					// Filter out to simulate kNearestPointOnPathHitRequest that
+					// does not work properly
 					if (hitType > kSegmentHitType)
 						hitType = -1;
 				} else if (hitType == kFillHitType) {
-					// bugfix for illustrator: returns kFillHitType instead of kCenterHitType when hitting center!
+					// Bugfix for illustrator: returns kFillHitType instead of
+					// kCenterHitType when hitting center!
 					AIBoolean visible = false;
 					sAIArt->GetArtCenterPointVisible(toolHit.object, &visible);
 					if (visible) {
-						// find zoom factor
+						// Find zoom factor
 						AIDocumentViewHandle view = NULL;
-						// the active view is at index 0:
+						// The active view is at index 0:
 						sAIDocumentView->GetNthDocumentView(0, &view);
 						AIReal zoom = 1.0f;
 						sAIDocumentView->GetDocumentViewZoom(view, &zoom);
-						// messure distance from center
+						// Messure distance from center
 						AIRealRect bounds;
 						sAIArt->GetArtBounds(toolHit.object, &bounds);
-						DEFINE_POINT(center, (bounds.left + bounds.right) / 2.0, (bounds.top + bounds.bottom) / 2.0);
-						if (sAIRealMath->AIRealPointClose(&center, &pt, tolerance / zoom))
+						DEFINE_POINT(center,
+								(bounds.left + bounds.right) / 2.0,
+								(bounds.top + bounds.bottom) / 2.0);
+						if (sAIRealMath->AIRealPointClose(&center, &pt,
+								tolerance / zoom))
 							hitType = kCenterHitType;
 					}
 				}
 				if (hitType >= 0) {
-					jobject item = gEngine->wrapArtHandle(env, toolHit.object, doc);
-					jobject point = gEngine->convertPoint(env, kArtboardCoordinates, &toolHit.point);
-					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitResult, gEngine->cid_ai_HitResult, (jint) doc,
-							hitType, item, (jint) toolHit.segment, (jdouble) toolHit.t, point, (jint) textRange);
+					jobject item = gEngine->wrapArtHandle(env, toolHit.object,
+							doc);
+					jobject point = gEngine->convertPoint(env,
+							kArtboardCoordinates, &toolHit.point);
+					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitResult,
+							gEngine->cid_ai_HitResult, (jint) doc, hitType, item,
+							(jint) toolHit.segment, (jdouble) toolHit.t, point,
+							(jint) textRange);
 				}
 			}
 			sAIHitTest->Release(hit);
@@ -958,7 +1060,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 /*
  * int nativeGetStories(int storyHandle, boolean release)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj, jint storyHandle, jboolean release) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(
+		JNIEnv *env, jobject obj, jint storyHandle, jboolean release) {
 	using namespace ATE;
 	jint ret = 0;
 	try {
@@ -977,7 +1080,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
 /*
  * void reflowText()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(
+		JNIEnv *env, jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -990,7 +1094,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(JNIEnv *en
 /*
  * int nativeGetFileFormat()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetFileFormat(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetFileFormat(
+		JNIEnv *env, jobject obj) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -1004,7 +1109,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetFileFormat(J
 /*
  * void nativeSetFileFormat(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(
+		JNIEnv *env, jobject obj, jint handle) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -1016,7 +1122,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(J
 /*
  * boolean nativeIsValid()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeIsValid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeIsValid(
+		JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		AIBoolean exists = false;
@@ -1029,7 +1136,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeIsValid(JNI
 /*
  * int nativeGetData()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(
+		JNIEnv *env, jobject obj) {
 	AIDictionaryRef dictionary = NULL;
 	try {
 		// Cause the doc switch if necessary
@@ -1042,7 +1150,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(JNIEnv 
 /*
  * void setUndoType(int type)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setUndoType(JNIEnv *env, jobject obj, jint type) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setUndoType(
+		JNIEnv *env, jobject obj, jint type) {
 	try {
 		sAIUndo->SetKind(type);
 	} EXCEPTION_CONVERT(env);

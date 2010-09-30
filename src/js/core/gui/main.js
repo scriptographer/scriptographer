@@ -293,13 +293,13 @@ var mainDialog = new FloatingDialog(
 		var scr = ScriptographerEngine.compile(entry.file);
 		if (scr) {
 			var scope = entry.scope = scr.engine.createScope();
-			if (handler instanceof ToolEventHandler) {
+			if (handler instanceof ToolHandler) {
 				scope.put('tool', handler, true);
 			}
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.file, scope);
-			if (handler instanceof ToolEventHandler) {
+			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
 				// can get coordinate system information from it.
 				handler.script = scope.get('script');
@@ -480,9 +480,9 @@ var mainDialog = new FloatingDialog(
 		var path = getEntryPath(entry);
 		parameters.path = path;
 		var isTool = entry.type == 'tool';
-		// Create a ToolEventHandler that handles all the complicated ToolEvent
+		// Create a ToolHandler that handles all the complicated ToolEvent
 		// stuff for us, to replicate completely the behavior of tools.
-		var handler = isTool ? new ToolEventHandler() : {};
+		var handler = isTool ? new ToolHandler() : {};
 		// The same scope is shared among all instances of this Effect.
 		// So we need to save and restore scope variables into the event.parameters
 		// object. The values are saved as Json, as duplicating effects otherwise

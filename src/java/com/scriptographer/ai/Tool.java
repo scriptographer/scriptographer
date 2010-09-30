@@ -34,9 +34,9 @@ import java.util.EnumSet;
 
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.adm.Image;
+import com.scriptographer.sg.CoordinateSystem;
 
 /**
  * The Tool object refers to the Scriptographer tool in the Illustrator tool
@@ -69,7 +69,7 @@ import com.scriptographer.adm.Image;
  * 
  * @author lehni
  */
-public class Tool extends ToolEventHandler {
+public class Tool extends ToolHandler {
 	// TODO: implement a way to set cursors?
 	private int cursor = 128;
 
@@ -281,16 +281,31 @@ public class Tool extends ToolEventHandler {
 	private static int onHandleEvent(int handle, String selector,
 			double x, double y, int pressure, int modifiers) {
 		Tool tool = getTool(handle);
-		ToolEventType type = ToolEventType.get(selector); 
+		ToolEventType type = ToolEventType.get(selector);
 		if (tool != null && type != null) {
-			// Make sure we use the right coordinate system before converting
-			// the point. It is a bit a shame we have to introduce a local
-			// convertPoint(x, y) function for this, but that's the only
-			// easy way to use the native side's coordinate system handling
+			// Make sure we use the right coordinate system to convert the
+			// point. It is a bit a shame we have to introduce a local
+			// convertPoint(topDown, x, y) function for this, but that's the
+			// only easy way to use the native side's coordinate system handling
 			// on the point and respect the tools / script's context correctly
-			ScriptographerEngine.setCoordinateSystem(tool.script != null
-					? tool.script.getCoordinateSystem() : null);
-			tool.onHandleEvent(type, convertPoint(x, y), pressure, modifiers);
+			// before actually calling Document.beginExecution()
+			Point point = convertPoint(
+					CoordinateSystem.TOP_DOWN == (tool.script != null
+							? tool.script.getCoordinateSystem()
+							: null),
+					// Activate the underlying Artboard if the mouse is pressed,
+					// as Ai only activates on mouse-up.
+					type == ToolEventType.MOUSE_DOWN,
+					// Update coordinates system when tool is selected, mouse
+					// is clicked or released, and when the we're not in a drag
+					// movement. During a drag movement, the coordinates won't
+					// change and therefore do not need an update.
+					type == ToolEventType.SELECT
+					|| type == ToolEventType.MOUSE_DOWN
+					|| type == ToolEventType.MOUSE_UP
+					|| type == ToolEventType.MOUSE_MOVE,
+					x, y);
+			tool.onHandleEvent(type, point, pressure, modifiers);
 		}
 		// Tell the native side to update the cursor
 		return tool.cursor;
@@ -299,7 +314,9 @@ public class Tool extends ToolEventHandler {
 	/*
 	 * See the comment above in onHandleEvent
 	 */
-	private static native Point convertPoint(double x, double y);
+	private static native Point convertPoint(boolean topDownCoordinates,
+			boolean activateArtboard, boolean updateCoordinates,
+			double x, double y);
 
 	private static Tool getTool(int handle) {
 		return tools.get(handle);

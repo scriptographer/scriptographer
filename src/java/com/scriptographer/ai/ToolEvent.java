@@ -50,7 +50,7 @@ import com.scriptographer.sg.Event;
  * @author lehni
  */
 public class ToolEvent extends Event {
-	private ToolEventHandler tool;
+	private ToolHandler tool;
 	private ToolEventType type;
 	private Point point = null;
 	private Point lastPoint = null;
@@ -60,7 +60,7 @@ public class ToolEvent extends Event {
 	private double pressure = -1;
 	private Item item = null;
 
-	protected ToolEvent(ToolEventHandler tool, ToolEventType type, int modifiers) {
+	protected ToolEvent(ToolHandler tool, ToolEventType type, int modifiers) {
 		super(modifiers);
 		this.tool = tool;
 		this.type = type;
@@ -77,7 +77,11 @@ public class ToolEvent extends Event {
 		return buf.toString();
 	}
 
-	private Point getPoint(Point point, Point toolPoint) {
+	/**
+	 * Convenience method to allow local overrides of point values.
+	 * See application below.
+	 */
+	private Point choosePoint(Point point, Point toolPoint) {
 		if (point != null)
 			return point;
 		if (toolPoint != null)
@@ -103,7 +107,7 @@ public class ToolEvent extends Event {
 	 * </code>
 	 */
 	public Point getPoint() {
-		return getPoint(point, tool.point);
+		return choosePoint(point, tool.point);
 	}
 
 	public void setPoint(Point point) {
@@ -115,7 +119,7 @@ public class ToolEvent extends Event {
 	 * event was fired.
 	 */
 	public Point getLastPoint() {
-		return getPoint(lastPoint, tool.lastPoint);
+		return choosePoint(lastPoint, tool.lastPoint);
 	}
 
 	public void setLastPoint(Point lastPoint) {
@@ -127,7 +131,7 @@ public class ToolEvent extends Event {
 	 * was last clicked.
 	 */
 	public Point getDownPoint() {
-		return getPoint(downPoint, tool.downPoint);
+		return choosePoint(downPoint, tool.downPoint);
 	}
 
 	public void setDownPoint(Point downPoint) {
@@ -142,8 +146,10 @@ public class ToolEvent extends Event {
 	 */
 	public Point getMiddlePoint() {
 		// For explanations, see getDelta()
-		if (middlePoint == null && tool.lastPoint != null)
+		if (middlePoint == null && tool.lastPoint != null) {
+			// (point + lastPoint) / 2
 			return tool.point.add(tool.lastPoint).divide(2);
+		}
 		return middlePoint;
 	}
 
@@ -162,8 +168,9 @@ public class ToolEvent extends Event {
 		// Instead, keep calculating the delta each time, so the result can be
 		// directly modified by the script without changing the internal values.
 		// We could cache this and use clone, but this is almost as fast...
-		if (delta == null && tool.lastPoint != null)
+		if (delta == null && tool.lastPoint != null) {
 			return tool.point.subtract(tool.lastPoint);
+		}
 		return delta;
 	}
 

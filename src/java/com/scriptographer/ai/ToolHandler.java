@@ -38,7 +38,7 @@ import com.scriptographer.sg.Script;
  *
  * @jshide
  */
-public class ToolEventHandler extends NativeObject {
+public class ToolHandler extends NativeObject {
 
 	private Double minDistance;
 	private Double maxDistance;
@@ -50,11 +50,11 @@ public class ToolEventHandler extends NativeObject {
 	protected int downCount;
 	protected double pressure;
 
-	protected ToolEventHandler(int handle) {
+	protected ToolHandler(int handle) {
 		super(handle);
 	}
 
-	public ToolEventHandler() {
+	public ToolHandler() {
 	}
 
 	/**
@@ -479,5 +479,7 @@ public class ToolEventHandler extends NativeObject {
 
 	public void setScript(Script script) {
 		this.script = script;
+		// Let the script know it's there for a tool.
+		script.setToolHandler(this);
 	}
 }

@@ -128,7 +128,7 @@ import com.scriptographer.ai.TextRange;
 import com.scriptographer.ai.TextStory;
 import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
-import com.scriptographer.ai.ToolEventHandler;
+import com.scriptographer.ai.ToolHandler;
 import com.scriptographer.ai.Tracing;
 import com.scriptographer.sg.Application;
 import com.scriptographer.sg.Scriptographer;
@@ -194,7 +194,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextRange.class,
 		TextStory.class,
 		Tool.class,
-		ToolEventHandler.class,
+		ToolHandler.class,
 		Tracing.class,
 	
 		// UI, alphabetically

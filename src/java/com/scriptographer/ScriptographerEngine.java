@@ -411,7 +411,10 @@ public class ScriptographerEngine {
 					? script.getCoordinateSystem()
 					: CoordinateSystem.DEFAULT);
 			// Pass topDownCoordinates value to the client side as well
-			Document.beginExecution(topDownCoordinates);
+			Document.beginExecution(topDownCoordinates,
+					// Do not update coordinate systems for tool scripts,
+					// as this has already happened in Tool.onHandleEvent()
+					script == null || !script.isToolScript());
 			// Disable output to the console while the script is executed as it
 			// won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
