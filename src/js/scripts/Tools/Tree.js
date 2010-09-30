@@ -88,7 +88,7 @@ function onMouseUp(event) {
 					for (var j = 0; j < newCount; j++) {
 						var newPath = path.clone();
 						var scale = branch.scale * (Math.random() * (values.maxScale - values.minScale) + values.minScale);
-						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * values.rotation;
+						var rotation = branch.rotation + (Math.random() - 0.5) * 180 * values.rotation;
 						newPath.scale(scale);
 						var curStartPoint = newPath.segments.first.point;
 						newPath.position += prevEndPoint - curStartPoint;

@@ -51,7 +51,7 @@ function nextStep() {
 					p2 = result.point;
 					velocity = -velocity;
 					var angle = velocity.getDirectedAngle(tangent);
-					velocity = velocity.rotate(Math.PI - 2 * angle);
+					velocity = velocity.rotate(180 - 2 * angle);
 					path.add(result.point);
 					// Avoid another reflexion with the same object just
 					// after being reflected:

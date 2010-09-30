@@ -39,7 +39,7 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
 	var step = event.delta;
-	step.angle += mul * (90).toRadians();
+	step.angle += mul * 90;
 	step.length = values.size;
 	path.add(event.point + step);
 	mul *= -1;

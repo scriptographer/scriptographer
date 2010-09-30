@@ -57,7 +57,7 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	var vector = (event.delta / 2).rotate((90).toRadians());
+	var vector = (event.delta / 2).rotate(-90);
 	
 	if (values.flip && event.count.isEven())
 		vector = vector * -1;

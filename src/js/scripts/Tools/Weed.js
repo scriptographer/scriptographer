@@ -49,14 +49,16 @@ function onMouseDrag(event) {
 // Branch:
 function Branch(point, group) {
 	this.point = point;
-	this.vector = new Point(Math.random() * values.size, 0).rotate(Math.random() * 2 * Math.PI);
+	this.vector = new Point(Math.random() * values.size, 0).rotate(
+			Math.random() * 360);
 	this.path = new Path();
 	this.path.add(point);
 	group.appendTop(this.path);
 }
 
 Branch.prototype.grow = function() {
-	this.vector = this.vector.transform(new Matrix().rotate(Math.random() - 0.5));
+	this.vector = this.vector.transform(new Matrix().rotate(
+			(Math.random() - 0.5) * 30));
 	this.point += this.vector;
 	this.path.add(this.point);
 };

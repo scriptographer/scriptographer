@@ -51,13 +51,12 @@ function onMouseDown(event) {
 
 var mul = 1;
 function onMouseDrag(event) {
-	var step = event.delta.clone();
+	var step = event.delta.rotate(90 * mul);
 	
 	if (!values.mouseOffset)
 		step.length = values.offset;
 
-	var vector = step.rotate((90).toRadians() * mul);
-	var segment = new Segment(event.point + vector);
+	var segment = new Segment(event.point + step);
 	segment.handleIn = -event.delta * values.curviness;
 	segment.handleOut = event.delta * values.curviness;
 	path.add(segment);

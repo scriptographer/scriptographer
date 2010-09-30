@@ -31,7 +31,6 @@ var palette = new Palette('Worm Farm', components, values);
 tool.minDistance = values.minDistance;
 
 var worm;
-var angle = (90).toRadians();
 
 // Every time the user clicks the mouse to drag we create a path
 // and when a user drags the mouse we add points to it
@@ -59,13 +58,13 @@ function onMouseDrag(event) {
 	//   -----*
 	//   |
 	//   ------
-	var top = event.middlePoint + step.rotate(-angle);
+	var top = event.middlePoint + step.rotate(-90);
 
 	// the bottom point: the middle point + the step rotated by 90 degrees
 	//   ------
 	//   |
 	//   -----*
-	var bottom = event.middlePoint + step.rotate(angle);
+	var bottom = event.middlePoint + step.rotate(90);
 	
 	// add the top point to the end of the path
 	worm.add(top);

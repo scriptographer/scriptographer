@@ -8,18 +8,13 @@ var components = {
 var values = Dialog.prompt('Enter Spirograph Values', components);
 
 if (values) {
-	var step = (1).toRadians();
-	var theta = 0;
-
 	var path = new Path();
-	var i = 0;
-	while(i <= 360 * values.num) {
+	for (var i = 0; i <= 360 * values.num; i++) {
+		var theta = i.toRadians();
 		path.add(new Point(
 			values.length * Math.cos(theta) - values.position * Math.cos(values.length * theta / values.radius),
 			values.length * Math.sin(theta) - values.position * Math.sin(values.length * theta / values.radius)
 		));
-		theta += step;
-		i++;
 	}
 	path.pointsToCurves();
 }

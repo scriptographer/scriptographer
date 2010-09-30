@@ -52,7 +52,7 @@ function onMouseDown(event) {
 function onMouseDrag(event) {
 	
 	var offset = event.delta;
-	offset.angle += (90).toRadians();
+	offset.angle += 90;
 
 	var lineSize = values.size / values.lines;
 	for (var i = 0; i < values.lines; i++) {

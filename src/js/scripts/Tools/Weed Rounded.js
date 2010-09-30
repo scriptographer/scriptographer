@@ -62,12 +62,13 @@ function onMouseDrag(event) {
 // Branch:
 function Branch(point, group) {
 	this.point = point;
-	this.vector = new Point(1, 0).rotate(Math.random() * 2 * Math.PI);
+	this.vector = new Point(1, 0).rotate(Math.random() * 360);
 	this.path = new Path();
 	this.path.add(point);
-	this.path.strokeWidth = values.minWidth + Math.random() * (values.maxWidth - values.minWidth);
+	this.path.strokeWidth = values.minWidth + Math.random()
+			* (values.maxWidth - values.minWidth);
 	group.appendTop(this.path);
-	this.rotate = 0.2;
+	this.rotate = 12;
 	this.count = 0;
 	this.max = 0;
 }
@@ -76,8 +77,8 @@ Branch.prototype.grow = function() {
 	if (this.count++ < this.max) {
 		this.vector = this.vector.rotate(this.rotate);
 	} else {
-		this.vector.length = (1.0 - Math.random() * 0.5) * values.size;
-		this.max = Math.round(Math.random() * Math.PI * 2.0 / Math.abs(this.rotate));
+		this.vector.length = (1 - Math.random() * 0.5) * values.size;
+		this.max = Math.round(Math.random() * 360 / Math.abs(this.rotate));
 		this.rotate *= -1;
 		this.count = 0;
 	}
