@@ -44,6 +44,10 @@ public enum ComponentType {
 	LIST("list"),
 	BUTTON("button"),
 	SLIDER("slider"),
+	/**
+	* @deprecated
+	*/
+	RANGE("range"),
 	COLOR("color"),
 	FONT("font"),
 	MENU_ENTRY("menu-entry"),
