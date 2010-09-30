@@ -151,11 +151,17 @@ public class Timer extends NativeObject {
 					document.clearChangedStates();
 				boolean changed = timer.onExecute()
 						|| document != null && document.hasChangedSates();
-				// Only change undo type if the document have actually changed.
-				// This prevents issues with situations where Timers are used
-				// for ADM interface stuff, e.g. invokeLater().
-				if (document != null && changed)
+				// Only change undo type if the document have actually changed,
+				// or if the type is MERGE, in which case we will not add new
+				// unto levels. This is actually needed to prevent a weird bug
+				// that occasionally happens where Ai keeps adding new levels.
+				// To not set STANDARD in all cases prevents issues with
+				// situations where Timers are used for ADM interface stuff,
+				// e.g. invokeLater().
+				if (document != null && (changed
+						|| undoType == Document.UNDO_MERGE)) {
 					document.setUndoType(undoType);
+				}
 				return changed;
 			} finally {
 				// Simulate one shot timers by aborting:
