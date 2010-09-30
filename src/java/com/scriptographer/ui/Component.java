@@ -232,6 +232,7 @@ public class Component implements ChangeReceiver {
 		return type;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setType(ComponentType type) {
 		if (proxy != null)
 			throw new UnsupportedOperationException(
