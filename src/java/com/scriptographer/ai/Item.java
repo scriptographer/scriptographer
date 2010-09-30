@@ -534,13 +534,11 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * were just changed.
 	 */
 	protected boolean commit(boolean invalidate) {
-		if (CommitManager.commit(this)) {
-			// Increasing version by one causes refetching of cached data:
-			if (invalidate)
-				version++;
-			return true;
-		}
-		return false;
+		boolean committed = CommitManager.commit(this);
+		// Increasing version by one causes refetching of cached data:
+		if (invalidate)
+			version++;
+		return committed;
 	}
 
 	/**
