@@ -96,8 +96,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv
 		style->gradient = (AIGradientHandle) handle;
 		gEngine->convertPoint(env, kArtboardCoordinates, origin, &style->gradientOrigin);
 		style->gradientAngle = angle;
-		style->gradientLength = length; 
-		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &style->matrix);
+		style->gradientLength = length;
+		// TODO: Test if conersion is correct and sync with 
+		// ScriptographerEngine::convertColor
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &style->matrix);
 		style->hiliteAngle = hiliteAngle;
 		style->hiliteLength = hiliteLength;
 	} EXCEPTION_CONVERT(env);
@@ -121,6 +123,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetPattern(JNIEnv 
 		style->reflectAngle = 0;
 		style->shearAngle = 0;
 		style->shearAxis = 0;
-		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &style->transform);
+		// TODO: Test if conersion is correct and sync with 
+		// ScriptographerEngine::convertColor
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &style->transform);
 	} EXCEPTION_CONVERT(env);
 }

@@ -165,9 +165,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 					} break;
 					case MatrixType: {
 						AIRealMatrix matrix;
-						// TODO: What coordinate system to convert to here???
+						// TODO: Test if conersion is correct
 						if (converted = !sAIEntry->ToRealMatrix(entry, &matrix))
-							res = gEngine->convertMatrix(env, kDocumentCoordinates, &matrix);
+							res = gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &matrix);
 					} break;
 					case FillStyleType: {
 						AIFillStyle fill;
@@ -280,8 +280,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						entry = sAIEntry->FromRealPoint(&point);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Matrix)) {
 						AIRealMatrix matrix;
-						// TODO: What coordinate system to convert to here???
-						gEngine->convertMatrix(env, kDocumentCoordinates, value, &matrix);
+						// TODO: Test if conersion is correct
+						gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, value, &matrix);
 						entry = sAIEntry->FromRealMatrix(&matrix);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_FillStyle)) {
 						AIFillStyle style;

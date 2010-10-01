@@ -1219,32 +1219,39 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
 
 // com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
-		CoordinateSystem system, AIRealMatrix *mt, jobject res) {
-	AIReal xOrigin, yOrigin;
-	switch (system) {
+		CoordinateSystem from, CoordinateSystem to, AIRealMatrix *mt,
+		jobject res) {
+
+	AIRealMatrix matrix = *mt;
+
+	switch (to) {
 	case kDocumentCoordinates:
-		xOrigin = m_documentOrigin.h;
-		yOrigin = m_documentOrigin.v;
+		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
+				-m_documentOrigin.h, -m_documentOrigin.v);
 		break;
 	case kArtboardCoordinates:
-		xOrigin = m_artboardOrigin.h;
-		yOrigin = m_artboardOrigin.v;
+		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
+				-m_artboardOrigin.h, -m_artboardOrigin.v);
 		break;
-	default:
-		xOrigin = yOrigin = 0;
 	}
-	AIRealMatrix matrix;
-	// The initialisation does the same as these two together:
-	// sAIRealMath->AIRealMatrixSetTranslate(&matrix, xOrigin, yOrigin);
-	// sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
-	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, -1, xOrigin, -yOrigin);
-	else 
-		sAIRealMath->AIRealMatrixSet(&matrix, 1, 0, 0, 1, xOrigin, yOrigin);
-	sAIRealMath->AIRealMatrixConcat(&matrix, mt, &matrix);
+
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
-	sAIRealMath->AIRealMatrixConcatTranslate(&matrix, -xOrigin, -yOrigin);
+
+	switch (from) {
+	case kDocumentCoordinates:
+		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
+				m_documentOrigin.h, m_documentOrigin.v);
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
+		break;
+	case kArtboardCoordinates:
+		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
+				m_artboardOrigin.h, m_artboardOrigin.v);
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
+		break;
+	}
 	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
 		(jdouble) matrix.a, (jdouble) matrix.b,
 		(jdouble) matrix.c, (jdouble) matrix.d,
@@ -1252,7 +1259,8 @@ jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
 }
 
 AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
-		CoordinateSystem system, jobject mt, AIRealMatrix *res) {
+		CoordinateSystem from, CoordinateSystem to, jobject mt,
+		AIRealMatrix *res) {
 	// TODO: use same conversion as Gradient where the native side calls a java
 	// function on Matrix to call back into native side with values.
 	AIRealMatrix matrix = {
@@ -1270,30 +1278,39 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 	EXCEPTION_CHECK(env);
 	if (res == NULL)
 		res = new AIRealMatrix;
-	AIReal xOrigin, yOrigin;
-	switch (system) {
-	case kArtboardCoordinates:
-		xOrigin = m_artboardOrigin.h;
-		yOrigin = m_artboardOrigin.v;
-		break;
+
+	switch (to) {
 	case kDocumentCoordinates:
-		xOrigin = m_documentOrigin.h;
-		yOrigin = m_documentOrigin.v;
+		sAIRealMath->AIRealMatrixSetTranslate(res,
+				-m_documentOrigin.h, -m_documentOrigin.v);
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
+		break;
+	case kArtboardCoordinates:
+		sAIRealMath->AIRealMatrixSetTranslate(res,
+				-m_artboardOrigin.h, -m_artboardOrigin.v);
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
 		break;
 	default:
-		xOrigin = yOrigin = 0;
+		sAIRealMath->AIRealMatrixSetIdentity(res);
 	}
-	// The initialisation does the same as these two together:
-	// sAIRealMath->AIRealMatrixSetTranslate(res, -xOrigin, -yOrigin);
-	// sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, -1, -xOrigin, yOrigin);
-	else 
-		sAIRealMath->AIRealMatrixSet(res, 1, 0, 0, 1, -xOrigin, -yOrigin);
+
 	sAIRealMath->AIRealMatrixConcat(res, &matrix, res);
+
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-	sAIRealMath->AIRealMatrixConcatTranslate(res, xOrigin, yOrigin);
+
+	switch (from) {
+	case kDocumentCoordinates:
+		sAIRealMath->AIRealMatrixConcatTranslate(res,
+				m_documentOrigin.h, m_documentOrigin.v);
+		break;
+	case kArtboardCoordinates:
+		sAIRealMath->AIRealMatrixConcatTranslate(res,
+				m_artboardOrigin.h, m_artboardOrigin.v);
+		break;
+	}
 	return res;
 }
 
@@ -1432,7 +1449,10 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 				(jint) b->gradient,
 				gEngine->convertPoint(env, kArtboardCoordinates, &b->gradientOrigin),
 				(jfloat) b->gradientAngle, (jfloat) b->gradientLength,
-				gEngine->convertMatrix(env, kArtboardCoordinates, &b->matrix),
+				// TODO: Test if conersion is correct and sync with 
+				// Color.nativeSetGradient
+				gEngine->convertMatrix(env, kCurrentCoordinates,
+						kArtboardCoordinates, &b->matrix),
 				(jfloat) b->hiliteAngle, (jfloat) b->hiliteLength);
 		}
 		case kPattern: {
@@ -1456,8 +1476,10 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 			}
 			return newObject(env, cls_ai_PatternColor, cid_ai_PatternColor,
 					(jint) p->pattern,
-					gEngine->convertMatrix(env, kArtboardCoordinates,
-							&p->transform));
+					// TODO: Test if conersion is correct and sync with 
+					// Color.nativeSetPattern
+					gEngine->convertMatrix(env, kCurrentCoordinates,
+							kArtboardCoordinates, &p->transform));
 		}
 		case kNoneColor: {
 			return obj_ai_Color_NONE;

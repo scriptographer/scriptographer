@@ -43,7 +43,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeCreate(JNIE
 		short paintOrder;
 		AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
 		// harden the matrix as symbols use hard matrixes internaly
 		sAIHardSoft->AIRealMatrixHarden(&mx);
 		AIArtHandle res = NULL;
@@ -83,9 +83,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setSymbol(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		AIRealMatrix m;
-		sAISymbol->GetSoftTransformOfSymbolArt(art, &m);
-		return gEngine->convertMatrix(env, kArtboardCoordinates, &m);
+		AIRealMatrix mx;
+		sAISymbol->GetSoftTransformOfSymbolArt(art, &mx);
+		gEngine->println(env, "NATIVE: %f %f %f %f %f %f",
+			(jdouble) mx.a, (jdouble) mx.b,
+			(jdouble) mx.c, (jdouble) mx.d,
+			(jdouble) mx.tx, (jdouble) mx.ty);
+		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -97,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(JNIEnv 
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
 		sAISymbol->SetSoftTransformOfSymbolArt(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }
