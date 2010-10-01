@@ -85,10 +85,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(JNIE
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix mx;
 		sAISymbol->GetSoftTransformOfSymbolArt(art, &mx);
-		gEngine->println(env, "NATIVE: %f %f %f %f %f %f",
-			(jdouble) mx.a, (jdouble) mx.b,
-			(jdouble) mx.c, (jdouble) mx.d,
-			(jdouble) mx.tx, (jdouble) mx.ty);
 		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
