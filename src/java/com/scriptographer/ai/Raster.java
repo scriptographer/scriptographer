@@ -50,8 +50,6 @@ import java.net.URL;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.NetUtils;
-import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.sg.CoordinateSystem;
 
 /**
  * The Raster item represents an image in an Illustrator document.
@@ -372,13 +370,11 @@ public class Raster extends Item {
 	 */
 	public Color getAverageColor(Shape shape) {
 //		Rectangle2D rect = shape.getBounds2D();
-		CoordinateSystem system = ScriptographerEngine.getCoordinateSystem();
 		GeneralPath path;
 		int width = getWidth();
 		int height = getHeight();
 		int startX = 0;
-		// Respect coordinate system for y of raster bounds
-		int startY = system == CoordinateSystem.BOTTOM_UP ? -height : 0;
+		int startY = -height;
 		if (shape != null) {
 			Matrix inverse = getInverseMatrix();
 			if (inverse == null)
