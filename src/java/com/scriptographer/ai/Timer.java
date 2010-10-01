@@ -158,8 +158,8 @@ public class Timer extends NativeObject {
 				// To not set STANDARD in all cases prevents issues with
 				// situations where Timers are used for ADM interface stuff,
 				// e.g. invokeLater().
-				if (document != null && (changed
-						|| undoType == Document.UNDO_MERGE)) {
+				if (document != null
+						&& (changed || undoType == Document.UNDO_MERGE)) {
 					document.setUndoType(undoType);
 				}
 				return changed;
