@@ -310,9 +310,25 @@ public class Document extends NativeObject implements ChangeReceiver {
 		history.put(historyBranch.branch, historyBranch);
 	}
 
+	private int historyShift = 0;
+
 	private void setHistoryLevels(int undoLevel, int redoLevel,
 			boolean checkLevel) {
+		// Illustrator has a maximum of 200 undo levels. When we get over
+		// that, the current undoLevel gets decreased to 199, without
+		// increasing the redolevel. We can detect this and adjust a
+		// correcting shift factor accordingly. Tricky stuff indeed!
+		undoLevel += historyShift;
 		if (undoLevel != this.undoLevel || redoLevel != this.redoLevel) {
+			// Detect maximum of undo levels reached. The undoLevel then stays
+			// the same, and the redoLevel does not change.
+			if (undoLevel == this.undoLevel - 1 && redoLevel == this.redoLevel) {
+				historyShift++;
+				undoLevel++;
+				if (reportUndoHistory)
+					ScriptographerEngine.logConsole("Increasing History Shift: "
+							+ historyShift);
+			}
 			boolean updateItems = false;
 			if (checkLevel && undoLevel > this.undoLevel) {
 				// A new history cycle was completed.
