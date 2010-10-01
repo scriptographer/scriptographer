@@ -364,6 +364,7 @@ public class TextRange extends DocumentObject implements Committable,
 	/**
 	 * The transformation matrices of the characters in the text range.
 	 */
+	// TODO: Rename to getMatrices() ?
 	public native Matrix[] getTransformations();
 	/*
 	TODO: ...
