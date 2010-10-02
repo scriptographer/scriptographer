@@ -11,7 +11,7 @@ var values = {
 var components = {
 	size: {
 		label: 'Radius',
-		type: 'range',
+		type: 'slider',
 		range: [0, 1000]
 	}
 };
