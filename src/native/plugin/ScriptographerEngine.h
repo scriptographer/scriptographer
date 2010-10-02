@@ -463,7 +463,7 @@ public:
 	jobject convertPoint(JNIEnv *env, CoordinateSystem system, AIRealPoint *point, jobject res = NULL) {
 		return convertPoint(env, system, point->h, point->v, res);
 	}
-	AIRealPoint *convertPoint(JNIEnv *env, CoordinateSystem system, jobject point, AIRealPoint *res = NULL);
+	void convertPoint(JNIEnv *env, CoordinateSystem system, jobject point, AIRealPoint *res);
 
 	// Segment array point conversion
 	void convertSegments(JNIEnv *env, AIReal *data, int count, CoordinateSystem system, bool from);
@@ -473,54 +473,54 @@ public:
 	jobject convertRectangle(JNIEnv *env, CoordinateSystem system, AIRealRect *rect, jobject res = NULL) {
 		return convertRectangle(env, system, rect->left, rect->top, rect->right, rect->bottom, res);
 	}
-	AIRealRect *convertRectangle(JNIEnv *env, CoordinateSystem system, jobject rect, AIRealRect *res = NULL);	
+	void convertRectangle(JNIEnv *env, CoordinateSystem system, jobject rect, AIRealRect *res);	
 
 	// com.scriptographer.ai.Size <-> AIRealPoint
 	jobject convertSize(JNIEnv *env, float width, float height, jobject res = NULL);
 	jobject convertSize(JNIEnv *env, AIRealPoint *size, jobject res = NULL) {
 		return convertSize(env, size->h, size->v, res);
 	}
-	AIRealPoint *convertSize(JNIEnv *env, jobject size, AIRealPoint *res = NULL);
+	void convertSize(JNIEnv *env, jobject size, AIRealPoint *res);
 
 	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, AIRealMatrix *mt, jobject res = NULL);
-	AIRealMatrix *convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, jobject mt, AIRealMatrix *res = NULL);
+	AIRealMatrix *convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, jobject mt, AIRealMatrix *res);
 
 	// com.scriptographer.adm.Point <-> ADMPoint
 	jobject convertPoint(JNIEnv *env, ADMPoint *point, jobject res = NULL);
-	ADMPoint *convertPoint(JNIEnv *env, jobject point, ADMPoint *res = NULL);
+	void convertPoint(JNIEnv *env, jobject point, ADMPoint *res);
 
 	// com.scriptographer.adm.Rectangle <-> ADMRect
 	jobject convertRectangle(JNIEnv *env, ADMRect *rect, jobject res = NULL);
-	ADMRect *convertRectangle(JNIEnv *env, jobject rect, ADMRect *res = NULL);	
+	void convertRectangle(JNIEnv *env, jobject rect, ADMRect *res);	
 
 	// com.scriptographer.adm.Size <-> ADMPoint
 	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL);
-	ADMPoint *convertSize(JNIEnv *env, jobject size, ADMPoint *res = NULL);
+	void convertSize(JNIEnv *env, jobject size, ADMPoint *res);
 
 	// java.awt.Color <-> ADMRGBColor
 	jobject convertColor(JNIEnv *env, ADMRGBColor *srcCol);	
-	ADMRGBColor *convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol = NULL);	
+	void convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol);	
 
 	// com.scriptoggrapher.ai.Color <-> AIColor
 	jobject convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha = -1.0f);
-	AIColor *convertColor(JNIEnv *env, jobject srcCol, AIColor *dstCol = NULL, AIReal *alpha = NULL);	
-	AIColor *convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol = NULL, AIReal *alpha = NULL);
+	bool convertColor(JNIEnv *env, jobject srcCol, AIColor *dstCol, AIReal *alpha = NULL);	
+	bool convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha = NULL);
 
 	// AIColor <-> ADMRGBColor
-	AIColor *convertColor(ADMRGBColor *srcCol, AIColor *dstCol = NULL);	
-	ADMRGBColor *convertColor(AIColor *srcCol, ADMRGBColor *dstCol = NULL);	
+	bool convertColor(ADMRGBColor *srcCol, AIColor *dstCol);	
+	bool convertColor(AIColor *srcCol, ADMRGBColor *dstCol);	
 
 	// AIColor <-> AIColor
-	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = -1.0f, AIReal *dstAlpha = NULL);
+	bool convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol, AIReal srcAlpha = -1.0f, AIReal *dstAlpha = NULL);
 
 	// com.scriptoggrapher.ai.FillStyle <-> AIFillStyle
 	jobject convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res = NULL);
-	AIFillStyle *convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res = NULL);
+	void convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res);
 
 	// com.scriptoggrapher.ai.StrokeStyle <-> AIStrokeStyle
 	jobject convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res = NULL);
-	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
+	void convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res);
 
 	// com.scriptoggrapher.ai.ItemList <-> AIArtSet
 	jobject convertItemSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);

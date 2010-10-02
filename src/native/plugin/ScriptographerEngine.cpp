@@ -1004,7 +1004,7 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 
 // This handles 2 types of points: com.scriptographer.ai.Point,
 // com.scriptographer.adm.Point
-AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
+void ScriptographerEngine::convertPoint(JNIEnv *env,
 		CoordinateSystem system, jobject point, AIRealPoint *res) {
 	jdouble x, y;
 	if (env->IsInstanceOf(point, cls_ai_Point)) {
@@ -1030,12 +1030,9 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
 		y += m_artboardOrigin.v;
 		break;
 	}
-	if (res == NULL)
-		res = new AIRealPoint;
 	res->h = x;
 	res->v = y;
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 /**
@@ -1152,7 +1149,7 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 	}
 }
 
-AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
+void ScriptographerEngine::convertRectangle(JNIEnv *env,
 		CoordinateSystem system, jobject rect, AIRealRect *res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	jdouble x = env->GetDoubleField(rect, fid_ai_Rectangle_x);
@@ -1174,8 +1171,6 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
 		y += m_artboardOrigin.v;
 		break;
 	}
-	if (res == NULL)
-		res = new AIRealRect;
 	res->left = x;
 	res->right = x + width;
 
@@ -1187,12 +1182,11 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
 		res->top = y + height;
 	}
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 // com.scriptographer.ai.Size <-> AIRealPoint
-jobject ScriptographerEngine::convertSize(JNIEnv *env,
-		float width, float height, jobject res) {
+jobject ScriptographerEngine::convertSize(JNIEnv *env, float width,
+		float height, jobject res) {
 	if (res == NULL) {
 		return newObject(env, cls_ai_Size, cid_ai_Size,
 				(jdouble) width, (jdouble) height);
@@ -1203,10 +1197,8 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env,
 	}
 }
 
-AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
-		jobject size, AIRealPoint *res) {
-	if (res == NULL)
-		res = new AIRealPoint;
+void ScriptographerEngine::convertSize(JNIEnv *env, jobject size,
+		AIRealPoint *res) {
 	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
 	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
 	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
@@ -1214,7 +1206,6 @@ AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env,
 	res->h = width;
 	res->v = height;
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 // com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
@@ -1276,8 +1267,6 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 			|| !VALID_COORDINATE(matrix.tx) || !VALID_COORDINATE(matrix.ty))
 		THROW_INVALID_COORDINATES(env, mt);
 	EXCEPTION_CHECK(env);
-	if (res == NULL)
-		res = new AIRealMatrix;
 
 	switch (to) {
 	case kDocumentCoordinates:
@@ -1329,10 +1318,8 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 
 // This handles 2 types of points: com.scriptographer.adm.Point,
 // com.scriptographer.ai.Point
-ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
+void ScriptographerEngine::convertPoint(JNIEnv *env,
 		jobject point, ADMPoint *res) {
-	if (res == NULL)
-		res = new ADMPoint;
 	if (env->IsInstanceOf(point, cls_adm_Point)) {
 		res->h = env->GetIntField(point, fid_adm_Point_x);
 		res->v = env->GetIntField(point, fid_adm_Point_y);
@@ -1341,7 +1328,6 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env,
 		res->v = (short) env->GetDoubleField(point, fid_ai_Point_y);
 	}
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 // com.scriptographer.adm.Rectangle <-> ADMRect
@@ -1361,16 +1347,13 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 	}
 }
 
-ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env,
+void ScriptographerEngine::convertRectangle(JNIEnv *env,
 		jobject rect, ADMRect *res) {
-	if (res == NULL)
-		res = new ADMRect;
 	res->left = env->GetIntField(rect, fid_adm_Rectangle_x);
 	res->top = env->GetIntField(rect, fid_adm_Rectangle_y);
 	res->right = res->left + env->GetIntField(rect, fid_adm_Rectangle_width);
 	res->bottom = res->top + env->GetIntField(rect, fid_adm_Rectangle_height);
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 // com.scriptographer.adm.Size <-> ADMPoint
@@ -1386,14 +1369,11 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env,
 	}
 }
 
-ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env,
+void ScriptographerEngine::convertSize(JNIEnv *env,
 		jobject size, ADMPoint *res) {
-	if (res == NULL)
-		res = new ADMPoint;
 	res->h = env->GetIntField(size, fid_adm_Size_width);
 	res->v = env->GetIntField(size, fid_adm_Size_height);
 	EXCEPTION_CHECK(env);
-	return res;
 }
 
 // java.awt.Color <-> ADMRGBColor
@@ -1404,10 +1384,8 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
 			(jfloat) srcCol->blue / 65535.0);
 }
 
-ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env,
+void ScriptographerEngine::convertColor(JNIEnv *env,
 		jobject srcCol, ADMRGBColor *dstCol) {
-	if (dstCol == NULL)
-		dstCol = new ADMRGBColor;
 	jfloatArray array = (jfloatArray) env->CallObjectMethod(srcCol,
 			mid_awt_Color_getColorComponents, NULL);
 	int length = env->GetArrayLength(array);
@@ -1420,7 +1398,6 @@ ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env,
 	dstCol->blue = (unsigned short) (values[2] * 65535.0 + 0.5);
 	delete values;
 	EXCEPTION_CHECK(env);
-	return dstCol;
 }
 
 // com.scriptoggrapher.ai.Color <-> AIColor
@@ -1489,10 +1466,8 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env,
 	return NULL;
 }
 
-AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
+bool ScriptographerEngine::convertColor(JNIEnv *env,
 		jobject srcCol, AIColor *dstCol, AIReal *alpha) {
-	if (dstCol == NULL)
-		dstCol = new AIColor;
 	// TODO: add kCustomColor
 	if (env->IsInstanceOf(srcCol, cls_ai_GradientColor)) {
 		dstCol->kind = kGradient;
@@ -1501,6 +1476,7 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
 		// right arguments
 		callVoidMethod(env, srcCol, mid_ai_GradientColor_set,
 				(jint) &dstCol->c.b);
+		return true;
 	} else if (env->IsInstanceOf(srcCol, cls_ai_PatternColor)) {
 		dstCol->kind = kPattern;
 		// call mid_ai_PatternColor_set, which sets the AIPatternStyle by
@@ -1508,20 +1484,20 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
 		// right arguments
 		callVoidMethod(env, srcCol, mid_ai_PatternColor_set,
 				(jint) &dstCol->c.p);
+		return true;
 	} else {
-		convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol,
+		return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol,
 				mid_ai_Color_getComponents), dstCol, alpha);
 	}
-	return dstCol;
+	return false;
 }
 
-AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
+bool ScriptographerEngine::convertColor(JNIEnv *env,
 		jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
-	if (dstCol == NULL)
-		dstCol = new AIColor;
 	int length = env->GetArrayLength(srcCol);
 	jfloat *values = new jfloat[length];
 	env->GetFloatArrayRegion(srcCol, 0, length, values);
+	bool ok = true;
 	switch (length) {
 	case 2:
 		dstCol->kind = kGrayColor;
@@ -1546,40 +1522,36 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env,
 		if (alpha != NULL)
 			*alpha = values[4];
 		break;
+	default:
+		ok = false;
 	}
 	delete values;
-	return dstCol;
+	return ok;
 }
 
 // AIColor <-> ADMRGBColor
 
-AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol,
-		AIColor *dstCol) {
-	if (dstCol == NULL)
-		dstCol = new AIColor;
+bool ScriptographerEngine::convertColor(ADMRGBColor *srcCol, AIColor *dstCol) {
 	dstCol->kind = kThreeColor;
 	dstCol->c.rgb.red = (float) srcCol->red / 65535.0;
 	dstCol->c.rgb.green = (float) srcCol->green / 65535.0;
 	dstCol->c.rgb.blue = (float) srcCol->blue / 65535.0;
-	return dstCol;
+	return true;
 }
 
-ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol,
-		ADMRGBColor *dstCol) {
-	if (dstCol == NULL)
-		dstCol = new ADMRGBColor;
+bool ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *dstCol) {
 	// convert to RGB if it isn't already:
 	if (srcCol->kind != kThreeColor && !convertColor(srcCol,
 			kAIRGBColorSpace, srcCol))
-		return NULL;
+		return false;
 	dstCol->red = (short) (srcCol->c.rgb.red * 65535.0 + 0.5);
 	dstCol->green = (short) (srcCol->c.rgb.green * 65535.0 + 0.5);
 	dstCol->blue = (short) (srcCol->c.rgb.blue * 65535.0 + 0.5);
-	return dstCol;
+	return true;
 }
 
 // AIColor <-> AIColor
-AIColor *ScriptographerEngine::convertColor(AIColor *srcCol,
+bool ScriptographerEngine::convertColor(AIColor *srcCol,
 		AIColorConversionSpaceValue dstSpace, AIColor *dstCol, AIReal srcAlpha,
 		AIReal *dstAlpha) {
 	// Determine srcCol's space and sample size:
@@ -1638,8 +1610,6 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol,
 		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
 				dst, options, &inGamut)) {
 #endif
-			if (dstCol == NULL)
-				dstCol = new AIColor;
 			// Init the destCol with 0
 			// memset(dstCol, 0, sizeof(AIColor));
 			// determine dstCol's kind and sampleSize:
@@ -1671,10 +1641,10 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol,
 			// get back alpha:
 			if (dstAlpha != NULL)
 				*dstAlpha = dstHasAlpha ? srcAlpha : -1;
-			return dstCol;
+			return true;
 		}
 	}
-	return NULL;
+	return false;
 }
 
 // AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
@@ -1693,12 +1663,9 @@ jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style,
 	return res;
 }
 
-AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env,
+void ScriptographerEngine::convertFillStyle(JNIEnv *env,
 		jobject style, AIFillStyle *res) {
-	if (res == NULL)
-		res = new AIFillStyle;
 	callVoidMethod(env, style, mid_ai_FillStyle_initNative, res);
-	return res;
 }
 
 // AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
@@ -1724,12 +1691,9 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
 	return res;
 }
 
-AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
+void ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
 		jobject style, AIStrokeStyle *res) {
-	if (res == NULL)
-		res = new AIStrokeStyle;
 	callVoidMethod(env, style, mid_ai_StrokeStyle_initNative, res);
-	return res;
 }
 
 
