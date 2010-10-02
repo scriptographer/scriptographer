@@ -833,14 +833,11 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	public Rectangle getBounds() {
-		return new Rectangle(getRulerOrigin().negate(), getSize());
+		return getArtboards().getFirst().getBounds();
 	}
 
 	public void setBounds(Rectangle bounds) {
-		if (bounds != null) {
-			setRulerOrigin(bounds.getPoint().negate());
-			setSize(bounds.getSize());
-		}
+		getArtboards().getFirst().setBounds(bounds);
 	}
 
 	private native int nativeGetColormodel();
