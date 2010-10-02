@@ -483,8 +483,8 @@ public:
 	AIRealPoint *convertSize(JNIEnv *env, jobject size, AIRealPoint *res = NULL);
 
 	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
-	jobject convertMatrix(JNIEnv *env, CoordinateSystem system, AIRealMatrix *mt, jobject res = NULL);
-	AIRealMatrix *convertMatrix(JNIEnv *env, CoordinateSystem system, jobject mt, AIRealMatrix *res = NULL);
+	jobject convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, AIRealMatrix *mt, jobject res = NULL);
+	AIRealMatrix *convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, jobject mt, AIRealMatrix *res = NULL);
 
 	// com.scriptographer.adm.Point <-> ADMPoint
 	jobject convertPoint(JNIEnv *env, ADMPoint *point, jobject res = NULL);

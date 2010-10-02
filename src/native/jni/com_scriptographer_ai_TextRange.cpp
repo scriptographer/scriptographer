@@ -118,8 +118,8 @@ public:
 		sAIRealMath->AIRealMatrixConcat(&m_matrix, &textMatrix, &matrix);
 		sAIHardSoft->AIRealMatrixSoften(&matrix);
 		// Weird... Is ATE upside down? This seems to help, but why?
-		matrix.ty = -matrix.ty;
 		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
+		matrix.ty = -matrix.ty;
 		return matrix;
 	}
 
@@ -170,13 +170,13 @@ public:
 		for (int i = 0, l = m_runs.size(); i < l; i++) {
 			GlyphRun *run = get(i);
 			ASRealPoint **origins = run->getOrigins();
-			ASRealMatrix matrix = run->getMatrix();
+			ASRealMatrix runMatrix = run->getMatrix();
 			for (int j = 0, m = run->charSize(); j < m; j++) {
 				ASRealPoint *origin = origins[j];
 				jobject point;
 				if (origin != NULL) {
 					AIRealPoint pt;
-					sAIRealMath->AIRealMatrixXformPoint(&matrix, origin, &pt);
+					sAIRealMath->AIRealMatrixXformPoint(&runMatrix, origin, &pt);
 					point = gEngine->convertPoint(env, kArtboardCoordinates, &pt);
 				} else {
 					point = NULL;
@@ -198,9 +198,10 @@ public:
 				ASRealPoint *origin = origins[j];
 				jobject matrix;
 				if (origin != NULL) {
-					ASRealMatrix glyphMatrix = runMatrix;
-					sAIRealMath->AIRealMatrixConcatTranslate(&glyphMatrix, origin->h, origin->v);
-					matrix = gEngine->convertMatrix(env, kArtboardCoordinates, &glyphMatrix);
+					ASRealMatrix glyphMatrix;
+					sAIRealMath->AIRealMatrixSetTranslate(&glyphMatrix, origin->h, origin->v);
+					sAIRealMath->AIRealMatrixConcat(&glyphMatrix, &runMatrix, &glyphMatrix);
+					matrix = gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &glyphMatrix);
 				} else {
 					matrix = NULL;
 				}

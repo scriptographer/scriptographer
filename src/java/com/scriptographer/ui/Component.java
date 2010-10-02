@@ -100,6 +100,7 @@ public class Component implements ChangeReceiver {
 					type = ComponentType.STRING;
 			}
 			if (type != null) {
+				setType(type);
 				// Call setMultiline to set default value for length
 				setMultiline(false);
 				// Tell the framework to set the properties from the map on the
@@ -148,7 +149,7 @@ public class Component implements ChangeReceiver {
 	public Component(ComponentType type, String label,
 			Object value) {
 		this.label = label;
-		this.type = type;
+		setType(type);
 		this.defaultValue = value;
 	}
 
@@ -231,10 +232,14 @@ public class Component implements ChangeReceiver {
 		return type;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setType(ComponentType type) {
 		if (proxy != null)
 			throw new UnsupportedOperationException(
 					"The component type cannot be changed once it is created");
+		// Convert legacy type RANGE to SLIDER:
+		if (type == ComponentType.RANGE)
+			type = ComponentType.SLIDER;
 		this.type = type;
 	}
 

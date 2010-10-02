@@ -1030,7 +1030,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, kArtboardCoordinates, matrix, &mx);
 /*
 		// Modify the matrix so that it 'acts' on the center of the selected object
 		// TODO: Introduce reg points?

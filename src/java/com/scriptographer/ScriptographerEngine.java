@@ -472,15 +472,23 @@ public class ScriptographerEngine {
 			boolean topDownCoordinates);
 
 	protected static void setTopDownCoordinates(boolean topDown) {
-		//if (topDown ^ topDownCoordinates) {
+		if (topDown ^ topDownCoordinates) {
 			topDownCoordinates = topDown;
 			nativeSetTopDownCoordinates(topDown);
-		//}
+		}
+	}
+
+	public static CoordinateSystem getCoordinateSystem() {
+		return topDownCoordinates ? CoordinateSystem.TOP_DOWN
+				: CoordinateSystem.BOTTOM_UP;
 	}
 
 	public static void setCoordinateSystem(CoordinateSystem system) {
-//		System.out.println("System: " + system);
 		setTopDownCoordinates(system == CoordinateSystem.TOP_DOWN);
+	}
+
+	public static AngleUnits getAngleUnits() {
+		return anglesInDegrees ? AngleUnits.DEGREES : AngleUnits.RADIANS;
 	}
 
 	public static void setAngleUnits(AngleUnits angleUnits) {

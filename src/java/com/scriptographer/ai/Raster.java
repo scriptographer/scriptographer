@@ -33,6 +33,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
@@ -43,7 +44,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
-import java.awt.color.ColorSpace;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -371,7 +371,10 @@ public class Raster extends Item {
 	public Color getAverageColor(Shape shape) {
 //		Rectangle2D rect = shape.getBounds2D();
 		GeneralPath path;
-		int width, height, startX, startY;
+		int width = getWidth();
+		int height = getHeight();
+		int startX = 0;
+		int startY = -height;
 		if (shape != null) {
 			Matrix inverse = getInverseMatrix();
 			if (inverse == null)
@@ -383,11 +386,12 @@ public class Raster extends Item {
 			path.setWindingRule(pi.getWindingRule());
 			path.append(pi, false);
 			Rectangle2D bounds = path.getBounds2D();
-			// Fetch the sub image to iterate over and calculate average colors from
-			width = getWidth();
-			height = getHeight();
+			// Fetch the sub image to iterate over and calculate average colors
+			// from
 			// Crop to the maximum size.
-			Rectangle2D.intersect(bounds, new Rectangle2D.Double(0, -height, width, height), bounds);
+			Rectangle2D.intersect(bounds,
+					new Rectangle2D.Double(startX, startY, width, height),
+					bounds);
 			width = (int) Math.ceil(bounds.getWidth());
 			height = (int) Math.ceil(bounds.getHeight());
 			// Are we completely outside the raster? If so, return null
@@ -396,10 +400,6 @@ public class Raster extends Item {
 			startX = (int) Math.floor(bounds.getX());
 			startY = (int) Math.floor(bounds.getY());
 		} else {
-			width = getWidth();
-			height = getHeight();
-			startX = 0;
-			startY = -height;
 			path = null;
 		}
 		BufferedImage img = getSubImage(startX, -startY - height, width, height);

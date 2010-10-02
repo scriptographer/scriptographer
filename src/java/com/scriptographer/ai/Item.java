@@ -474,7 +474,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			HandleHistoryEntry last = handleHistory.peek();
 			if (last.version == modificationVersion) {
 				if (Document.reportUndoHistory)
-					ScriptographerEngine.logConsole("Updating handleHistory version"
+					ScriptographerEngine.logConsole("Updating handleHistory version "
 							+ Integer.toString(last.handle, 16) + ", " + last.version);
 				last.version = version;
 			}
