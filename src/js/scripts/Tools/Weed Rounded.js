@@ -13,22 +13,29 @@ var values = {
 // Interface
 
 var components = {
-	size: { label: 'Radius' },
+	size: {
+		label: 'Radius',
+		steppers: true
+	},
 	minAmount: {
 		label: 'Minimal Amount',
-		min: 0
+		min: 0,
+		steppers: true
 	},
 	maxAmount: {
 		label: 'Maximal Amount',
-		min: 0
+		min: 0,
+		steppers: true
 	},
 	minWidth: {
 		label: 'Minimal Stroke Width',
-		min: 0
+		min: 0,
+		steppers: true
 	},
 	maxWidth: {
 		label: 'Maximal Stroke Width',
-		min: 0
+		min: 0,
+		steppers: true
 	}
 };
 

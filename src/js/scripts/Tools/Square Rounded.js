@@ -14,11 +14,13 @@ checkValues();
 var components = {
 	radius: {
 		description: 'Radius',
-		min: 0
+		min: 0,
+		steppers: true
 	},
 	tolerance: {
 		description: 'Tolerance',
-		min: 0
+		min: 0,
+		steppers: true
 	}
 };
 
