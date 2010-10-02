@@ -381,6 +381,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(
 		AIRealPoint pt;
 		gEngine->convertPoint(env, kCurrentCoordinates, origin, &pt);
 		sAIDocument->SetDocumentRulerOrigin(&pt);
+		// Update the coordinate system after the origin has changed
+		gEngine->updateCoordinateSystem();
 	} EXCEPTION_CONVERT(env);
 }
 
