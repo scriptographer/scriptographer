@@ -35,12 +35,13 @@
  */
 
 /*
- * int nativeCreate(int orientation, float x, float y)
+ * int nativeCreate(int orientation, double x, double y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint orientation, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint orientation, jdouble x, jdouble y) {
 	AIArtHandle art = NULL;
 	try {
-		DEFINE_POINT(pt, x, y);
+		AIRealPoint pt;
+		gEngine->convertPoint(env, kArtboardCoordinates, x, y, &pt);
 		
 		short paintOrder;
 		AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);

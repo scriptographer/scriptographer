@@ -43,7 +43,7 @@ public class PointText extends TextItem {
 		super(handle, docHandle, created);
 	}
 
-	native private static int nativeCreate(int orientation, float x, float y);
+	native private static int nativeCreate(int orientation, double x, double y);
 	
 	/**
 	 * Creates a point text item

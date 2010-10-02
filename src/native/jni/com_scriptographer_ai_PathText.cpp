@@ -50,14 +50,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate(JNIEnv *
 }
 
 /*
- * int nativeCreate(int orientation, int artHandle, float x, float y)
+ * int nativeCreate(int orientation, int artHandle, double x, double y)
  *
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orientation, jint artHandle, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orientation, jint artHandle, jdouble x, jdouble y) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;
 	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
-	DEFINE_POINT(pt, x, y);
+	AIRealPoint pt;
+	gEngine->convertPoint(env, kArtboardCoordinates, x, y, &pt);
 	sAITextFrame->NewOnPathText2(paintOrder, artInsert, (AITextOrientation) orientation, (AIArtHandle) artHandle, pt, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Unable to create text object. Please make sure there is an open document.");

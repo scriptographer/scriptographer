@@ -52,7 +52,8 @@ JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEn
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint(JNIEnv *env, jclass cls, jfloatArray values, jfloat x, jfloat y, jfloat parameter) {
 	try {
 		AIPathSegment *segments = (AIPathSegment *) env->GetFloatArrayElements(values, NULL);
-		DEFINE_POINT(pt, x, y);
+		AIRealPoint pt;
+		gEngine->convertPoint(env, kArtboardCoordinates, x, y, &pt);
 		AIRealBezier bezier;
 		bezier.p0 = segments[0].p;
 		bezier.p1 = segments[0].out;
