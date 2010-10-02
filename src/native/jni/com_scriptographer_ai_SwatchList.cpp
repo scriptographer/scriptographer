@@ -33,14 +33,18 @@
  * com.scriptographer.ai.SwatchList
  */
 
+// Skip the first two standard swatches from the list exposed to scripting
+#define SWATCHLIST_OFFSET 2
+
 /*
  * int nativeSize(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeSize(
+		JNIEnv *env, jclass cls, jint docHandle) {
 	try {
 		AISwatchListRef list = NULL;
 		if (!sAISwatchList->GetSwatchList((AIDocumentHandle) docHandle, &list))
-			return sAISwatchList->CountSwatches(list);
+			return sAISwatchList->CountSwatches(list) - SWATCHLIST_OFFSET;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -48,11 +52,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeSize(JNIEnv *
 /*
  * int nativeGet(int docHandle, int index)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGet__II(JNIEnv *env, jclass cls, jint docHandle, jint index) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGet__II(
+		JNIEnv *env, jclass cls, jint docHandle, jint index) {
 	try {
 		AISwatchListRef list = NULL;
 		if (!sAISwatchList->GetSwatchList((AIDocumentHandle) docHandle, &list))
-			return (jint) sAISwatchList->GetNthSwatch(list, index);
+			return (jint) sAISwatchList->GetNthSwatch(list,
+					index + SWATCHLIST_OFFSET);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -60,7 +66,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGet__II(JNIEn
 /*
  * int nativeGet(int docHandle, java.lang.String name)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGet__ILjava_lang_String_2(JNIEnv *env, jclass cls, jint docHandle, jstring name) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGet__ILjava_lang_String_2(
+		JNIEnv *env, jclass cls, jint docHandle, jstring name) {
 	AISwatchRef ret = NULL;
 	try {
 		AISwatchListRef list = NULL;
