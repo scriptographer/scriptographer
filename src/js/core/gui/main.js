@@ -299,6 +299,7 @@ var mainDialog = new FloatingDialog(
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.file, scope);
+			correctOrigin(scope);
 			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
 				// can get coordinate system information from it.
@@ -378,8 +379,29 @@ var mainDialog = new FloatingDialog(
     				break;
 			    }
 			default:
-				ScriptographerEngine.execute(entry.file, null);
+				var scr = ScriptographerEngine.compile(entry.file);
+				if (scr) {
+					var scope = scr.engine.createScope();
+					// Don't call scr.execute directly, since we handle SG
+					// specific things in ScriptographerEngine.execute:
+					ScriptographerEngine.execute(scr, entry.file, scope);
+					correctOrigin(scope);
+				}
 			}
+		}
+	}
+
+	function correctOrigin(scope) {
+		// Update ruler origin on CS4 and below to make sure units are displayed
+		// correctly when in top-down coordinates.
+		if (document && scriptographer.version < 15) {
+			var scr = scope.get('script');
+			var origin = document.rulerOrigin
+					+ (scr.coordinateSystem == 'top-down'
+							? document.bounds.topLeft
+							: document.bounds.bottomLeft);
+			if (document.rulerOrigin != origin)
+				document.rulerOrigin = origin;
 		}
 	}
 
