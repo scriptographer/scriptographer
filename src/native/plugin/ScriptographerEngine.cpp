@@ -2073,6 +2073,14 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art,
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
+#if kPluginInterfaceVersion >= kAI15
+	// Turn off pixel perfect flag on all newly created items on CS5 and above,
+	// as it aligns points strangly. To use this feature one then has to 
+	// explicitely set it through the UI for now
+	// TODO: later maybe add a property to Item
+	if (created)
+		sAIArt->SetPixelPerfect(art, false);
+#endif
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle,
 			(jint) art, (jshort) type, (jint) textType,
 			(jint) (doc ? doc : gWorkingDoc), wrapped, created);
