@@ -171,7 +171,7 @@ public class GradientColor extends Color {
 		throw new UnsupportedOperationException("Cannot convert gradient to AWT color");
 	}
 	
-	public void setAlpha(float alhpa) {
+	public void setAlpha(Float alpha) {
 		throw new UnsupportedOperationException("Cannot set alpha on gradient");
 	}
 
