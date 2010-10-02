@@ -140,9 +140,10 @@ var mainDialog = new FloatingDialog(
 	function getScriptDirectories() {
 		return scriptRepositories.collect(function(repository) {
 			if (repository.visible) {
-				var dir = repository.sealed && repository.name == 'Examples'
-						? examplesDirectory
-						: new File(repository.path);
+				var dir = repository.sealed
+						&& /^(Examples|Tutorials)$/.test(repository.name)
+								? new File(scriptsDirectory, repository.name)
+								: new File(repository.path);
 				if (dir.exists()) {
 					dir.alternateName = repository.name;
 					return dir;

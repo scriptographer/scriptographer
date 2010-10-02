@@ -258,8 +258,8 @@ Scriptographer build instructions
 			<fileset dir="${docs.dir.js}"/>
 		</copy>
 
-		<!-- Examples -->
-		<copy todir="${target.packages}/Scriptographer/Examples">
+		<!-- Scripts -->
+		<copy todir="${target.packages}/Scriptographer/Scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 			</fileset>

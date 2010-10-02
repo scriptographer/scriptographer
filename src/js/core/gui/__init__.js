@@ -53,12 +53,13 @@ var firstRun = !script.preferences.accepted;
 
 if (firstRun) {
 	include('license.js');
-	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
+	script.preferences.accepted =
+			licenseDialog.doModal() == licenseDialog.defaultItem;
 }
 
 // Script Locations
 var userDirectory = new File(java.lang.System.getProperty('user.home'));
-var examplesDirectory = new File(ScriptographerEngine.pluginDirectory, 'Examples');
+var scriptsDirectory = new File(ScriptographerEngine.pluginDirectory, 'Scripts');
 var scriptRepositories = script.preferences.repositories;
 
 if (script.preferences.accepted) {
@@ -75,14 +76,17 @@ if (script.preferences.accepted) {
 			});
 		}
 	}
-	// Add standard Examples repository if it does not exist:
-	if (!scriptRepositories.contains(function(repository) {
-		return repository.name == 'Examples';
-	})) {
-		scriptRepositories.unshift({
-			name: 'Examples', sealed: true, visible: true
-		});
-	}
+	// Add standard Examples and Tutorials repositories if they don't exist:
+	// Reversed sequence, due to unshift
+	['Tutorials', 'Examples'].each(function(name) {
+		if (!scriptRepositories.contains(function(repository) {
+			return repository.name == name;
+		})) {
+			scriptRepositories.unshift({
+				name: name, sealed: true, visible: true
+			});
+		}
+	})
 	script.preferences.repositories = scriptRepositories;
 	include('console.js');
 	include('about.js');
