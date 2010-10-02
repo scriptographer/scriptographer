@@ -68,7 +68,7 @@ var licenseDialog = new ModalDialog(function() {
 			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ').height);
 				if (urls[line] && tracker.point.x < this.getTextSize(lines[line]).width)
-					app.launch(urls[line]);
+					illustrator.launch(urls[line]);
 			}
 			return true;
 		}

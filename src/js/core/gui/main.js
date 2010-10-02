@@ -62,8 +62,8 @@ var mainDialog = new FloatingDialog(
 					entry.expanded = !entry.expanded;
 					entry.list.invalidate();
 				} else {
-					// Edit the file through app.launch
-					app.launch(entry.file);
+					// Edit the file through illustrator.launch
+					illustrator.launch(entry.file);
 					// execute();
 				}
 			}
@@ -299,7 +299,7 @@ var mainDialog = new FloatingDialog(
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.file, scope);
-			correctOrigin(scope);
+			adjustOrigin(scope);
 			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
 				// can get coordinate system information from it.
@@ -385,16 +385,17 @@ var mainDialog = new FloatingDialog(
 					// Don't call scr.execute directly, since we handle SG
 					// specific things in ScriptographerEngine.execute:
 					ScriptographerEngine.execute(scr, entry.file, scope);
-					correctOrigin(scope);
+					adjustOrigin(scope);
 				}
 			}
 		}
 	}
 
-	function correctOrigin(scope) {
+	function adjustOrigin(scope) {
 		// Update ruler origin on CS4 and below to make sure units are displayed
 		// correctly when in top-down coordinates.
-		if (document && scriptographer.version < 15) {
+		if (document && illustrator.version < 15
+					&& script.preferences.adjustOrigin) {
 			var scr = scope.get('script');
 			var origin = document.rulerOrigin
 					+ (scr.coordinateSystem == 'top-down'
@@ -661,6 +662,26 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
+	if (illustrator.version < 15) {
+		// Add a menu item that controls whether origins are automatically 
+		// adjusted. Default is true:
+		if (script.preferences.adjustOrigin === undefined)
+			script.preferences.adjustOrigin = true;
+
+		var adjustOriginEntry = new ListEntry(menu) {
+			text: 'Automatically Adjust Ruler Origin',
+			checked: script.preferences.adjustOrigin,
+			onSelect: function() {
+				this.checked = !this.checked;
+				script.preferences.adjustOrigin = this.checked;
+			}
+		};
+	}
+
+	var separator2Entry = new ListEntry(menu) {
+		separator: true
+	};
+
 	var aboutEntry = new ListEntry(menu) {
 		text: 'About Scriptographer...',
 		onSelect: function() {
@@ -671,7 +692,7 @@ var mainDialog = new FloatingDialog(
 	var referenceEntry = new ListEntry(menu) {
 		text: 'Reference...',
 		onSelect: function() {
-			app.launch('file://' + new File(scriptographer.pluginDirectory,
+			illustrator.launch('file://' + new File(scriptographer.pluginDirectory,
 					'Reference/index.html'));
 		}
 	};

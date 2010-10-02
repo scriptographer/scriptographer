@@ -37,16 +37,16 @@ import com.scriptographer.ai.FileFormatList;
 import com.scriptographer.ai.FontList;
 
 /**
- * The Application object represents the Illustrator application and can be
- * accessed through the global {@code app} variable.
+ * The Illustrator object represents the Illustrator application and can be
+ * accessed through the global {@code illustrator} variable.
  * 
  * @author lehni
  * 
  * @jsnostatic
  */
-public class Application {
+public class Illustrator {
 
-	private Application() {
+	private Illustrator() {
 		// Do not let anyone to instantiate this class.
 	}
 
@@ -174,14 +174,14 @@ public class Application {
 		ScriptographerEngine.closeProgress();
 	}
 
-	private static Application application = null;
+	private static Illustrator application = null;
 
 	/**
 	 * @jshide
 	 */
-	public static Application getInstance() {
+	public static Illustrator getInstance() {
 		if (application == null)
-			application = new Application();
+			application = new Illustrator();
 		return application;
 	}
 }

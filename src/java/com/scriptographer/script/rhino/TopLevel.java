@@ -130,7 +130,7 @@ import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 import com.scriptographer.ai.ToolHandler;
 import com.scriptographer.ai.Tracing;
-import com.scriptographer.sg.Application;
+import com.scriptographer.sg.Illustrator;
 import com.scriptographer.sg.Scriptographer;
 import com.scriptographer.ui.Dialog;
 import com.scriptographer.ui.Key;
@@ -286,10 +286,14 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			e.printStackTrace();
 		}
 
-		defineProperty("app", Application.getInstance(),
+		defineProperty("scriptographer", Scriptographer.getInstance(),
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
-		defineProperty("scriptographer", Scriptographer.getInstance(),
+		defineProperty("illustrator", Illustrator.getInstance(),
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+
+		// deprecated:
+		defineProperty("app", Illustrator.getInstance(),
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 	}
 
