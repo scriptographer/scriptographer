@@ -210,7 +210,8 @@ public abstract class Color {
 			try {
 				profile = ICC_Profile.getInstance(
 						Color.class.getClassLoader().getResourceAsStream(
-								"com/scriptographer/cmm/" + model.name().toLowerCase() + ".icc"));
+								"com/scriptographer/cmm/"
+								+ model.name().toLowerCase() + ".icc"));
 			} catch (IOException e) {
 				throw new ScriptographerException(e);
 			}
@@ -225,5 +226,6 @@ public abstract class Color {
 			Point origin, double angle, double length, Matrix matrix,
 			double hiliteAngle, double hiliteLength);
 	
-	protected static native void nativeSetPattern(int pointer, int handle, Matrix matrix);
+	protected static native void nativeSetPattern(int pointer, int handle,
+			Matrix matrix);
 }

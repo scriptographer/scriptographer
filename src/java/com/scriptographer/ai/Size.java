@@ -31,6 +31,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.ChangeEmitter;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -507,6 +508,8 @@ public class Size implements ChangeEmitter {
 	}
 
 	public String toString() {
-	   	return "{ width: " + width + ", height: " + height + " }";
+	   	return "{ width: " + ScriptographerEngine.numberFormat.format(width)
+	   			+ ", height: " + ScriptographerEngine.numberFormat.format(height)
+	   			+ " }";
 	}
 }

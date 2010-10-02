@@ -32,6 +32,7 @@ package com.scriptographer.ai;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.text.NumberFormat;
 
 import com.scriptographer.ScriptographerEngine;
 
@@ -389,19 +390,14 @@ public class Matrix {
 		return this;
 	}
 
-	// Round values to sane precision for printing
-	// Note that Math.sin(Math.PI) has an error of about 10^-16
-	private static double round(double value) {
-		return Math.rint(value * 1E15) / 1E15;
-	}
-
 	public String toString() {
-		return "[[" + round(transform.getScaleX()) + ", "
-				+ round(transform.getShearX()) + ", "
-				+ round(transform.getTranslateX()) + "], ["
-				+ round(transform.getShearY()) + ", "
-				+ round(transform.getScaleY()) + ", "
-				+ round(transform.getTranslateY()) + "]]";
+		NumberFormat format = ScriptographerEngine.numberFormat;
+		return "[[" + format.format(transform.getScaleX()) + ", "
+				+ format.format(transform.getShearX()) + ", "
+				+ format.format(transform.getTranslateX()) + "], ["
+				+ format.format(transform.getShearY()) + ", "
+				+ format.format(transform.getScaleY()) + ", "
+				+ format.format(transform.getTranslateY()) + "]]";
 	}
 	
 	/**

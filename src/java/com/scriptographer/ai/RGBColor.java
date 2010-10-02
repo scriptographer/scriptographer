@@ -31,6 +31,9 @@ package com.scriptographer.ai;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
+import java.text.NumberFormat;
+
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -169,12 +172,13 @@ public class RGBColor extends Color {
 	}
 
 	public String toString() {
+		NumberFormat format = ScriptographerEngine.numberFormat;
 		StringBuffer buf = new StringBuffer(32);
-		buf.append("{ red: ").append(red);
-		buf.append(", green: ").append(green);
-		buf.append(", blue: ").append(blue);
+		buf.append("{ red: ").append(format.format(red));
+		buf.append(", green: ").append(format.format(green));
+		buf.append(", blue: ").append(format.format(blue));
 		if (alpha != -1f)
-			buf.append(", alpha: ").append(alpha);
+			buf.append(", alpha: ").append(format.format(alpha));
 		buf.append(" }");
 		return buf.toString();
 	}

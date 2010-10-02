@@ -33,6 +33,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,6 +75,22 @@ public class ScriptographerEngine {
 	private static Thread mainThread;
 
 	private static HashMap<String, ArrayList<Scope>> callbackScopes;
+
+	/*
+	 * Create a NumberFormat object to be used wherever numbers are printed to
+	 * the user. We use a reasonable amount of fractional digits (5) and the
+	 * same symbols for NaN and Infinity as in JavaScript.
+	 */
+	private static final DecimalFormatSymbols numberFormatSymbols =
+			new DecimalFormatSymbols();
+
+	static {
+		numberFormatSymbols.setInfinity("Infinity");
+		numberFormatSymbols.setNaN("NaN");
+	}
+
+	public static final NumberFormat numberFormat =
+			new DecimalFormat("0.#####", numberFormatSymbols);
 
 	// All callback functions to be found and collected in the compiled scopes.
 	private static String[] callbackNames = {
