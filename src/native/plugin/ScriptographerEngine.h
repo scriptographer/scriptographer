@@ -463,6 +463,7 @@ public:
 	jobject convertPoint(JNIEnv *env, CoordinateSystem system, AIRealPoint *point, jobject res = NULL) {
 		return convertPoint(env, system, point->h, point->v, res);
 	}
+	void convertPoint(JNIEnv *env, CoordinateSystem system, jdouble x, jdouble y, AIRealPoint *res);
 	void convertPoint(JNIEnv *env, CoordinateSystem system, jobject point, AIRealPoint *res);
 
 	// Segment array point conversion

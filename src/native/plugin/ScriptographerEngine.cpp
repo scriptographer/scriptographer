@@ -1004,20 +1004,13 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 
 // This handles 2 types of points: com.scriptographer.ai.Point,
 // com.scriptographer.adm.Point
-void ScriptographerEngine::convertPoint(JNIEnv *env,
-		CoordinateSystem system, jobject point, AIRealPoint *res) {
-	jdouble x, y;
-	if (env->IsInstanceOf(point, cls_ai_Point)) {
-		x = env->GetDoubleField(point, fid_ai_Point_x);
-		y = env->GetDoubleField(point, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
-		x = env->GetIntField(point, fid_adm_Point_x);
-		y = env->GetIntField(point, fid_adm_Point_y);
-	}
+void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
+		jdouble x, jdouble y, AIRealPoint *res) {
 	// Illustrator crashes when it receives nan coordinates. So Set them 
 	// to 0 before passing them to the native code.
 	if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y))
-		THROW_INVALID_COORDINATES(env, point);
+		THROW_INVALID_COORDINATES(env,
+				convertPoint(env, kCurrentCoordinates, x, y));
 	if (m_topDownCoordinates)
 		y = -y;
 	switch (system) {
@@ -1033,6 +1026,19 @@ void ScriptographerEngine::convertPoint(JNIEnv *env,
 	res->h = x;
 	res->v = y;
 	EXCEPTION_CHECK(env);
+}
+
+void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
+		jobject point, AIRealPoint *res) {
+	jdouble x, y;
+	if (env->IsInstanceOf(point, cls_ai_Point)) {
+		x = env->GetDoubleField(point, fid_ai_Point_x);
+		y = env->GetDoubleField(point, fid_ai_Point_y);
+	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
+		x = env->GetIntField(point, fid_adm_Point_x);
+		y = env->GetIntField(point, fid_adm_Point_y);
+	}
+	convertPoint(env, system, x, y, res);
 }
 
 /**
