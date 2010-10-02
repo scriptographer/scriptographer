@@ -31,6 +31,9 @@ package com.scriptographer.ai;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
+import java.text.NumberFormat;
+
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -125,10 +128,11 @@ public class GrayColor extends Color {
 	}
 
 	public String toString() {
+		NumberFormat format = ScriptographerEngine.numberFormat;
 		StringBuffer buf = new StringBuffer(16);
-		buf.append("{ gray: ").append(gray);
+		buf.append("{ gray: ").append(format.format(gray));
 		if (alpha != -1f)
-			buf.append(", alpha: ").append(alpha);
+			buf.append(", alpha: ").append(format.format(alpha));
 		buf.append(" }");
 		return buf.toString();
 	}

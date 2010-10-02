@@ -66,7 +66,7 @@ if (script.preferences.accepted) {
 		scriptRepositories = [];
 		var dir = Dialog.chooseDirectory(
 			'Please choose your Scriptographer Script Folder. We recommend'
-			+ (app.isMacintosh() ? '\n' : ' ')
+			+ (illustrator.isMacintosh() ? '\n' : ' ')
 			+ 'to keep your scripts in a dedicated folder within your Documents.',
 			userDirectory);
 		if (dir && dir.isDirectory()) {

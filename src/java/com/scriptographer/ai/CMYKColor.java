@@ -33,6 +33,9 @@ package com.scriptographer.ai;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
+import java.text.NumberFormat;
+
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -205,13 +208,14 @@ public class CMYKColor extends Color {
 	}
 
 	public String toString() {
+		NumberFormat format = ScriptographerEngine.numberFormat;
 		StringBuffer buf = new StringBuffer(32);
-		buf.append("{ cyan: ").append(cyan);
-		buf.append(", magenta: ").append(magenta);
-		buf.append(", yellow: ").append(yellow);
-		buf.append(", black: ").append(black);
+		buf.append("{ cyan: ").append(format.format(cyan));
+		buf.append(", magenta: ").append(format.format(magenta));
+		buf.append(", yellow: ").append(format.format(yellow));
+		buf.append(", black: ").append(format.format(black));
 		if (alpha != -1f)
-			buf.append(", alpha: ").append(alpha);
+			buf.append(", alpha: ").append(format.format(alpha));
 		buf.append(" }");
 		return buf.toString();
 	}

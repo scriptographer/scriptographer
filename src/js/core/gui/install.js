@@ -25,7 +25,7 @@
  * -- GPL LICENSE NOTICE --
  */
 
-if (app.isMacintosh()) {
+if (illustrator.isMacintosh()) {
 	function executeProcess(command, input) {
 		var process = java.lang.Runtime.getRuntime().exec(command);
 		if (input) {

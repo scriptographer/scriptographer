@@ -1,3 +1,5 @@
+// http://scriptographer.org/tutorials/paths/using-color-and-style/#the-pathstyle-object
+
 var firstPath = new Path.Circle(new Point(50, 50), 50); 
 firstPath.strokeColor = '#ff0000'; 
 print(firstPath.strokeColor); // { red: 1, green: 0.0, blue: 0.0 } 

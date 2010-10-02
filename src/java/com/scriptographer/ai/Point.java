@@ -946,6 +946,8 @@ public class Point implements ChangeEmitter {
 	}
 
 	public String toString() {
-	   	return "{ x: " + x + ", y: " + y + " }";
+	   	return "{ x: " + ScriptographerEngine.numberFormat.format(x)
+	   		+ ", y: " + ScriptographerEngine.numberFormat.format(y)
+	   		+ " }";
 	}
 }

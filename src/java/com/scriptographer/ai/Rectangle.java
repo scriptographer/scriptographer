@@ -585,10 +585,12 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(128);
-		buf.append("{ x: ").append(x);
-		buf.append(", y: ").append(y);
-		buf.append(", width: ").append(width);
-		buf.append(", height: ").append(height);
+		buf.append("{ x: ").append(ScriptographerEngine.numberFormat.format(x));
+		buf.append(", y: ").append(ScriptographerEngine.numberFormat.format(y));
+		buf.append(", width: ").append(
+				ScriptographerEngine.numberFormat.format(width));
+		buf.append(", height: ").append(
+				ScriptographerEngine.numberFormat.format(height));
 		buf.append(" }");
 		return buf.toString();
 	}

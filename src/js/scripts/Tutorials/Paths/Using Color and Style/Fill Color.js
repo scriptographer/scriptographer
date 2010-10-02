@@ -1,3 +1,5 @@
+// http://scriptographer.org/tutorials/paths/using-color-and-style/#fill-color
+
 var myPath = new Path(); 
 myPath.add(new Point(20, 70)); 
 myPath.add(new Point(40, 100)); 
