@@ -81,7 +81,7 @@ function executeRaster(createDot, multiple) {
 
 	for (var y = 0; y < raster.height; y++) {
 		for (var x = 0; x < raster.width; x++) {
-			app.updateProgress(y * raster.width + x + 1, pixelCount);
+			illustrator.updateProgress(y * raster.width + x + 1, pixelCount);
 			var radius = raster.getPixel(x, y).gray;
 			var obj = createDot(x, y, multiple ? dots : dots[0], radius);
 			if (obj) {
