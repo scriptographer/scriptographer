@@ -48,10 +48,10 @@ function onMouseDrag(event) {
 	var middle = event.point - event.delta / 2;	
 	
 	// the top point: the middle point + the step rotated by -90 degrees	
-	var top = middle + step.rotate((-90).toRadians());
+	var top = middle + step.rotate(-90);
 
 	// the bottom point: the middle point + the step rotated by 90 degrees	
-	var bottom = middle + step.rotate((90).toRadians());
+	var bottom = middle + step.rotate(90);
 	
 	//now create a line using the top and bottom points
 	new Path.Line(top, bottom);
