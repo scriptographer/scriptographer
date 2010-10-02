@@ -66,19 +66,6 @@ public class Script {
 	}
 
 	/**
-	 * Returns the script's preferences, as an object in which data
-	 * can be stored and retrieved from:
-	 * <code>
-	 * script.preferences.value = 10;
-	 * </code>
-	 */
-	public Preferences getPreferences() {
-		if (prefs == null)
-			prefs = new Preferences(ScriptographerEngine.getPreferences(this));
-		return prefs;
-	}
-
-	/**
 	 * Returns the script file.
 	 */
 	public File getFile() {
@@ -90,6 +77,24 @@ public class Script {
 	 */
 	public File getDirectory() {
 		return file.getParentFile();
+	}
+
+	/**
+	 * Returns the script's preferences, as an object in which data
+	 * can be stored and retrieved from:
+	 * <code>
+	 * script.preferences.value = 10;
+	 * </code>
+	 */
+	public Preferences getPreferences() {
+		// Share preferences with the parent, as this will also be the script
+		// object used in callback functions (the child script is only used
+		// during compile time of include).
+		if (parent != null)
+			return parent.getPreferences();
+		if (prefs == null)
+			prefs = new Preferences(ScriptographerEngine.getPreferences(this));
+		return prefs;
 	}
 
 	/**
