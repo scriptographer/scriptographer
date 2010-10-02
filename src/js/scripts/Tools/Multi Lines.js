@@ -16,11 +16,14 @@ var values = {
 var components = {
 	lines: {
 		label: 'Lines',
-		range: [0, 100]
+		range: [0, 100],
+		min: 1,
+		steppers: true
 	},
 	size: {
 		label: 'Size',
-		min: 0
+		min: 0,
+		steppers: true
 	},
 	smooth: { label: 'Smooth' },
 	happy: { label: 'Happy' }

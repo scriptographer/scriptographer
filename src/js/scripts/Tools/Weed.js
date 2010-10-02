@@ -12,15 +12,17 @@ var values = {
 var components = {
 	size: {
 		label: 'Size',
-		range: [0, 100]
+		range: [0, 100],
+		steppers: true
 	},
 	max: {
 		label: 'Max',
-		range: [1, 500]
+		range: [1, 500],
+		steppers: true
 	}
 };
 
-var palette = new Palette('Random Radius', components, values);
+var palette = new Palette('Weed', components, values);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Mouse handling

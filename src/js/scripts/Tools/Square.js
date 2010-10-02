@@ -11,7 +11,8 @@ var values = {
 var components = {
 	tolerance: {
 		label: 'Tolerance',
-		min: 0
+		min: 0,
+		steppers: true
 	}
 };
 

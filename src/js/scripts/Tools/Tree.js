@@ -39,6 +39,7 @@ var components = {
 	minBranch: {
 		label: 'Min Branches',
 		min: 0,
+		steppers: true,
 		onChange: function(value) {
 			if (value > values.maxBranch)
 				values.maxBranch = value;
@@ -47,6 +48,7 @@ var components = {
 	maxBranch: {
 		label: 'Max Branches',
 		min: 0,
+		steppers: true,
 		onChange: function(value) {
 			if (value < values.minBranch)
 				values.minBranch = value;
