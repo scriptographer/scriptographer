@@ -62,6 +62,10 @@
 #define MAPVK_VK_TO_VSC_EX 4
 #endif
 
+// Define missing isnan and isinf
+#define isnan(x) _isnan(x)
+#define isinf(x) (!_finite(x))
+
 #endif // WIN_ENV
 
 // JNI
