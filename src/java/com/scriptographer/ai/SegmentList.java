@@ -426,19 +426,19 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	}
 
 	/**
-	 * Adds a cubic bezier curve to the path, defined by two handles and an end
+	 * Adds a cubic bezier curve to the path, defined by two handles and a to
 	 * point.
 	 */
-	public void cubicCurveTo(Point handle1, Point handle2, Point end) {
-		cubicCurveTo(handle1.x, handle1.y, handle2.x, handle2.y, end.x, end.y);
+	public void cubicCurveTo(Point handle1, Point handle2, Point to) {
+		cubicCurveTo(handle1.x, handle1.y, handle2.x, handle2.y, to.x, to.y);
 	}
 
 	/**
-	 * Adds a cubic bezier curve to the path, defined by two handles and an end
+	 * Adds a cubic bezier curve to the path, defined by two handles and a to
 	 * point.
 	 */
 	public void cubicCurveTo(double handle1X, double handle1Y,
-			double handle2X, double handle2Y, double endX, double endY) {
+			double handle2X, double handle2Y, double toX, double toY) {
 		// First modify the current segment:
 		Segment current = getCurrentSegment();
 		// Convert to relative values:
@@ -446,23 +446,23 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				handle1X - current.point.x,
 				handle1Y - current.point.y);
 		// And add the new segment, with handleIn set to c2
-		add(new Segment(endX, endY, handle2X - endX, handle2Y - endY, 0, 0));
+		add(new Segment(toX, toY, handle2X - toX, handle2Y - toY, 0, 0));
 	}
 
 	/**
-	 * Adds a quadratic bezier curve to the path, defined by a handle and an end
+	 * Adds a quadratic bezier curve to the path, defined by a handle and a to
 	 * point.
 	 */
-	public void quadraticCurveTo(Point handle, Point end) {
-		quadraticCurveTo(handle.x, handle.y, end.x, end.y);		
+	public void quadraticCurveTo(Point handle, Point to) {
+		quadraticCurveTo(handle.x, handle.y, to.x, to.y);		
 	}
 
 	/**
-	 * Adds a quadratic bezier curve to the path, defined by a handle and an end
+	 * Adds a quadratic bezier curve to the path, defined by a handle and a to
 	 * point.
 	 */
 	public void quadraticCurveTo(double handleX, double handleY,
-			double endX, double endY) {
+			double toX, double toY) {
 		// This is exact:
 		// If we have the three quad points: A E D,
 		// and the cubic is A B C D,
@@ -473,78 +473,80 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		double y1 = current.point.y;
 		cubicCurveTo(handleX + (1f/3f) * (x1 - handleX),
 				handleY + (1f/3f) * (y1 - handleY), 
-				handleX + (1f/3f) * (endX - handleX),
-				handleY + (1f/3f) * (endY - handleY),
-				endX,
-				endY);
+				handleX + (1f/3f) * (toX - handleX),
+				handleY + (1f/3f) * (toY - handleY),
+				toX,
+				toY);
 	}
 
-	public void curveTo(Point through, Point end, double t) {
+	public void curveTo(Point through, Point to, double parameter) {
 		Point current = getCurrentSegment().point;
-		// handle = (through - (1 - t)^2 * start - t^2 * end) / (2 * (1 - t) * t)
-		double t1 = 1 - t;
+		// handle = (through - (1 - t)^2 * current - t^2 * to) / (2 * (1 - t) * t)
+		double t1 = 1 - parameter;
 		Point handle = through.subtract(
 				current.multiply(t1 * t1)).subtract(
-						end.multiply(t * t)).divide(2.0 * t * t1);
+						to.multiply(parameter * parameter)).divide(
+								2.0 * parameter * t1);
 		if (handle.isNaN())
 			throw new ScriptographerException(
-					"Cannot put a curve through points with t=" + t);
-		quadraticCurveTo(handle, end);
+					"Cannot put a curve through points with parameter="
+					+ parameter);
+		quadraticCurveTo(handle, to);
 	}
 
-	public void curveTo(Point through, Point end) {
-		curveTo(through, end, 0.5);
-	}
-
-	public void curveTo(double throughX, double throughY,
-			double endX, double endY, double t) {
-		curveTo(new Point(throughX, throughY), new Point(endX, endY), t);
+	public void curveTo(Point through, Point to) {
+		curveTo(through, to, 0.5);
 	}
 
 	public void curveTo(double throughX, double throughY,
-			double endX, double endY) {
-		curveTo(throughX, throughY, endX, endY, 0.5);
+			double toX, double toY, double parameter) {
+		curveTo(new Point(throughX, throughY), new Point(toX, toY), parameter);
 	}
 
-	public void arcTo(Point end, boolean clockwise) {
+	public void curveTo(double throughX, double throughY,
+			double toX, double toY) {
+		curveTo(throughX, throughY, toX, toY, 0.5);
+	}
+
+	public void arcTo(Point point, boolean clockwise) {
 		Point current = getCurrentSegment().point;
-		Point middle = current.add(end).divide(2);
+		Point middle = current.add(point).divide(2);
 		Point step = middle.subtract(current);
-		Point point = clockwise 
+		Point through = clockwise 
 				? middle.subtract(-step.y, step.x)
 				: middle.add(-step.y, step.x);
-		arcTo(point, end);
+		arcTo(through, point);
 	}
 
-	public void arcTo(Point end) {
-		arcTo(end, true);
+	public void arcTo(Point point) {
+		arcTo(point, true);
 	}
 
-	public void arcTo(double endX, double endY, boolean clockwise) {
-		arcTo(new Point(endX, endY), clockwise);
+	public void arcTo(double x, double y, boolean clockwise) {
+		arcTo(new Point(x, y), clockwise);
 	}
 
-	public void arcTo(double endX, double endY) {
-		arcTo(endX, endY, true);
-	}
-
-	/**
-	 * Adds a circular arc to the path that passes through the given through
-	 * point.
-	 */
-	public void arcTo(Point through, Point end) {
-		arcTo(through.x, through.y, end.x, end.y);
+	public void arcTo(double x, double y) {
+		arcTo(x, y, true);
 	}
 
 	/**
 	 * Adds a circular arc to the path that passes through the given through
 	 * point.
 	 */
-	public void arcTo(double throughX, double throughY, double endX, double endY) {
+	public void arcTo(Point through, Point to) {
+		arcTo(through.x, through.y, to.x, to.y);
+	}
+
+	/**
+	 * Adds a circular arc to the path that passes through the given through
+	 * point.
+	 */
+	public void arcTo(double throughX, double throughY, double toX, double toY) {
 		// Get the start point:
 		Segment current = getCurrentSegment();
-		double x1 = current.point.x, x2 = throughX, x3 = endX;
-		double y1 = current.point.y, y2 = throughY, y3 = endY;
+		double x1 = current.point.x, x2 = throughX, x3 = toX;
+		double y1 = current.point.y, y2 = throughY, y3 = toY;
 		
 		double f = x3 * x3 - x3 * x2 - x1 * x3 + x1 * x2 + y3 * y3 - y3 * y2
 				- y1 * y3 + y1 * y2;
@@ -619,9 +621,9 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	 * Relative commands
 	 */
 
-	public void lineBy(Point point) {
-		if (point != null)
-			lineBy(point.x, point.y);
+	public void lineBy(Point vector) {
+		if (vector != null)
+			lineBy(vector.x, vector.y);
 	}
 
 	public void lineBy(double x, double y) {
@@ -629,56 +631,57 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		lineTo(current.add(x, y));
 	}
 
-	public void curveBy(Point through, Point end, double t) {
-		curveBy(through != null ? through.x : 0,
-				through != null ? through.y : 0,
-				end != null ? end.x : 0,
-				end != null ? end.y : 0,
-				t);
+	public void curveBy(Point throughVector, Point toVector, double parameter) {
+		curveBy(throughVector != null ? throughVector.x : 0,
+				throughVector != null ? throughVector.y : 0,
+				toVector != null ? toVector.x : 0,
+				toVector != null ? toVector.y : 0,
+				parameter);
 	}
 
-	public void curveBy(Point through, Point end) {
-		curveBy(through, end, 0.5);
-	}
-
-	public void curveBy(double throughX, double throughY,
-			double endX, double endY, double t) {
-		Point current = getCurrentSegment().point;
-		curveTo(current.add(throughX, throughY), current.add(endX, endY), t);
+	public void curveBy(Point throughVector, Point toVector) {
+		curveBy(throughVector, toVector, 0.5);
 	}
 
 	public void curveBy(double throughX, double throughY,
-			double endX, double endY) {
-		curveBy(throughX, throughY, endX, endY, 0.5);
-	}
-
-	public void arcBy(Point end, boolean clockwise) {
-		arcBy(end != null ? end.x : 0, end != null ? end.y : 0, clockwise);
-	}
-
-	public void arcBy(double endX, double endY, boolean clockwise) {
+			double toX, double toY, double parameter) {
 		Point current = getCurrentSegment().point;
-		arcTo(current.add(endX, endY), clockwise);
+		curveTo(current.add(throughX, throughY), current.add(toX, toY), parameter);
+	}
+
+	public void curveBy(double throughX, double throughY,
+			double toX, double toY) {
+		curveBy(throughX, throughY, toX, toY, 0.5);
+	}
+
+	public void arcBy(Point vector, boolean clockwise) {
+		arcBy(vector != null ? vector.x : 0,
+				vector != null ? vector.y : 0, clockwise);
+	}
+
+	public void arcBy(double x, double y, boolean clockwise) {
+		Point current = getCurrentSegment().point;
+		arcTo(current.add(x, y), clockwise);
 	}
 
 	/**
 	 * Adds a circular arc to the path that passes through the given through
 	 * point.
 	 */
-	public void arcBy(Point through, Point end) {
-		arcBy(through != null ? through.x : 0,
-				through != null ? through.y : 0,
-				end != null ? end.x : 0,
-				end != null ? end.y : 0);
+	public void arcBy(Point throughVector, Point toVector) {
+		arcBy(throughVector != null ? throughVector.x : 0,
+				throughVector != null ? throughVector.y : 0,
+				toVector != null ? toVector.x : 0,
+				toVector != null ? toVector.y : 0);
 	}
 
 	/**
 	 * Adds a circular arc to the path that passes through the given through
 	 * point.
 	 */
-	public void arcBy(double throughX, double throughY, double endX, double endY) {
+	public void arcBy(double throughX, double throughY, double toX, double toY) {
 		Point current = getCurrentSegment().point;
-		arcTo(current.add(throughX, throughY), current.add(endX, endY));
+		arcTo(current.add(throughX, throughY), current.add(toX, toY));
 	}
 
 	/**

@@ -714,31 +714,31 @@ public class Path extends PathItem {
 	
 	@Override
 	public void cubicCurveTo(double handle1X, double handle1Y, double handle2X,
-			double handle2Y, double endX, double endY) {
+			double handle2Y, double toX, double toY) {
 		getSegments().cubicCurveTo(handle1X, handle1Y, handle2X, handle2Y,
-				endX, endY);
+				toX, toY);
 	}
 
 	@Override
 	public void quadraticCurveTo(double handleX, double handleY,
-			double endX, double endY) {
-		getSegments().quadraticCurveTo(handleX, handleY, endX, endY);
+			double toX, double toY) {
+		getSegments().quadraticCurveTo(handleX, handleY, toX, toY);
 	}
 
 	@Override
 	public void curveTo(double throughX, double throughY,
-			double endX, double endY, double t) {
-		getSegments().curveTo(throughX, throughY, endX, endY, t);
+			double toX, double toY, double parameter) {
+		getSegments().curveTo(throughX, throughY, toX, toY, parameter);
 	}
 
 	@Override
-	public void arcTo(double endX, double endY, boolean clockwise) {
-		getSegments().arcTo(endX, endY, clockwise);
+	public void arcTo(double x, double y, boolean clockwise) {
+		getSegments().arcTo(x, y, clockwise);
 	}
 
 	@Override
-	public void arcTo(double throughX, double throughY, double endX, double endY) {
-		getSegments().arcTo(throughX, throughY, endX, endY);
+	public void arcTo(double throughX, double throughY, double toX, double toY) {
+		getSegments().arcTo(throughX, throughY, toX, toY);
 	}
 
 	@Override
@@ -748,18 +748,18 @@ public class Path extends PathItem {
 
 	@Override
 	public void curveBy(double throughX, double throughY,
-			double endX, double endY, double t) {
-		getSegments().curveBy(throughX, throughY, endX, endY, t);
+			double toX, double toY, double parameter) {
+		getSegments().curveBy(throughX, throughY, toX, toY, parameter);
 	}
 
 	@Override
-	public void arcBy(double endX, double endY, boolean clockwise) {
-		getSegments().arcBy(endX, endY, clockwise);
+	public void arcBy(double x, double y, boolean clockwise) {
+		getSegments().arcBy(x, y, clockwise);
 	}
 
 	@Override
-	public void arcBy(double throughX, double throughY, double endX, double endY) {
-		getSegments().arcBy(throughX, throughY, endX, endY);
+	public void arcBy(double throughX, double throughY, double toX, double toY) {
+		getSegments().arcBy(throughX, throughY, toX, toY);
 	}
 
 	@Override

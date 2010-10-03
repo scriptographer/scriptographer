@@ -151,19 +151,19 @@ public class CompoundPath extends PathItem {
 
 	@Override
 	public void curveTo(double throughX, double throughY,
-			double endX, double endY, double t) {
-		getCurrentPath().curveTo(throughX, throughY, endX, endY, t);
+			double toX, double toY, double parameter) {
+		getCurrentPath().curveTo(throughX, throughY, toX, toY, parameter);
 	}
 
 	@Override
-	public void arcTo(double endX, double endY, boolean clockwise) {
-		getCurrentPath().arcTo(endX, endY, clockwise);
+	public void arcTo(double x, double y, boolean clockwise) {
+		getCurrentPath().arcTo(x, y, clockwise);
 	}
 
 	@Override
 	public void arcTo(double throughX, double throughY,
-			double endX, double endY) {
-		getCurrentPath().arcTo(throughX, throughY, endX, endY);
+			double toX, double toY) {
+		getCurrentPath().arcTo(throughX, throughY, toX, toY);
 	}
 
 	public void moveBy(double x, double y) {
@@ -183,18 +183,18 @@ public class CompoundPath extends PathItem {
 
 	@Override
 	public void curveBy(double throughX, double throughY,
-			double endX, double endY, double t) {
-		getCurrentPath().curveBy(throughX, throughY, endX, endY, t);
+			double toX, double toY, double parameter) {
+		getCurrentPath().curveBy(throughX, throughY, toX, toY, parameter);
 	}
 
 	@Override
-	public void arcBy(double endX, double endY, boolean clockwise) {
-		getCurrentPath().arcBy(endX, endY, clockwise);
+	public void arcBy(double x, double y, boolean clockwise) {
+		getCurrentPath().arcBy(x, y, clockwise);
 	}
 
 	@Override
-	public void arcBy(double throughX, double throughY, double endX, double endY) {
-		getCurrentPath().arcBy(throughX, throughY, endX, endY);
+	public void arcBy(double throughX, double throughY, double toX, double toY) {
+		getCurrentPath().arcBy(throughX, throughY, toX, toY);
 	}
 
 	@Override
