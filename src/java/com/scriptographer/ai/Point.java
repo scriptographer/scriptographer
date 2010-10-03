@@ -609,9 +609,9 @@ public class Point implements ChangeEmitter {
 	 * 
 	 * The angle orientation is controlled by the
 	 * {@link com.scriptographer.sg.Script#getCoordinateSystem() } property,
-	 * which is top-down by default, leading to clockwise angle orientation. In
-	 * the bottom-up coordinate system, angles are specified in
-	 * counter-clockwise orientation.
+	 * which is {@code 'top-down' } by default, leading to clockwise angle
+	 * orientation. In the {@code 'bottom-up' } coordinate system, angles are
+	 * specified in counter-clockwise orientation.
 	 */
 	public double getAngle() {
 		// Cache the angle in the internal angle field, so we can return
