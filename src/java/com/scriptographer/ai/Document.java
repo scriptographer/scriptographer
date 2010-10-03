@@ -1333,6 +1333,26 @@ public class Document extends NativeObject implements ChangeReceiver {
 		return createRectangle(new Rectangle(point, size));
 	}
 
+	/**
+	 * Creates a rectangle shaped Path Item from the passed points. These do not
+	 * necessarily need to be the top left and bottom right corners, the
+	 * constructor figures out how to fit a rectangle between them.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Rectangle(new Point(100, 100), new Point(200, 300));
+	 * </code>
+	 * 
+	 * @param point1 The first point defining the rectangle
+	 * @param point2 The second point defining the rectangle
+	 * @return the newly created path
+	 * 
+	 * @jshide
+	 */
+	public Path createRectangle(Point point1, Point point2) {
+		return createRectangle(new Rectangle(point1, point2));
+	}
+
 	private native Path nativeCreateRoundRectangle(Rectangle rect, Size size);
 
 	/**
@@ -1481,6 +1501,23 @@ public class Document extends NativeObject implements ChangeReceiver {
 		return createCircle(new Point(x, y), radius);
 	}
 
+	/**
+	 * Creates a circular arc shaped Path Item.
+	 * 
+	 * Sample code:
+	 * 
+	 * <code>
+	 * var path = new Path.Arc(new Point(0, 0), new Point(100, 100),
+	 *         new Point(200, 150));
+	 * </code>
+	 * 
+	 * @param from the starting point of the circular arc
+	 * @param through the point the arc passes through
+	 * @param to the end point of the arc
+	 * @return the newly created path
+	 * 
+	 * @jshide
+	 */
 	public Path createArc(Point from, Point through, Point to) {
 		Path path = createPath();
 		path.moveTo(from);
