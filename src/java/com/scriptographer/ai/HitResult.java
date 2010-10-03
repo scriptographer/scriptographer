@@ -33,9 +33,10 @@ import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.script.EnumUtils;
 
 /**
- * HitResult objects are returned by {@link Document#hitTest} and
- * {@link Path#hitTest}. They represent the result of a hit test,
- * which is reflected in the object's properties as described below.
+ * HitResult objects are returned by
+ * {@link Document#hitTest(Point, HitRequest, float)} and
+ * {@link Path#hitTest(Point, HitRequest, float)}. They represent the result of
+ * a hit test, which is reflected in the object's properties as described below.
  * 
  * @author lehni
  */
