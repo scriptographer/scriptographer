@@ -330,7 +330,7 @@ public class Matrix {
 	 * 
 	 * Angles are oriented clockwise and measured in degrees by default. Read
 	 * more about angle units and orientation in the description of the
-	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * {@link com.scriptographer.ai.Point#getAngle()} property.
 	 * 
 	 * @param angle the angle to rotate by
 	 * @param center the center point around which to rotate

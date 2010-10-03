@@ -327,7 +327,7 @@ public class CharacterStyle extends PathStyle {
 	 * 
 	 * Angles are oriented clockwise and measured in degrees by default. Read
 	 * more about angle units and orientation in the description of the
-	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * {@link com.scriptographer.ai.Point#getAngle()} property.
 	 * 
 	 * Sample code:
 	 * <code>
