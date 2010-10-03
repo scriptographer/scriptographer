@@ -623,6 +623,22 @@ public class Point implements ChangeEmitter {
 				: angle;
 	}
 
+	public int getQuadrant() {
+		if (x >= 0) {
+			if (y >= 0) {
+				return 1;
+			} else {
+				return 4;
+			}
+		} else {
+			if (y >= 0) {
+				return 2;
+			} else {
+				return 3;
+			}
+		}
+	}
+
 	public void setAngle(double angle) {
 		if (ScriptographerEngine.anglesInDegrees)
 			angle = angle * Math.PI / 180.0;
