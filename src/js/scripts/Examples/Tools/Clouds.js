@@ -57,11 +57,11 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	var vector = (event.delta / 2).rotate(-90);
-	
-	if (values.flip && event.count.isEven())
-		vector = vector * -1;
-	
-	var circlePoint = event.middlePoint + vector;
-	path.arcTo(circlePoint, event.point);
+	if (values.flip) {
+		// Look at whether event.count is even to decide if we draw an arc
+		// in clockwise or counter-clockwise direction.
+		path.arcTo(event.point, event.count.isEven());
+	} else {
+		path.arcTo(event.point);
+	}
 }
