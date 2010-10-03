@@ -1,6 +1,6 @@
 Path.inject(new function() {
 	return ['Line', 'Rectangle', 'RoundRectangle', 'RegularPolygon',
-			'Star', 'Spiral', 'Oval', 'Circle'].each(function(name) {
+			'Star', 'Spiral', 'Oval', 'Circle', 'Arc'].each(function(name) {
 		this.statics[name] = function() {
 			if (!document)
 				throw 'Unable to create item. There is no document.';

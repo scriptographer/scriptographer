@@ -1254,7 +1254,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Path createLine(Point pt1, Point pt2) {
-		Path path = this.createPath();
+		Path path = createPath();
 		path.moveTo(pt1);
 		path.lineTo(pt2);
 		return path;
@@ -1479,6 +1479,13 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 */
 	public Path createCircle(float x, float y, float radius) {
 		return createCircle(new Point(x, y), radius);
+	}
+
+	public Path createArc(Point from, Point through, Point to) {
+		Path path = createPath();
+		path.moveTo(from);
+		path.arcTo(through, to);
+		return path;
 	}
 
 	private native Path nativeCreateRegularPolygon(Point center, int numSides,

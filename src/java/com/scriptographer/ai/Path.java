@@ -53,6 +53,7 @@ import com.scriptographer.CommitManager;
  * @jsreference {@type constructor} {@name Path.Spiral} {@reference Document#createSpiral} {@after Path}
  * @jsreference {@type constructor} {@name Path.Oval} {@reference Document#createOval} {@after Path}
  * @jsreference {@type constructor} {@name Path.Circle} {@reference Document#createCircle} {@after Path}
+ * @jsreference {@type constructor} {@name Path.Arc} {@reference Document#createArc} {@after Path}
  */
 
 public class Path extends PathItem {
