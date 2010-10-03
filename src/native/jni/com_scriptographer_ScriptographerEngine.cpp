@@ -193,9 +193,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_dispatchNext
 }
 
 /*
- * jdouble getApplicationVersion()
+ * jdouble getIllustratorVersion()
  */
-JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationVersion(JNIEnv *env, jclass cls) {
+JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getIllustratorVersion(JNIEnv *env, jclass cls) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		ASInt32 major = sAIRuntime->GetAppMajorVersion();
@@ -211,9 +211,9 @@ JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getApplic
 }
 
 /*
- * int getApplicationRevision()
+ * int getIllustratorRevision()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationRevision(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_getIllustratorRevision(JNIEnv *env, jclass cls) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		return sAIRuntime->GetAppRevisionVersion();

@@ -54,14 +54,14 @@ public class Illustrator {
 	 * Adobe Illustrator's version description.
 	 */
 	public double getVersion() {
-		return ScriptographerEngine.getApplicationVersion();
+		return ScriptographerEngine.getIllustratorVersion();
 	}
 
 	/**
 	 * Adobe Illustrator's revision number.
 	 */
 	public int getRevision() {
-		return ScriptographerEngine.getApplicationRevision();
+		return ScriptographerEngine.getIllustratorRevision();
 	}
 
 	/**
@@ -174,14 +174,14 @@ public class Illustrator {
 		ScriptographerEngine.closeProgress();
 	}
 
-	private static Illustrator application = null;
+	private static Illustrator instance = null;
 
 	/**
 	 * @jshide
 	 */
 	public static Illustrator getInstance() {
-		if (application == null)
-			application = new Illustrator();
-		return application;
+		if (instance == null)
+			instance = new Illustrator();
+		return instance;
 	}
 }

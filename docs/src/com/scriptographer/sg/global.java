@@ -57,9 +57,9 @@ public class global {
 	public Scriptographer scriptographer;
 
 	/**
-	 * The global application object.
+	 * The global illustrator object.
 	 */
-	public Application app;
+	public Illustrator illustrator;
 	
 	/**
 	 * The global documents array.

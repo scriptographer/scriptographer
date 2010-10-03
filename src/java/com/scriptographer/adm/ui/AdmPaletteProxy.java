@@ -67,7 +67,7 @@ public class AdmPaletteProxy extends PaletteProxy {
 			}
 		};
 
-		double version = ScriptographerEngine.getApplicationVersion();
+		double version = ScriptographerEngine.getIllustratorVersion();
 		boolean upperCase = false;
 		int extraWidth;
 		if (version >= 15) { // CS4 and above

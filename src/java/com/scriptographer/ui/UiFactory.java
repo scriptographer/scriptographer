@@ -46,7 +46,7 @@ public abstract class UiFactory {
 
 	public static UiFactory getInstance() {
 		if (factory == null) {
-			factory = ScriptographerEngine.getApplicationVersion() < 16
+			factory = ScriptographerEngine.getIllustratorVersion() < 16
 					? new AdmUiFactory()
 					// TODO: Implement SwtUiFactory
 					// new SwtUiFactory();

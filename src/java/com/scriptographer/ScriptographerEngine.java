@@ -835,9 +835,9 @@ public class ScriptographerEngine {
 
 	public static native boolean isActive();
 
-	public static native double getApplicationVersion();
+	public static native double getIllustratorVersion();
 
-	public static native int getApplicationRevision();
+	public static native int getIllustratorRevision();
 
 	private static double version = -1;
 	private static int revision = -1;
