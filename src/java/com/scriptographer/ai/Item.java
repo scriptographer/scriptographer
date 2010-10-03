@@ -556,8 +556,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			int dictionaryHandle);
 
 	protected boolean remove(boolean removeHandle) {
-		if (handle != 0 && (!removeHandle
-				|| nativeRemove(handle, document.handle, dictionaryHandle))) {
+		if (handle != 0 && (!removeHandle || isValid()
+				&& nativeRemove(handle, document.handle, dictionaryHandle))) {
 			// Do not remove from items since undoing can bring them back, and
 			// we don't want to loose the undo history tracking ionformation for
 			// them: items.remove(handle);
