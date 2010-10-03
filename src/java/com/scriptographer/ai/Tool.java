@@ -176,7 +176,8 @@ public class Tool extends ToolHandler {
 	 * is called repeatedly after the initial {@link #onMouseDown} until the
 	 * user releases the mouse.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * // Fire the onMouseDrag event once a second,
 	 * // while the mouse button is down
 	 * tool.eventInterval = 1000;

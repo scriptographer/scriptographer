@@ -67,8 +67,7 @@ public class PlacedSymbol extends Item {
 	 * Sample code:
 	 * <code>
 	 * var symbol = document.symbols['Rocket'];
-	 * var rotation = (45).toRadians();
-	 * var matrix = new Matrix().translate(100, 100).rotate(rotation);
+	 * var matrix = new Matrix().translate(100, 100).rotate(45);
 	 * var placedSymbol = new PlacedSymbol(symbol, matrix);
 	 * </code>
 	 * 

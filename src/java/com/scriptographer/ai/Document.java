@@ -666,7 +666,8 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * passed map. For each of the keys in the map, the demanded value can
 	 * either be true or false.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * // All selected paths and rasters contained in the document.
 	 * var selectedItems = document.getItems({ 
 	 *     type: [Path, Raster], 

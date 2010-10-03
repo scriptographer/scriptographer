@@ -36,8 +36,9 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 
 /**
- * The CharacterStyle object represents the character style of a text item ({@link TextItem#getCharacterStyle()})
- * or a text range ({@link TextRange#getCharacterStyle()}).
+ * The CharacterStyle object represents the character style of a text item (
+ * {@link TextItem#getCharacterStyle()}) or a text range (
+ * {@link TextRange#getCharacterStyle()}).
  * 
  * Sample code:
  * <code>
@@ -324,16 +325,20 @@ public class CharacterStyle extends PathStyle {
 	 * The rotation of the characters in the text item that the character style
 	 * is applied to.
 	 * 
+	 * Angles are oriented clockwise and measured in degrees by default. Read
+	 * more about angle units and orientation in the description of the
+	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = 'The content of the text field.';
 	 * 
 	 * // sets the character rotation to 45 degrees:
-	 * text.characterStyle.rotation = (45).toRadians();
+	 * text.characterStyle.rotation = 45;
 	 * </code>
 	 * 
-	 * @return the rotation in radians
+	 * @return the rotation angle
 	 */
 	public Float getRotation() {
 		Float rotation = nativeGetRotation();

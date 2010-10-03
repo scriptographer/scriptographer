@@ -37,10 +37,11 @@ import com.scriptographer.ScriptographerEngine;
 
 /**
  * The Point object represents a point in the two dimensional space of the
- * Illustrator document. Some functions also use it as a two dimensional vector
- * object.
+ * Illustrator document. It is also used to represent two dimensional vector
+ * objects.
  * 
- * @jsreference {@type field} {@name selected} {@reference SegmentPoint#selected} {@after angle}
+ * @jsreference {@type field} {@name selected} {@reference
+ *              SegmentPoint#selected} {@after angle}
  * 
  * @author lehni
  */
@@ -427,7 +428,8 @@ public class Point implements ChangeEmitter {
 	 * The modulo operator returns the integer remainders of dividing the point
 	 * by the supplied point as a new point.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var point = new Point(12, 6);
 	 * print(point % new Point(5, 2)); // {x: 2, y: 0}
 	 * </code>
@@ -444,7 +446,8 @@ public class Point implements ChangeEmitter {
 	 * The modulo operator returns the integer remainders of dividing the point
 	 * by the supplied value as a new point.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var point = new Point(12, 6);
 	 * print(point % 5); // {x: 2, y: 1}
 	 * </code>
@@ -596,10 +599,19 @@ public class Point implements ChangeEmitter {
 	public Point normalize() {
 		return normalize(1);
 	}
-	
+
 	/**
-	 * The angle from the x axis to the vector in radians, measured in counter
-	 * clockwise direction.
+	 * The vector's angle, measured from the x-axis to the vector.
+	 * 
+	 * Angle units are controlled by the
+	 * {@link com.scriptographer.sg.Script#getAngleUnits() } property, and are in
+	 * degrees by default.
+	 * 
+	 * The angle orientation is controlled by the
+	 * {@link com.scriptographer.sg.Script#getCoordinateSystem() } property,
+	 * which is top-down by default, leading to clockwise angle orientation. In
+	 * the bottom-up coordinate system, angles are specified in
+	 * counter-clockwise orientation.
 	 */
 	public double getAngle() {
 		// Cache the angle in the internal angle field, so we can return
@@ -623,10 +635,13 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-     * {@grouptitle Angle & Rotation}
+	 * {@grouptitle Angle & Rotation}
 	 * 
-	 * Returns the smaller angle between two vectors in radians. The angle is
-	 * unsigned, no information about rotational direction is given.
+	 * Returns the smaller angle between two vectors. The angle is unsigned, no
+	 * information about rotational direction is given.
+	 * 
+	 * Read more about angle units and orientation in the description of the
+	 * {@link #getAngle()} property.
 	 * 
 	 * @param point
 	 */
@@ -642,9 +657,11 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Returns the angle between two vectors in radians. The angle is
-	 * directional and signed, giving information about the rotational
-	 * direction.
+	 * Returns the angle between two vectors. The angle is directional and
+	 * signed, giving information about the rotational direction.
+	 * 
+	 * Read more about angle units and orientation in the description of the
+	 * {@link #getAngle()} property.
 	 * 
 	 * @param point
 	 */
@@ -662,7 +679,10 @@ public class Point implements ChangeEmitter {
 	 * Rotates the point by the given angle.
 	 * The object itself is not modified.
 	 * 
-	 * @param angle the rotation angle in radians
+	 * Read more about angle units and orientation in the description of the
+	 * {@link #getAngle()} property.
+	 * 
+	 * @param angle the rotation angle
 	 * @return the rotated point
 	 */
 	public Point rotate(double angle) {
@@ -680,7 +700,10 @@ public class Point implements ChangeEmitter {
 	 * Rotates the point around a center point.
 	 * The object itself is not modified.
 	 * 
-	 * @param angle the rotation angle in radians
+	 * Read more about angle units and orientation in the description of the
+	 * {@link #getAngle()} property.
+	 * 
+	 * @param angle the rotation angle
 	 * @param center the center point of the rotation
 	 * @return the rotated point
 	 */
@@ -695,7 +718,10 @@ public class Point implements ChangeEmitter {
 	 * Rotates the point around a center point.
 	 * The object itself is not modified.
 	 * 
-	 * @param angle the rotation angle in radians
+	 * Read more about angle units and orientation in the description of the
+	 * {@link #getAngle()} property.
+	 * 
+	 * @param angle the rotation angle
 	 * @param x the x coordinate of the center point
 	 * @param y the y coordinate of the center point
 	 * @return the rotated point
@@ -830,7 +856,8 @@ public class Point implements ChangeEmitter {
 	 * Returns a new point with the absolute values of the specified {@link #x}
 	 * and {@link #y} values. The object itself is not modified!
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var point = new Point(-5, 10);
 	 * var absPoint = point.abs();
 	 * print(absPoint); // { x: 5.0, y: 10.0 }

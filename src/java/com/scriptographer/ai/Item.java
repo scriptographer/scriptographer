@@ -645,7 +645,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * The item's position within the art board. This is the
 	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * // Create a circle at position { x: 10, y: 10 }
 	 * var circle = new Path.Circle(new Point(10, 10), 10);
 	 * 
@@ -1569,7 +1570,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Checks whether the item is valid, i.e. it hasn't been removed.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var path = new Path();
 	 * print(path.isValid()); // true
 	 * path.remove();
@@ -1647,7 +1649,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * list of children and moving it above all other children. You can use this
 	 * function for groups, compound paths and layers.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
@@ -1674,7 +1677,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * list of children and moving it below all other children. You can use this
 	 * function for groups, compound paths and layers.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendBottom(path);
@@ -1697,7 +1701,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Moves this item above the specified item.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isAbove(secondPath)); // false
@@ -1713,7 +1718,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Moves the item below the specified item.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isBelow(firstPath)); // false
@@ -1732,7 +1738,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * Checks if this item is above the specified item in the stacking order of
 	 * the document.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isAbove(firstPath)); // true
@@ -1747,7 +1754,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * Checks if the item is below the specified item in the stacking order of
 	 * the document.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isBelow(secondPath)); // true
@@ -1769,7 +1777,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Checks if the item is contained within the specified item.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
@@ -1784,7 +1793,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Checks if the item is an ancestor of the specified item.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
@@ -1900,7 +1910,11 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Rotates the item by a given angle around the given point.
 	 * 
-	 * @param angle the rotation angle in radians
+	 * Angles are oriented clockwise and measured in degrees by default. Read
+	 * more about angle units and orientation in the description of the
+	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * 
+	 * @param angle the rotation angle
 	 * @see Matrix#rotate(double, Point)
 	 */
 	public void rotate(double angle, Point center) {
@@ -1910,7 +1924,11 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * Rotates the item by a given angle around its center point.
 	 * 
-	 * @param theta the rotation angle in radians
+	 * Angles are oriented clockwise and measured in degrees by default. Read
+	 * more about angle units and orientation in the description of the
+	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * 
+	 * @param angle the rotation angle
 	 */
 	public void rotate(double angle) {
 		rotate(angle, getPosition());

@@ -323,19 +323,16 @@ public class Matrix {
 		return scale(scale, scale);
 	}
 
-	public Matrix rotate(double angle) {
-		transform.rotate(ScriptographerEngine.anglesInDegrees 
-				? angle * Math.PI / 180.0
-				: angle);
-		return this;
-	}
-
 	/**
 	 * Concatenates the matrix with a matrix that rotates coordinates by a
 	 * specified angle (and around a center point, if specified). The matrix
 	 * itself is modified and a reference to it is returned.
 	 * 
-	 * @param angle the angle to rotate by in radians
+	 * Angles are oriented clockwise and measured in degrees by default. Read
+	 * more about angle units and orientation in the description of the
+	 * {@link com.scriptographer.Point#getAngle()} property.
+	 * 
+	 * @param angle the angle to rotate by
 	 * @param center the center point around which to rotate
 	 * @return a reference to the matrix
 	 */
@@ -345,6 +342,13 @@ public class Matrix {
 				: angle,
 				center != null ? center.getX() : 0,
 				center != null ? center.getY() : 0);
+		return this;
+	}
+
+	public Matrix rotate(double angle) {
+		transform.rotate(ScriptographerEngine.anglesInDegrees 
+				? angle * Math.PI / 180.0
+				: angle);
 		return this;
 	}
 

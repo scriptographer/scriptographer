@@ -132,6 +132,18 @@ public class Script {
 	 * there can only be one standard within one 'inlcude' chain...
 	 */
 
+	/**
+	 * The coordinate system orientation that all coordinates in the current
+	 * script are specified in, {@code 'top-down' } by default.
+	 * 
+	 * Set to {@code 'bottom-up' } for backward compatibility with scripts
+	 * written for Scriptographer 2.8 / CS4 and below, where the bottom-up
+	 * orientation was default.
+	 * 
+	 * Note that angles are oriented clockwise in the {@code 'top-down' }
+	 * coordinate system, and counter-clockwise in the {@code 'bottom-up' }
+	 * system.
+	 */
 	public CoordinateSystem getCoordinateSystem() {
 		if (parent != null)
 			return parent.getCoordinateSystem();
@@ -147,6 +159,10 @@ public class Script {
 		}
 	}
 
+	/**
+	 * The angle units that all angles in the current script are measured in,
+	 * {@code 'degrees' } by default.
+	 */
 	public AngleUnits getAngleUnits() {
 		if (parent != null)
 			return parent.getAngleUnits();

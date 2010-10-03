@@ -307,7 +307,8 @@ public class Size implements ChangeEmitter {
 	 * The modulo operator returns the integer remainders of dividing the size
 	 * by the supplied size as a new size.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var size = new Size(12, 6);
 	 * print(size % new Size(5, 2)); // {width: 2, height: 0}
 	 * </code>
@@ -324,7 +325,8 @@ public class Size implements ChangeEmitter {
 	 * The modulo operator returns the integer remainders of dividing the size
 	 * by the supplied value as a new size.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var size = new Size(12, 6);
 	 * print(size % 5); // {width: 2, height: 1}
 	 * </code>
@@ -422,7 +424,8 @@ public class Size implements ChangeEmitter {
 	 * specified {@link #width} and {@link #height} values. The object itself is
 	 * not modified!
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * var size = new Size(10.2, 10.9);
 	 * var floorSize = size.floor();
 	 * print(floorSize); // { width: 10.0, height: 10.0 }

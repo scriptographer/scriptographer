@@ -56,8 +56,11 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	/**
 	 * Creates a rectangle object.
 	 * 
-	 * @param x	the left coordinate {@default 0}
-	 * @param y the top coordinate {@default 0}
+	 * @param x the left coordinate {@default 0}
+	 * @param y the top coordinate if in the top-down coordinate system, bottom
+	 *        otherwise. See
+	 *        {@link com.scriptographer.sg.Script#getCoordinateSystem() } for
+	 *        more information. {@default 0}
 	 * @param width {@default 0}
 	 * @param height {@default 0}
 	 */
@@ -78,9 +81,12 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	public Rectangle(Point point, Size size) {
 		this(point.x, point.y, size.width, size.height);
 	}
-	
+
 	/**
-	 * Creates a rectangle object from the passed points.
+	 * Creates a rectangle object from the passed points. These do not
+	 * necessarily need to be the top left and bottom right corners, the
+	 * constructor figures out how to fit a rectangle between them.
+	 * 
 	 * @param point1 The first point defining the rectangle
 	 * @param point2 The second point defining the rectangle
 	 */
@@ -124,11 +130,6 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	/**
 	 * Changes the boundary properties of the rectangle.
 	 * 
-	 * @param x The left position
-	 * @param y The top position
-	 * @param width
-	 * @param height
-	 * 
 	 * @jshide
 	 */
 	public void set(double x, double y, double width, double height) {
@@ -150,8 +151,10 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	}
 
 	/**
-	 * The y position of the rectangle. In the AI coordinate
-	 * system, the y axis grows from bottom to top.
+	 * The y position of the rectangle. This is the top coordinate if in the
+	 * top-down coordinate system, bottom otherwise. See
+	 * {@link com.scriptographer.sg.Script#getCoordinateSystem() } for more
+	 * information.
 	 */
 	public double getY() {
 		return y;
@@ -235,9 +238,8 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	}
 
 	/**
-	 * The top coordinate of the rectangle. In the AI coordinate system, the y
-	 * axis grows from bottom to top. Note that this doesn't move the whole
-	 * rectangle: the bottom won't move.
+	 * The top coordinate of the rectangle. Note that this doesn't move the
+	 * whole rectangle: the bottom won't move.
 	 */
 	public double getTop() {
 		if (ScriptographerEngine.topDownCoordinates) {
@@ -270,9 +272,8 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	}
 
 	/**
-	 * The bottom coordinate of the rectangle. In the AI coordinate system, the
-	 * y axis grows from bottom to top. Note that this doesn't move the whole
-	 * rectangle: the top won't move.
+	 * The bottom coordinate of the rectangle. Note that this doesn't move the
+	 * whole rectangle: the top won't move.
 	 */
 	public double getBottom() {
 		if (ScriptographerEngine.topDownCoordinates) {

@@ -43,7 +43,8 @@ import com.scratchdisk.util.ArrayList;
  * by various fields that can either be set to {@code true}, {@code false}, or
  * {@code null}.
  * 
- * Sample code: <code>
+ * Sample code:
+ * <code>
  * // All selected paths and rasters contained in the document.
  * var selectedItems = document.getItems({ 
  *     type: [Path, Raster], 
