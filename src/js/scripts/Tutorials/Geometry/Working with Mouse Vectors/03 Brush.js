@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/geometry/working-with-mouse-vectors/#using-the-skeleton-points-to-make-a-body-around-our-line
 
 tool.minDistance = 15;

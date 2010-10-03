@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/typography/styling-typography/#changing-the-font-of-a-text-range
 
 var position = new Point(100, 100); 

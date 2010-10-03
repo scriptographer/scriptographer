@@ -1,4 +1,7 @@
-// // http://scriptographer.org/tutorials/interaction/creating-mouse-tools/#my-first-mouse-tool
+// ////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
+// http://scriptographer.org/tutorials/interaction/creating-mouse-tools/#my-first-mouse-tool
 
 // Create a new path once, when the script is executed: 
 var myPath = new Path(); 

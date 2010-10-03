@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/typography/creating-text-items/#area-text
 
 var position = new Point(100, 100); 

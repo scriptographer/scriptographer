@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/document-items/transforming-items/#rotating-items
 
 var path = new Path.Rectangle(new Point(50, 50), new Size(100, 50));

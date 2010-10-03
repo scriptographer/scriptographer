@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/images/color-averaging-image-areas/#and-now-for-some-mouse-interaction
 
 var raster; 

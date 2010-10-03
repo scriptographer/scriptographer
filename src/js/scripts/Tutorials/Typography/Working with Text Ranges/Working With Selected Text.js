@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/typography/working-with-text-ranges/#working-with-selected-text
 
 var range = document.selectedTextRange; 

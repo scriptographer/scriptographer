@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/typography/working-with-text-ranges/#helvarial
 
 var textItems = document.getItems({ 

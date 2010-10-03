@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/paths/working-with-path-items/#closing-paths
 
 var myPath = new Path(); 

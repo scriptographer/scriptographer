@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/creating-mouse-tools/#mouse-handler-functions
 
 function onMouseDown(event) { 

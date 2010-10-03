@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/paths/using-color-and-style/#stroke-cap
 
 var myPath = new Path(); 

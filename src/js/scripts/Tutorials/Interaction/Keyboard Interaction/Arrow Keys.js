@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/keyboard-interaction/#having-fun-with-the-arrow-keys
 
 // The following example creates a path on execution and then adds

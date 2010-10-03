@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/creating-mouse-tools/#minimum-distance
 
 tool.minDistance = 50; 

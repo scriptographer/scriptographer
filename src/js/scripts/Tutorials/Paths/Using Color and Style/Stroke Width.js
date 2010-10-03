@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/paths/using-color-and-style/#stroke-width
 
 var myPath = new Path(); 

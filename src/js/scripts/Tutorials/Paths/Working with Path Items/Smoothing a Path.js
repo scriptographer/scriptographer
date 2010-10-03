@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/paths/working-with-path-items/#smoothing-paths
 
 var myPath = new Path(); 

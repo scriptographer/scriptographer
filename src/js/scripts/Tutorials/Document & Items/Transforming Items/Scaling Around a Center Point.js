@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/document-items/transforming-items/#scaling-an-item-around-a-center-point
 
 // Let's make a path and then scale it by 50% from {x: 0, y: 0}:

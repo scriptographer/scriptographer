@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/mouse-tool-events/#mouse-position
 
 // The mouse has to be moved at least 10 pt

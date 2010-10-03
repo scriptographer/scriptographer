@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/creating-mouse-tools/#event-interval
 
 // Call the onMouseDrag function every 30 ms: 

@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/paths/creating-predefined-shapes/#regular-polygon-shaped-paths
 
 // Create a triangle shaped path

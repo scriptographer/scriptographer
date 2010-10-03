@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/keyboard-interaction/#checking-whether-a-key-is-pressed
 
 var path; 

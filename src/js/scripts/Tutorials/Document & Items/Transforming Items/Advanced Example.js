@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/document-items/transforming-items/#advanced-example
 
 var circlePath = new Path.Circle(new Point(150, 150), 25); 

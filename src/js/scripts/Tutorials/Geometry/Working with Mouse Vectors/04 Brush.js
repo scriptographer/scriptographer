@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/geometry/working-with-mouse-vectors/#smoothing-and-coloring-the-body
 
 tool.minDistance = 15;

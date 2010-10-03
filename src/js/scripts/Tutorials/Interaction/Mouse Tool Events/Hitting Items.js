@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/interaction/mouse-tool-events/#hitting-items-with-the-mouse
 
 function onMouseDown(event) { 

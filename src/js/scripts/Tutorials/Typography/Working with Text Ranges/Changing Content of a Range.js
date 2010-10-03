@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/typography/working-with-text-ranges/#changing-the-content-of-a-text-range
 
 // Create the text item 

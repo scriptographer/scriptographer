@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/images/working-with-images-and-pixels/#using-color-channel-values
 
 // find all selected images in the document 

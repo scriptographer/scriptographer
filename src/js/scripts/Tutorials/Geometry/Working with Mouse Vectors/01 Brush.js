@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// This script belongs to the following tutorial:
+//
 // http://scriptographer.org/tutorials/geometry/working-with-mouse-vectors/#drawing-a-line-while-dragging
 
 // The minimum distance the mouse has to drag
