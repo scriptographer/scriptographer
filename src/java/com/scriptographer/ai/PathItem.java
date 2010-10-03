@@ -76,26 +76,23 @@ public abstract class PathItem extends Item {
 	/**
 	 * {@grouptitle PostScript-style drawing commands}
 	 */
-	public abstract void moveTo(double x, double y);	
 
 	public void moveTo(Point pt) {
 		if (pt == null) moveTo(0, 0);
 		else moveTo(pt.x, pt.y);
 	}
 
-	public abstract void lineTo(double x, double y);
+	public abstract void moveTo(double x, double y);	
 
 	public void lineTo(Point pt) {
 		if (pt == null) lineTo(0, 0);
 		else lineTo(pt.x, pt.y);
 	}
 
-	public abstract void curveTo(double handle1X, double handle1Y,
-			double handle2X, double handle2Y,
-			double endX, double endY);
+	public abstract void lineTo(double x, double y);
 
-	public void curveTo(Point handle1, Point handle2, Point end) {
-		curveTo(handle1 != null ? handle1.x : 0,
+	public void cubicCurveTo(Point handle1, Point handle2, Point end) {
+		cubicCurveTo(handle1 != null ? handle1.x : 0,
 				handle1 != null ? handle1.y : 0,
 				handle2 != null ? handle2.x : 0,
 				handle2 != null ? handle2.y : 0,
@@ -103,78 +100,196 @@ public abstract class PathItem extends Item {
 				end != null ? end.y : 0);
 	}
 
-	public abstract void curveTo(double handleX, double handleY,
+	public abstract void cubicCurveTo(double handle1X, double handle1Y,
+			double handle2X, double handle2Y, double endX, double endY);
+
+	/**
+	 * @deprecated
+	 */
+	public void curveTo(Point handle1, Point handle2, Point end) {
+		cubicCurveTo(handle1, handle2, end);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void curveTo(double handle1X, double handle1Y,
+			double handle2X, double handle2Y, double endX, double endY) {
+		cubicCurveTo(handle1X, handle1Y, handle2X, handle2Y, endX, endY);
+	}
+
+	public void quadraticCurveTo(Point handle, Point end) {
+		quadraticCurveTo(handle != null ? handle.x : 0,
+				handle != null ? handle.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0);
+	}
+
+	public abstract void quadraticCurveTo(double handleX, double handleY,
 			double endX, double endY);
 
-	public void curveTo(Point handle, Point end) {
-		curveTo(handle != null ? handle.x : 0, handle != null ? handle.y : 0,
-				end != null ? end.x : 0, end != null ? end.y : 0);
+	/**
+	 * @deprecated
+	 */
+	public void quadTo(Point handle, Point end) {
+		quadraticCurveTo(handle, end);
 	}
 
-	public abstract void arcTo(double endX, double endY);
-
-	public void arcTo(Point end) {
-		arcTo(end != null ? end.x : 0, end != null ? end.y : 0);
+	/**
+	 * @deprecated
+	 */
+	public void quadTo(double handleX, double handleY, double endX, double endY) {
+		quadraticCurveTo(handleX, handleY, endX, endY);
 	}
 
-	public abstract void curveThrough(double middleX, double middleY,
+	public void curveTo(Point through, Point end, double t) {
+		curveTo(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0,
+				t);
+	}
+
+	public void curveTo(Point through, Point end) {
+		curveTo(through, end, 0.5);
+	}
+
+	public abstract void curveTo(double throughX, double throughY,
 			double endX, double endY, double t);
 
-	public void curveThrough(double middleX, double middleY,
+	public void curveTo(double throughX, double throughY,
 			double endX, double endY) {
-		curveThrough(middleX, middleY, endX, endY, 0.5);
+		curveTo(throughX, throughY, endX, endY, 0.5);
 	}
 
-	public void curveThrough(Point middle, Point end, double t) {
-		curveThrough(middle != null ? middle.x : 0, middle != null ? middle.y : 0,
-				end != null ? end.x : 0, end != null ? end.y : 0, t);
+	/**
+	 * @deprecated
+	 */
+	public void curveThrough(Point through, Point end, double t) {
+		curveTo(through, end, t);
 	}
 
-	public void curveThrough(Point middle, Point end) {
-		curveThrough(middle, end, 0.5);
+	/**
+	 * @deprecated
+	 */
+	public void curveThrough(double throughX, double throughY,
+			double endX, double endY, double t) {
+		curveTo(throughX, throughY, endX, endY, t);
 	}
 
-	public abstract void arcThrough(double middleX, double middleY,
+	/**
+	 * @deprecated
+	 */
+	public void curveThrough(Point through, Point end) {
+		curveTo(through, end);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void curveThrough(double throughX, double throughY,
+			double endX, double endY) {
+		curveTo(throughX, throughY, endX, endY);
+	}
+
+	public void arcTo(Point end, boolean clockwise) {
+		arcTo(end != null ? end.x : 0,
+				end != null ? end.y : 0,
+				clockwise);
+	}
+
+	public void arcTo(Point end) {
+		arcTo(end, true);
+	}
+
+	public abstract void arcTo(double endX, double endY, boolean clockwise);
+
+	public void arcTo(double endX, double endY) {
+		arcTo(endX, endY, true);
+	}
+
+	public void arcTo(Point through, Point end) {
+		arcTo(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0);
+	}
+
+	public abstract void arcTo(double throughX, double throughY,
 			double endX, double endY);
 
-	public void arcThrough(Point middle, Point end) {
-		arcThrough(middle != null ? middle.x : 0, middle != null ? middle.y : 0,
-				end != null ? end.x : 0, end != null ? end.y : 0);
+	/**
+	 * @deprecated
+	 */
+	public void arcThrough(Point through, Point end) {
+		arcTo(through.x, through.y, end.x, end.y);
 	}
+	
+	/**
+	 * @deprecated
+	 */
+	public void arcThrough(double throughX, double throughY, double endX,
+			double endY) {
+		arcTo(throughX, throughY, endX, endY);
+	}
+
+	public void lineBy(Point pt) {
+		if (pt != null)
+			lineBy(pt.x, pt.y);
+	}
+
+	public abstract void lineBy(double x, double y);	
+
+	public void curveBy(Point through, Point end, double t) {
+		curveBy(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0,
+				t);
+	}
+
+	public void curveBy(Point through, Point end) {
+		curveBy(through, end, 0.5);
+	}
+
+	public abstract void curveBy(double throughX, double throughY,
+			double endX, double endY, double t);
+
+	public void curveBy(double throughX, double throughY,
+			double endX, double endY) {
+		curveBy(throughX, throughY, endX, endY, 0.5);
+	}
+
+	public void arcBy(Point end, boolean clockwise) {
+		arcBy(end != null ? end.x : 0,
+				end != null ? end.y : 0,
+				clockwise);
+	}
+
+	public void arcBy(Point end) {
+		arcBy(end, true);
+	}
+
+	public abstract void arcBy(double endX, double endY, boolean clockwise);
+
+	public void arcBy(double endX, double endY) {
+		arcBy(endX, endY, true);
+	}
+	public void arcBy(Point through, Point end) {
+		arcBy(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0);
+	}
+
+	public abstract void arcBy(double throughX, double throughY,
+			double endX, double endY);
 
 	/**
 	 * Closes the path. If it is closed, Illustrator connects the first and last
 	 * segments.
 	 */
 	public abstract void closePath();
-
-	/**
-	 * @deprecated
-	 */
-	public void quadTo(double handleX, double handleY, double endX, double endY) {
-		curveTo(handleX, handleY, endX, endY);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void quadTo(Point handle, Point end) {
-		curveTo(handle.x, handle.y, end.x, end.y);		
-	}
-	
-	/**
-	 * @deprecated
-	 */
-	public void arcTo(double middleX, double middleY, double endX, double endY) {
-		arcThrough(middleX, middleY, endX, endY);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void arcTo(Point middle, Point end) {
-		arcThrough(middle.x, middle.y, end.x, end.y);
-	}
 
 
 	/**

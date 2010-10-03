@@ -118,47 +118,88 @@ public class CompoundPath extends PathItem {
 		super.setFullySelected(selected);
 	}
 
-	private Path getPreviousPath() {
-		Path prevPath = (Path) getFirstChild();
-		if (prevPath == null)
-			throw new ScriptographerException("Use a moveTo command first");
-		return prevPath;
+	private Path getCurrentPath() {
+		Path current = (Path) getFirstChild();
+		if (current == null)
+			throw new ScriptographerException("Use a moveTo() command first");
+		return current;
 	}
 
+	@Override
 	public void moveTo(double x, double y) {
 		// moveTo always creates a new path:
 		Path path = new Path();
 		appendTop(path);
 		path.moveTo(x, y);
 	}
-	
-	public void lineTo(double x, double y) {
-		getPreviousPath().lineTo(x, y);
+
+	@Override
+		public void lineTo(double x, double y) {
+		getCurrentPath().lineTo(x, y);
 	}
 	
-	public void curveTo(double c1x, double c1y, double c2x, double c2y,
+	@Override
+	public void cubicCurveTo(double c1x, double c1y, double c2x, double c2y,
 			double x, double y) {
-		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
+		getCurrentPath().cubicCurveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void curveTo(double cx, double cy, double x, double y) {
-		getPreviousPath().curveTo(cx, cy, x, y);
+	@Override
+	public void quadraticCurveTo(double cx, double cy, double x, double y) {
+		getCurrentPath().quadraticCurveTo(cx, cy, x, y);
 	}
 
-	public void arcTo(double endX, double endY) {
-		getPreviousPath().arcTo(endX, endY);
+	@Override
+	public void curveTo(double throughX, double throughY,
+			double endX, double endY, double t) {
+		getCurrentPath().curveTo(throughX, throughY, endX, endY, t);
 	}
 
-	public void curveThrough(double centerX, double centerY, double endX, double endY, double t) {
-		getPreviousPath().curveThrough(centerX, centerY, endX, endY, t);
+	@Override
+	public void arcTo(double endX, double endY, boolean clockwise) {
+		getCurrentPath().arcTo(endX, endY, clockwise);
 	}
 
-	public void arcThrough(double centerX, double centerY, double endX, double endY) {
-		getPreviousPath().arcThrough(centerX, centerY, endX, endY);
+	@Override
+	public void arcTo(double throughX, double throughY,
+			double endX, double endY) {
+		getCurrentPath().arcTo(throughX, throughY, endX, endY);
 	}
-	
+
+	public void moveBy(double x, double y) {
+		Point current = getCurrentPath().getSegments().getCurrentSegment().point;
+		moveTo(current.add(x, y));
+	}
+
+	public void moveBy(Point pt) {
+		if (pt == null) moveTo(0, 0);
+		else moveBy(pt.x, pt.y);
+	}
+
+	@Override
+	public void lineBy(double x, double y) {
+		getCurrentPath().lineBy(x, y);
+	}
+
+	@Override
+	public void curveBy(double throughX, double throughY,
+			double endX, double endY, double t) {
+		getCurrentPath().curveBy(throughX, throughY, endX, endY, t);
+	}
+
+	@Override
+	public void arcBy(double endX, double endY, boolean clockwise) {
+		getCurrentPath().arcBy(endX, endY, clockwise);
+	}
+
+	@Override
+	public void arcBy(double throughX, double throughY, double endX, double endY) {
+		getCurrentPath().arcBy(throughX, throughY, endX, endY);
+	}
+
+	@Override
 	public void closePath() {
-		Path prevPath = getPreviousPath();
+		Path prevPath = getCurrentPath();
 		prevPath.setClosed(true);
 	}
 	
@@ -180,6 +221,7 @@ public class CompoundPath extends PathItem {
 	 *        leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */
+	@Override
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
 		while (!iter.isDone()) {
@@ -202,10 +244,10 @@ public class CompoundPath extends PathItem {
 					lineTo(f[0], f[1]);
 					break;
 				case PathIterator.SEG_QUADTO:
-					curveTo(f[0], f[1], f[2], f[3]);
+					quadraticCurveTo(f[0], f[1], f[2], f[3]);
 					break;
 				case PathIterator.SEG_CUBICTO:
-					curveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
+					cubicCurveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
 					break;
 				case PathIterator.SEG_CLOSE:
 					closePath();
@@ -220,6 +262,7 @@ public class CompoundPath extends PathItem {
 	/**
 	 * @jshide
 	 */
+	@Override
 	public GeneralPath toShape() {
 		Path path = (Path) getFirstChild();
 		GeneralPath shape = (GeneralPath) path.toShape();

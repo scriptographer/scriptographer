@@ -702,39 +702,67 @@ public class Path extends PathItem {
 		nativeSetTabletData(TABLET_PRESSURE, data);
 	}
 	
+	@Override
 	public void moveTo(double x, double y) {
 		getSegments().moveTo(x, y);
 	}
 	
+	@Override
 	public void lineTo(double x, double y) {
 		getSegments().lineTo(x, y);
 	}
 	
-	public void curveTo(double handle1X, double handle1Y,
-			double handle2X, double handle2Y,
+	@Override
+	public void cubicCurveTo(double handle1X, double handle1Y, double handle2X,
+			double handle2Y, double endX, double endY) {
+		getSegments().cubicCurveTo(handle1X, handle1Y, handle2X, handle2Y,
+				endX, endY);
+	}
+
+	@Override
+	public void quadraticCurveTo(double handleX, double handleY,
 			double endX, double endY) {
-		getSegments().curveTo(handle1X, handle1Y, handle2X, handle2Y, endX, endY);
+		getSegments().quadraticCurveTo(handleX, handleY, endX, endY);
 	}
 
-	public void curveTo(double handleX, double handleY,
-			double endX, double endY) {
-		getSegments().curveTo(handleX, handleY, endX, endY);
-	}
-
-	public void arcTo(double endX, double endY) {
-		getSegments().arcTo(endX, endY);
-	}
-
-	public void curveThrough(double middleX, double middleY,
+	@Override
+	public void curveTo(double throughX, double throughY,
 			double endX, double endY, double t) {
-		getSegments().curveThrough(middleX, middleY, endX, endY, t);
+		getSegments().curveTo(throughX, throughY, endX, endY, t);
 	}
 
-	public void arcThrough(double middleX, double middleY,
-			double endX, double endY) {
-		getSegments().arcThrough(middleX, middleY, endX, endY);
+	@Override
+	public void arcTo(double endX, double endY, boolean clockwise) {
+		getSegments().arcTo(endX, endY, clockwise);
 	}
 
+	@Override
+	public void arcTo(double throughX, double throughY, double endX, double endY) {
+		getSegments().arcTo(throughX, throughY, endX, endY);
+	}
+
+	@Override
+	public void lineBy(double x, double y) {
+		getSegments().lineBy(x, y);
+	}
+
+	@Override
+	public void curveBy(double throughX, double throughY,
+			double endX, double endY, double t) {
+		getSegments().curveBy(throughX, throughY, endX, endY, t);
+	}
+
+	@Override
+	public void arcBy(double endX, double endY, boolean clockwise) {
+		getSegments().arcBy(endX, endY, clockwise);
+	}
+
+	@Override
+	public void arcBy(double throughX, double throughY, double endX, double endY) {
+		getSegments().arcBy(throughX, throughY, endX, endY);
+	}
+
+	@Override
 	public void closePath() {
 		setClosed(true);
 	}
@@ -757,6 +785,7 @@ public class Path extends PathItem {
 	 *        leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */
+	@Override
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
 		SegmentList segments = getSegments();
@@ -779,10 +808,10 @@ public class Path extends PathItem {
 					segments.lineTo(f[0], f[1]);
 					break;
 				case PathIterator.SEG_QUADTO:
-					segments.curveTo(f[0], f[1], f[2], f[3]);
+					segments.quadraticCurveTo(f[0], f[1], f[2], f[3]);
 					break;
 				case PathIterator.SEG_CUBICTO:
-					segments.curveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
+					segments.cubicCurveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
 					break;
 				case PathIterator.SEG_CLOSE:
 					setClosed(true);

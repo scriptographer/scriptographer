@@ -252,7 +252,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 	public boolean addAll(int index, ReadOnlyList<? extends Segment> elements) {
 		if (index < 0 || index > size)
-			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: "
+					+ size);
 
 		int count = elements.size();
 		if (count == 0)
@@ -390,66 +391,87 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	
 	/*
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
-	 */	
-	public void moveTo(double x, double y) {
-		if (size > 0)
-			throw new ScriptographerException(
-					"moveTo can only be called at the beginning of a list of segments");
-		add(new Segment(x, y));
+	 */
+
+	/**
+	 * Helper method that returns the current segment and checks if we need to
+	 * execute a moveTo() command first.
+	 */
+	protected Segment getCurrentSegment() {
+		if (size == 0)
+			throw new ScriptographerException("Use a moveTo() command first");
+		return getLast();
 	}
 	
 	public void moveTo(Point pt) {
 		moveTo(pt.x, pt.y);
 	}
-	
-	public void lineTo(double x, double y) {
-		/* Let's not be so picky about this for now 
-		if (size == 0)
-			throw new ScriptographerException("Use a moveTo command first");
-		*/
+
+	public void moveTo(double x, double y) {
+		if (size > 0)
+			throw new ScriptographerException(
+					"moveTo() can only be called at the beginning of a list of segments");
 		add(new Segment(x, y));
 	}
 	
 	public void lineTo(Point pt) {
-		lineTo(pt.x, pt.y);
+		if (pt != null)
+			lineTo(pt.x, pt.y);
 	}
-	
+
+	public void lineTo(double x, double y) {
+		// Let's not be so picky about calling moveTo() first for now:
+		// getCurrentSegment();
+		add(new Segment(x, y));
+	}
+
 	/**
-	 * Adds a cubic bezier curve to the path, defined by two handles and an end point.
+	 * Adds a cubic bezier curve to the path, defined by two handles and an end
+	 * point.
 	 */
-	public void curveTo(double handle1X, double handle1Y, double handle2X,
-			double handle2Y, double endX, double endY) {
-		if (size == 0)
-			throw new ScriptographerException("Use a moveTo command first");
-		// first modify the current segment:
-		Segment lastSegment = get(size - 1);
-		// convert to relative values:
-		lastSegment.handleOut.set(handle1X - lastSegment.point.x, handle1Y
-				- lastSegment.point.y);
-		// and add the new segment, with handleIn set to c2
+	public void cubicCurveTo(Point handle1, Point handle2, Point end) {
+		cubicCurveTo(handle1.x, handle1.y, handle2.x, handle2.y, end.x, end.y);
+	}
+
+	/**
+	 * Adds a cubic bezier curve to the path, defined by two handles and an end
+	 * point.
+	 */
+	public void cubicCurveTo(double handle1X, double handle1Y,
+			double handle2X, double handle2Y, double endX, double endY) {
+		// First modify the current segment:
+		Segment current = getCurrentSegment();
+		// Convert to relative values:
+		current.handleOut.set(
+				handle1X - current.point.x,
+				handle1Y - current.point.y);
+		// And add the new segment, with handleIn set to c2
 		add(new Segment(endX, endY, handle2X - endX, handle2Y - endY, 0, 0));
 	}
-	
+
 	/**
-	 * Adds a cubic bezier curve to the path, defined by two handles and an end point.
+	 * Adds a quadratic bezier curve to the path, defined by a handle and an end
+	 * point.
 	 */
-	public void curveTo(Point handle1, Point handle2, Point end) {
-		curveTo(handle1.x, handle1.y, handle2.x, handle2.y, end.x, end.y);
+	public void quadraticCurveTo(Point handle, Point end) {
+		quadraticCurveTo(handle.x, handle.y, end.x, end.y);		
 	}
-	
+
 	/**
-	 * Adds a quadratic bezier curve to the path, defined by a handle and an end point.
+	 * Adds a quadratic bezier curve to the path, defined by a handle and an end
+	 * point.
 	 */
-	public void curveTo(double handleX, double handleY, double endX, double endY) {
+	public void quadraticCurveTo(double handleX, double handleY,
+			double endX, double endY) {
 		// This is exact:
 		// If we have the three quad points: A E D,
 		// and the cubic is A B C D,
 		// B = E + 1/3 (A - E)
 		// C = E + 1/3 (D - E)
-		Segment segment = get(size - 1);
-		double x1 = segment.point.x;
-		double y1 = segment.point.y;
-		curveTo(handleX + (1f/3f) * (x1 - handleX),
+		Segment current = getCurrentSegment();
+		double x1 = current.point.x;
+		double y1 = current.point.y;
+		cubicCurveTo(handleX + (1f/3f) * (x1 - handleX),
 				handleY + (1f/3f) * (y1 - handleY), 
 				handleX + (1f/3f) * (endX - handleX),
 				handleY + (1f/3f) * (endY - handleY),
@@ -457,50 +479,75 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				endY);
 	}
 
-	/**
-	 * Adds a quadratic bezier curve to the path, defined by a handle and an end point.
-	 */
-	public void curveTo(Point handle, Point end) {
-		curveTo(handle.x, handle.y, end.x, end.y);		
-	}
-
-	public void curveThrough(double middleX, double middleY, double endX, double endY, double t) {
-		curveThrough(new Point(middleX, middleY), new Point(endX, endY), t);
-	}
-
-	public void curveThrough(double middleX, double middleY, double endX, double endY) {
-		curveThrough(middleX, middleY, endX, endY, 0.5);
-	}
-
-	public void curveThrough(Point middle, Point end, double t) {
-		Point start = getLast().getPoint();
-		// handle = (middle - (1 - t)^2 * start - t^2 * end) / (2 * (1 - t) * t)
+	public void curveTo(Point through, Point end, double t) {
+		Point current = getCurrentSegment().point;
+		// handle = (through - (1 - t)^2 * start - t^2 * end) / (2 * (1 - t) * t)
 		double t1 = 1 - t;
-		Point handle = middle.subtract(
-				start.multiply(t1 * t1)).subtract(
+		Point handle = through.subtract(
+				current.multiply(t1 * t1)).subtract(
 						end.multiply(t * t)).divide(2.0 * t * t1);
 		if (handle.isNaN())
 			throw new ScriptographerException(
 					"Cannot put a curve through points with t=" + t);
-		curveTo(handle, end);
+		quadraticCurveTo(handle, end);
 	}
 
-	public void curveThrough(Point middle, Point end) {
-		curveThrough(middle, end, 0.5);
+	public void curveTo(Point through, Point end) {
+		curveTo(through, end, 0.5);
 	}
+
+	public void curveTo(double throughX, double throughY,
+			double endX, double endY, double t) {
+		curveTo(new Point(throughX, throughY), new Point(endX, endY), t);
+	}
+
+	public void curveTo(double throughX, double throughY,
+			double endX, double endY) {
+		curveTo(throughX, throughY, endX, endY, 0.5);
+	}
+
+	public void arcTo(Point end, boolean clockwise) {
+		Point current = getCurrentSegment().point;
+		Point middle = current.add(end).divide(2);
+		Point step = middle.subtract(current);
+		Point point = clockwise 
+				? middle.subtract(-step.y, step.x)
+				: middle.add(-step.y, step.x);
+		arcTo(point, end);
+	}
+
+	public void arcTo(Point end) {
+		arcTo(end, true);
+	}
+
+	public void arcTo(double endX, double endY, boolean clockwise) {
+		arcTo(new Point(endX, endY), clockwise);
+	}
+
+	public void arcTo(double endX, double endY) {
+		arcTo(endX, endY, true);
+	}
+
 	/**
-	 * Adds a circular arc to the path that passes through the given middle point.
+	 * Adds a circular arc to the path that passes through the given through
+	 * point.
 	 */
-	public void arcThrough(double middleX, double middleY, double endX, double endY) {
-		if (size == 0)
-			throw new ScriptographerException("Use a moveTo command first");
+	public void arcTo(Point through, Point end) {
+		arcTo(through.x, through.y, end.x, end.y);
+	}
+
+	/**
+	 * Adds a circular arc to the path that passes through the given through
+	 * point.
+	 */
+	public void arcTo(double throughX, double throughY, double endX, double endY) {
+		// Get the start point:
+		Segment current = getCurrentSegment();
+		double x1 = current.point.x, x2 = throughX, x3 = endX;
+		double y1 = current.point.y, y2 = throughY, y3 = endY;
 		
-		// Get the startPoint:
-		Segment start = getLast();
-		double x1 = start.point.x, x2 = middleX, x3 = endX;
-		double y1 = start.point.y, y2 = middleY, y3 = endY;
-		
-		double f = x3 * x3 - x3 * x2 - x1 * x3 + x1 * x2 + y3 * y3 - y3 * y2 - y1 * y3 + y1 * y2;
+		double f = x3 * x3 - x3 * x2 - x1 * x3 + x1 * x2 + y3 * y3 - y3 * y2
+				- y1 * y3 + y1 * y2;
 		double g = x3 * y1 - x3 * y2 + x1 * y2 - x1 * y3 + x2 * y3 - x2 * y1;
 		double m = g == 0 ? 0 : f / g;
 
@@ -548,14 +595,15 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		for (int i = 0; i <= arcSegs; i++) {
 			double relx = Math.cos(angle);
 			double rely = Math.sin(angle);
-			Point pt = new Point(centerX + relx * radius, centerY + rely * radius);
+			Point pt = new Point(centerX + relx * radius,
+					centerY + rely * radius);
 			Point out;
 			if (i == arcSegs) out = null;
 			else out = new Point(centerX + (relx - z * rely) * radius - pt.x,
 					centerY + (rely + z * relx) * radius - pt.y);
 			if (i == 0) {
 				// Modify startSegment
-				start.handleOut.set(out);
+				current.handleOut.set(out);
 			} else {
 				// Add new Segment
 				Point in = new Point(
@@ -567,54 +615,70 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 	}
 
-	/**
-	 * Adds a circular arc to the path that passes through the given middle point.
+	/*
+	 * Relative commands
 	 */
-	public void arcThrough(Point middle, Point end) {
-		arcThrough(middle.x, middle.y, end.x, end.y);
-	}
 
-	public void arcTo(Point end) {
-		if (size == 0)
-			throw new ScriptographerException("Use a moveTo command first");
-		Segment last = getLast();
-		Point start = last.point;
-		Segment previous = last.getPrevious();
-		Point middle = start.add(end).divide(2);
-		Point point = null;
-		if (previous != null) {
-			Point normal1 = previous.getCurve().getNormal(0.99);
-			Point normal2 = new Point(start.y - end.y, end.x - start.x);
-
-			// normal2 = normal2.rotate(-Math.PI / 2);
-			/*
-			Path path = new Path();
-			path.moveTo(start);
-			path.lineTo(start.add(normal1.normalize(100)));
-			path = new Path();
-			path.moveTo(middle);
-			path.lineTo(middle.add(normal2.normalize(100)));
-			*/
-			Point center = Line.intersect(start, start.add(normal1), true,
-					middle, middle.add(normal2), true);
-			if (center != null) {
-				double radius = center.getDistance(start);
-				point = center.add(middle.subtract(center).normalize(radius));
-				/*
-				Document.getActiveDocument().createOval(new Rectangle(point, new Size(5, 5)));
-				Document.getActiveDocument().createOval(new Rectangle(end, new Size(5, 5)));
-				*/
-			}
-		} else {
-			Point step = middle.subtract(start);
-			point = middle.add(-step.y, step.x);
-		}
+	public void lineBy(Point point) {
 		if (point != null)
-			arcThrough(point, end);
+			lineBy(point.x, point.y);
 	}
 
-	public void arcTo(double endX, double endY) {
-		arcTo(new Point(endX, endY));
+	public void lineBy(double x, double y) {
+		Point current = getCurrentSegment().point;
+		lineTo(current.add(x, y));
+	}
+
+	public void curveBy(Point through, Point end, double t) {
+		curveBy(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0,
+				t);
+	}
+
+	public void curveBy(Point through, Point end) {
+		curveBy(through, end, 0.5);
+	}
+
+	public void curveBy(double throughX, double throughY,
+			double endX, double endY, double t) {
+		Point current = getCurrentSegment().point;
+		curveTo(current.add(throughX, throughY), current.add(endX, endY), t);
+	}
+
+	public void curveBy(double throughX, double throughY,
+			double endX, double endY) {
+		curveBy(throughX, throughY, endX, endY, 0.5);
+	}
+
+	public void arcBy(Point end, boolean clockwise) {
+		arcBy(end != null ? end.x : 0, end != null ? end.y : 0, clockwise);
+	}
+
+	public void arcBy(double endX, double endY, boolean clockwise) {
+		Point current = getCurrentSegment().point;
+		arcTo(current.add(endX, endY), clockwise);
+	}
+
+	/**
+	 * Adds a circular arc to the path that passes through the given through
+	 * point.
+	 */
+	public void arcBy(Point through, Point end) {
+		arcBy(through != null ? through.x : 0,
+				through != null ? through.y : 0,
+				end != null ? end.x : 0,
+				end != null ? end.y : 0);
+	}
+
+	/**
+	 * Adds a circular arc to the path that passes through the given through
+	 * point.
+	 */
+	public void arcBy(double throughX, double throughY, double endX, double endY) {
+		Point current = getCurrentSegment().point;
+		arcTo(current.add(throughX, throughY), current.add(endX, endY));
 	}
 
 	/**
