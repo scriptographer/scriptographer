@@ -7,23 +7,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	spacing: {
-		label: 'Spacing',
-		units: 'percent',
-		steppers: true
-	},
-	scale: {
-		label: 'Scale',
-		options: ['none', 'both', 'horizontal']
-	}
-};
-
-var palette = new Palette('Clone Brush', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var items, nextItem, group;
@@ -87,3 +70,20 @@ function prepareNextItem(count) {
 		tool.maxDistance = null;
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	spacing: {
+		label: 'Spacing',
+		units: 'percent',
+		steppers: true
+	},
+	scale: {
+		label: 'Scale',
+		options: ['none', 'both', 'horizontal']
+	}
+};
+
+var palette = new Palette('Clone Brush', components, values);

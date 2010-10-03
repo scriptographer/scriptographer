@@ -11,27 +11,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	lines: {
-		label: 'Lines',
-		range: [0, 100],
-		min: 1,
-		steppers: true
-	},
-	size: {
-		label: 'Size',
-		min: 0,
-		steppers: true
-	},
-	smooth: { label: 'Smooth' },
-	happy: { label: 'Happy' }
-};
-
-var palette = new Palette('Multi Lines', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var paths;
@@ -68,3 +47,24 @@ function onMouseDrag(event) {
 			path.smooth();
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	lines: {
+		label: 'Lines',
+		range: [0, 100],
+		min: 1,
+		steppers: true
+	},
+	size: {
+		label: 'Size',
+		min: 0,
+		steppers: true
+	},
+	smooth: { label: 'Smooth' },
+	happy: { label: 'Happy' }
+};
+
+var palette = new Palette('Multi Lines', components, values);

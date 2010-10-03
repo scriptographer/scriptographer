@@ -6,22 +6,6 @@ tool.fixedDistance = 10;
 var values = { size: tool.fixedDistance };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	size: {
-		label: 'Size', type: 'number',
-		steppers: true,
-		range: [0.01, 500],
-		onChange: function(value) {
-			tool.fixedDistance = value;
-		}
-	}
-};
-
-var palette = new Palette('Grid', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var point, path;
@@ -43,3 +27,19 @@ function onMouseDrag(event) {
 		point = p;
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	size: {
+		label: 'Size', type: 'number',
+		steppers: true,
+		range: [0.01, 500],
+		onChange: function(value) {
+			tool.fixedDistance = value;
+		}
+	}
+};
+
+var palette = new Palette('Grid', components, values);

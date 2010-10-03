@@ -9,27 +9,6 @@ var values = {
 checkValues();
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	radius: {
-		description: 'Radius',
-		min: 0,
-		steppers: true
-	},
-	tolerance: {
-		description: 'Tolerance',
-		min: 0,
-		steppers: true
-	}
-};
-
-var palette = new Palette('Square Radius', components, values);
-palette.onChange = function(component) {
-	checkValues();
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var handle;
@@ -79,3 +58,24 @@ function onMouseDrag(event) {
 		curPoint = path.segments.last.point;
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	radius: {
+		description: 'Radius',
+		min: 0,
+		steppers: true
+	},
+	tolerance: {
+		description: 'Tolerance',
+		min: 0,
+		steppers: true
+	}
+};
+
+var palette = new Palette('Square Radius', components, values);
+palette.onChange = function(component) {
+	checkValues();
+};

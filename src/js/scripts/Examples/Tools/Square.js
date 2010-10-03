@@ -6,19 +6,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	tolerance: {
-		label: 'Tolerance',
-		min: 0,
-		steppers: true
-	}
-};
-
-var palette = new Palette('Square', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var prevSeg, curSeg, path;
@@ -51,3 +38,16 @@ function onMouseDrag(event) {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	tolerance: {
+		label: 'Tolerance',
+		min: 0,
+		steppers: true
+	}
+};
+
+var palette = new Palette('Square', components, values);

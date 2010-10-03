@@ -10,55 +10,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	minScale: {
-		label: 'Min Scale',
-		type: 'slider',
-		range: [0, 1],
-		onChange: function(value) {
-			if (value > values.maxScale)
-				values.maxScale = value;
-		}
-	},
-	maxScale: {
-		label: 'Max Scale',
-		type: 'slider',
-		range: [0, 1],
-		onChange: function(value) {
-			if (value < values.minScale)
-				values.minScale = value;
-		}
-	},
-	rotation: {
-		label: 'Rotation',
-		type: 'slider',
-		range: [0, 1]
-	},
-	minBranch: {
-		label: 'Min Branches',
-		min: 0,
-		steppers: true,
-		onChange: function(value) {
-			if (value > values.maxBranch)
-				values.maxBranch = value;
-		}
-	},
-	maxBranch: {
-		label: 'Max Branches',
-		min: 0,
-		steppers: true,
-		onChange: function(value) {
-			if (value < values.minBranch)
-				values.minBranch = value;
-		}
-	}
-};
-
-var palette = new Palette('Tree', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var path;
@@ -117,3 +68,52 @@ function onMouseUp(event) {
 		path.remove();
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	minScale: {
+		label: 'Min Scale',
+		type: 'slider',
+		range: [0, 1],
+		onChange: function(value) {
+			if (value > values.maxScale)
+				values.maxScale = value;
+		}
+	},
+	maxScale: {
+		label: 'Max Scale',
+		type: 'slider',
+		range: [0, 1],
+		onChange: function(value) {
+			if (value < values.minScale)
+				values.minScale = value;
+		}
+	},
+	rotation: {
+		label: 'Rotation',
+		type: 'slider',
+		range: [0, 1]
+	},
+	minBranch: {
+		label: 'Min Branches',
+		min: 0,
+		steppers: true,
+		onChange: function(value) {
+			if (value > values.maxBranch)
+				values.maxBranch = value;
+		}
+	},
+	maxBranch: {
+		label: 'Max Branches',
+		min: 0,
+		steppers: true,
+		onChange: function(value) {
+			if (value < values.minBranch)
+				values.minBranch = value;
+		}
+	}
+};
+
+var palette = new Palette('Tree', components, values);

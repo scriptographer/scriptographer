@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
+// Values
 
 var values = {
 	fixLength: false,
@@ -8,56 +8,6 @@ var values = {
 	showAngleLength: false,
 	showCoordinates: false
 };
-
-var components = {
-	ruler0: { label: 'Vector', type: 'ruler' },
-	length: {
-		label: 'Length', type: 'number', units: 'point', length: 10
-	},
-	fixLength: {
-		label: 'Fix', type: 'checkbox'
-	},
-	angle: {
-		label: 'Angle', type: 'number', units: 'degree', length: 10,
-		range: [-360, 360]
-	},
-	fixAngle: {
-		label: 'Fix', type: 'checkbox'
-	},
-	ruler1: { label: 'Coordinates', type: 'ruler' },
-	x: {
-		label: 'X', type: 'number', units: 'point', length: 10
-	},
-	y: {
-		label: 'Y', type: 'number', units: 'point', length: 10
-	},
-	ruler2: { label: 'Display', type: 'ruler' },
-	showAngleLength: {
-		label: 'Vector', type: 'checkbox'
-	},
-	showCoordinates: {
-		label: 'Coordinates', type: 'checkbox'
-	},
-	showCircle: {
-		label: 'Circle', type: 'checkbox'
-	},
-	ruler3: { label: 'Instructions', type: 'ruler' },
-	instructions: {
-		type: 'text', fullSize: true,
-		value: 'SHIFT = Add New Vector\nALT = Modify Last Vector'
-	}
-}
-
-var palette = new Palette('Vektor', components, values);
-
-palette.onChange = function(component) {
-	var name = component.name, value = component.value;
-	if (vector) {
-		// Update Vector
-		vector[name] = value;
-		drawVector(false);
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vector
@@ -118,10 +68,13 @@ function drawVector(drag) {
 	}
 	var quadrant = vector.quadrant;
 	if (values.showCoordinates && !drag) {
-		drawLength(vectorStart, vectorStart + [vector.x, 0],
-				[1, 3].contains(quadrant) ? -1 : 1, true, vector.x, 'x: ');
-		drawLength(vectorStart, vectorStart + [0, vector.y], 
-				[1, 3].contains(quadrant) ? 1 : -1, true, vector.y, 'y: ');
+		var lengthThreshold = 25;
+		if (Math.abs(vector.x) >= lengthThreshold)
+			drawLength(vectorStart, vectorStart + [vector.x, 0],
+					[1, 3].contains(quadrant) ? -1 : 1, true, vector.x, 'x: ');
+		if (Math.abs(vector.y) >= lengthThreshold)
+			drawLength(vectorStart, vectorStart + [0, vector.y], 
+					[1, 3].contains(quadrant) ? 1 : -1, true, vector.y, 'y: ');
 	}
 	dashedItems.each(function(item) {
 		item.style = {
@@ -238,4 +191,57 @@ function onMouseUp(event) {
 		dashItem = null;
 	}
 	vectorPrevious = vector;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	ruler0: { label: 'Vector', type: 'ruler' },
+	length: {
+		label: 'Length', type: 'number', units: 'point', length: 10
+	},
+	fixLength: {
+		label: 'Fix', type: 'checkbox'
+	},
+	angle: {
+		label: 'Angle', type: 'number', units: 'degree', length: 10,
+		range: [-360, 360]
+	},
+	fixAngle: {
+		label: 'Fix', type: 'checkbox'
+	},
+	ruler1: { label: 'Coordinates', type: 'ruler' },
+	x: {
+		label: 'X', type: 'number', units: 'point', length: 10
+	},
+	y: {
+		label: 'Y', type: 'number', units: 'point', length: 10
+	},
+	ruler2: { label: 'Display', type: 'ruler' },
+	showAngleLength: {
+		label: 'Vector', type: 'checkbox'
+	},
+	showCoordinates: {
+		label: 'Coordinates', type: 'checkbox'
+	},
+	showCircle: {
+		label: 'Circle', type: 'checkbox'
+	},
+	ruler3: { label: 'Instructions', type: 'ruler' },
+	instructions: {
+		type: 'text', fullSize: true,
+		value: 'SHIFT = Add New Vector\nALT = Modify Last Vector'
+	}
+}
+
+var palette = new Palette('Vektor', components, values);
+
+palette.onChange = function(component) {
+	var name = component.name, value = component.value;
+	if (vector) {
+		// Update Vector
+		vector[name] = value;
+		drawVector(false);
+	}
 }

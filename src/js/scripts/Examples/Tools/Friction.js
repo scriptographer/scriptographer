@@ -8,29 +8,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	accel: {
-		label: 'Acceleration',
-		type: 'slider',
-		range: [0.5, 20]
-	},
-	friction: {
-		label: 'Friction',
-		type: 'slider',
-		range: [0, 0.99]
-	},
-	accelFriction: {
-		label: 'Acceleration Friction',
-		type: 'slider',
-		range: [0.4, 1]
-	}
-};
-
-var palette = new Palette('Friction', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 tool.eventInterval = 1000 / 100; // 100 times a second
@@ -53,3 +30,26 @@ function onMouseDrag(event) {
 	path.add(point);
 	path.smooth();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	accel: {
+		label: 'Acceleration',
+		type: 'slider',
+		range: [0.5, 20]
+	},
+	friction: {
+		label: 'Friction',
+		type: 'slider',
+		range: [0, 0.99]
+	},
+	accelFriction: {
+		label: 'Acceleration Friction',
+		type: 'slider',
+		range: [0.4, 1]
+	}
+};
+
+var palette = new Palette('Friction', components, values);

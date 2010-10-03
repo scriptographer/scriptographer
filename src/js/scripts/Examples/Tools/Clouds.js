@@ -9,6 +9,28 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Mouse handling
+
+var path;
+function onMouseDown(event) {
+	path = new Path() {
+		strokeJoin: 'round',
+		strokeCap: 'round'
+	};
+	path.add(event.point);
+}
+
+function onMouseDrag(event) {
+	if (values.flip) {
+		// Look at whether event.count is even to decide if we draw an arc
+		// in clockwise or counter-clockwise direction.
+		path.arcTo(event.point, event.count.isEven());
+	} else {
+		path.arcTo(event.point);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Interface
 
 var components = {
@@ -43,25 +65,3 @@ var components = {
 };
 
 new Palette('Clouds', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
-// Mouse handling
-
-var path;
-function onMouseDown(event) {
-	path = new Path() {
-		strokeJoin: 'round',
-		strokeCap: 'round'
-	};
-	path.add(event.point);
-}
-
-function onMouseDrag(event) {
-	if (values.flip) {
-		// Look at whether event.count is even to decide if we draw an arc
-		// in clockwise or counter-clockwise direction.
-		path.arcTo(event.point, event.count.isEven());
-	} else {
-		path.arcTo(event.point);
-	}
-}

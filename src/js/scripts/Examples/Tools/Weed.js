@@ -7,24 +7,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	size: {
-		label: 'Size',
-		range: [0, 100],
-		steppers: true
-	},
-	max: {
-		label: 'Max',
-		range: [1, 500],
-		steppers: true
-	}
-};
-
-var palette = new Palette('Weed', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 tool.eventInterval = 1000 / 100; // 100 times a second
@@ -68,3 +50,21 @@ Branch.prototype.grow = function() {
 Branch.prototype.finish = function() {
 	this.path.pointsToCurves();
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	size: {
+		label: 'Size',
+		range: [0, 100],
+		steppers: true
+	},
+	max: {
+		label: 'Max',
+		range: [1, 500],
+		steppers: true
+	}
+};
+
+var palette = new Palette('Weed', components, values);

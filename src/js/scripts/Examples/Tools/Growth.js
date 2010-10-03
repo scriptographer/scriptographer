@@ -6,19 +6,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	scale: {
-		label: 'Scale',
-		type: 'slider',
-		range: [0.5, 1]
-	}
-};
-
-var palette = new Palette('Grow', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 var path;
@@ -53,3 +40,16 @@ function onMouseUp(event) {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	scale: {
+		label: 'Scale',
+		type: 'slider',
+		range: [0.5, 1]
+	}
+};
+
+var palette = new Palette('Grow', components, values);

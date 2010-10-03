@@ -10,38 +10,6 @@ var values = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = {
-	size: {
-		label: 'Radius',
-		steppers: true
-	},
-	minAmount: {
-		label: 'Minimal Amount',
-		min: 0,
-		steppers: true
-	},
-	maxAmount: {
-		label: 'Maximal Amount',
-		min: 0,
-		steppers: true
-	},
-	minWidth: {
-		label: 'Minimal Stroke Width',
-		min: 0,
-		steppers: true
-	},
-	maxWidth: {
-		label: 'Maximal Stroke Width',
-		min: 0,
-		steppers: true
-	}
-};
-
-var palette = new Palette('Weed Rounded', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 tool.eventInterval = 1000 / 100; // 100 times a second
@@ -96,3 +64,35 @@ Branch.prototype.grow = function() {
 Branch.prototype.finish = function() {
 	this.path.pointsToCurves();
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = {
+	size: {
+		label: 'Radius',
+		steppers: true
+	},
+	minAmount: {
+		label: 'Minimal Amount',
+		min: 0,
+		steppers: true
+	},
+	maxAmount: {
+		label: 'Maximal Amount',
+		min: 0,
+		steppers: true
+	},
+	minWidth: {
+		label: 'Minimal Stroke Width',
+		min: 0,
+		steppers: true
+	},
+	maxWidth: {
+		label: 'Maximal Stroke Width',
+		min: 0,
+		steppers: true
+	}
+};
+
+var palette = new Palette('Weed Rounded', components, values);

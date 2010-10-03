@@ -7,25 +7,6 @@ var values  = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Interface
-
-var components = { 
-	minDistance: {
-		type: 'number', label: 'Size',
-		units: 'point',
-		range: [0, 1000],
-		onChange: function(value) {
-			tool.minDistance = value;
-		} 
-	},
-	varyThickness: {
-		type: 'checkbox', label: 'Vary Thickness'
-	}
-};
-
-var palette = new Palette('Worm Farm', components, values);
-
-////////////////////////////////////////////////////////////////////////////////
 // Mouse handling
 
 tool.minDistance = values.minDistance;
@@ -85,3 +66,22 @@ function onMouseUp(event) {
 	worm.add(event.point);
 	worm.smooth();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Interface
+
+var components = { 
+	minDistance: {
+		type: 'number', label: 'Size',
+		units: 'point',
+		range: [0, 1000],
+		onChange: function(value) {
+			tool.minDistance = value;
+		} 
+	},
+	varyThickness: {
+		type: 'checkbox', label: 'Vary Thickness'
+	}
+};
+
+var palette = new Palette('Worm Farm', components, values);

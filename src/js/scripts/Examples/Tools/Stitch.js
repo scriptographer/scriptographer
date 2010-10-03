@@ -9,6 +9,24 @@ var values = {
 };
 
 //////////////////////////////////////////////////////////////////////////////////
+// Mouse handling
+
+var path;
+var mul = 1;
+
+function onMouseDown(event) {
+	path = new Path();
+}
+
+function onMouseDrag(event) {
+	var step = event.delta;
+	step.angle += mul * 90;
+	step.length = values.size;
+	path.add(event.point + step);
+	mul *= -1;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 // Interface
 
 var components = {
@@ -26,21 +44,3 @@ var components = {
 };
 
 var palette = new Palette('Stitch', components, values);
-
-//////////////////////////////////////////////////////////////////////////////////
-// Mouse handling
-
-var path;
-var mul = 1;
-
-function onMouseDown(event) {
-	path = new Path();
-}
-
-function onMouseDrag(event) {
-	var step = event.delta;
-	step.angle += mul * 90;
-	step.length = values.size;
-	path.add(event.point + step);
-	mul *= -1;
-}
