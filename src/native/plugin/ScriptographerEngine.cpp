@@ -919,62 +919,66 @@ jdouble ScriptographerEngine::convertDouble(JNIEnv *env, jobject value) {
 }
 
 void ScriptographerEngine::updateCoordinateSystem() {
-	// Get the global document origin
-	sAIDocument->GetDocumentRulerOrigin(&m_documentOrigin);
+	// First make sure there's an open document at all
+	if (gWorkingDoc != NULL) {
+		// Get the global document origin
+		sAIDocument->GetDocumentRulerOrigin(&m_documentOrigin);
 #if kPluginInterfaceVersion >= kAI15
-	using namespace ai;
-	ArtboardList artboards;
-	if (artboards.IsValid()) {
-		ArtboardID index;
-		if (!artboards.GetActive(index)) {
-			ArtboardProperties artboard = artboards.GetArtboardProperties(index);
-			// Artboard Origin is returned relative to the Artboard Bounds, so
-			// Add it up
-			AIRealRect rect;
-			artboard.GetPosition(rect);
-			AIRealPoint origin;
-			artboard.GetRulerOrigin(origin);
-			// If we are in bottom up coordinates and the origin is set to the
-			// top left corner (default setting), fake a new origin at the
-			// bottom left corner.
-			if (m_topDownCoordinates || origin.v != 0 || origin.v != 0) {
-				m_artboardOrigin.h = rect.left + origin.h;
-				m_artboardOrigin.v = rect.top - origin.v;
-			} else {
-				m_artboardOrigin.h = rect.left;
-				m_artboardOrigin.v = rect.bottom;
+		using namespace ai;
+		ArtboardList artboards;
+		if (artboards.IsValid()) {
+			ArtboardID index;
+			if (!artboards.GetActive(index)) {
+				ArtboardProperties artboard = artboards.GetArtboardProperties(index);
+				// Artboard Origin is returned relative to the Artboard Bounds, so
+				// Add it up
+				AIRealRect rect;
+				artboard.GetPosition(rect);
+				AIRealPoint origin;
+				artboard.GetRulerOrigin(origin);
+				// If we are in bottom up coordinates and the origin is set to the
+				// top left corner (default setting), fake a new origin at the
+				// bottom left corner.
+				if (m_topDownCoordinates || origin.v != 0 || origin.v != 0) {
+					m_artboardOrigin.h = rect.left + origin.h;
+					m_artboardOrigin.v = rect.top - origin.v;
+				} else {
+					m_artboardOrigin.h = rect.left;
+					m_artboardOrigin.v = rect.bottom;
+				}
+				// Document Origin on CS5 is returned relative to the active
+				// artboard, so add its origin to it for the absolute value.
+				m_documentOrigin.h += m_artboardOrigin.h;
+				m_documentOrigin.v += m_artboardOrigin.v;
 			}
-			// Document Origin on CS5 is returned relative to the active
-			// artboard, so add its origin to it for the absolute value.
-			m_documentOrigin.h += m_artboardOrigin.h;
-			m_documentOrigin.v += m_artboardOrigin.v;
 		}
-	}
 #elif kPluginInterfaceVersion >= kAI13
-	ASInt32 index = 0;
-	AICropAreaPtr area = NULL;
-	if (!sAICropArea->GetActive(&index) && !sAICropArea->Get(index, &area)) {
-		m_artboardOrigin.h = area->m_CropAreaRect.left;
-		m_artboardOrigin.v = m_topDownCoordinates
-			? area->m_CropAreaRect.top : area->m_CropAreaRect.bottom;
-	} else {
-		// In case of error
-		m_artboardOrigin.h = 0;
-		m_artboardOrigin.v = 0;
-	}
+		ASInt32 index = 0;
+		AICropAreaPtr area = NULL;
+		if (!sAICropArea->GetActive(&index) && !sAICropArea->Get(index, &area)) {
+			m_artboardOrigin.h = area->m_CropAreaRect.left;
+			m_artboardOrigin.v = m_topDownCoordinates
+				? area->m_CropAreaRect.top : area->m_CropAreaRect.bottom;
+		} else {
+			// In case of error
+			m_artboardOrigin.h = 0;
+			m_artboardOrigin.v = 0;
+		}
 #else // kPluginInterfaceVersion < kAI13
-	// There are no Artboards, use global document origin instead?
-	// Or document crop box?
-	m_artboardOrigin = m_documentOrigin;
-	/*
-	VS
-	AIRealRect rect;
-	sAIDocument->GetDocumentCropBox(&rect);
-	m_artboardOrigin.h = rect.left;
-	m_artboardOrigin.v = m_topDownCoordinates
-		? rect.top : rect.bottom;
-	*/
+		// TODO:
+		// There are no Artboards, use global document origin instead?
+		// Or document crop box?
+		m_artboardOrigin = m_documentOrigin;
+		/*
+		VS
+		AIRealRect rect;
+		sAIDocument->GetDocumentCropBox(&rect);
+		m_artboardOrigin.h = rect.left;
+		m_artboardOrigin.v = m_topDownCoordinates
+			? rect.top : rect.bottom;
+		*/
 #endif // kPluginInterfaceVersion >= kAI13
+	}
 }
 
 // com.scriptographer.ai.Point <-> AIRealPoint
