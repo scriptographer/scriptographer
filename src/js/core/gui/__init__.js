@@ -66,7 +66,6 @@ function getDocumentsDirectory() {
 		var view = javax.swing.filechooser.FileSystemView.getFileSystemView();
 		return view.getDefaultDirectory();
 	}
-	 // new File(java.lang.System.getProperty('user.home'));
 }
 
 // Script Locations
