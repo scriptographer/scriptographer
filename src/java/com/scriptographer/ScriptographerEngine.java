@@ -181,6 +181,10 @@ public class ScriptographerEngine {
 		return pluginDir;
 	}
 
+	public static File getCoreDirectory() {
+		return coreDir;
+	}
+
 	public static void setScriptDirectories(File[] directories) {
 		scriptDirectories = directories;
 		// When setting script directories for error reporting, also compile

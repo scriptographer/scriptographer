@@ -57,25 +57,58 @@ if (firstRun) {
 			licenseDialog.doModal() == licenseDialog.defaultItem;
 }
 
+function getDocumentsDirectory() {
+	if (illustrator.isMacintosh()) {
+		var FileManager = com.apple.eio.FileManager;
+		return new File(FileManager.findFolder(FileManager.kUserDomain,
+				FileManager.OSTypeToInt('docs')));
+	} else {
+		var view = javax.swing.filechooser.FileSystemView.getFileSystemView();
+		return view.getDefaultDirectory();
+	}
+	 // new File(java.lang.System.getProperty('user.home'));
+}
+
 // Script Locations
-var userDirectory = new File(java.lang.System.getProperty('user.home'));
+var documentsDirectory = getDocumentsDirectory();
+var coreDirectory = ScriptographerEngine.coreDirectory;
 var scriptsDirectory = new File(ScriptographerEngine.pluginDirectory, 'Scripts');
 var scriptRepositories = script.preferences.repositories;
 
 if (script.preferences.accepted) {
 	if (!scriptRepositories) {
 		scriptRepositories = [];
-		var dir = Dialog.chooseDirectory(
-			'Please choose your Scriptographer Script Folder. We recommend'
-			+ (illustrator.isMacintosh() ? '\n' : ' ')
-			+ 'to keep your scripts in a dedicated folder within your Documents.',
-			userDirectory);
+		var dir = new File(documentsDirectory, 'Scriptographer Scripts');
+		if (!dir.exists()) {
+			if (Dialog.confirm('Scriptographer Scripts Folder',
+				'You do not have a Scriptographer scripts folder set up\n'
+				+ 'for your own scripts. Would you like to create a scripts\n'
+				+ 'folder in your Documents now and define it as a script\n'
+				+ 'repository in Scriptographer?\n\n'
+				+ 'We recommend new users to do so.')) {
+				dir.makeDirectory();
+			} else {
+				dir = Dialog.chooseDirectory(
+					'Please choose your Scriptographer Scripts Folder.'
+					+ 'We recommend' + (illustrator.isMacintosh() ? '\n' : ' ')
+					+ 'to keep your scripts in a dedicated folder'
+					+ 'within your Documents.',
+					documentsDirectory);
+			}
+		}
 		if (dir && dir.isDirectory()) {
 			scriptRepositories.push({
 				name: 'My Scripts', path: dir.path, visible: true
 			});
 		}
 	}
+	// Filter out folders that contain the core script directory, as this
+	// would lead to an endless loop while loading otherwise. Also filter empty
+	// ones, which were set up wrongly:
+	scriptRepositories = scriptRepositories.filter(function(repository) {
+		return repository.sealed || repository.path
+				&& !new File(repository.path).contains(coreDirectory);
+	});
 	// Add standard Examples and Tutorials repositories if they don't exist:
 	// Reversed sequence, due to unshift
 	['Tutorials', 'Examples'].each(function(name) {

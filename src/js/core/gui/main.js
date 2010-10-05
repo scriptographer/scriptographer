@@ -144,6 +144,7 @@ var mainDialog = new FloatingDialog(
 						&& /^(Examples|Tutorials)$/.test(repository.name)
 								? new File(scriptsDirectory, repository.name)
 								: new File(repository.path);
+				// Only show repositories that actually exist:
 				if (dir.exists()) {
 					dir.alternateName = repository.name;
 					return dir;
@@ -239,7 +240,7 @@ var mainDialog = new FloatingDialog(
 			if (file) {
 				if (file.exists())
 					file.remove();
-				file.create();
+				file.createNewFile();
 				// Use refreshList to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
 				// Make sure the list is populated first, so refreshList

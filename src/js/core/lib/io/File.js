@@ -550,7 +550,7 @@ File = Base.extend(new function() {
 				return ok;
 			} else {
 				// Copy the file with FileChannels:
-				file.create();
+				file.createNewFile();
 				var src = new java.io.FileInputStream(this.getPath()).getChannel();
 				var dst = new java.io.FileOutputStream(file.getPath()).getChannel();
 				var amount = dst.transferFrom(src, 0, src.size());
@@ -656,6 +656,16 @@ File = Base.extend(new function() {
 			return res.join(File.separator);
 		},
 
+		contains: function(file) {
+			file = new File(file);
+			while (file) {
+				if (file.equals(this))
+					return true;
+				file = file.getParent();
+			}
+			return false;
+		},
+
 		getExtension: function() {
 			return File.getExtension(this.getName());
 		},
@@ -664,7 +674,7 @@ File = Base.extend(new function() {
 			return File.getContentType(this.getName());
 		},
 
-		create: function() {
+		createNewFile: function() {
 			// returns boolean
 			return this._file.createNewFile();
 		},

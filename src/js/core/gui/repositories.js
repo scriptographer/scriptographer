@@ -187,9 +187,22 @@ var repositoriesDialog = new ModalDialog(function() {
 	}
 
 	function chooseDirectory(directory) {
-		return Dialog.chooseDirectory(
+		var dir = Dialog.chooseDirectory(
 				'Choose a Scriptographer Script Repository Folder.',
-				directory || userDirectory);
+				directory || documentsDirectory);
+		if (dir && dir.exists()) {
+			// Filter out folders that contain the core script directory, as this
+			// would lead to an endless loop while loading otherwise.
+			if (dir.contains(coreDirectory)) {
+				Dialog.alert(
+					'Unable to add this folder as a script repository,\n'
+					+ 'because it contains the Scriptographer plugin folder:\n\n'
+					+ dir);
+			} else {
+				return dir;
+			}
+		}
+		return null;
 	}
 
 	function changeSelectedEntry() {
