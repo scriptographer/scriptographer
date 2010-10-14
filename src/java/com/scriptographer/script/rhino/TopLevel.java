@@ -274,13 +274,14 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		defineProperty("documents", DocumentList.getInstance(),
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		defineProperty("fonts", FontList.getInstance(),
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		try {
 			defineProperty(this, "document", "getActiveDocument", null);
+			// Expose deprecated activeDocument
 			defineProperty(this, "activeDocument", "getActiveDocument", null);
 		} catch (Exception e) {
 			e.printStackTrace();
