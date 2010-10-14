@@ -103,7 +103,7 @@ public class RhinoScriptException extends ScriptException {
 			} else {
 				writer.println(re.details());
 			}
-			String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
+			String[] stackTrace = re.getScriptStackTrace().split("\\r\\n|\\n|\\r");
 			String sourceName = re.sourceName();
 			if (sourceName != null) {
 				int lineNumber = re.lineNumber();
@@ -120,7 +120,7 @@ public class RhinoScriptException extends ScriptException {
 				}
 			}
 			// Parse the lines for filename:linenumber
-			Pattern pattern = Pattern.compile("\\s+at\\s+([^:]+):(\\d+)");
+			Pattern pattern = Pattern.compile("\\s+at\\s+(.+):(\\d+)");
 			for (int i = 0; i < stackTrace.length; i++) {
 				String line = stackTrace[i];
 				Matcher matcher = pattern.matcher(line);
