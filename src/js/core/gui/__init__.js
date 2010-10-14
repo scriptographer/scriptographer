@@ -60,8 +60,15 @@ if (firstRun) {
 function getDocumentsDirectory() {
 	if (illustrator.isMacintosh()) {
 		var FileManager = com.apple.eio.FileManager;
-		return new File(FileManager.findFolder(FileManager.kUserDomain,
-				FileManager.OSTypeToInt('docs')));
+		// Some old JVMs on Mac do not seem to support this. Fall back to
+		// using user.home in that case:
+		if (FileManager && typeof FileManager.OSTypeToInt == 'function') {
+			return new File(FileManager.findFolder(FileManager.kUserDomain,
+					FileManager.OSTypeToInt('docs')));
+		} else {
+			return new File(java.lang.System.getProperty('user.home'),
+					'Documents');
+		}
 	} else {
 		var view = javax.swing.filechooser.FileSystemView.getFileSystemView();
 		return view.getDefaultDirectory();
