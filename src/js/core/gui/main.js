@@ -55,9 +55,9 @@ var mainDialog = new FloatingDialog(
 			if (!expanded && entry.expanded)
 				entry.populate();
 			// Detect doubleclicks on files and folders.
-			if (tracker.action == Tracker.ACTION_BUTTON_UP &&
-					(tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK) &&
-					tracker.point.x > entry.expandArrowRect.right) {
+			if (tracker.action == Tracker.ACTION_BUTTON_UP
+					 && (tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK)
+					 && tracker.point.x > entry.expandArrowRect.right) {
 				if (entry.isDirectory) {
 					entry.expanded = !entry.expanded;
 					entry.list.invalidate();
