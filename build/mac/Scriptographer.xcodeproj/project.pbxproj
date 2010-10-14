@@ -970,7 +970,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 10ABD5FF098835E000A7EB07 /* Build configuration list for PBXProject "Scriptographer" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* TutorialCallMe */;
 			projectDirPath = "";
 			projectRoot = "";
