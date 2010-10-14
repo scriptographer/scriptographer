@@ -163,8 +163,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 	#endif
 #endif
 		}
-		if (doc != NULL)
+		if (doc != NULL) {
 			Document_activate(doc, false);
+			// Automatically switch to the newly created / opened document
+			gActiveDoc = doc;
+		}
 	} EXCEPTION_CONVERT(env);
 	return (jint) doc;
 }
@@ -212,8 +215,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		sAIDocumentList->New(preset, &params,
 				(ActionDialogStatus) dialogStatus, &doc);
 #endif // kPluginInterfaceVersion >= kAI13 
-		if (doc != NULL)
+		if (doc != NULL) {
 			Document_activate(doc, false);
+			// Automatically switch to the newly created / opened document
+			gActiveDoc = doc;
+		}
 #endif
 	} EXCEPTION_CONVERT(env);
 	if (str != NULL)
@@ -229,12 +235,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeActivate(
 	try {
 		// Do not switch yet as we may want to focus the document too:
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
-		if (doc != gWorkingDoc) {
+		if (doc != gWorkingDoc)
 			Document_activate(doc, true, focus);
-			// If forCreation is set, set gCreationDoc instead of gActiveDoc
-			if (forCreation) gCreationDoc = doc;
-			else gActiveDoc = doc;
-		}
+		// If forCreation is set, set gCreationDoc instead of gActiveDoc
+		if (forCreation) gCreationDoc = doc;
+		else gActiveDoc = doc;
 	} EXCEPTION_CONVERT(env);
 }
 
