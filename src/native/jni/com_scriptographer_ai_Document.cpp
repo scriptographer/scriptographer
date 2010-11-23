@@ -152,16 +152,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 #if kPluginInterfaceVersion < kAI12
 			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel,
 					(ActionDialogStatus) dialogStatus, &doc);
-#else
+#else // kPluginInterfaceVersion >= kAI12
 			ai::FilePath filePath(fileSpec);
-	#if kPluginInterfaceVersion < kAI13
+#if kPluginInterfaceVersion < kAI13
 			sAIDocumentList->Open(filePath, (AIColorModel) colorModel,
 					(ActionDialogStatus) dialogStatus, &doc);
-	#else
+#else // kPluginInterfaceVersion >= kAI13
 			sAIDocumentList->Open(filePath, (AIColorModel) colorModel,
 					(ActionDialogStatus) dialogStatus, true, &doc);
-	#endif
-#endif
+#endif // kPluginInterfaceVersion >= kAI13
+#endif // kPluginInterfaceVersion >= kAI12
 		}
 		if (doc != NULL) {
 			Document_activate(doc, false);
