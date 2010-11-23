@@ -965,18 +965,14 @@ void ScriptographerEngine::updateCoordinateSystem() {
 			m_artboardOrigin.v = 0;
 		}
 #else // kPluginInterfaceVersion < kAI13
-		// TODO:
-		// There are no Artboards, use global document origin instead?
-		// Or document crop box?
-		m_artboardOrigin = m_documentOrigin;
-		/*
-		VS
-		AIRealRect rect;
-		sAIDocument->GetDocumentCropBox(&rect);
-		m_artboardOrigin.h = rect.left;
-		m_artboardOrigin.v = m_topDownCoordinates
-			? rect.top : rect.bottom;
-		*/
+		// This is similar to ArtboardList.nativeGet()
+		m_artboardOrigin.h = -m_documentOrigin.h;
+		m_artboardOrigin.v = -m_documentOrigin.v;
+		if (m_topDownCoordinates) {
+			AIDocumentSetup setup;
+			sAIDocument->GetDocumentSetup(&setup);
+			m_artboardOrigin.v += setup.height;
+		}
 #endif // kPluginInterfaceVersion >= kAI13
 	}
 }

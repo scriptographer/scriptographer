@@ -88,8 +88,15 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 		);
 		return true;
 #else // kPluginInterfaceVersion < kAI13
+		AIRealPoint origin;
+		sAIDocument->GetDocumentRulerOrigin(&origin);
+		AIDocumentSetup setup;
+		sAIDocument->GetDocumentSetup(&setup);
 		AIRealRect rect;
-		sAIDocument->GetDocumentCropBox(&rect);
+		rect.left = -origin.h;
+		rect.bottom  = -origin.v;
+		rect.right =  rect.left + setup.width;
+		rect.top = rect.bottom + setup.height;
 		gEngine->callVoidMethod(env, artboard, gEngine->mid_ai_Artboard_set,
 			gEngine->convertRectangle(env, kCurrentCoordinates, &rect),
 			// TODO: Find out if these can be simulated somehow too?
