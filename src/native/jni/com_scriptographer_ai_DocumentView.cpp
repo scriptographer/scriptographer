@@ -214,21 +214,23 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_scrollBy(JNIEnv *
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getInvalidBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
-		AIRealRect rect;
-		sAIDocumentView->GetDocumentViewInvalidRect(view, &rect);
-		return gEngine->convertRectangle(env, kCurrentCoordinates, &rect);
+		AIRealRect rt;
+		sAIDocumentView->GetDocumentViewInvalidRect(view, &rt);
+		return gEngine->convertRectangle(env, kCurrentCoordinates, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * void invalidate(float x, float y, float width, float height)
+ * void invalidate(com.scriptographer.ai.Rectangle rect)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_invalidate(
+		JNIEnv *env, jobject obj, jobject rect) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
-		DEFINE_RECT(rect, x, y, width, height);
-		sAIDocumentView->SetDocumentViewInvalidRect(view, &rect);
+		AIRealRect rt;
+		gEngine->convertRectangle(env, kCurrentCoordinates, rect, &rt);
+		sAIDocumentView->SetDocumentViewInvalidRect(view, &rt);
 	} EXCEPTION_CONVERT(env);
 }
 

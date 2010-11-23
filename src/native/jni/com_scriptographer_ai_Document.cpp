@@ -630,12 +630,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env,
 	} EXCEPTION_CONVERT(env);
 }
 
+
 /*
- * void invalidate(float x, float y, float width, float height)
+ * void invalidate(com.scriptographer.ai.Rectangle rect)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(
-		JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width,
-		jfloat height) {
+		JNIEnv *env, jobject obj, jobject rect) {
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -644,9 +644,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(
 		// that fits much better here.
 		// Acording to DocumentView.h, we don't need to pass a view handle, as
 		// this document is now the current one anyhow and its view is on top of
-		// the others:	
-		DEFINE_RECT(rect, x, y, width, height);
-		sAIDocumentView->SetDocumentViewInvalidDocumentRect(NULL, &rect);
+		// the others:
+		AIRealRect rt;
+		gEngine->convertRectangle(env, kCurrentCoordinates, rect, &rt);
+		sAIDocumentView->SetDocumentViewInvalidDocumentRect(NULL, &rt);
 	} EXCEPTION_CONVERT(env);
 }
 

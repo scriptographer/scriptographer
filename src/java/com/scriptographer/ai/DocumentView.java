@@ -188,11 +188,8 @@ public class DocumentView extends DocumentObject {
 	public Rectangle getUpdateRect() {
 		return getInvalidBounds();
 	}
-	public native void invalidate(float x, float y, float width, float height);
-
-	public void invalidate(Rectangle rect) {
-		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
-	}
+	
+	public native void invalidate(Rectangle rect);
 
 	public void invalidate() {
 		invalidate(getBounds());

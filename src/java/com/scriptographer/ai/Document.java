@@ -1133,19 +1133,11 @@ public class Document extends NativeObject implements ChangeReceiver {
 	}
 
 	/**
-	 * @jshide
-	 */
-	public native void invalidate(float x, float y, float width, float height);
-	
-	/**
 	 * Invalidates the rectangle in artwork coordinates. This will cause all
 	 * views of the document that contain the given rectangle to update at the
 	 * next opportunity.
 	 */
-	public void invalidate(Rectangle rect) {
-		invalidate((float) rect.x, (float) rect.y, (float) rect.width, 
-				(float) rect.height);
-	}
+	public native void invalidate(Rectangle rect);
 
 	private native boolean nativeWrite(File file, int formatHandle, boolean ask);
 

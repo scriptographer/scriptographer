@@ -99,10 +99,3 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 	AIRealPoint NAME; \
 	NAME.h = X; \
 	NAME.v = Y;
-
-#define DEFINE_RECT(RT, X, Y, WIDTH, HEIGHT) \
-	AIRealRect RT; \
-	RT.left = X; \
-	RT.top  = Y; \
-	RT.right =  X + WIDTH; \
-	RT.bottom = Y + HEIGHT;
