@@ -955,7 +955,8 @@ void ScriptographerEngine::updateCoordinateSystem() {
 #elif kPluginInterfaceVersion >= kAI13
 		ASInt32 index = 0;
 		AICropAreaPtr area = NULL;
-		if (!sAICropArea->GetActive(&index) && !sAICropArea->Get(index, &area)) {
+		if (!sAICropArea->GetActive(&index) && index != -1
+				&& !sAICropArea->Get(index, &area)) {
 			m_artboardOrigin.h = area->m_CropAreaRect.left;
 			m_artboardOrigin.v = m_topDownCoordinates
 				? area->m_CropAreaRect.top : area->m_CropAreaRect.bottom;
