@@ -37,7 +37,8 @@
 /*
  * int nativeGetSize(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(
+		JNIEnv *env, jclass cls, jint handle) {
 	// On cropping areas aresomething else than artboards, so use CS4 and above
 #if kPluginInterfaceVersion >= kAI14
 	try {
@@ -55,7 +56,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(JNI
 /*
  * int nativeRemove(int handle, int fromIndex, int toIndex)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint fromIndex, jint toIndex) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(
+		JNIEnv *env, jclass cls, jint handle, jint fromIndex, jint toIndex) {
 #if kPluginInterfaceVersion >= kAI14
 	try {
 		Document_activate((AIDocumentHandle) handle);
@@ -73,9 +75,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(JNIE
 }
 
 /*
- * boolean nativeGet(int handle, int index, com.scriptographer.ai.Artboard artboard)
+ * boolean nativeGet(int handle, int index, com.scriptographer.ai.Artboard 
+ *     artboard)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jobject artboard) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(
+		JNIEnv *env, jclass cls, jint handle, jint index, jobject artboard) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
 #if kPluginInterfaceVersion >= kAI14
@@ -83,7 +87,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 		if (sAICropArea->Get(index, &area))
 			throw new StringException("Cannot get artboard");
 		gEngine->callVoidMethod(env, artboard, gEngine->mid_ai_Artboard_set,
-				gEngine->convertRectangle(env, kCurrentCoordinates, &area->m_CropAreaRect),
+				gEngine->convertRectangle(env, kCurrentCoordinates,
+				&area->m_CropAreaRect),
 				area->m_bShowCenter, area->m_bShowCrossHairs,
 				area->m_bShowSafeAreas, area->m_fPAR
 		);
@@ -109,7 +114,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 	return false;
 }
 
-// memset to 0 since it might have more fields than we support here (e.g. additional fields in CS3)
+// memset to 0 since it might have more fields than we support here (e.g.
+// additional fields in CS3)
 #define DEFINE_CROPAREA() \
 	AICropArea area; \
 	memset(&area, 0, sizeof(AICropArea)); \
@@ -120,9 +126,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 	area.m_bShowSafeAreas = showSafeAreas; \
 
 /*
- * boolean nativeInsert(int handle, int index, com.scriptographer.ai.Rectangle bounds, boolean showCenter, boolean showCrossHairs, boolean showSafeAreas, double pixelAspectRatio)
+ * boolean nativeInsert(int handle, int index, com.scriptographer.ai.Rectangle
+ *     bounds, boolean showCenter, boolean showCrossHairs,
+ *     boolean showSafeAreas, double pixelAspectRatio)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds, jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas, jdouble pixelAspectRatio) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
+		JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds,
+		jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas,
+		jdouble pixelAspectRatio) {
 #if kPluginInterfaceVersion >= kAI14
 	try {
 		Document_activate((AIDocumentHandle) handle);
@@ -142,13 +153,15 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
 			if (sAICropArea->AddNew(&area, &pos))
 				throw new StringException("Cannot add artboard");
 		} else {
-			// Get last one and add it again at the end, to start moving the others by one, down to index.
+			// Get last one and add it again at the end, to start moving the
+			// others by one, down to index.
 			AICropAreaPtr prev = NULL;
 			if (sAICropArea->Get(count - 1, &prev))
 				throw new StringException("Cannot get artboard");
 			if (sAICropArea->AddNew(prev, &pos))
 				throw new StringException("Cannot add artboard");
-			// Move the ones above index one up now, excluding the last one which was already handled above.
+			// Move the ones above index one up now, excluding the last one
+			// which was already handled above.
 			for (int i = count - 2; i >= index; i--) {
 				if (sAICropArea->Get(i, &prev))
 					throw new StringException("Cannot get artboard");
@@ -167,14 +180,20 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
 }
 
 /*
- * boolean nativeSet(int handle, int index, com.scriptographer.ai.Rectangle bounds, boolean showCenter, boolean showCrossHairs, boolean showSafeAreas, double pixelAspectRatio)
+ * boolean nativeSet(int handle, int index, com.scriptographer.ai.Rectangle
+ *     bounds, boolean showCenter, boolean showCrossHairs,
+ *     boolean showSafeAreas, double pixelAspectRatio)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds, jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas, jdouble pixelAspectRatio) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(
+		JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds,
+		jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas,
+		jdouble pixelAspectRatio) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
 #if kPluginInterfaceVersion >= kAI14
 		DEFINE_CROPAREA();
-		// If index is bigger than array size, add empty artboards until we reach the needed size, then update that field.
+		// If index is bigger than array size, add empty artboards until we
+		// reach the needed size, then update that field.
 		ASInt32 count = 0, pos = 0;
 		sAICropArea->GetCount(&count);
 		if (index >= count) {
