@@ -38,7 +38,8 @@
  * int nativeGetSize(int handle)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
-#if kPluginInterfaceVersion >= kAI13
+	// On cropping areas aresomething else than artboards, so use CS4 and above
+#if kPluginInterfaceVersion >= kAI14
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		ASInt32 count = 0;
@@ -46,16 +47,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(JNI
 		return count;
 	} EXCEPTION_CONVERT(env);
 	return 0;
-#else // kPluginInterfaceVersion < kAI13
+#else // kPluginInterfaceVersion < kAI14
 	return 1;
-#endif // kPluginInterfaceVersion < kAI13 
+#endif // kPluginInterfaceVersion < kAI14
 }
 
 /*
  * int nativeRemove(int handle, int fromIndex, int toIndex)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint fromIndex, jint toIndex) {
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI14
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		AICropAreaPtr area = NULL;
@@ -65,9 +66,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(JNIE
 		sAICropArea->GetCount(&count);
 		return count;
 	} EXCEPTION_CONVERT(env);
-#else // kPluginInterfaceVersion < kAI13
-	// We can't remove any artboards on CS2 and bellow
-#endif // kPluginInterfaceVersion < kAI13 
+#else // kPluginInterfaceVersion < kAI14
+	// We can't remove any artboards on CS3 and bellow
+#endif // kPluginInterfaceVersion < kAI14
 	return 0;
 }
 
@@ -77,7 +78,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(JNIE
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jobject artboard) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI14
 		AICropAreaPtr area = NULL;
 		if (sAICropArea->Get(index, &area))
 			throw new StringException("Cannot get artboard");
@@ -87,7 +88,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 				area->m_bShowSafeAreas, area->m_fPAR
 		);
 		return true;
-#else // kPluginInterfaceVersion < kAI13
+#else // kPluginInterfaceVersion < kAI14
 		AIRealPoint origin;
 		sAIDocument->GetDocumentRulerOrigin(&origin);
 		AIDocumentSetup setup;
@@ -103,7 +104,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
 			false, false, false, 1.0f
 		);
 		return true;
-#endif // kPluginInterfaceVersion < kAI13 
+#endif // kPluginInterfaceVersion < kAI14 
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -122,7 +123,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(JNI
  * boolean nativeInsert(int handle, int index, com.scriptographer.ai.Rectangle bounds, boolean showCenter, boolean showCrossHairs, boolean showSafeAreas, double pixelAspectRatio)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds, jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas, jdouble pixelAspectRatio) {
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI14
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		DEFINE_CROPAREA();
@@ -159,9 +160,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
 		}
 		return true;
 	} EXCEPTION_CONVERT(env);
-#else // kPluginInterfaceVersion < kAI13
-	// Do nothing. We can't insert on CS2 and below.
-#endif // kPluginInterfaceVersion < kAI13 
+#else // kPluginInterfaceVersion < kAI14
+	// Do nothing. We can't insert artboards on CS3 and below.
+#endif // kPluginInterfaceVersion < kAI14 
 	return false;
 }
 
@@ -171,7 +172,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds, jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas, jdouble pixelAspectRatio) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI14
 		DEFINE_CROPAREA();
 		// If index is bigger than array size, add empty artboards until we reach the needed size, then update that field.
 		ASInt32 count = 0, pos = 0;
@@ -186,13 +187,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(JNI
 		if (sAICropArea->Update(index, &area))
 			throw new StringException("Cannot update artboard");
 		return true;
-#else // kPluginInterfaceVersion < kAI13
-		if (index == 0) {
-			AIRealRect rect;
-			gEngine->convertRectangle(env, kCurrentCoordinates, bounds, &rect);
-			return !sAIDocument->SetDocumentCropBox(&rect);
-		}
-#endif // kPluginInterfaceVersion < kAI13 
+#else // kPluginInterfaceVersion < kAI14
+	// Do nothing. We can't change artboards on CS3 and below.
+#endif // kPluginInterfaceVersion < kAI14 
 	} EXCEPTION_CONVERT(env);
 	return false;
 }

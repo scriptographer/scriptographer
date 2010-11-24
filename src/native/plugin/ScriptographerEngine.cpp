@@ -952,7 +952,7 @@ void ScriptographerEngine::updateCoordinateSystem() {
 				m_documentOrigin.v += m_artboardOrigin.v;
 			}
 		}
-#elif kPluginInterfaceVersion >= kAI13
+#elif kPluginInterfaceVersion >= kAI14
 		ASInt32 index = 0;
 		AICropAreaPtr area = NULL;
 		if (!sAICropArea->GetActive(&index) && index != -1
@@ -965,7 +965,7 @@ void ScriptographerEngine::updateCoordinateSystem() {
 			m_artboardOrigin.h = 0;
 			m_artboardOrigin.v = 0;
 		}
-#else // kPluginInterfaceVersion < kAI13
+#else // kPluginInterfaceVersion < kAI14
 		// This is similar to ArtboardList.nativeGet()
 		m_artboardOrigin.h = -m_documentOrigin.h;
 		m_artboardOrigin.v = -m_documentOrigin.v;
@@ -974,7 +974,7 @@ void ScriptographerEngine::updateCoordinateSystem() {
 			sAIDocument->GetDocumentSetup(&setup);
 			m_artboardOrigin.v += setup.height;
 		}
-#endif // kPluginInterfaceVersion >= kAI13
+#endif // kPluginInterfaceVersion < kAI14
 	}
 }
 
