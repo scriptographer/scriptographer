@@ -470,6 +470,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getMatrix(JNIEnv *en
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix mx;
 		sAIRaster->GetRasterMatrix(art, &mx);
+		// Flip the scaleY value to reflect orientation of PlacedFile
+		mx.d = -mx.d;
 		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -483,6 +485,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, 
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
 		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
+		// Flip the scaleY value to reflect orientation of PlacedFile
+		mx.d = -mx.d;
 		sAIRaster->SetRasterMatrix(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }

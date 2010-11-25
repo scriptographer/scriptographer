@@ -38,16 +38,19 @@
  * int nativeCreate(int symbolHandle, com.scriptographer.ai.Matrix matrix)
  */
 
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeCreate(
+		JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
 	try {
 		short paintOrder;
 		AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates,
+				matrix, &mx);
 		// harden the matrix as symbols use hard matrixes internaly
 		sAIHardSoft->AIRealMatrixHarden(&mx);
 		AIArtHandle res = NULL;
-		sAISymbol->NewInstanceWithTransform((AIPatternHandle) symbolHandle, &mx, paintOrder, artInsert, &res);
+		sAISymbol->NewInstanceWithTransform((AIPatternHandle) symbolHandle, &mx,
+				paintOrder, artInsert, &res);
 		return (jint) res;
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -56,7 +59,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeCreate(JNIE
 /*
  * int nativeGetSymbol()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeGetSymbol(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeGetSymbol(
+		JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIPatternHandle symbol = NULL;
@@ -69,7 +73,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeGetSymbol(J
 /*
  * void setSymbol(com.scriptographer.ai.Symbol symbol)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setSymbol(JNIEnv *env, jobject obj, jobject symbol) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setSymbol(
+		JNIEnv *env, jobject obj, jobject symbol) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		gEngine->getPatternHandle(env, symbol);
@@ -80,12 +85,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setSymbol(JNIEnv 
 /*
  * com.scriptographer.ai.Matrix getMatrix()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(
+		JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix mx;
 		sAISymbol->GetSoftTransformOfSymbolArt(art, &mx);
-		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx);
+		// Flip the scaleY value to reflect orientation of PlacedFile
+		mx.d = -mx.d;
+		return gEngine->convertMatrix(env, kCurrentCoordinates,
+				kArtboardCoordinates, &mx);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -93,11 +102,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(JNIE
 /*
  * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(
+		JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates,
+				matrix, &mx);
+		// Flip the scaleY value to reflect orientation of PlacedFile
+		mx.d = -mx.d;
 		sAISymbol->SetSoftTransformOfSymbolArt(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }
@@ -105,7 +118,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(JNIEnv 
 /*
  * com.scriptographer.ai.Item embed()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_embed(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_embed(
+		JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle embedded = NULL;
