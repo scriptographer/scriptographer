@@ -1195,10 +1195,9 @@ jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
 	if (to == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
 				-m_artboardOrigin.h, -m_artboardOrigin.v);
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
 	}
-
-	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
 
 	if (from == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
@@ -1242,10 +1241,9 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 
 	sAIRealMath->AIRealMatrixConcat(res, &matrix, res);
 
-	if (m_topDownCoordinates)
-		sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-
 	if (from == kArtboardCoordinates) {
+		if (m_topDownCoordinates)
+			sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
 		sAIRealMath->AIRealMatrixConcatTranslate(res,
 				m_artboardOrigin.h, m_artboardOrigin.v);
 	}
