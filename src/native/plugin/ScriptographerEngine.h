@@ -33,11 +33,12 @@ enum CoordinateSystem {
 	 * Use document (page) coordinate system.
 	 */
 	kDocumentCoordinates,
+
 	/**
 	 * Use artboard coordinate system.
 	 */
 	kArtboardCoordinates,
-	
+
 	/**
 	 * Use the coordinate system.
 	 */
@@ -58,7 +59,7 @@ private:
 #endif
 
 	// Coordinate System Stuff
-	AIRealPoint m_documentOrigin;
+	AIRealPoint m_rulerOrigin;
 	AIRealPoint m_artboardOrigin;
 	bool m_topDownCoordinates;
 

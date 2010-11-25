@@ -119,7 +119,7 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 		delete exc;
 		throw new StringException("Unable to create ScriptographerEngine.");
 	}
-	m_documentOrigin.h = m_documentOrigin.v = 0;
+	m_rulerOrigin.h = m_rulerOrigin.v = 0;
 	m_artboardOrigin.h = m_artboardOrigin.v = 0;
 	m_topDownCoordinates = true;
 	gEngine = this;
@@ -922,7 +922,7 @@ void ScriptographerEngine::updateCoordinateSystem() {
 	// First make sure there's an open document at all
 	if (gWorkingDoc != NULL) {
 		// Get the global document origin
-		sAIDocument->GetDocumentRulerOrigin(&m_documentOrigin);
+		sAIDocument->GetDocumentRulerOrigin(&m_rulerOrigin);
 #if kPluginInterfaceVersion >= kAI15
 		using namespace ai;
 		ArtboardList artboards;
@@ -948,8 +948,8 @@ void ScriptographerEngine::updateCoordinateSystem() {
 				}
 				// Document Origin on CS5 is returned relative to the active
 				// artboard, so add its origin to it for the absolute value.
-				m_documentOrigin.h += m_artboardOrigin.h;
-				m_documentOrigin.v += m_artboardOrigin.v;
+				m_rulerOrigin.h += m_artboardOrigin.h;
+				m_rulerOrigin.v += m_artboardOrigin.v;
 			}
 		}
 #elif kPluginInterfaceVersion >= kAI14
@@ -967,8 +967,8 @@ void ScriptographerEngine::updateCoordinateSystem() {
 		}
 #else // kPluginInterfaceVersion < kAI14
 		// This is similar to ArtboardList.nativeGet()
-		m_artboardOrigin.h = -m_documentOrigin.h;
-		m_artboardOrigin.v = -m_documentOrigin.v;
+		m_artboardOrigin.h = -m_rulerOrigin.h;
+		m_artboardOrigin.v = -m_rulerOrigin.v;
 		if (m_topDownCoordinates) {
 			AIDocumentSetup setup;
 			sAIDocument->GetDocumentSetup(&setup);
@@ -981,17 +981,11 @@ void ScriptographerEngine::updateCoordinateSystem() {
 // com.scriptographer.ai.Point <-> AIRealPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 		AIReal x, AIReal y, jobject res) {
-	switch (system) {
-	case kDocumentCoordinates:
-		x -= m_documentOrigin.h;
-		y -= m_documentOrigin.v;
-		break;
-	case kArtboardCoordinates:
+	if (system == kArtboardCoordinates) {
 		x -= m_artboardOrigin.h;
 		y -= m_artboardOrigin.v;
-		break;
 	}
-	if (m_topDownCoordinates)
+	if (m_topDownCoordinates && system != kCurrentCoordinates)
 		y = -y;
 	if (res == NULL) {
 		return newObject(env, cls_ai_Point, cid_ai_Point,
@@ -1012,17 +1006,11 @@ void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 	if (!VALID_COORDINATE(x) || !VALID_COORDINATE(y))
 		THROW_INVALID_COORDINATES(env,
 				convertPoint(env, kCurrentCoordinates, x, y));
-	if (m_topDownCoordinates)
+	if (m_topDownCoordinates && system != kCurrentCoordinates)
 		y = -y;
-	switch (system) {
-	case kDocumentCoordinates:
-		x += m_documentOrigin.h;
-		y += m_documentOrigin.v;
-		break;
-	case kArtboardCoordinates:
+	if (system == kArtboardCoordinates) {
 		x += m_artboardOrigin.h;
 		y += m_artboardOrigin.v;
-		break;
 	}
 	res->h = x;
 	res->v = y;
@@ -1049,15 +1037,9 @@ void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 void ScriptographerEngine::convertSegments(JNIEnv *env, AIReal *data, int count,
 		CoordinateSystem system, bool from) {
 	AIReal xOrigin, yOrigin;
-	switch (system) {
-	case kDocumentCoordinates:
-		xOrigin = m_documentOrigin.h;
-		yOrigin = m_documentOrigin.v;
-		break;
-	case kArtboardCoordinates:
+	if (system == kArtboardCoordinates) {
 		xOrigin = m_artboardOrigin.h;
 		yOrigin = m_artboardOrigin.v;
-		break;
 	}
 	// Check if a conversion is needed at all?
 	if (xOrigin != 0 || yOrigin != 0 || m_topDownCoordinates) {
@@ -1133,15 +1115,9 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 	AIReal y = m_topDownCoordinates ? top : bottom;
 	AIReal width = right - left;
 	AIReal height = top - bottom;
-	switch (system) {
-	case kDocumentCoordinates:
-		x -= m_documentOrigin.h;
-		y -= m_documentOrigin.v;
-		break;
-	case kArtboardCoordinates:
+	if (system == kArtboardCoordinates) {
 		x -= m_artboardOrigin.h;
 		y -= m_artboardOrigin.v;
-		break;
 	}
 	if (m_topDownCoordinates)
 		y = -y;
@@ -1168,15 +1144,9 @@ void ScriptographerEngine::convertRectangle(JNIEnv *env,
 		THROW_INVALID_COORDINATES(env, rect);
 	if (m_topDownCoordinates)
 		y = -y;
-	switch (system) {
-	case kDocumentCoordinates:
-		x += m_documentOrigin.h;
-		y += m_documentOrigin.v;
-		break;
-	case kArtboardCoordinates:
+	if (system == kArtboardCoordinates) {
 		x += m_artboardOrigin.h;
 		y += m_artboardOrigin.v;
-		break;
 	}
 	res->left = x;
 	res->right = x + width;
@@ -1222,33 +1192,19 @@ jobject ScriptographerEngine::convertMatrix(JNIEnv *env,
 
 	AIRealMatrix matrix = *mt;
 
-	switch (to) {
-	case kDocumentCoordinates:
-		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
-				-m_documentOrigin.h, -m_documentOrigin.v);
-		break;
-	case kArtboardCoordinates:
+	if (to == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
 				-m_artboardOrigin.h, -m_artboardOrigin.v);
-		break;
 	}
 
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
 
-	switch (from) {
-	case kDocumentCoordinates:
-		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
-				m_documentOrigin.h, m_documentOrigin.v);
-		if (m_topDownCoordinates)
-			sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
-		break;
-	case kArtboardCoordinates:
+	if (from == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixConcatTranslate(&matrix,
 				m_artboardOrigin.h, m_artboardOrigin.v);
 		if (m_topDownCoordinates)
 			sAIRealMath->AIRealMatrixConcatScale(&matrix, 1, -1);
-		break;
 	}
 	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
 		(jdouble) matrix.a, (jdouble) matrix.b,
@@ -1275,20 +1231,12 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 		THROW_INVALID_COORDINATES(env, mt);
 	EXCEPTION_CHECK(env);
 
-	switch (to) {
-	case kDocumentCoordinates:
-		sAIRealMath->AIRealMatrixSetTranslate(res,
-				-m_documentOrigin.h, -m_documentOrigin.v);
-		if (m_topDownCoordinates)
-			sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-		break;
-	case kArtboardCoordinates:
+	if (to == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixSetTranslate(res,
 				-m_artboardOrigin.h, -m_artboardOrigin.v);
 		if (m_topDownCoordinates)
 			sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
-		break;
-	default:
+	} else {
 		sAIRealMath->AIRealMatrixSetIdentity(res);
 	}
 
@@ -1297,15 +1245,9 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 	if (m_topDownCoordinates)
 		sAIRealMath->AIRealMatrixConcatScale(res, 1, -1);
 
-	switch (from) {
-	case kDocumentCoordinates:
-		sAIRealMath->AIRealMatrixConcatTranslate(res,
-				m_documentOrigin.h, m_documentOrigin.v);
-		break;
-	case kArtboardCoordinates:
+	if (from == kArtboardCoordinates) {
 		sAIRealMath->AIRealMatrixConcatTranslate(res,
 				m_artboardOrigin.h, m_artboardOrigin.v);
-		break;
 	}
 	return res;
 }
