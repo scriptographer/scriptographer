@@ -73,11 +73,12 @@ AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getMatrix(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		AIRealMatrix mx;
-		sAIPlaced->GetPlacedMatrix(art, &mx);
-		sAIHardSoft->AIRealMatrixHarden(&mx);
-		sAIRealMath->AIRealMatrixConcatScale(&mx, 1, -1);
-		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx);
+		AIRealMatrix mx1, mx2;
+		sAIPlaced->GetPlacedMatrix(art, &mx1);
+		sAIRealMath->AIRealMatrixSetIdentity(&mx2);
+		sAIHardSoft->AIRealMatrixHarden(&mx2);
+		sAIRealMath->AIRealMatrixConcat(&mx2, &mx1, &mx1);
+		return gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &mx1);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -88,13 +89,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getMatrix(JNIEnv
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedFile_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		AIRealMatrix mx;
-		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx);
-		// Similar issue as in GlyphRun#getMatrix() (see TextRange),
-		// again not clear why this solves it.
-		sAIRealMath->AIRealMatrixConcatScale(&mx, 1, -1);
-		sAIHardSoft->AIRealMatrixSoften(&mx);
-		sAIPlaced->SetPlacedMatrix(art, &mx);
+		AIRealMatrix mx1, mx2;
+		gEngine->convertMatrix(env, kArtboardCoordinates, kCurrentCoordinates, matrix, &mx1);
+		sAIRealMath->AIRealMatrixSetIdentity(&mx2);
+		sAIHardSoft->AIRealMatrixHarden(&mx2);
+		sAIRealMath->AIRealMatrixInvert(&mx2);
+		sAIRealMath->AIRealMatrixConcat(&mx2, &mx1, &mx1);
+		sAIPlaced->SetPlacedMatrix(art, &mx1);
 	} EXCEPTION_CONVERT(env);
 }
 
