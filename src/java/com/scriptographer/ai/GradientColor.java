@@ -43,10 +43,10 @@ public class GradientColor extends Color {
 	 */
 	Point hilite;
 	/*
-	 * The accumulated transformations of the gradient. It is not necessarily the same
-	 * as the transformation matrix of the object containing the gradient.
-	 * When a gradient is first applied to an object, the value is set to the
-	 * identity matrix. When the user transforms the object, the user
+	 * The accumulated transformations of the gradient. It is not necessarily
+	 * the same as the transformation matrix of the object containing the
+	 * gradient. When a gradient is first applied to an object, the value is set
+	 * to the identity matrix. When the user transforms the object, the user
 	 * transformation matrix is concatenated to the gradient instance's matrix.
 	 */
 	Matrix matrix;
@@ -74,7 +74,7 @@ public class GradientColor extends Color {
 		);
 		this.matrix = matrix;
 	}
-	
+
 	/**
 	 * Creates a GradientColor object.
 	 * 
@@ -105,7 +105,8 @@ public class GradientColor extends Color {
 	 * @param hilite the hilite point (only for radial gradients)
 	 * @param matrix the tranformation matrix
 	 */
-	public GradientColor(Gradient gradient, Point origin, Point destination, Point hilite, Matrix matrix) {
+	public GradientColor(Gradient gradient, Point origin, Point destination,
+			Point hilite, Matrix matrix) {
 		this.gradient = gradient;
 		this.origin = new Point(origin);
 		this.destination = new Point(destination);
@@ -113,7 +114,8 @@ public class GradientColor extends Color {
 		this.matrix = new Matrix(matrix);
 	}
 
-	public GradientColor(Gradient gradient, Point origin, Point destination, Point hilite) {
+	public GradientColor(Gradient gradient, Point origin, Point destination,
+			Point hilite) {
 		this(gradient, origin, destination, hilite, null);
 	}
 
@@ -122,8 +124,10 @@ public class GradientColor extends Color {
 	}
 
 	/**
-	 * Called from the native environment, to fill a native struct. This is the opposite
-	 * of the above constructor that 's called from the native side only.
+	 * Called from the native environment, to fill a native struct. This is the
+	 * opposite of the above constructor that 's called from the native side
+	 * only.
+	 * 
 	 * @param struct
 	 */
 	protected void set(int pointer) {
@@ -134,12 +138,13 @@ public class GradientColor extends Color {
 		// of the total length of the gradient, between 0 and 1, and its
 		// angle is relative to the gradient's angle. This does the trick:
 		double length = destination.getLength();
-		double angle = destination.getAngle() * 180.0 / Math.PI;
+		double angle = destination.getAngleInDegrees();
 		// Divide by length to scale to range between 0 and 1:
 		double hiliteLength = hilite.getLength() / length;
 		// Subtract angle to get absolute angle:
-		double hiliteAngle = hilite.getAngle() * 180.0 / Math.PI - angle;
-		// Make sure we're not above 1, since that's the maximum allowed value for hilite
+		double hiliteAngle = hilite.getAngleInDegrees() - angle;
+		// Make sure we're not above 1, since that's the maximum allowed value
+		// for hilite
 		if (hiliteLength > 1)
 			hiliteLength = 1;
 		nativeSetGradient(pointer, gradient.handle, origin, angle, length,
@@ -164,15 +169,18 @@ public class GradientColor extends Color {
 	 * @jshide
 	 */
 	public float[] getComponents() {
-		throw new UnsupportedOperationException("Cannot convert gradient to components");
+		throw new UnsupportedOperationException(
+				"Cannot convert gradient to components");
 	}
 
 	public java.awt.Color toAWTColor() {
-		throw new UnsupportedOperationException("Cannot convert gradient to AWT color");
+		throw new UnsupportedOperationException(
+				"Cannot convert gradient to AWT color");
 	}
 	
 	public void setAlpha(Float alpha) {
-		throw new UnsupportedOperationException("Cannot set alpha on gradient");
+		throw new UnsupportedOperationException(
+				"Cannot set alpha on gradient");
 	}
 
 	/**

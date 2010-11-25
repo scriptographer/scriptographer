@@ -601,6 +601,20 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
+	 * For internal use regardless of userland angle units.
+	 */
+	protected double getAngleInRadians() {
+		return Math.atan2(y, x);
+	}
+
+	/**
+	 * For internal use regardless of userland angle units.
+	 */
+	protected double getAngleInDegrees() {
+		return Math.atan2(y, x) * 180.0 / Math.PI;
+	}
+
+	/**
 	 * The vector's angle, measured from the x-axis to the vector.
 	 * 
 	 * Angle units are controlled by the
@@ -619,7 +633,7 @@ public class Point implements ChangeEmitter {
 		if (angle == null)
 			angle = Math.atan2(y, x);
 		return ScriptographerEngine.anglesInDegrees
-				? 180.0 * angle / Math.PI
+				? angle * 180.0 / Math.PI
 				: angle;
 	}
 
@@ -667,7 +681,7 @@ public class Point implements ChangeEmitter {
 		else {
 			double angle = Math.acos(this.dot(point) / div);
 			return ScriptographerEngine.anglesInDegrees
-					? 180.0 * angle / Math.PI
+					? angle * 180.0 / Math.PI
 					: angle;
 		}
 	}
