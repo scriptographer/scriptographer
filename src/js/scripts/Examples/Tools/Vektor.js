@@ -175,7 +175,6 @@ function onMouseDown(event) {
 		vectorItem = null;
 	}
 	processVector(event, true);
-//	document.redraw();
 }
 
 function onMouseDrag(event) {
