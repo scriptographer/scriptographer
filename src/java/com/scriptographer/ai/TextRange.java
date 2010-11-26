@@ -102,12 +102,13 @@ public class TextRange extends DocumentObject implements Committable,
 		}
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		// Committing changes for TextRange does not need more than
 		// a reflow of the text layout in the document.
 		// This is needed since otherwise, the TextItem's attributes
 		// (bounds, etc) are invalid
-		document.reflowText();
+		if (!endExecution)
+			document.reflowText();
 		dirty = false;
 	}
 
@@ -348,9 +349,9 @@ public class TextRange extends DocumentObject implements Committable,
 	
 	protected void commitStyles() {
 		if (characterStyle != null && characterStyle.dirty)
-			characterStyle.commit();
+			characterStyle.commit(false);
 		if (paragraphStyle != null && paragraphStyle.dirty)
-			paragraphStyle.commit();
+			paragraphStyle.commit(false);
 	}
 	
 	// TODO: move to CharacterStyle
@@ -823,12 +824,12 @@ public class TextRange extends DocumentObject implements Committable,
 	 */
 	protected void updateStyle() {
 		if (characterStyle != null) {
-			characterStyle.commit();
+			characterStyle.commit(false);
 			// Swap with new instance, so changes do get reflected.
 			characterStyle.changeHandle(nativeGetCharacterStyle(handle));
 		}
 		if (paragraphStyle != null) {
-			paragraphStyle.commit();
+			paragraphStyle.commit(false);
 			// Swap with new instance, so changes do get reflected.
 			paragraphStyle.changeHandle(nativeGetParagraphStyle(handle));
 		}

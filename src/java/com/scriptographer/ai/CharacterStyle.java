@@ -102,7 +102,7 @@ public class CharacterStyle extends PathStyle {
 	
 	public Object clone() {
 		if (dirty) // make sure it's not dirty 
-			commit();
+			commit(false);
 		return new CharacterStyle(nativeClone());
 	}
 	
@@ -141,7 +141,7 @@ public class CharacterStyle extends PathStyle {
 		fetched = true;
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (dirty) {
 			if (pathStyleChanged)
 				commit(handle, 0);

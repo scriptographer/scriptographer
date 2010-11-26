@@ -188,7 +188,7 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 			return false;
 		}
 
-		public void commit() {
+		public void commit(boolean endExecution) {
 			if (dirty && reference != null && index != -1 && nativeSet()) {
 				version = CommitManager.version;
 				dirty = false;

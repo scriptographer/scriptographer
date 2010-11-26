@@ -64,10 +64,10 @@ public abstract class TextItem extends Item implements TextStoryProvider {
 		super(handle);
 	}
 
-	protected boolean commit(boolean invalidate) {
+	protected boolean commitAndInvalidate(boolean invalidate) {
 		// Commit changes to anything depending on the item's story as well.
 		CommitManager.commit(getStory());
-		return super.commit(invalidate);
+		return super.commitAndInvalidate(invalidate);
 	}
 
 	private native int nativeGetOrientation();

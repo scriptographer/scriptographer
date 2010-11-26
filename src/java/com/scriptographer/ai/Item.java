@@ -533,7 +533,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * The version is then increased to invalidate the cached values, as they
 	 * were just changed.
 	 */
-	protected boolean commit(boolean invalidate) {
+	protected boolean commitAndInvalidate(boolean invalidate) {
 		boolean committed = CommitManager.commit(this);
 		// Increasing version by one causes refetching of cached data:
 		if (invalidate)
@@ -547,8 +547,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 */
 	protected static boolean commitIfWrapped(int handle, boolean invalidate) {
 		Item item = getIfWrapped(handle);
-		if (item != null) 
-			return item.commit(invalidate);
+		if (item != null)
+			return item.commitAndInvalidate(invalidate);
 		return false;
 	}
 

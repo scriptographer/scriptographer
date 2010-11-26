@@ -38,5 +38,5 @@ public interface Committable {
 	 * 
 	 * @jshide
 	 */
-	public abstract void commit();
+	public abstract void commit(boolean endExecution);
 }

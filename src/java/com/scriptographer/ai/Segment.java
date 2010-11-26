@@ -267,7 +267,7 @@ public class Segment implements Committable, ChangeReceiver {
 		values[valueIndex + 6] = corner ? 1f : 0f;
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
 			Path path = segments.path;
 			path.checkValid();

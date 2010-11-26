@@ -257,7 +257,7 @@ public class PathStyle extends NativeObject implements Style, Committable {
 		fetched = true;
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (dirty && item != null && item.isValid()) {
 			commit(item.handle, item.document.handle);
 			version = item.version;

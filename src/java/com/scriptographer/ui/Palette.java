@@ -178,7 +178,7 @@ public class Palette implements PropertyObserver, Committable {
 		CommitManager.markDirty(this, this);
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (proxy != null)
 			proxy.update(sizeChanged);
 		sizeChanged = false;

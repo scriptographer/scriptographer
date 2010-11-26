@@ -63,27 +63,39 @@ public class CommitManager {
 	 * 
 	 * @return true if anything was committed.
 	 */
-	public static boolean commit(Object key) {
+	protected static boolean commit(Object key, boolean endExecution) {
 		boolean committed = false;
 		if (key != null) {
 			Committable obj = committables.get(key);
 			if (obj != null) {
-				obj.commit();
+				obj.commit(endExecution);
 				committed = true;
 				// case it's a text, use the story as a key as well. it's used
 				// like that in CharacterAttributes
 				if (obj instanceof TextItem)
-					commit(((TextItem) obj).getStory());
+					commit(((TextItem) obj).getStory(), endExecution);
 				// Remove object after committing
 				committables.remove(key);
 			}
 		} else if (committables.size() > 0) {
 			for (Committable committable : committables.values())
-				committable.commit();
+				committable.commit(endExecution);
 			committed = true;
 			committables.clear();
 		}
 		return committed;
+	}
+
+	/**
+	 * Commits changes to objects that are associated with the given key this is
+	 * usually a item, where path styles and segment lists use the item
+	 * as a key when calling markDirty. If key is null, all changes are
+	 * committed.
+	 * 
+	 * @return true if anything was committed.
+	 */
+	public static boolean commit(Object key) {
+		return commit(key, false);
 	}
 
 	/**
@@ -93,7 +105,7 @@ public class CommitManager {
 		version++;
 		// Also set the modificationVersion to allow versioning for increased performance.
 		ExtendedJavaObject.changeVersion = version;
-		return commit(null);
+		return commit(null, true);
 	}
 
 	public static void markDirty(Object key, Committable committable) {
@@ -131,9 +143,9 @@ public class CommitManager {
 		static class CommittableGroup implements Committable {
 			LinkedHashMap<Integer, Committable> committables = new LinkedHashMap<Integer, Committable>();
 
-			public void commit() {
+			public void commit(boolean endExecution) {
 				for (Committable committable : committables.values())
-					committable.commit();
+					committable.commit(endExecution);
 			}
 
 			public void add(Committable obj) {

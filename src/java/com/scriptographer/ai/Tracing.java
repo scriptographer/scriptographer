@@ -71,7 +71,7 @@ public class Tracing extends Item implements Committable {
 		}
 	}
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (dirty) {
 			update();
 			dirty = false;

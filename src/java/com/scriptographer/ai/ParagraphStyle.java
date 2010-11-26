@@ -83,13 +83,13 @@ public class ParagraphStyle extends NativeObject implements Style, Committable {
 	
 	public Object clone() {
 		if (dirty) // make sur it's not dirty 
-			commit();
+			commit(false);
 		return new ParagraphStyle(nativeClone());
 	}
 	
 	protected native void nativeSetStyle(int handle, int rangeHandle);
 
-	public void commit() {
+	public void commit(boolean endExecution) {
 		if (dirty) {
 			if (range != null)
 				nativeSetStyle(handle, range.handle);
