@@ -231,8 +231,8 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			items.put(handle, this);
 
 		// Collect new items. Used for effects
-		if (created && newItems != null)
-			newItems.add(this);
+		if (created && createdItems != null)
+			createdItems.add(this);
 	}
 
 	protected Item(int handle, int docHandle, boolean created) {
@@ -2012,21 +2012,21 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 		return super.toString();
 	}
 
-	private static ItemList newItems = null;
+	private static ItemList createdItems = null;
 	
 	/**
 	 * @jshide
 	 */
-	public static void collectNewItems() {
-		newItems = new ItemList();
+	public static void collectCreatedItems() {
+		createdItems = new ItemList();
 	}
 
 	/**
 	 * @jshide
 	 */
-	public static ItemList retreiveNewItems() {
-		ItemList items = newItems;
-		newItems = null;
+	public static ItemList retreiveCreatedItems() {
+		ItemList items = createdItems;
+		createdItems = null;
 		for (int i = items.size() - 1; i >= 0; i--) {
 			Item item = items.get(i);
 			// Make sure we're not returning any invalid new items.

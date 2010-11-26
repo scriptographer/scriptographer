@@ -466,12 +466,12 @@ public class LiveEffect extends NativeObject {
 			// done with them at the end. Since doing the wrong
 			// thing leads to endless crashes, this is the best
 			// way to handle this anyway.
-			Item.collectNewItems();
+			Item.collectCreatedItems();
 			ItemList newItems = null;
 			try {
 				effect.onCalculate(new LiveEffectEvent(item, parameters));
 			} finally {
-				newItems = Item.retreiveNewItems();
+				newItems = Item.retreiveCreatedItems();
 			}
 			if (newItems.size() > 0) {
 				boolean changed = false;
