@@ -55,9 +55,13 @@ var consoleDialog = new FloatingDialog(
 				}
 				try {
 					if (text != '') {
-						var res = engine.evaluate(text, 'console', consoleScope);
-						if (res !== undefined)
-							print(res);
+						var scr = engine.compile(text, 'console');
+						if (scr) {
+							var res = ScriptographerEngine.execute(scr, null,
+									consoleScope);
+							if (res !== undefined)
+								print(res);
+						}
 					}
 				} catch (e) {
 					if (e.javaException) {

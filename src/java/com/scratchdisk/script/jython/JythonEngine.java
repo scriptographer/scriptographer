@@ -80,13 +80,12 @@ public class JythonEngine extends ScriptEngine {
 		}
 	}
 
-	public Scope createScope() {
-		return new JythonScope();
+	public Script compile(String code, String name) {
+		return null;
 	}
 
-	public Object evaluate(String code, String name, Scope scope)
-			throws ScriptException {
-		return null;
+	public Scope createScope() {
+		return new JythonScope();
 	}
 
 	public Scope getScope(Object object) {

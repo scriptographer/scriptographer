@@ -155,6 +155,11 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		}
 	}
 
+	public Script compile(String code, String name) {
+		return new RhinoScript(this,
+				context.compileString(code, name, 1, null), null);
+	}
+
 	public Object evaluate(String code, String name, Scope scope)
 			throws RhinoScriptException {
 		try {

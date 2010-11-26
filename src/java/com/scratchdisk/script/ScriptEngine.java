@@ -164,8 +164,13 @@ public abstract class ScriptEngine {
 		return script;
 	}
 
-	public abstract Object evaluate(String code, String name, Scope scope)
-			throws ScriptException;
+	public abstract Script compile(String code, String name);
+
+	public Object evaluate(String code, String name, Scope scope)
+			throws ScriptException {
+		Script script = compile(code, name);
+		return script.execute(scope);
+	}
 
 	/**
 	 * Returns a shortened version of the path to the script file. The script

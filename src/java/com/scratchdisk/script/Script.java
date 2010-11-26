@@ -41,7 +41,8 @@ public abstract class Script {
 
 	public Script(File file) {
 		this.file = file;
-		lastModified = file.lastModified();
+		if (file != null)
+			lastModified = file.lastModified();
 	}
 
 	public abstract Object execute(Scope scope) throws ScriptException;
