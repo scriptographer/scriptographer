@@ -79,7 +79,8 @@ public class Matrix {
 	 * @jshide
 	 */
 	public Matrix(Matrix matrix) {
-		transform = matrix != null ? matrix.toAffineTransform() : new AffineTransform();
+		transform = matrix != null ? matrix.toAffineTransform()
+						: new AffineTransform();
 	}
 
 	/**
@@ -193,7 +194,8 @@ public class Matrix {
 	}
 
 	public void setScaleX(double scaleX) {
-		transform.setTransform(scaleX, transform.getShearY(), transform.getShearX(), transform.getScaleY(),
+		transform.setTransform(scaleX, transform.getShearY(),
+				transform.getShearX(), transform.getScaleY(),
 				transform.getTranslateX(), transform.getTranslateY());
 	}
 	
@@ -202,8 +204,9 @@ public class Matrix {
 	}
 
 	public void setScaleY(double scaleY) {
-		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), scaleY,
-				transform.getTranslateX(), transform.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(),
+				transform.getShearX(), scaleY, transform.getTranslateX(),
+				transform.getTranslateY());
 	}
 	
 	public double getShearX() {
@@ -211,8 +214,9 @@ public class Matrix {
 	}
 
 	public void setShearX(double shearX) {
-		transform.setTransform(transform.getScaleX(), transform.getShearY(), shearX, transform.getScaleY(),
-				transform.getTranslateX(), transform.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(),
+				shearX, transform.getScaleY(), transform.getTranslateX(),
+				transform.getTranslateY());
 	}
 
 	public double getShearY() {
@@ -220,8 +224,9 @@ public class Matrix {
 	}
 
 	public void setShearY(double shearY) {
-		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), shearY,
-				transform.getTranslateX(), transform.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(),
+				transform.getShearX(), shearY, transform.getTranslateX(),
+				transform.getTranslateY());
 	}
 
 	public double getTranslateX() {
@@ -229,8 +234,9 @@ public class Matrix {
 	}
 
 	public void setTranslateX(double translateX) {
-		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(),
-				transform.getScaleY(), translateX, transform.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(),
+				transform.getShearX(), transform.getScaleY(), translateX,
+				transform.getTranslateY());
 	}
 
 	public double getTranslateY() {
@@ -238,8 +244,9 @@ public class Matrix {
 	}
 
 	public void setTranslateY(double translateY) {
-		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(),
-				transform.getScaleY(), transform.getTranslateX(), translateY);
+		transform.setTransform(transform.getScaleX(), transform.getShearY(),
+				transform.getShearX(), transform.getScaleY(),
+				transform.getTranslateX(), translateY);
 	}
 
 	/**
