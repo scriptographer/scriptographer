@@ -2024,6 +2024,21 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	/**
 	 * @jshide
 	 */
+	public static void clearCreatedItems() {
+		// Clear right away
+		createdItems = null;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static boolean hasCreatedItems() {
+		return createdItems.size() > 0;
+	}
+
+	/**
+	 * @jshide
+	 */
 	public static ItemList retreiveCreatedItems() {
 		ItemList items = createdItems;
 		createdItems = null;

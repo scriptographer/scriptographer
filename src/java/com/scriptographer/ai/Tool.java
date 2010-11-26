@@ -275,6 +275,22 @@ public class Tool extends ToolHandler {
 		this.rolloverImage = image;
 	}
 
+	public void onHandleEvent(ToolEventType type, Point pt, int pressure,
+			int modifiers) {
+		if (type == ToolEventType.MOUSE_DOWN) {
+			try {
+				Item.collectCreatedItems();
+				super.onHandleEvent(type, pt, pressure, modifiers);
+				if (Item.hasCreatedItems())
+					Document.getActiveDocument().redraw();
+			} finally {
+				Item.clearCreatedItems();
+			}
+		} else {
+			super.onHandleEvent(type, pt, pressure, modifiers);
+		}
+	}
+
 	/**
 	 * To be called from the native environment. Returns the cursor
 	 * id to be set, if any.
