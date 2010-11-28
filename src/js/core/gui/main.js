@@ -53,25 +53,32 @@ var mainDialog = new FloatingDialog(
 			// This might change entry.expanded state
 			entry.defaultTrack(tracker);
 			if (!expanded && entry.expanded)
-				entry.populate();
+				entry.data.populate();
 			// Detect doubleclicks on files and folders.
 			if (tracker.action == Tracker.ACTION_BUTTON_UP
-					 && (tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK)
 					 && tracker.point.x > entry.expandArrowRect.right) {
-				if (entry.isDirectory) {
-					entry.expanded = !entry.expanded;
-					entry.list.invalidate();
-				} else {
-					// Edit the file through illustrator.launch
-					illustrator.launch(entry.file);
-					// execute();
+				if (tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK) {
+					if (entry.data.isDirectory) {
+						entry.expanded = !entry.expanded;
+						entry.list.invalidate();
+					} else {
+						// Edit the file through illustrator.launch
+						illustrator.launch(entry.data.file);
+						// execute();
+					}
 				}
+				updateButtons();
 			}
 			// Return false to prevent calling of defaultTrack as we called
 			// it already.
 			return false;
 		}
 	};
+
+	this.onTrack = function(tracker) {
+		if (tracker.action == Tracker.ACTION_BUTTON_UP)
+			updateButtons();
+	}
 
 	var scriptImage = getImage('script.png');
 	var effectImage = getImage('effect.png');
@@ -783,6 +790,13 @@ var mainDialog = new FloatingDialog(
 			consoleDialog.visible = !consoleDialog.visible;
 		}
 	};
+
+	function updateButtons() {
+		var entry = getSelectedScriptEntry();
+		playButton.enabled = entry ? !entry.data.isDirectory : false;
+		newScriptButton.enabled = entry ? !(entry.data.isDirectory
+				&& entry.childList || entry.list).data.sealed : false;
+	}
 
 	initAll();
 
