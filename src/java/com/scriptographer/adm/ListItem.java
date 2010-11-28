@@ -138,6 +138,9 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 	 * Callback functions
 	 */
 
+	public native void setTrackEntryMask(int mask);
+	public native int getTrackEntryMask();
+
 	private boolean trackEntryCallback = false;
 	private boolean drawEntryCallback = false;
 
@@ -277,19 +280,6 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 					Math.max(rect.height, entrySize.height));
 		setEntryTextRect(rect.x, rect.y, rect.width, rect.height);
 	}
-
-	/*
-	 * item action mask
-	 *
-	 */
-
-	/**
-	 * TODO: these are for the list object underneath, not the
-	 * dialog item object. but they override the one from item
-	 * therefore they should be renamed. but how?
-	 */
-	public native void setTrackMask(int mask);
-	public native int getTrackMask();
 
 	/*
 	 * customizing appearance

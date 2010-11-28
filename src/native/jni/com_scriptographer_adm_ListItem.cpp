@@ -143,9 +143,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setEntrySize(JNIEnv 
 }
 
 /*
- * void setTrackMask(int mask)
+ * void setTrackEntryMask(int mask)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setTrackEntryMask(JNIEnv *env, jobject obj, jint mask) {
 	try {
 		#define SET_TRACK_MASK(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			LIST_SUITE->SetMask(list, mask);
@@ -155,9 +155,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setTrackMask(JNIEnv 
 }
 
 /*
- * int getTrackMask()
+ * int getTrackEntryMask()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getTrackMask(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getTrackEntryMask(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_TRACK_MASK(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			return (jint)LIST_SUITE->GetMask(list);
