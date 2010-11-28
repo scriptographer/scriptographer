@@ -771,29 +771,31 @@ var mainDialog = new FloatingDialog(
 							}
 						} else {
 							// Move a level up as there is no more on this level
-							var parent = entry.list.parentEntry;
-							if (parent) {
-								if (down) {
-									next = parent.list[parent.index + 1];
-								} else {
-									next = parent;
-								}
+							next = entry.list.parentEntry;
+							if (next && down) {
+								// Select the next entry on the parent level
+								// when moving down
+								next = next.list[next.index + 1];
 							}
 						}
 					}
 					if (next) {
 						entry.selected = false;
 						next.selected = true;
+						updateButtons();
 					}
+					return true;
 				} else if (entry.data.isDirectory
 						&& /left|right/.test(event.keyCode)) {
 					entry.expanded = event.keyCode == 'right';
 					if (entry.expanded)
 						entry.data.populate();
 					entry.list.invalidate();
+					return true;
 				} else if (/return|enter/.test(event.keyCode)) {
 					// Choose
 					chooseEntry(entry);
+					return true;
 				} else if (event.modifiers.command) {
 					switch (event.keyCode) {
 					case 'r':
@@ -806,16 +808,20 @@ var mainDialog = new FloatingDialog(
 							chooseEntry(entry);
 						break;
 					case 'n':
+						// New Script
 						createScript();
 						break;
 					case 's':
+						// Stop
 						stopAll();
 						break;
+					default:
+						// Make sure system short-cuts still work too.
+						return false;
 					}
+					return true;
 				}
 			}
-			updateButtons();
-			return true;
 		}
 	}
 
