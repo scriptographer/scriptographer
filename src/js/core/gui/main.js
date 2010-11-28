@@ -601,7 +601,7 @@ var mainDialog = new FloatingDialog(
 			this.text = (mainDialog.visible ? 'Hide' : 'Show')
 					+ ' Main Palette';
 		}
-	}.setCommand('`', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
+	}.setCommand('`', MenuItem.MODIFIER_OPTION | MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		onSelect: function() {
@@ -611,7 +611,8 @@ var mainDialog = new FloatingDialog(
 			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
 					+ ' Console Palette';
 		}
-	}.setCommand('`', MenuItem.MODIFIER_OPTION | MenuItem.MODIFIER_COMMAND);
+	}.setCommand('`', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_OPTION
+			| MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		text: 'About...',
@@ -735,14 +736,13 @@ var mainDialog = new FloatingDialog(
 	global.onKeyDown = function(event) {
 		return false;
 		if (event.character == '`') {
-			if (event.modifiers.command) {
+			if (event.modifiers.command && event.modifiers.option) {
 				if (event.modifiers.shift) {
-//					mainDialog.visible = !mainDialog.visible;
-//					return true;
-				} else if (event.modifiers.option) {
-//					consoleDialog.visible = !consoleDialog.visible;
-//					return true;
+					consoleDialog.visible = !consoleDialog.visible;
+				} else {
+					mainDialog.visible = !mainDialog.visible;
 				}
+				return true;
 			} else if (!event.modifiers.shift && !event.modifiers.control) {
 				tool.selected = true;
 				return true;
