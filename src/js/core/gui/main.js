@@ -734,7 +734,6 @@ var mainDialog = new FloatingDialog(
 	}
 
 	global.onKeyDown = function(event) {
-		return false;
 		if (event.character == '`') {
 			if (event.modifiers.command && event.modifiers.option) {
 				if (event.modifiers.shift) {
@@ -743,7 +742,8 @@ var mainDialog = new FloatingDialog(
 					mainDialog.visible = !mainDialog.visible;
 				}
 				return true;
-			} else if (!event.modifiers.shift && !event.modifiers.control) {
+			} else if (!event.modifiers.command && !event.modifiers.option
+						&& !event.modifiers.shift && !event.modifiers.control) {
 				tool.selected = true;
 				return true;
 			}
