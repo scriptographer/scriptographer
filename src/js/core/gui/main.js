@@ -88,50 +88,54 @@ var mainDialog = new FloatingDialog(
 		var entry = new HierarchyListEntry(list, Base.pick(index, -1)) {
 			text: file.alternateName || file.name,
 			// backgroundColor: 'background',
-			file: file,
-			lastModified: file.lastModified,
-			isDirectory: file.isDirectory()
+			data: {
+				file: file,
+				lastModified: file.lastModified,
+				isDirectory: file.isDirectory()
+			}
 		};
 		var isRoot = list == scriptList;
-		if (entry.isDirectory) {
+		if (entry.data.isDirectory) {
 			// Create empty child list to get the arrow button but do not
 			// populate yet. This is done dynamically in onTrackEntry, when
 			// the user opens the list
 			entry.createChildList();
-			entry.childList.directory = file;
+			entry.childList.data.directory = file;
 			// Seal Examples and Tutorials and pass on sealed setting
-			entry.childList.sealed = isRoot 
-					? /^(Examples|Tutorials)$/.test(file.name) : list.sealed;
+			entry.childList.data.sealed = isRoot
+					? /^(Examples|Tutorials)$/.test(file.name)
+					: list.data.sealed;
 			// Remember myScriptsEntry
-			if (isRoot && !myScriptsEntry && !entry.childList.sealed)
+			if (isRoot && !myScriptsEntry && !entry.childList.data.sealed)
 				myScriptsEntry = entry;
 			entry.expanded = false;
-			entry.populated = false;
-			entry.populate = function() {
-				if (!this.populated) {
-					this.childList.directory = file;
-					var files = getFiles(this.childList);
+			entry.data.populated = false;
+			entry.data.populate = function() {
+				if (!entry.data.populated) {
+					entry.childList.data.directory = file;
+					var files = getFiles(entry.childList);
 					for (var i = 0, l = files.length; i < l; i++)
-						addFile(this.childList, files[i]);
-					this.populated = true;
+						addFile(entry.childList, files[i]);
+					entry.data.populated = true;
 				}
 			}
 			entry.image = folderImage;
 			directoryEntries[file] = entry;
 		} else {
-			entry.update = function() {
+			entry.data.update = function() {
 				var type = file.readAll().match(
 						/(onMouse(?:Up|Down|Move|Drag))|(onCalculate)/);
-				this.type = type && (type[1] && 'tool' || type[2] && 'effect');
-				this.image = this.type == 'tool'
-					? (currentToolFile == this.file
-						? activeToolScriptImage
-						: toolScriptImage)
-					: hasEffects && this.type == 'effect'
-						? effectImage
-						: scriptImage;
+				entry.data.type = type && (type[1] && 'tool'
+						|| type[2] && 'effect');
+				entry.image = entry.data.type == 'tool'
+						? (currentToolFile == entry.data.file
+								? activeToolScriptImage
+								: toolScriptImage)
+						: hasEffects && entry.data.type == 'effect'
+								? effectImage
+								: scriptImage;
 			}
-			entry.update();
+			entry.data.update();
 			fileEntries[file] = entry;
 		}
 		return entry;
@@ -155,11 +159,11 @@ var mainDialog = new FloatingDialog(
 
 	function getFiles(list) {
 		var files;
-		if (!list.directory) {
+		if (!list.data.directory) {
 			// Return root directories
 			files = getScriptDirectories();
 		} else {
-			files = list.directory.list(function(file) {
+			files = list.data.directory.list(function(file) {
 				return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
 					(/\.(?:js|rb|py)$/.test(file.name) || file.isDirectory());
 			});
@@ -174,7 +178,7 @@ var mainDialog = new FloatingDialog(
 				myScriptsEntry = null;
 		}
 		// Do only refresh populated lists
-		if (list.parentEntry && !list.parentEntry.populated)
+		if (list.parentEntry && !list.parentEntry.data.populated)
 			return [];
 		// Get new listing of the directory, then match with already inserted 
 		// files. Create a lookup object for easily finding and tracking of
@@ -188,22 +192,22 @@ var mainDialog = new FloatingDialog(
 		// Now walk through all the already inserted files, find the ones that
 		// need to be removed, and refresh already populated ones.
 		var removed = list.each(function(entry) {
-			if (force || !files[entry.file.path]) {
+			if (force || !files[entry.data.file.path]) {
 				// Don't remove right away since that would mess up the each
 				// loop Instead. we collect them in the removed array, to be
 				// removed in a seperate loop after.
 				this.push(entry);
 			} else {
-				delete files[entry.file.path];
+				delete files[entry.data.file.path];
 				// See if the file was changed, and if so, update its icon since
 				// it might be a tool now
-				var lastModified = entry.file.lastModified;
-				if (entry.lastModified != lastModified) {
-					entry.lastModified = lastModified; 
-					if (!entry.isDirectory)
-						entry.update();
+				var lastModified = entry.data.file.lastModified;
+				if (entry.data.lastModified != lastModified) {
+					entry.data.lastModified = lastModified; 
+					if (!entry.data.isDirectory)
+						entry.data.update();
 				}
-				if (entry.populated)
+				if (entry.data.populated)
 					refreshList(entry.childList, false);
 			}
 		}, []);
@@ -220,10 +224,11 @@ var mainDialog = new FloatingDialog(
 
 	function createScript() {
 		var entry = scriptList.selectedLeafEntry;
-		var list = entry && (entry.isDirectory ? entry.childList : entry.list);
-		if (!list || list.sealed)
+		var list = entry && (entry.data.isDirectory
+				? entry.childList : entry.list);
+		if (!list || list.data.sealed)
 			list = myScriptsEntry ? myScriptsEntry.childList : scriptList;
-		var dir = list.directory;
+		var dir = list.data.directory;
 		if (dir) {
 			// Find a non existing filename:
 			var file;
@@ -245,7 +250,7 @@ var mainDialog = new FloatingDialog(
 				// right place, and mark the newly added file as selected.
 				// Make sure the list is populated first, so refreshList
 				// actually processes it.
-				list.parentEntry.populate();
+				list.parentEntry.data.populate();
 				refreshList(list, false);
 				list.each(function(other) {
 					if (other.file == file) {
@@ -264,7 +269,7 @@ var mainDialog = new FloatingDialog(
 
 	function getSelectedScriptEntry() {
 		var entry = scriptList.selectedLeafEntry;
-		return entry && entry.file ? entry : null;
+		return entry && entry.data.file ? entry : null;
 	}
 
 	function getEntryPath(entry) {
@@ -281,8 +286,8 @@ var mainDialog = new FloatingDialog(
 		var list = scriptList, entry; 
 		for (var i = 0, l = path.length; i < l && list; i++) {
 			entry = list[path[i]];
-			if (entry && entry.isDirectory) {
-				entry.populate();
+			if (entry && entry.data.isDirectory) {
+				entry.data.populate();
 				list = entry.childList;
 			} else {
 				list = null;
@@ -292,15 +297,15 @@ var mainDialog = new FloatingDialog(
 	}
 
 	function compileScope(entry, handler) {
-		var scr = ScriptographerEngine.compile(entry.file);
+		var scr = ScriptographerEngine.compile(entry.data.file);
 		if (scr) {
-			var scope = entry.scope = scr.engine.createScope();
+			var scope = entry.data.scope = scr.engine.createScope();
 			if (handler instanceof ToolHandler) {
 				scope.put('tool', handler, true);
 			}
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
-			ScriptographerEngine.execute(scr, entry.file, scope);
+			ScriptographerEngine.execute(scr, entry.data.file, scope);
 			adjustOrigin(scope);
 			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
@@ -311,7 +316,7 @@ var mainDialog = new FloatingDialog(
 			// to allow them to be defined globally.
 			// Support deprecated onOptions too, by converting it to
 			// onEditOptions.
-			var names = entry.type == 'tool'
+			var names = entry.data.type == 'tool'
 				? ['onEditOptions', 'onOptions', 'onSelect', 'onDeselect',
 					'onReselect', 'onMouseDown', 'onMouseUp', 'onMouseDrag',
 					'onMouseMove']
@@ -326,7 +331,7 @@ var mainDialog = new FloatingDialog(
 	}
 
 	function executeEffect(entry) {
-		if (entry && /^(tool|effect)$/.test(entry.type)) {
+		if (entry && /^(tool|effect)$/.test(entry.data.type)) {
 			// This works even for multiple selections, as the path style
 			// apparently is applied to all of the selected items. Fine
 			// with us... But not so clean...
@@ -348,15 +353,15 @@ var mainDialog = new FloatingDialog(
 	function execute() {
 		var entry = getSelectedScriptEntry();
 		if (entry) {
-			switch (entry.type) {
+			switch (entry.data.type) {
 			case 'tool':
 				// Manually call onStop in tool scopes before they get overridden.
-				if (entry.scope) {
-					var onStop = entry.scope.getCallable('onStop');
+				if (entry.data.scope) {
+					var onStop = entry.data.scope.getCallable('onStop');
 					if (onStop)
 						onStop.call(tool);
 				}
-				tool.title = tool.tooltip = entry.file.name;
+				tool.title = tool.tooltip = entry.data.file.name;
 				tool.image = tool.activeImage;
 				// Reset settings
 				tool.initialize();
@@ -367,12 +372,12 @@ var mainDialog = new FloatingDialog(
 					if (onInit)
 						onInit.call(tool);
 				}
-				if (entry.file != currentToolFile) {
+				if (entry.data.file != currentToolFile) {
 					var curEntry = fileEntries[currentToolFile];
 					if (curEntry && curEntry.isValid())
 						curEntry.image = toolScriptImage;
 					entry.image = activeToolScriptImage;
-					currentToolFile = entry.file;
+					currentToolFile = entry.data.file;
 				}
 				break;
 			case 'effect':
@@ -381,12 +386,12 @@ var mainDialog = new FloatingDialog(
     				break;
 			    }
 			default:
-				var scr = ScriptographerEngine.compile(entry.file);
+				var scr = ScriptographerEngine.compile(entry.data.file);
 				if (scr) {
 					var scope = scr.engine.createScope();
 					// Don't call scr.execute directly, since we handle SG
 					// specific things in ScriptographerEngine.execute:
-					ScriptographerEngine.execute(scr, entry.file, scope);
+					ScriptographerEngine.execute(scr, entry.data.file, scope);
 					adjustOrigin(scope);
 				}
 			}
@@ -504,15 +509,16 @@ var mainDialog = new FloatingDialog(
 	function compileEffect(entry, parameters) {
 		var path = getEntryPath(entry);
 		parameters.path = path;
-		var isTool = entry.type == 'tool';
+		var isTool = entry.data.type == 'tool';
 		// Create a ToolHandler that handles all the complicated ToolEvent
 		// stuff for us, to replicate completely the behavior of tools.
 		var handler = isTool ? new ToolHandler() : {};
 		// The same scope is shared among all instances of this Effect.
-		// So we need to save and restore scope variables into the event.parameters
-		// object. The values are saved as Json, as duplicating effects otherwise
-		// does not create deep copies of parameters, which breaks storing values
-		// in JS objects which would get converted to shared Dictionaries otherwise.
+		// So we need to save and restore scope variables into the
+		// event.parameters object. The values are saved as Json, as duplicating
+		// effects otherwise does not create deep copies of parameters, which
+		// breaks storing values in JS objects which would get converted to
+		// shared Dictionaries otherwise.
 		var scope = compileScope(entry, handler);
 		if (scope) {
 			scope.put('effect', effect, true);
@@ -542,7 +548,7 @@ var mainDialog = new FloatingDialog(
 				}
 			}
 			effectEntries[path] = entry;
-			entry.handler = handler;
+			entry.data.handler = handler;
 			return true;
 		}
 	}
@@ -559,12 +565,14 @@ var mainDialog = new FloatingDialog(
 						compileEffect(entry, event.parameters);
 					} else {
 						// TODO: Alert?
-						print('Cannot find effect script: ', event.parameters.path);
+						print('Cannot find effect script: ',
+								event.parameters.path);
 					}
 				}
-				var func = entry && entry.handler && entry.handler[name];
+				var func = entry && entry.data.handler
+						&& entry.data.handler[name];
 				if (func)
-					return func.call(entry.scope, event);
+					return func.call(entry.data.scope, event);
 			}
 		}
 	});
@@ -694,7 +702,8 @@ var mainDialog = new FloatingDialog(
 	var referenceEntry = new ListEntry(menu) {
 		text: 'Reference...',
 		onSelect: function() {
-			illustrator.launch('file://' + new File(scriptographer.pluginDirectory,
+			illustrator.launch('file://' + new File(
+					scriptographer.pluginDirectory,
 					'Reference/index.html'));
 		}
 	};
@@ -721,11 +730,11 @@ var mainDialog = new FloatingDialog(
 		if (event.character == '`') {
 			if (event.modifiers.command) {
 				if (event.modifiers.shift) {
-					mainDialog.visible = !mainDialog.visible;
-					return true;
+//					mainDialog.visible = !mainDialog.visible;
+//					return true;
 				} else if (event.modifiers.option) {
-					consoleDialog.visible = !consoleDialog.visible;
-					return true;
+//					consoleDialog.visible = !consoleDialog.visible;
+//					return true;
 				}
 			} else if (!event.modifiers.shift && !event.modifiers.control) {
 				tool.selected = true;

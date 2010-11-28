@@ -29,6 +29,9 @@
 
 package com.scriptographer.adm;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ai.Timer;
 import com.scriptographer.script.RunnableCallable;
@@ -45,6 +48,7 @@ abstract class NotificationHandler extends NativeObject {
 	private Tracker tracker = new Tracker();
  	@SuppressWarnings("unused")
 	private Drawer drawer = new Drawer();
+	private Map data;
 
 	protected abstract void onNotify(Notifier notifier);
 	protected abstract boolean onTrack(Tracker tracker);
@@ -66,6 +70,19 @@ abstract class NotificationHandler extends NativeObject {
 		} else {
 			onNotify(notifier);
 		}
+	}
+
+	/**
+	 * Allow UI items to store data along with them.
+	 */
+	public Map getData() {
+		if (data == null)
+			data = new HashMap();
+		return data;
+	}
+
+	public void setData(Map data) {
+		this.data = data;
 	}
 
 	private class RunnableTimer extends Timer {
