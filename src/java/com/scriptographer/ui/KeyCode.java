@@ -40,6 +40,7 @@ import com.scratchdisk.util.IntegerEnum;
  */
 public enum KeyCode implements IntegerEnum {
 	ENTER('\n'),
+	RETURN('\r'),
 	BACKSPACE('\b'),
 	TAB('\t'),
 	CANCEL(3),
