@@ -62,9 +62,7 @@ var mainDialog = new FloatingDialog(
 						entry.expanded = !entry.expanded;
 						entry.list.invalidate();
 					} else {
-						// Edit the file through illustrator.launch
-						illustrator.launch(entry.data.file);
-						// execute();
+						chooseEntry(entry);
 					}
 				}
 				updateButtons();
@@ -355,6 +353,12 @@ var mainDialog = new FloatingDialog(
 					+ 'to items, please select some items\n'
 					+ 'before executing the script.');
 		}
+	}
+
+	function chooseEntry(entry) {
+		// Edit the file through illustrator.launch
+		illustrator.launch(entry.data.file);
+		// execute();
 	}
 
 	function execute() {
@@ -747,6 +751,71 @@ var mainDialog = new FloatingDialog(
 				tool.selected = true;
 				return true;
 			}
+		} else if (mainDialog.active) {
+			// Handle keyboard navigation in scriptList
+			var entry = getSelectedScriptEntry();
+			if (entry) {
+				if (/up|down/.test(event.keyCode)) {
+					var down = event.keyCode == 'down';
+					// Step into open folders when moving down
+					if (down && entry.data.isDirectory && entry.expanded) {
+						next = entry.childList.first;
+					} else {
+						var index = entry.index + (down ? 1 : -1);
+						var next = entry.list[index];
+						if (next) {
+							// Step into open foldres when moving up
+							if (!down && next.data.isDirectory
+									&& next.expanded) {
+								next = next.childList.last;
+							}
+						} else {
+							// Move a level up as there is no more on this level
+							var parent = entry.list.parentEntry;
+							if (parent) {
+								if (down) {
+									next = parent.list[parent.index + 1];
+								} else {
+									next = parent;
+								}
+							}
+						}
+					}
+					if (next) {
+						entry.selected = false;
+						next.selected = true;
+					}
+				} else if (entry.data.isDirectory
+						&& /left|right/.test(event.keyCode)) {
+					entry.expanded = event.keyCode == 'right';
+					if (entry.expanded)
+						entry.data.populate();
+					entry.list.invalidate();
+				} else if (/return|enter/.test(event.keyCode)) {
+					// Choose
+					chooseEntry(entry);
+				} else if (event.modifiers.command) {
+					switch (event.keyCode) {
+					case 'r':
+						// Run
+						execute();
+						break;
+					case 'e':
+						// Edit
+						if (!entry.data.isDirectory)
+							chooseEntry(entry);
+						break;
+					case 'n':
+						createScript();
+						break;
+					case 's':
+						stopAll();
+						break;
+					}
+				}
+			}
+			updateButtons();
+			return true;
 		}
 	}
 
