@@ -307,21 +307,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setPosition(
 }
 
 /*
- * com.scriptographer.adm.Size nativeGetimumMinSize()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinimumSize(
-		JNIEnv *env, jobject obj) {
-	try {
-		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		ADMPoint pt;
-		pt.h = sADMDialog->GetMinWidth(dialog);
-		pt.v = sADMDialog->GetMinHeight(dialog);
-		return gEngine->convertSize(env, &pt);
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
  * void nativeSetMinimumSize(int width, int height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize(
@@ -331,20 +316,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize(
 		sADMDialog->SetMinWidth(dialog, width);
 		sADMDialog->SetMinHeight(dialog, height);
 	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * com.scriptographer.adm.Size nativeGetMaximumSize()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMaximumSize(
-		JNIEnv *env, jobject obj) {
-	try {
-		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		DEFINE_ADM_POINT(pt, sADMDialog->GetMaxWidth(dialog),
-				sADMDialog->GetMaxHeight(dialog));
-		return gEngine->convertSize(env, &pt);
-	} EXCEPTION_CONVERT(env);
-	return NULL;
 }
 
 /*
@@ -1119,7 +1090,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(
 		ADMPlatformFileTypesSpecification3 specs;
 		// This is needed in order to zero out the mac specific part on mac...
 		memset(&specs, 0, sizeof(ADMPlatformFileTypesSpecification3));
-		memcpy(specs.filter, fltr, MIN(kADMMaxFilterLength, env->GetStringLength(filter)));
+		if (filter != NULL)
+			memcpy(specs.filter, fltr, MIN(kADMMaxFilterLength, env->GetStringLength(filter)));
 
 		SPPlatformFileSpecification result, dir;
 		SPPlatformFileSpecification *initial = gEngine->convertFile(env, directory, &dir);

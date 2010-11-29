@@ -1018,12 +1018,9 @@ public abstract class Dialog extends Component {
 	 * properties in the wrapper and then only set them natively when the dialog
 	 * is activate.
 	 */
-	private native Size nativeGetMinimumSize();
 	
 	private native void nativeSetMinimumSize(int width, int height);
 
-	private native Size nativeGetMaximumSize();
-	
 	private native void nativeSetMaximumSize(int width, int height);
 
 	public Size getMinimumSize() {
