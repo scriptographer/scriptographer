@@ -1090,7 +1090,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(
 		ADMPlatformFileTypesSpecification3 specs;
 		// This is needed in order to zero out the mac specific part on mac...
 		memset(&specs, 0, sizeof(ADMPlatformFileTypesSpecification3));
-		memcpy(specs.filter, fltr, MIN(kADMMaxFilterLength, env->GetStringLength(filter)));
+		if (filter != NULL)
+			memcpy(specs.filter, fltr, MIN(kADMMaxFilterLength, env->GetStringLength(filter)));
 
 		SPPlatformFileSpecification result, dir;
 		SPPlatformFileSpecification *initial = gEngine->convertFile(env, directory, &dir);
