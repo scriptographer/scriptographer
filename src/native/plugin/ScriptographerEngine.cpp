@@ -673,6 +673,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_adm_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
 	mid_adm_Dialog_onSizeChanged = getMethodID(env, cls_adm_Dialog, "onSizeChanged", "(IIZ)V");
+	mid_adm_Dialog_deactivateActiveDialog = getStaticMethodID(env, cls_adm_Dialog, "deactivateActiveDialog", "()V");
 
 	cls_adm_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
 
@@ -2285,6 +2286,19 @@ ASErr ScriptographerEngine::onRevert() {
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
+
+#ifdef WIN_ENV
+
+ASErr ScriptographerEngine::deactivateActiveDialog() {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_adm_Dialog, mid_adm_Dialog_deactivateActiveDialog);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+#endif // WIN_ENV
 
 /**
  * AI Tool

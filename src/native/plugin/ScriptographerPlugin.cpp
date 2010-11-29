@@ -284,20 +284,29 @@ WNDPROC ScriptographerPlugin::s_defaultAppWindowProc = NULL;
 
 LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg,
 		WPARAM wParam, LPARAM lParam) {
-	if (gEngine != NULL && uMsg == WM_ACTIVATEAPP) {
-		int type = -1;
-		switch (LOWORD(wParam)) {
-		case WA_ACTIVE:
-			gPlugin->m_active = true;
-			type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
-			break;
-		case WA_INACTIVE:
-			gPlugin->m_active = false;
-			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
-			break;
+	if (gEngine != NULL) {
+		if (uMsg == WM_ACTIVATEAPP) {
+			int type = -1;
+			switch (LOWORD(wParam)) {
+			case WA_ACTIVE:
+				gPlugin->m_active = true;
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
+				break;
+			case WA_INACTIVE:
+				gPlugin->m_active = false;
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
+				break;
+			}
+			if (type != -1)
+				gEngine->callOnHandleEvent(type);
+#ifdef WIN_ENV
+		} else if (uMsg == WM_PARENTNOTIFY) {
+			// Deactivate ADM Dialogs on Windows whenever a click happens
+			// outside the ADM palettes or documents. WM_PARENTNOTIFY appears to
+			// be the message to identify these events.
+			gEngine->deactivateActiveDialog();
+#endif // WIN_ENV
 		}
-		if (type != -1)
-			gEngine->callOnHandleEvent(type);
 	}
 	return ::CallWindowProc(s_defaultAppWindowProc, hwnd, uMsg, wParam, lParam);
 }
@@ -816,6 +825,10 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
 		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
 			error = gEngine->onSelectionChanged();
+#ifdef WIN_ENV
+			// Deactivate ADM Dialogs on Windows
+			gEngine->deactivateActiveDialog();
+#endif // WIN_ENV
 		} else if (msg->notifier == m_afterUndoNotifier) {
 			error = gEngine->onUndo();
 		} else if (msg->notifier == m_afterRedoNotifier) {
@@ -835,13 +848,12 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
 		} else if (msg->notifier == m_appStartedNotifier) {
 			error = onPostStartupPlugin();
 		}
-		/* Is this needed?
 		if (!error || error == kUnhandledMsgErr) {
 			if (sSPBasic->IsEqual(selector, kSelectorAINotify)) {
-				error = notify(msg);
+				int i = 0;
+				//error = notify(msg);
 			}
 		}
-		*/
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->MenuItem_onSelect((AIMenuMessage *) message);

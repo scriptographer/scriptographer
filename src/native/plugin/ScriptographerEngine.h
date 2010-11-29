@@ -353,6 +353,7 @@ public:
 
 	jclass cls_adm_Dialog;
 	jmethodID mid_adm_Dialog_onSizeChanged;
+	jmethodID mid_adm_Dialog_deactivateActiveDialog;
 
 	jclass cls_adm_PopupDialog;
 
@@ -621,7 +622,11 @@ public:
 	ASErr onRedo();
 	ASErr onClear();
 	ASErr onRevert();
-	
+
+#ifdef WIN_ENV
+	ASErr deactivateActiveDialog();
+#endif // WIN_ENV
+
 	// AI Tool
 	ASErr Tool_onHandleEvent(const char * selector, AIToolMessage *message);
 

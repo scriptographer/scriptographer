@@ -422,6 +422,7 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onActivate() {
+		activeDialog = this;
 		if (onActivate != null)
 			ScriptographerEngine.invoke(onActivate, this);
 	}
@@ -437,6 +438,8 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onDeactivate() {
+		if (activeDialog == this)
+			activeDialog = null;
 		if (onDeactivate != null)
 			ScriptographerEngine.invoke(onDeactivate, this);
 	}
@@ -683,6 +686,18 @@ public abstract class Dialog extends Component {
 		}
 	}
 
+	private static Dialog activeDialog = null;
+
+	public static Dialog getActiveDialog() {
+		return activeDialog;
+	}
+
+	protected static void deactivateActiveDialog() {
+		if (activeDialog != null) {
+			activeDialog.setActive(false);
+			activeDialog = null;
+		}
+	}
 	/*
 	 * Wrapper stuff:
 	 */
