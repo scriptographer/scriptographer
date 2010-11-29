@@ -100,6 +100,9 @@ public abstract class Dialog extends Component {
 	private boolean visible = false;
 	private boolean active = false;
 
+	protected static Dialog activeDialog = null;
+	protected static Dialog previousActiveDialog = null;
+
 	protected AWTDialogContainer container = null;
 
 	/**
@@ -422,7 +425,6 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onActivate() {
-		activeDialog = this;
 		if (onActivate != null)
 			ScriptographerEngine.invoke(onActivate, this);
 	}
@@ -438,8 +440,6 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onDeactivate() {
-		if (activeDialog == this)
-			activeDialog = null;
 		if (onDeactivate != null)
 			ScriptographerEngine.invoke(onDeactivate, this);
 	}
@@ -598,10 +598,17 @@ public abstract class Dialog extends Component {
 				// See comment for initialize to understand why this is fired
 				// here too
 				initialize(true, false);
+				activeDialog = this;
 				active = true;
 				onActivate();
 				break;
 			case WINDOW_DEACTIVATE:
+				if (activeDialog == this) {
+					// Keep track of the previously active dialog, as it is 
+					// needed in a workaround for falsly activate modal dialogs.
+					previousActiveDialog = activeDialog;
+					activeDialog = null;
+				}
 				active = false;
 				onDeactivate();
 				break;
@@ -686,18 +693,6 @@ public abstract class Dialog extends Component {
 		}
 	}
 
-	private static Dialog activeDialog = null;
-
-	public static Dialog getActiveDialog() {
-		return activeDialog;
-	}
-
-	protected static void deactivateActiveDialog() {
-		if (activeDialog != null) {
-			activeDialog.setActive(false);
-			activeDialog = null;
-		}
-	}
 	/*
 	 * Wrapper stuff:
 	 */
@@ -807,8 +802,19 @@ public abstract class Dialog extends Component {
 	public native void nativeSetActive(boolean active);
 	
 	public void setActive(boolean active) {
-		nativeSetActive(active);
 		this.active = active;
+		nativeSetActive(active);
+	}
+
+	public static Dialog getActiveDialog() {
+		return activeDialog;
+	}
+
+	protected static void deactivateActiveDialog() {
+		if (activeDialog != null) {
+			activeDialog.setActive(false);
+			activeDialog = null;
+		}
 	}
 
 	/* 

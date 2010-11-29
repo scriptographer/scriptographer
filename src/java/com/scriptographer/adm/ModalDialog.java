@@ -126,8 +126,14 @@ public class ModalDialog extends Dialog {
 			// deactivating it does not work.
 			invokeLater(new Runnable() {
 				public void run() {
-					if (!isVisible())
+					if (!isVisible()) {
+						// Make sure that the focus goes back to whoever was
+						// active before this invisible modal dialog got wrongly
+						// activated.
+						if (previousActiveDialog != null)
+							previousActiveDialog.setActive(true);
 						setActive(false);
+					}
 				}
 			});
 		} else {
