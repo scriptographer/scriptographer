@@ -328,41 +328,46 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				// WM_CHAR here at all, which simplifies finding matching
 				// down / up events a lot.
 				if (pMsg->message == WM_KEYDOWN) {
-					WCHAR unicode[16];
-					HKL layout = GetKeyboardLayout(0);
-					int count = ToUnicodeEx(keyCode, scanCode, keyboardState, unicode, 16, 0, layout);
-					if (count >= 1) {
-						chr = unicode[0];
-					} else if (count < 0) {
-						// Dead keys (^,`...)
-						isDead = true;
-						// We must clear the buffer because ToUnicodeEx messed it up, see below.
-						BYTE keyboardStateNull[256];
-						memset(keyboardStateNull, 0, sizeof(keyboardStateNull));
-						do {
-							count = ToUnicodeEx(keyCode, scanCode, keyboardStateNull, unicode, 16, 0, layout);
-						} while(count < 0);
+					// Do not use unicode translation for shift keys, as this somehow wrongly gets
+					// rid of previous unicode sequence states.
+					// TODO: Find other keys that might have to be filtered!
+					if (keyCode != VK_SHIFT) {
+						WCHAR unicode[16];
+						HKL layout = GetKeyboardLayout(0);
+						int count = ToUnicodeEx(keyCode, scanCode, keyboardState, unicode, 16, 0, layout);
+						if (count >= 1) {
+							chr = unicode[0];
+						} else if (count < 0) {
+							// Dead keys (^,`...)
+							isDead = true;
+							// We must clear the buffer because ToUnicodeEx messed it up, see below.
+							BYTE keyboardStateNull[256];
+							memset(keyboardStateNull, 0, sizeof(keyboardStateNull));
+							do {
+								count = ToUnicodeEx(keyCode, scanCode, keyboardStateNull, unicode, 16, 0, layout);
+							} while(count < 0);
+						}
+						// We inject the last dead key back, since ToUnicodeEx removed it.
+						// More about this peculiar behavior see e.g: 
+						// http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
+						// http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
+						// http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
+						if (s_lastKeyCode != 0 && s_lastIsDead) {
+							ToUnicodeEx(s_lastKeyCode, s_lastScanCode, s_lastKeyboardState, unicode, 16, 0, layout);
+							s_lastKeyCode = 0;
+						} else {
+							s_lastKeyCode = keyCode;
+							s_lastScanCode = scanCode;
+							s_lastIsDead = isDead;
+							memcpy(s_lastKeyboardState, keyboardState, sizeof(keyboardState));
+						}
+						// Detect and handle back space, but filter out repeated
+						// hits by checking previous state (lParam & (1 << 30))
+						if (keyCode == '\b' && !(pMsg->lParam & (1 << 30)))
+							gEngine->onClear();
+						// Store the char used for a keydown / char event so
+						// the same can be used when that key is released again
 					}
-					// We inject the last dead key back, since ToUnicodeEx removed it.
-					// More about this peculiar behavior see e.g: 
-					// http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
-					// http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
-					// http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
-					if (s_lastKeyCode != 0 && s_lastIsDead) {
-						ToUnicodeEx(s_lastKeyCode, s_lastScanCode, s_lastKeyboardState, unicode, 16, 0, layout);
-						s_lastKeyCode = 0;
-					} else {
-						s_lastKeyCode = keyCode;
-						s_lastScanCode = scanCode;
-						s_lastIsDead = isDead;
-						memcpy(s_lastKeyboardState, keyboardState, sizeof(keyboardState));
-					}
-					// Detect and handle back space, but filter out repeated
-					// hits by checking previous state (lParam & (1 << 30))
-					if (keyCode == '\b' && !(pMsg->lParam & (1 << 30)))
-						gEngine->onClear();
-					// Store the char used for a keydown / char event so
-					// the same can be used when that key is released again
 					s_keyChars[scanCode] = chr;
 					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN;
 				} else {
