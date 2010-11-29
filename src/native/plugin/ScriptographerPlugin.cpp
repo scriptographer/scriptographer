@@ -37,11 +37,12 @@
 ScriptographerPlugin *gPlugin = NULL;
 
 ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
-	// set the global sSPBasic pointer only once here, as it may be converted to a glued version
-	// if MACHO_CFM_GLUE is defined
+	// Set the global sSPBasic pointer only once here, as it may be converted to
+	// a glued version if MACHO_CFM_GLUE is defined
 	sSPBasic = messageData->basic;
 #ifdef MACHO_CFM_GLUE
-	// the basic suite is never acquired and therefore needs to be glue manually here
+	// The basic suite is never acquired and therefore needs to be glue manually
+	// here
 	createGluedSuite((void **) &sSPBasic, sizeof(SPBasicSuite));
 #endif
 	m_pluginRef = messageData->self;
@@ -74,7 +75,8 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 ScriptographerPlugin::~ScriptographerPlugin() {
 	gPlugin = NULL;
 #ifdef MACHO_CFM_GLUE
-	// the basic suite is never released and therefore needs to be unglue manually here
+	// The basic suite is never released and therefore needs to be unglue
+	// manually here
 	disposeGluedSuite(sSPBasic, sizeof(SPBasicSuite));
 #endif
 }
@@ -140,7 +142,8 @@ unsigned char ScriptographerPlugin::s_keycodeMacToJava[256] = {
 	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 };
 
-OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData) {
+OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler,
+		EventRef event, void* userData) {
 	if (gEngine != NULL) {
 		int type = -1;
 		switch(GetEventKind(event)) {
@@ -159,7 +162,8 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 	return kNoErr;
 }
 
-OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
+OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
+		EventRef event, void *userData) {
 	UInt32 cls = GetEventClass(event);
 	UInt32 kind = GetEventKind(event);
 	bool handled = false;
@@ -177,21 +181,27 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 			case kEventRawKeyUp:
 			case kEventRawKeyRepeat: {
 				UInt32 keyCode;
-				GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
+				GetEventParameter(event, kEventParamKeyCode,
+						typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
 				UniChar uniChar;
-				GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+				GetEventParameter(event, kEventParamKeyUnicodes,
+						typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
 				UInt32 modifiers;
-				GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
+				GetEventParameter(event, kEventParamKeyModifiers,
+						typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
 				// Establish an app context now, so the callback handlers will
 				// have no problems using suites.
 				AppContext context;
 				if (kind == kEventRawKeyDown && uniChar == '\b') // Back space
 					gEngine->onClear();
-				int type = kind == kEventRawKeyDown || kind == kEventRawKeyRepeat
-					? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
-					: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
-				keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
-				handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
+				int type = kind == kEventRawKeyDown
+						|| kind == kEventRawKeyRepeat
+						? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
+						: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+				keyCode = keyCode >= 0 && keyCode < 0xff
+						? s_keycodeMacToJava[keyCode] : 0xff;
+				handled = gEngine->callOnHandleKeyEvent(type, keyCode,
+						uniChar, modifiers);
 			}
 			break;
 			case kEventRawKeyModifiersChanged: {
@@ -208,7 +218,8 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 		switch (kind) {
 			case kEventMouseDown: {
 				Point point;
-				GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
+				GetEventParameter(event, kEventParamMouseLocation,
+						typeQDPoint, NULL, sizeof(Point), NULL, &point);
 				WindowRef window = NULL;
 				FindWindow(point, &window);
 				WindowClass wndClass;
@@ -221,20 +232,29 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 					ControlRef view = FindControlUnderMouse(point, window, &code);
 					*/
 					HIViewRef view;
-					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
-						CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
+					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event,
+							&view) == noErr && view != NULL) {
+						CFStringRef viewClass = HIObjectCopyClassID(
+								(HIObjectRef) view);
 						if (viewClass != NULL) {
-							// Detect the potential beginning of a window drag and notify the java side of it, so
-							// it can handle ADM / SWT overlays properly.
-							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
-								CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
-								CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
+							// Detect the potential beginning of a window drag
+							// and notify the java side of it, so it can handle
+							// ADM / SWT overlays properly.
+							if (CFStringHasPrefix(viewClass,
+									CFSTR("com.adobe.owl."))
+									&& (CFStringCompare(viewClass,
+										CFSTR("com.adobe.owl.tabgroup"), 0) == 0
+									|| CFStringCompare(viewClass,
+										CFSTR("com.adobe.owl.dock"), 0) == 0)) {
 								dragging = true;
 								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
 							}
 							/*
-							const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
-							gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
+							const char *str = CFStringGetCStringPtr(viewClass,
+									kCFStringEncodingMacRoman);
+							gEngine->println(gEngine->getEnv(),
+									"Mouse Event: #%i, x: %i y: %i, view: %x, class: %s",
+									kind, point.h, point.v, view, str);
 							*/
 						}
 					}
@@ -262,7 +282,8 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 
 WNDPROC ScriptographerPlugin::s_defaultAppWindowProc = NULL;
 
-LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg,
+		WPARAM wParam, LPARAM lParam) {
 	if (gEngine != NULL && uMsg == WM_ACTIVATEAPP) {
 		int type = -1;
 		switch (LOWORD(wParam)) {
@@ -288,7 +309,8 @@ UINT ScriptographerPlugin::s_lastKeyCode = 0;
 UINT ScriptographerPlugin::s_lastScanCode = 0;
 bool ScriptographerPlugin::s_lastIsDead = false;
 
-LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam,
+		LPARAM lParam) {
 	PMSG pMsg = (PMSG) lParam;
 	bool handled = false;
 	if (gEngine != NULL && wParam == PM_REMOVE) {
@@ -303,7 +325,8 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					// window but not the controls.
 					WINDOWINFO info;
 					GetWindowInfo(pMsg->hwnd, &info);
-					if ((info.dwStyle & WS_TABSTOP) && !(info.dwStyle & WS_CAPTION))
+					if ((info.dwStyle & WS_TABSTOP)
+							&& !(info.dwStyle & WS_CAPTION))
 						break;
 				}
 				// Get scan code and virtual code from key.
@@ -328,38 +351,45 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				// WM_CHAR here at all, which simplifies finding matching
 				// down / up events a lot.
 				if (pMsg->message == WM_KEYDOWN) {
-					// Do not use unicode translation for shift keys, as this somehow wrongly gets
-					// rid of previous unicode sequence states.
+					// Do not use unicode translation for shift keys, as this 
+					// somehow wrongly gets rid of previous unicode sequence
+					// states.
 					// TODO: Find other keys that might have to be filtered!
 					if (keyCode != VK_SHIFT) {
 						WCHAR unicode[16];
 						HKL layout = GetKeyboardLayout(0);
-						int count = ToUnicodeEx(keyCode, scanCode, keyboardState, unicode, 16, 0, layout);
+						int count = ToUnicodeEx(keyCode, scanCode,
+								keyboardState, unicode, 16, 0, layout);
 						if (count >= 1) {
 							chr = unicode[0];
 						} else if (count < 0) {
 							// Dead keys (^,`...)
 							isDead = true;
-							// We must clear the buffer because ToUnicodeEx messed it up, see below.
+							// We must clear the buffer because ToUnicodeEx
+							// messed it up, see below.
 							BYTE keyboardStateNull[256];
-							memset(keyboardStateNull, 0, sizeof(keyboardStateNull));
+							memset(keyboardStateNull, 0,
+									sizeof(keyboardStateNull));
 							do {
-								count = ToUnicodeEx(keyCode, scanCode, keyboardStateNull, unicode, 16, 0, layout);
+								count = ToUnicodeEx(keyCode, scanCode,
+									keyboardStateNull, unicode, 16, 0, layout);
 							} while(count < 0);
 						}
-						// We inject the last dead key back, since ToUnicodeEx removed it.
-						// More about this peculiar behavior see e.g: 
+						// We inject the last dead key back, since ToUnicodeEx
+						// removed it. More about this peculiar behavior see e.g: 
 						// http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
 						// http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
 						// http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
 						if (s_lastKeyCode != 0 && s_lastIsDead) {
-							ToUnicodeEx(s_lastKeyCode, s_lastScanCode, s_lastKeyboardState, unicode, 16, 0, layout);
+							ToUnicodeEx(s_lastKeyCode, s_lastScanCode,
+									s_lastKeyboardState, unicode, 16, 0, layout);
 							s_lastKeyCode = 0;
 						} else {
 							s_lastKeyCode = keyCode;
 							s_lastScanCode = scanCode;
 							s_lastIsDead = isDead;
-							memcpy(s_lastKeyboardState, keyboardState, sizeof(keyboardState));
+							memcpy(s_lastKeyboardState, keyboardState,
+									sizeof(keyboardState));
 						}
 						// Detect and handle back space, but filter out repeated
 						// hits by checking previous state (lParam & (1 << 30))
@@ -374,20 +404,23 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					UINT keyChr = s_keyChars[scanCode];
 					if (keyChr) {
 						chr = keyChr;
-						// Erase so we're not detecting non-matching WM_KEYUP messages.
+						// Erase so we're not detecting non-matching WM_KEYUP
+						// messages.
 						s_keyChars[scanCode] = 0;
 						type = com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
 					}
 				}
 				if (type != -1) {
-					// If there is no unicode translation for this key event, pass 0 for chr.
+					// If there is no unicode translation for this key event,
+					// pass 0 for chr.
 					if (chr == 0xffff)
 						chr = 0;
 					int modifiers = 0;
 					if (keyboardState[VK_SHIFT] & 0x80)
 						modifiers |= com_scriptographer_ui_KeyModifiers_SHIFT;
 					if (keyboardState[VK_CONTROL] & 0x80) {
-						// On Windows, VK_CONTROL matches both Control and Command
+						// On Windows, VK_CONTROL matches both Control and
+						// Command
 						modifiers |= com_scriptographer_ui_KeyModifiers_CONTROL;
 						modifiers |= com_scriptographer_ui_KeyModifiers_COMMAND;
 					}
@@ -395,7 +428,8 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 						modifiers |= com_scriptographer_ui_KeyModifiers_OPTION;
 					if (keyboardState[VK_CAPITAL] & 0x01)
 						modifiers |= com_scriptographer_ui_KeyModifiers_CAPS_LOCK;
-					handled = gEngine->callOnHandleKeyEvent(type, keyCode, chr, modifiers);
+					handled = gEngine->callOnHandleKeyEvent(type, keyCode, chr,
+							modifiers);
 				}
 			}
 			break;
@@ -419,7 +453,8 @@ bool ScriptographerPlugin::isKeyDown(int keycode) {
 			if (keycode != 0xff) {
 				KeyMap keys;
 				GetKeys(keys);
-				return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
+				return (((unsigned char *) keys)[keycode >> 3]
+						& (1 << (keycode & 7))) != 0;
 			}
 		}
 #endif
@@ -451,36 +486,46 @@ long ScriptographerPlugin::getNanoTime() {
 // ScriptographerPlugin:
 
 ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
-	// Aquire only the basic suites that are needed here. the rest is acquired in postStartup.
+	// Aquire only the basic suites that are needed here. the rest is acquired
+	// in postStartup.
 	ASErr error;
 	RETURN_ERROR(acquireSuites(&gStartupSuites));
 	
-	// Make sure the plugin stays in ram all the time and onPostStartupPlugin gets actually called
+	// Make sure the plugin stays in ram all the time and onPostStartupPlugin
+	// gets actually called
 	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
 	
 	// Add app started notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started",
+			kAIApplicationStartedNotifier, &m_appStartedNotifier));
 	
 	// Add selection changed notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed",
+			kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier));
 
 	// Add document closed notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Document Closed", kAIDocumentClosedNotifier, &m_documentClosedNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Document Closed",
+			kAIDocumentClosedNotifier, &m_documentClosedNotifier));
 
 	// Add after undo menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Undo", "AI Command Notifier: After Undo", &m_afterUndoNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Undo",
+			"AI Command Notifier: After Undo", &m_afterUndoNotifier));
 
 	// Add after redo menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Redo", "AI Command Notifier: After Redo", &m_afterRedoNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Redo",
+			"AI Command Notifier: After Redo", &m_afterRedoNotifier));
 
 	// Add before revert menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Revert", "AI Command Notifier: Before Revert To Saved", &m_beforeRevertNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Revert",
+			"AI Command Notifier: Before Revert To Saved", &m_beforeRevertNotifier));
 
 	// Add after revert menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert", "AI Command Notifier: After Revert To Saved", &m_afterRevertNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert",
+			"AI Command Notifier: After Revert To Saved", &m_afterRevertNotifier));
 
 	// Add before clear menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear",
+			"AI Command Notifier: Before Clear", &m_beforeClearNotifier));
 
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
@@ -489,13 +534,15 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
 	
-	// Now find the last occurence of PATH_SEP_CHR and determine the string there:
+	// Now find the last occurence of PATH_SEP_CHR and determine the string
+	// there:
 	*(strrchr(pluginPath, PATH_SEP_CHR) + 1) = '\0';
 
 #ifdef LOGFILE
 		// Create logfile:
 		char path[512];
-		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log", pluginPath);
+		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log",
+				pluginPath);
 		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
 #endif
@@ -534,8 +581,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassApplication, kEventAppDeactivated }
 	};
 	DEFINE_CALLBACK_PROC(appEventHandler);
-	RETURN_ERROR(InstallApplicationEventHandler(
-			NewEventHandlerUPP((EventHandlerProcPtr) CALLBACK_PROC(appEventHandler)),
+	RETURN_ERROR(InstallApplicationEventHandler(NewEventHandlerUPP(
+			(EventHandlerProcPtr) CALLBACK_PROC(appEventHandler)),
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
 	// Install Events
@@ -546,25 +593,28 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassKeyboard, kEventRawKeyModifiersChanged },
 #ifdef _DEBUG
 		// Only install the mouse events used for panel move tracking and SWT
-		// in debug mode for now as it is work in progress, unused in final product yet.
+		// in debug mode for now as it is work in progress, unused in final
+		// product yet.
 //		{ kEventClassMouse, kEventMouseDown },
 //		{ kEventClassMouse, kEventMouseUp }
 #endif // _DEBUG
 	};
 	DEFINE_CALLBACK_PROC(eventHandler);
 	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(),
-			NewEventHandlerUPP((EventHandlerProcPtr) CALLBACK_PROC(eventHandler)),
+			NewEventHandlerUPP(
+					(EventHandlerProcPtr) CALLBACK_PROC(eventHandler)),
 			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV
 	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,
 			::GetModuleHandle(NULL), ::GetCurrentThreadId());
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
-	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) appWindowProc);
-	// If the app is active (focus on splasher), send WA_ACTIVE message again, since it was received
-	// before installing the WindowProc.
-	// CAUTION: Installing WindowProc in onStartupPlugin does not seem to work on Windows,
-	// something seems to override it again after.
+	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC,
+			(LONG) appWindowProc);
+	// If the app is active (focus on splasher), send WA_ACTIVE message again,
+	// since it was received before installing the WindowProc.
+	// CAUTION: Installing WindowProc in onStartupPlugin does not seem to work
+	// on Windows, something seems to override it again after.
 	if (hWnd == ::GetParent(::GetForegroundWindow()))
 		appWindowProc(hWnd, WM_ACTIVATEAPP, WA_ACTIVE, 0);
 #endif
@@ -574,8 +624,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 	log("onShutdownPlugin");
 #ifdef WIN_ENV
-	// If we have overridden the default WindowProc, set it back now, since ours wont 
-	// exist anymore after unloading and that will lead to a crash.
+	// If we have overridden the default WindowProc, set it back now, since ours
+	// wont exist anymore after unloading and that will lead to a crash.
 	if (s_defaultAppWindowProc != NULL) {
 		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
@@ -597,7 +647,8 @@ ASErr ScriptographerPlugin::onUnloadPlugin(SPInterfaceMessage *message) {
 	return kUnloadErr; // Tell PluginMain to remove the plugin object after this
 }
 
-unsigned char *ScriptographerPlugin::toPascal(const char *src, unsigned char *dst) {
+unsigned char *ScriptographerPlugin::toPascal(const char *src,
+		unsigned char *dst) {
 	int len = strlen(src);
 	
 	if (len > 255)
@@ -625,18 +676,22 @@ char *ScriptographerPlugin::fromPascal(const unsigned char *src, char *dst) {
 }
 
 /*
- * Similar to sAIUser->SPPlatformFileSpecification2Path, but creates a posix path on Mac OS X, because that's what's needed for java
+ * Similar to sAIUser->SPPlatformFileSpecification2Path, but creates a posix
+ * path on Mac OS X, because that's what's needed for java
  */
-bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
+bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, 
+		char *path) {
 	// TODO: consider using AIFilePath.h instead of the hacks bellow!
 #ifdef MAC_ENV
 	// Java needs a posix path on mac, not a Carbon one, as used by Illustrator:
 	// Then transform this into a real FSSpec
 
-	// As the file refered to by fileSpec may not exist yet, create a FSSpec for its parent directory add the name afterwards
+	// As the file refered to by fileSpec may not exist yet, create a FSSpec for
+	// its parent directory add the name afterwards
 	unsigned char empty = 0; // 0-length p-string
 	FSSpec fsSpec;
-	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, &empty, &fsSpec) != noErr)
+	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, &empty, &fsSpec)
+			!= noErr)
 		return false;
 	// And from there into a Posix path:
 	FSRef fsRef;
@@ -650,12 +705,14 @@ bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec,
 	strcat(path, name);
 	delete name;
 #else
-	// On windows, things are easier because we don't have to convert to a posix path.
+	// On windows, things are easier because we don't have to convert to a posix
+	// path.
 	// if (sAIUser->SPPlatformFileSpecification2Path(fileSpec, path))
 	//	return false;
-	// Actually not, because sAIUser->SPPlatformFileSpecification2Path does not handle Unicode
-	// properly. But fileSpec->path seems to contain the short path already, which allways
-	// seems to point to the right file, so for the time being, just copy:
+	// Actually not, because sAIUser->SPPlatformFileSpecification2Path does not
+	// handle Unicode properly. But fileSpec->path seems to contain the short
+	// path already, which allways seems to point to the right file, so for the
+	// time being, just copy:
 	strcpy(path, fileSpec->path);
 	/*
 	If Unicode full paths would be needed, this would be the way to go:
@@ -689,7 +746,8 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path,
 	FSRef fsRef;
 	Boolean isDir;
 	if (!FSPathMakeRef((unsigned char*) path, &fsRef, &isDir)
-			&& !FSGetCatalogInfo(&fsRef, 0, NULL, NULL, (FSSpec *) fileSpec, NULL))
+			&& !FSGetCatalogInfo(&fsRef, 0, NULL, NULL, (FSSpec *) fileSpec,
+					NULL))
 		return true;
 	// If that did not work, create an FSRef for the path's parent dir and from
 	// there create a FSSpec for the child. This will only work for filenames
@@ -726,9 +784,11 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path,
 			| kFSCatInfoNodeID, &catalogInfo, NULL, NULL, NULL) != noErr)
 		return false;
 	
-	// And create a FSSpec (== SPPlatformFileSpecification) for the child with it:
+	// And create a FSSpec (== SPPlatformFileSpecification) for the child with 
+	// it:
 	OSErr error = FSMakeFSSpec(catalogInfo.volume, catalogInfo.nodeID,
-			toPascal(filename, (unsigned char *) filename), (FSSpec *) fileSpec);
+			toPascal(filename, (unsigned char *) filename),
+			(FSSpec *) fileSpec);
 	// File not found error is OK:
 	if (error != noErr && error != fnfErr)
 		return false;
@@ -745,7 +805,8 @@ void ScriptographerPlugin::setCursor(int cursorID) {
 	sADMBasic->SetPlatformCursor(m_pluginRef, cursorID);
 }
 
-ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *message) {
+ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
+		void *message) {
 	ASErr error = kUnhandledMsgErr;
 	
 	log("handleMessage: %s %s", caller, selector);
@@ -769,7 +830,8 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		} else if (msg->notifier == m_documentClosedNotifier) {
 			// Only send onClose events if we're not reverting the document.
 			if (!m_reverting)
-				error = gEngine->onDocumentClosed((AIDocumentHandle) msg->notifyData);
+				error = gEngine->onDocumentClosed(
+						(AIDocumentHandle) msg->notifyData);
 		} else if (msg->notifier == m_appStartedNotifier) {
 			error = onPostStartupPlugin();
 		}
@@ -786,7 +848,8 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
 			long inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
-			error = gEngine->MenuItem_onUpdate((AIMenuMessage *) message, inArtwork, isSelected, isTrue);
+			error = gEngine->MenuItem_onUpdate((AIMenuMessage *) message,
+					inArtwork, isSelected, isTrue);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFilter)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGetFilterParameters)) {
@@ -809,22 +872,31 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			error = onCheckFileFormat((AIFileFormatMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
-		error = gEngine->Tool_onHandleEvent(selector, (AIToolMessage *) message);
+		error = gEngine->Tool_onHandleEvent(selector,
+				(AIToolMessage *) message);
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
-			error = gEngine->LiveEffect_onEditParameters((AILiveEffectEditParamMessage *) message);
+			error = gEngine->LiveEffect_onEditParameters(
+					(AILiveEffectEditParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoLiveEffect)) {
-			error = gEngine->LiveEffect_onCalculate((AILiveEffectGoMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInterpolate)) {
-			error = gEngine->LiveEffect_onInterpolate((AILiveEffectInterpParamMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInputType)) {
-			error = gEngine->LiveEffect_onGetInputType((AILiveEffectInputTypeMessage *) message);
+			error = gEngine->LiveEffect_onCalculate(
+					(AILiveEffectGoMessage *) message);
+		} else if (sSPBasic->IsEqual(selector,
+				kSelectorAILiveEffectInterpolate)) {
+			error = gEngine->LiveEffect_onInterpolate(
+					(AILiveEffectInterpParamMessage *) message);
+		} else if (sSPBasic->IsEqual(selector,
+				kSelectorAILiveEffectInputType)) {
+			error = gEngine->LiveEffect_onGetInputType(
+					(AILiveEffectInputTypeMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {
-			error = gEngine->Annotator_onDraw((AIAnnotatorMessage *) message);
+			error = gEngine->Annotator_onDraw(
+					(AIAnnotatorMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIInvalAnnotation)) {
-			error = gEngine->Annotator_onInvalidate((AIAnnotatorMessage *) message);
+			error = gEngine->Annotator_onInvalidate(
+					(AIAnnotatorMessage *) message);
 		}
 	}
 	// Sweet Pea messages
@@ -832,21 +904,25 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
 			error = onUnloadPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
-			// There is no need to handle reload messages, as the plugin is persistent
-			// Through the use of sSPAccess->AcquirePlugin();
+			// There is no need to handle reload messages, as the plugin is 
+			// persistent through the use of sSPAccess->AcquirePlugin();
 			error = kNoErr;
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller)) {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
+			error = gEngine->callOnHandleEvent(
+					com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
-			error = onStartupPlugin(static_cast<SPInterfaceMessage *>(message));
+			error = onStartupPlugin(
+					static_cast<SPInterfaceMessage *> (message));
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
-			error = onShutdownPlugin(static_cast<SPInterfaceMessage *>(message));
+			error = onShutdownPlugin(
+					static_cast<SPInterfaceMessage *> (message));
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPCacheCaller)) {	
 		if (sSPBasic->IsEqual(selector, kSPPluginPurgeCachesSelector)) {
-			error = purge() ? kSPPluginCachesFlushResponse : kSPPluginCouldntFlushResponse;
+			error = purge() ? kSPPluginCachesFlushResponse
+					: kSPPluginCouldntFlushResponse;
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPPropertiesCaller)) {
 		if (sSPBasic->IsEqual(selector, kSPPropertiesAcquireSelector)) {
@@ -878,7 +954,8 @@ void ScriptographerPlugin::log(const char *str, ...) {
 void ScriptographerPlugin::reportError(const char* str, ...) {
 	ASBoolean gotBasic = false;
 	if (sADMBasic == NULL && sSPBasic != NULL) {
-		sSPBasic->AcquireSuite(kADMBasicSuite, kADMBasicSuiteVersion, (const void **) &sADMBasic);
+		sSPBasic->AcquireSuite(kADMBasicSuite, kADMBasicSuiteVersion,
+				(const void **) &sADMBasic);
 #ifdef MACHO_CFM_GLUE
 		createGluedSuite((void **) &sADMBasic, sizeof(ADMBasicSuite));
 #endif
@@ -951,7 +1028,8 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 	int n = 1;
 	while (true) {
 		char code[10];
-		ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, code, sizeof(code));
+		ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, code,
+				sizeof(code));
 		// If we got an error, back off and use the last string, which should be
 		// the default message
 		if (err || code[0] == '\0') {
@@ -1004,7 +1082,8 @@ ASBoolean ScriptographerPlugin::filterError(ASErr error) {
 #ifdef MACHO_CFM_GLUE
 
 void ScriptographerPlugin::createGluedSuite(void **suite, int size) {
-	// Use UInt32 for representation of a pointer, as it has the same size on CFM
+	// Use UInt32 for representation of a pointer, as it has the same size
+	// on CFM
 	UInt32 *origSuite = (UInt32 *) *suite;
 	size /= 4;
 	UInt32 *gluedSuite = new UInt32[size];
@@ -1052,13 +1131,15 @@ ASErr ScriptographerPlugin::acquireSuite(ImportSuite *suite) {
 	char message[256];
 
 	if (suite->suite != NULL) {
-		error = sSPBasic->AcquireSuite(suite->name, suite->version, (const void **) suite->suite);
+		error = sSPBasic->AcquireSuite(suite->name, suite->version,
+				(const void **) suite->suite);
 #ifdef MACHO_CFM_GLUE
 		if (!error)
 			createGluedSuite((void **) suite->suite, suite->size);
 #endif
 		if (error && sADMBasic != NULL) {
-			sprintf(message, "Error: %d, suite: %s, version: %d!", error, suite->name, suite->version);
+			sprintf(message, "Error: %d, suite: %s, version: %d!", error,
+					suite->name, suite->version);
 			sADMBasic->MessageAlert(message);
 		}
 	}
@@ -1089,7 +1170,8 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message) {
 	SPErr error = kNoErr;
 	
 	SPMessageData *messageData = static_cast<SPMessageData *>(message);
-	ScriptographerPlugin *plugin = static_cast<ScriptographerPlugin *>(messageData->globals);
+	ScriptographerPlugin *plugin =
+			static_cast<ScriptographerPlugin *>(messageData->globals);
 
 	bool remove = false;
 
