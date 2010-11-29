@@ -31,7 +31,6 @@
 #include "AppContext.h"
 #include "resourceIds.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_ui_KeyModifiers.h"
 #include "AIMenuCommandNotifiers.h"
  
 ScriptographerPlugin *gPlugin = NULL;
@@ -171,11 +170,11 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
 	case kEventClassKeyboard: {
 		// Only interfere with key events when we are not in ADM dialogs
 		WindowRef focus = GetUserFocusWindow();
-		UInt32 features;
+		WindowModality modality;
 		// Filter out modal dialogs and floating windows
 		if (focus == NULL || focus == ActiveNonFloatingWindow() 
-				&& GetWindowFeatures(focus, &features) == noErr
-				&& !(features & kWindowIsModal)) {
+				&& !GetWindowModality(focus, &modality, NULL)
+				&& modality == kWindowModalityNone) {
 			switch (kind) {
 			case kEventRawKeyDown:
 			case kEventRawKeyUp:
