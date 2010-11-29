@@ -1485,6 +1485,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\native\plugin\Array.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\native\plugin\exceptions.cpp"
 					>
 					<FileConfiguration
