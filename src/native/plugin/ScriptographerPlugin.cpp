@@ -318,11 +318,19 @@ UINT ScriptographerPlugin::s_lastKeyCode = 0;
 UINT ScriptographerPlugin::s_lastScanCode = 0;
 bool ScriptographerPlugin::s_lastIsDead = false;
 
+bool IsWindowModal(HWND hWnd) {
+	if (::GetWindowLong(hWnd, GWL_STYLE) & WS_POPUP) {
+		HWND hParent = ::GetParent(hWnd);
+		return hParent && !::IsWindowEnabled(hParent);
+	}
+	return false;
+}
 LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam,
 		LPARAM lParam) {
 	PMSG pMsg = (PMSG) lParam;
 	bool handled = false;
-	if (gEngine != NULL && wParam == PM_REMOVE) {
+	if (gEngine != NULL && wParam == PM_REMOVE
+			&& !::IsWindowModal(::GetActiveWindow())) {
 		switch (pMsg->message) {
 			case WM_KEYDOWN:
 			case WM_KEYUP: {
