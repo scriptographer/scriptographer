@@ -721,13 +721,25 @@ var mainDialog = new FloatingDialog(
 						updateItems();
 					}
 					return true;
-				} else if (entry.data.isDirectory
-						&& /left|right/.test(event.keyCode)) {
-					entry.expanded = event.keyCode == 'right';
-					if (entry.expanded)
-						entry.data.populate();
-					entry.list.invalidate();
-					return true;
+				} else if (/left|right/.test(event.keyCode)) {
+					var left = event.keyCode == 'left';
+					// Just like on OSX Finder, if we're stepping left and are
+					// not on an open directory,  step one level up and do not
+					// collapse anything yet.
+					if (left && (!entry.data.isDirectory || !entry.expanded)) {
+						var parent = entry.list.parentEntry;
+						if (parent) {
+							parent.selected = true;
+							entry.selected = false;
+							return true;
+						}
+					} else if (entry.data.isDirectory) {
+						entry.expanded = !left;
+						if (entry.expanded)
+							entry.data.populate();
+						entry.list.invalidate();
+						return true;
+					}
 				} else if (/return|enter/.test(event.keyCode)) {
 					// Choose
 					chooseEntry(entry);
