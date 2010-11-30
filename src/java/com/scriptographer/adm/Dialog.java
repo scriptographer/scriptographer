@@ -798,9 +798,9 @@ public abstract class Dialog extends Component {
 	public boolean isActive() {
 		return active;
 	}
-	
+
 	public native void nativeSetActive(boolean active);
-	
+
 	public void setActive(boolean active) {
 		this.active = active;
 		nativeSetActive(active);

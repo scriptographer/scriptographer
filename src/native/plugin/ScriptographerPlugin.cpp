@@ -300,10 +300,11 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg,
 			if (type != -1)
 				gEngine->callOnHandleEvent(type);
 #ifdef WIN_ENV
-		} else if (uMsg == WM_PARENTNOTIFY) {
+		} else if (uMsg == WM_PARENTNOTIFY && wParam > 0x200) {
 			// Deactivate ADM Dialogs on Windows whenever a click happens
-			// outside the ADM palettes or documents. WM_PARENTNOTIFY appears to
-			// be the message to identify these events.
+			// outside the ADM palettes or documents. In this case 
+			// WM_PARENTNOTIFY is sent with wParam set to one of the mouse
+			// button events (> 0x200).
 			gEngine->deactivateActiveDialog();
 #endif // WIN_ENV
 		}

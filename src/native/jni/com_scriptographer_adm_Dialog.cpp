@@ -38,6 +38,46 @@
  * com.scriptographer.ai.Dialog
  */
 
+#if defined(WIN_ENV) && kPluginInterfaceVersion < kAI13
+#define WIN_ENV_INSTALL_WNDPROC
+#endif // WIN_ENV && kPluginInterfaceVersion < kAI13
+
+#ifdef WIN_ENV_INSTALL_WNDPROC
+
+// Set up a data structure and a hash map that keeps track of dialog references
+// and default window procs per hWnd of native dialog windows.
+// This is needed on Windows < CS3 to capture dialog activation and internally
+// fire the required events again.
+
+#include <hash_map>
+
+using namespace stdext;
+
+typedef struct {
+	ADMDialogRef dialog;
+	WNDPROC defaultProc;
+} DialogData;
+
+typedef hash_map<HWND, DialogData> DialogDataMap;
+
+DialogDataMap dialogDataMap;
+
+LRESULT CALLBACK Dialog_windowProc(HWND hWnd, UINT uMsg,
+		WPARAM wParam, LPARAM lParam) {
+	DialogDataMap::iterator it = dialogDataMap.find(hWnd);
+	if (it != dialogDataMap.end()) {
+		if (uMsg == WM_NCACTIVATE || uMsg == WM_PARENTNOTIFY && wParam > 0x200) {
+			jobject obj = gEngine->getDialogObject(it->second.dialog);
+			gEngine->callOnNotify(obj, kADMWindowActivateNotifier);
+		}
+		return ::CallWindowProc(it->second.defaultProc, hWnd, uMsg, wParam,
+				lParam);
+	}
+	return 0;
+}
+
+#endif // WIN_ENV_INSTALL_WNDPROC
+
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 
 	// Hide the dialog by default:
@@ -68,6 +108,17 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 		jobject obj = gEngine->getDialogObject(dialog);
 		gEngine->callOnNotify(obj, kADMInitializeNotifier);
 	} EXCEPTION_CATCH_REPORT(env);
+
+#ifdef WIN_ENV_INSTALL_WNDPROC
+
+	HWND hWnd = (HWND) sADMDialog->GetWindowRef(dialog);
+	WNDPROC defaultProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC,
+			(LONG) Dialog_windowProc);
+	DialogData data = { dialog, defaultProc };
+	dialogDataMap[hWnd] = data;
+
+#endif // WIN_ENV_INSTALL_WNDPROC
+
 	return kNoErr;
 }
 
