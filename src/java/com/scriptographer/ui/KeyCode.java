@@ -47,7 +47,11 @@ public enum KeyCode implements IntegerEnum {
 	CLEAR(12),
 	SHIFT(16),
 	CONTROL(17),
+	/**
+	 * @deprecated in favour of OPTION
+	 */
 	ALT(18),
+	OPTION(18),
 	PAUSE(19),
 	CAPS_LOCK(20),
 	ESCAPE(27),
