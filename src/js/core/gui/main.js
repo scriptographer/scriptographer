@@ -261,6 +261,8 @@ var mainDialog = new FloatingDialog(
 				throw Base.stop;
 			}
 		});
+		// Update buttons and menu entries
+		updateItems();
 	}
 
 	function createScript() {
@@ -980,14 +982,19 @@ var mainDialog = new FloatingDialog(
 	};
 
 	function updateItems() {
+		// Update buttons and menu entries according to selected script or
+		// directory.
 		var entry = getSelectedScriptEntry();
-		var selected = entry ? !entry.data.isDirectory : false;
+		// See if a script is selected
+		var selectedScript = entry ? !entry.data.isDirectory : false;
+		// Do not allow creation of new items inside sealed repositories
 		var canCreate = createScriptButton.enabled = entry
 				? !(entry.data.isDirectory && entry.childList
 						|| entry.list).data.sealed
 				: false;
-		executeEntry.enabled = executeButton.enabled = selected;
-		editScriptEntry.enabled = editScriptButton.enabled = selected;
+		// Now update the actual items
+		executeEntry.enabled = executeButton.enabled = selectedScript;
+		editScriptEntry.enabled = editScriptButton.enabled = selectedScript;
 		createScriptEntry.enabled = createScriptButton.enabled = canCreate;
 		createDirectoryEntry.enabled = createDirectoryButton.enabled = canCreate;
 	}
