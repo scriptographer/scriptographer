@@ -50,7 +50,7 @@ function getImage(filename) {
 }
 
 function getDescription(text, shortcut, modifiers) {
-	if (shortcut) {
+	if (shortcut || modifiers) {
 		var parts = [];
 		var isMac = illustrator.isMacintosh();
 		if (modifiers) {
@@ -60,8 +60,11 @@ function getDescription(text, shortcut, modifiers) {
 				parts.push(isMac ? '\u2325' : 'Alt');
 			if (modifiers.command)
 				parts.push(isMac ? '\u2318' : 'Ctrl');
+			if (modifiers.enter)
+				parts.push(isMac ? '\u21a9' : 'Enter');
 		}
-		parts.push(shortcut.toUpperCase());
+		if (shortcut)
+			parts.push(shortcut.toUpperCase());
 		text += ' (' + parts.join(isMac ? '' : '+') + ')';
 	}
 	return text;

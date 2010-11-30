@@ -65,7 +65,7 @@ var mainDialog = new FloatingDialog(
 						chooseEntry(entry);
 					}
 				}
-				updateButtons();
+				updateItems();
 			}
 			// Return false to prevent calling of defaultTrack as we called
 			// it already.
@@ -75,7 +75,7 @@ var mainDialog = new FloatingDialog(
 
 	this.onTrack = function(tracker) {
 		if (tracker.action == Tracker.ACTION_BUTTON_UP)
-			updateButtons();
+			updateItems();
 	}
 
 	var scriptImage = getImage('script.png');
@@ -227,22 +227,50 @@ var mainDialog = new FloatingDialog(
 		});
 	}
 
+	function editScript() {
+		chooseEntry(getSelectedScriptEntry());
+	}
+
+	function pickNonExistingFile(dir, extension) {
+		// Find a non existing filename:
+		for (var i = 1; ; i++) {
+			var file = new File(dir, 'Untitled ' + i + (extension || ''));
+			if (!file.exists())
+				return file;
+		}
+	}
+
+	function updateCreatedFile(list, file) {
+		// Use refreshList to make sure the new item appears in the
+		// right place, and mark the newly added file as selected.
+		// Make sure the list is populated first, so refreshList
+		// actually processes it.
+		list.parentEntry.data.populate();
+		refreshList(list, false);
+		var current = scriptList.selectedLeafEntry;
+		list.each(function(other) {
+			if (other.data.file == file) {
+				if (current && current.isValid()) {
+					current.selected = false;
+					current = null;
+				}
+				other.selected = true;
+				// The list was already populated and refreshed, just
+				// expand it now to show the new entry
+				list.parentEntry.expanded = true;
+				throw Base.stop;
+			}
+		});
+	}
+
 	function createScript() {
-		var entry = scriptList.selectedLeafEntry;
-		var list = entry && (entry.data.isDirectory
-				? entry.childList : entry.list);
-		if (!list || list.data.sealed)
-			list = myScriptsEntry ? myScriptsEntry.childList : scriptList;
+		var list = getSelectedDirectoryList();
+		if (!list)
+			list = myScriptsEntry.childList;
 		var dir = list.data.directory;
 		if (dir) {
-			// Find a non existing filename:
-			var file;
-			for (var i = 1; ; i++) {
-				file = new File(dir, 'Untitled ' + i + '.js');
-				if (!file.exists())
-					break;
-			}
-			file = Dialog.fileSave('Create a New Script:', [
+			var file = pickNonExistingFile(dir, '.js');
+			file = Dialog.fileSave('Create a New Script', [
 				'JavaScript Files (*.js)', '*.js',
 				'All Files', '*.*'
 			], file);
@@ -251,23 +279,29 @@ var mainDialog = new FloatingDialog(
 				if (file.exists())
 					file.remove();
 				file.createNewFile();
-				// Use refreshList to make sure the new item appears in the
-				// right place, and mark the newly added file as selected.
-				// Make sure the list is populated first, so refreshList
-				// actually processes it.
-				list.parentEntry.data.populate();
-				refreshList(list, false);
-				list.each(function(other) {
-					if (other.data.file == file) {
-						if (entry && entry.isValid())
-							entry.selected = false;
-						other.selected = true;
-						// The list was already populated and refreshed, just
-						// expand it now to show the new entry
-						list.parentEntry.expanded = true;
-						throw Base.stop;
-					}
-				});
+				updateCreatedFile(list, file);
+			}
+		}
+	}
+
+	function createDirectory() {
+		var list = getSelectedDirectoryList();
+		var dir = list && list.data.directory;
+		if (dir) {
+			var file = pickNonExistingFile(dir);
+			var values = Dialog.prompt('Create New Folder', {
+				text: { type: 'text', value: 'Enter a new folder name:' },
+				name: { type: 'string', value: file.name, width: 300 }
+			});
+			if (values) {
+				file = new File(dir, values.name);
+				if (file.exists()) {
+					Dialog.alert("A folder named '" + values.name
+							+ "' already exists!");
+				} else {
+					file.makeDirectory();
+					updateCreatedFile(list, file);
+				}
 			}
 		}
 	}
@@ -275,6 +309,14 @@ var mainDialog = new FloatingDialog(
 	function getSelectedScriptEntry() {
 		var entry = scriptList.selectedLeafEntry;
 		return entry && entry.data.file ? entry : null;
+	}
+
+	function getSelectedDirectoryList() {
+		var entry = scriptList.selectedLeafEntry;
+		var list = entry && (entry.data.isDirectory
+				? entry.childList : entry.list);
+		if (list && !list.data.sealed)
+			return list;
 	}
 
 	function getEntryPath(entry) {
@@ -636,6 +678,9 @@ var mainDialog = new FloatingDialog(
 			case 'n':
 				if (event.modifiers.option && event.modifiers.shift) {
 					// New Script
+					// Make sure the dialog is up for keyboard navigation after
+					// bringing up the dialog.
+					mainDialog.active = true;
 					createScript();
 					return true;
 				}
@@ -671,7 +716,7 @@ var mainDialog = new FloatingDialog(
 					if (next) {
 						entry.selected = false;
 						next.selected = true;
-						updateButtons();
+						updateItems();
 					}
 					return true;
 				} else if (entry.data.isDirectory
@@ -743,8 +788,10 @@ var mainDialog = new FloatingDialog(
 	var texts = {
 		execute: getDescription('Execute Script', 'e', { command: true }),
 		stopAll: getDescription('Stop Running Scripts', '.', { command: true }),
+		editScript: getDescription('Edit Script...', null, { enter: true }),
 		createScript: getDescription('Create a New Script...', 'n',
 				{ shift: true, option: true, command: true }),
+		createDirectory: 'Create New Folder...',
 		console: 'Show / Hide Console',
 		repositories: 'Manage Repositories...',
 		adjustOrigin: 'Automatically Adjust Ruler Origin',
@@ -767,9 +814,31 @@ var mainDialog = new FloatingDialog(
 		onSelect: stopAll
 	};
 
+	var separator0Entry = new ListEntry(menu) {
+		separator: true
+	};
+
+	var editScriptEntry = new ListEntry(menu) {
+		text: texts.editScript,
+		onSelect: editScript
+	};
+
+	var separator1Entry = new ListEntry(menu) {
+		separator: true
+	};
+
 	var createScriptEntry = new ListEntry(menu) {
 		text: texts.createScript,
 		onSelect: createScript
+	};
+
+	var createDirectoryEntry = new ListEntry(menu) {
+		text: texts.createDirectory,
+		onSelect: createDirectory
+	};
+
+	var separator2Entry = new ListEntry(menu) {
+		separator: true
 	};
 
 	var consoleEntry = new ListEntry(menu) {
@@ -784,7 +853,7 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	var separator1Entry = new ListEntry(menu) {
+	var separator3Entry = new ListEntry(menu) {
 		separator: true
 	};
 
@@ -817,7 +886,7 @@ var mainDialog = new FloatingDialog(
 		};
 	}
 
-	var separator2Entry = new ListEntry(menu) {
+	var separator4Entry = new ListEntry(menu) {
 		separator: true
 	};
 
@@ -850,8 +919,9 @@ var mainDialog = new FloatingDialog(
 
 	// Buttons
 
-	var playButton = new ImageButton(this) {
+	var executeButton = new ImageButton(this) {
 		image: getImage('play.png'),
+		disabledImage: getImage('play-disabled.png'),
 		size: buttonSize,
 		toolTip: texts.execute,
 		onClick: function() {
@@ -861,6 +931,7 @@ var mainDialog = new FloatingDialog(
 
 	var stopButton = new ImageButton(this) {
 		image: getImage('stop.png'),
+		disabledImage: getImage('stop-disabled.png'),
 		size: buttonSize,
 		toolTip: texts.stopAll,
 		onClick: stopAll
@@ -868,17 +939,35 @@ var mainDialog = new FloatingDialog(
 
 	var effectButton = hasEffects && new ImageButton(this) {
 		image: getImage('effect.png'),
+		disabledImage: getImage('effect-disabled.png'),
 		size: buttonSize,
 		onClick: function() {
 			executeEffect(getSelectedScriptEntry());
 		}
 	};
 
-	var newScriptButton = new ImageButton(this) {
-		image: getImage('script.png'),
+	var editScriptButton = new ImageButton(this) {
+		image: getImage('edit-script.png'),
+		disabledImage: getImage('edit-script-disabled.png'),
+		size: buttonSize,
+		toolTip: texts.editScript,
+		onClick: editScript
+	};
+
+	var createScriptButton = new ImageButton(this) {
+		image: getImage('new-script.png'),
+		disabledImage: getImage('new-script-disabled.png'),
 		size: buttonSize,
 		toolTip: texts.createScript,
 		onClick: createScript
+	};
+
+	var createDirectoryButton = new ImageButton(this) {
+		image: getImage('folder.png'),
+		disabledImage: getImage('folder-disabled.png'),
+		size: buttonSize,
+		toolTip: texts.createDirectory,
+		onClick: createDirectory
 	};
 
 	var consoleButton = new ImageButton(this) {
@@ -890,14 +979,21 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	function updateButtons() {
+	function updateItems() {
 		var entry = getSelectedScriptEntry();
-		playButton.enabled = entry ? !entry.data.isDirectory : false;
-		newScriptButton.enabled = entry ? !(entry.data.isDirectory
-				&& entry.childList || entry.list).data.sealed : false;
+		var selected = entry ? !entry.data.isDirectory : false;
+		var canCreate = createScriptButton.enabled = entry
+				? !(entry.data.isDirectory && entry.childList
+						|| entry.list).data.sealed
+				: false;
+		executeEntry.enabled = executeButton.enabled = selected;
+		editScriptEntry.enabled = editScriptButton.enabled = selected;
+		createScriptEntry.enabled = createScriptButton.enabled = canCreate;
+		createDirectoryEntry.enabled = createDirectoryButton.enabled = canCreate;
 	}
 
 	initAll();
+	updateItems();
 
 	return {
 		title: 'Scriptographer',
@@ -907,11 +1003,15 @@ var mainDialog = new FloatingDialog(
 			south: new ItemGroup(this) {
 				layout: [ 'left', -1, -1 ],
 				content: [
-					playButton,
+					executeButton,
 					stopButton,
 					effectButton,
 					new Spacer(4, 0),
-					newScriptButton,
+					editScriptButton,
+					new Spacer(4, 0),
+					createScriptButton,
+					createDirectoryButton,
+					new Spacer(4, 0),
 					consoleButton,
 				]
 			}
