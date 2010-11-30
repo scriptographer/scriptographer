@@ -237,9 +237,16 @@ public class Component implements ChangeReceiver {
 		if (proxy != null)
 			throw new UnsupportedOperationException(
 					"The component type cannot be changed once it is created");
-		// Convert legacy type RANGE to SLIDER:
-		if (type == ComponentType.RANGE)
+		switch (type) {
+		case CHECKBOX:
+			// Convert deprecated type CHECKBOX to BOOLEAN:
+			type = ComponentType.BOOLEAN;
+			break;
+		case RANGE:
+			// Convert deprecated type RANGE to SLIDER:
 			type = ComponentType.SLIDER;
+			break;
+		}
 		this.type = type;
 	}
 
