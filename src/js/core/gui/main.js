@@ -258,7 +258,7 @@ var mainDialog = new FloatingDialog(
 				list.parentEntry.data.populate();
 				refreshList(list, false);
 				list.each(function(other) {
-					if (other.file == file) {
+					if (other.data.file == file) {
 						if (entry && entry.isValid())
 							entry.selected = false;
 						other.selected = true;
@@ -361,6 +361,18 @@ var mainDialog = new FloatingDialog(
 		// execute();
 	}
 
+	function setToolEntry(entry) {
+		var curEntry = fileEntries[currentToolFile];
+		if (curEntry && curEntry.isValid())
+			curEntry.image = toolScriptImage;
+		if (entry) {
+			entry.image = activeToolScriptImage;
+			currentToolFile = entry.data.file;
+		} else {
+			currentToolFile = null;
+		}
+	}
+
 	function execute() {
 		var entry = getSelectedScriptEntry();
 		if (entry) {
@@ -383,13 +395,8 @@ var mainDialog = new FloatingDialog(
 					if (onInit)
 						onInit.call(tool);
 				}
-				if (entry.data.file != currentToolFile) {
-					var curEntry = fileEntries[currentToolFile];
-					if (curEntry && curEntry.isValid())
-						curEntry.image = toolScriptImage;
-					entry.image = activeToolScriptImage;
-					currentToolFile = entry.data.file;
-				}
+				if (entry.data.file != currentToolFile)
+					setToolEntry(entry);
 				break;
 			case 'effect':
 			    if (hasEffects) {
@@ -406,6 +413,13 @@ var mainDialog = new FloatingDialog(
 					adjustOrigin(scope);
 				}
 			}
+			/*
+			// We want to keep keyboard focus on the main dialog even if the
+			// script opens palettes.
+			(function() {
+				mainDialog.active = true;
+			}).delay(1);
+			*/
 		}
 	}
 
@@ -427,6 +441,7 @@ var mainDialog = new FloatingDialog(
 	function stopAll() {
 		ScriptographerEngine.stopAll(true, false);
 		tool.reset();
+		setToolEntry(null);
 	}
 
 	function initAll() {
@@ -751,6 +766,23 @@ var mainDialog = new FloatingDialog(
 				tool.selected = true;
 				return true;
 			}
+		} else if (event.modifiers.command) {
+			switch (event.keyCode) {
+			case 'period':
+				// Stop
+				stopAll();
+				return true;
+			case 'e':
+				// Execute
+				execute();
+				return true;
+			case 'n':
+				if (event.modifiers.option && event.modifiers.shift) {
+					// New Script
+					createScript();
+					return true;
+				}
+			}
 		} else if (mainDialog.active) {
 			// Handle keyboard navigation in scriptList
 			var entry = getSelectedScriptEntry();
@@ -796,30 +828,6 @@ var mainDialog = new FloatingDialog(
 					// Choose
 					chooseEntry(entry);
 					return true;
-				} else if (event.modifiers.command) {
-					switch (event.keyCode) {
-					case 'r':
-						// Run
-						execute();
-						break;
-					case 'e':
-						// Edit
-						if (!entry.data.isDirectory)
-							chooseEntry(entry);
-						break;
-					case 'n':
-						// New Script
-						createScript();
-						break;
-					case 's':
-						// Stop
-						stopAll();
-						break;
-					default:
-						// Make sure system short-cuts still work too.
-						return false;
-					}
-					return true;
 				}
 			}
 		}
@@ -829,7 +837,7 @@ var mainDialog = new FloatingDialog(
 	var playButton = new ImageButton(this) {
 		image: getImage('play.png'),
 		size: buttonSize,
-		toolTip: 'Execute Script',
+		toolTip: 'Execute Script ',
 		onClick: function() {
 			execute();
 		}
