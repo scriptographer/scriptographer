@@ -66,6 +66,9 @@ LRESULT CALLBACK Dialog_windowProc(HWND hWnd, UINT uMsg,
 		WPARAM wParam, LPARAM lParam) {
 	DialogDataMap::iterator it = dialogDataMap.find(hWnd);
 	if (it != dialogDataMap.end()) {
+		// Consider this window activated if we either receive a WM_NCACTIVATE
+		// message or if a WM_PARENTNOTIFY with a mouse message is received
+		// (see ScriptographerPlugin::appWindowProc for more information).
 		if (uMsg == WM_NCACTIVATE || uMsg == WM_PARENTNOTIFY && wParam > 0x200) {
 			jobject obj = gEngine->getDialogObject(it->second.dialog);
 			gEngine->callOnNotify(obj, kADMWindowActivateNotifier);
