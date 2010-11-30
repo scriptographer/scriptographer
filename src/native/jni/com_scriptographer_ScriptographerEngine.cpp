@@ -144,9 +144,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
-		// Is the escape key pressed? 
-		// Unfortunately Visual C++ does not recognize '/e'
-		if (gPlugin != NULL && gPlugin->isKeyDown('\x1b'))
+		// Check if CMD-. is pressed. That's  META-. on Mac and CONTROL-. on Win
+		if (gPlugin != NULL && gPlugin->isKeyDown('.')
+#ifdef MAC_ENV
+				 && gPlugin->isKeyDown(157))
+#endif // MAC_ENV
+#ifdef WIN_ENV
+				 && gPlugin->isKeyDown(17))
+#endif // WIN_ENV
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);
