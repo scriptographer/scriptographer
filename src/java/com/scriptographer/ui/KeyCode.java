@@ -30,6 +30,7 @@
 package com.scriptographer.ui;
 
 import com.scratchdisk.util.IntegerEnum;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -39,6 +40,10 @@ import com.scratchdisk.util.IntegerEnum;
  * TODO Merge with Tracker constants and onKeyDown handling?
  */
 public enum KeyCode implements IntegerEnum {
+	/**
+	 * Same as META on Mac and CONTROL on Windows
+	 */
+	COMMAND(ScriptographerEngine.isMacintosh() ? 157 : 17),
 	ENTER('\n'),
 	RETURN('\r'),
 	BACKSPACE('\b'),
