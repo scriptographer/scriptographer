@@ -49,6 +49,24 @@ function getImage(filename) {
 	return image;
 }
 
+function getDescription(text, shortcut, modifiers) {
+	if (shortcut) {
+		var parts = [];
+		var isMac = illustrator.isMacintosh();
+		if (modifiers) {
+			if (modifiers.shift)
+				parts.push(isMac ? '\u21e7' : 'Shift');
+			if (modifiers.option)
+				parts.push(isMac ? '\u2325' : 'Alt');
+			if (modifiers.command)
+				parts.push(isMac ? '\u2318' : 'Ctrl');
+		}
+		parts.push(shortcut.toUpperCase());
+		text += ' (' + parts.join(isMac ? '' : '+') + ')';
+	}
+	return text;
+}
+
 var firstRun = !script.preferences.accepted;
 
 if (firstRun) {

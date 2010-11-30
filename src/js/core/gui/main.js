@@ -603,149 +603,6 @@ var mainDialog = new FloatingDialog(
 		}
 	});
 
-	// Menus
-
-	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES,
-			MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
-
-	var scriptographerItem = new MenuItem(scriptographerGroup) {
-		text: 'Scriptographer'
-	};
-
-	new MenuItem(scriptographerItem) {
-		onSelect: function() {
-			mainDialog.visible = !mainDialog.visible;
-		},
-		onUpdate: function() {
-			this.text = (mainDialog.visible ? 'Hide' : 'Show')
-					+ ' Main Palette';
-		}
-	}.setCommand('`', MenuItem.MODIFIER_OPTION | MenuItem.MODIFIER_COMMAND);
-
-	new MenuItem(scriptographerItem) {
-		onSelect: function() {
-			consoleDialog.visible = !consoleDialog.visible;
-		},
-		onUpdate: function() {
-			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
-					+ ' Console Palette';
-		}
-	}.setCommand('`', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_OPTION
-			| MenuItem.MODIFIER_COMMAND);
-
-	new MenuItem(scriptographerItem) {
-		text: 'About...',
-		onSelect: function() {
-			aboutDialog.doModal();
-		}
-	};
-
-	new MenuItem(scriptographerItem) {
-		separator: true
-	};
-
-	new MenuItem(scriptographerItem) {
-		text: 'Reload',
-		onSelect: function() {
-			ScriptographerEngine.reload.delay(0);
-		}
-	};
-
-	// Popup Menu
-
-	var menu = this.popupMenu;
-
-	var executeEntry = new ListEntry(menu) {
-		text: 'Execute Script',
-		onSelect: execute
-	};
-
-	var stopAllEntry = new ListEntry(menu) {
-		text: 'Stop Running Scripts',
-		onSelect: stopAll
-	};
-
-	var createScriptEntry = new ListEntry(menu) {
-		text: 'Create a New Script...',
-		onSelect: createScript
-	};
-
-	var consoleEntry = new ListEntry(menu) {
-		text: 'Show / Hide Console',
-		onSelect: function() {
-			consoleDialog.visible = !consoleDialog.visible;
-		},
-		onUpdate: function() {
-			// TODO: Make onUpdate work in ListEntry
-			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
-					+ ' Console Palette';
-		}
-	};
-
-	var separator1Entry = new ListEntry(menu) {
-		separator: true
-	};
-
-	var repositoriesEntry = new ListEntry(menu) {
-		text: 'Manage Repositories...',
-		onSelect: function() {
-			var repositories = repositoriesDialog.choose(scriptRepositories);
-			if (repositories) {
-				scriptRepositories = repositories;
-				script.preferences.repositories = repositories;
-				stopAll();
-				initAll();
-			}
-		}
-	};
-
-	if (illustrator.version < 15) {
-		// Add a menu item that controls whether origins are automatically 
-		// adjusted. Default is true:
-		if (script.preferences.adjustOrigin === undefined)
-			script.preferences.adjustOrigin = true;
-
-		var adjustOriginEntry = new ListEntry(menu) {
-			text: 'Automatically Adjust Ruler Origin',
-			checked: script.preferences.adjustOrigin,
-			onSelect: function() {
-				this.checked = !this.checked;
-				script.preferences.adjustOrigin = this.checked;
-			}
-		};
-	}
-
-	var separator2Entry = new ListEntry(menu) {
-		separator: true
-	};
-
-	var aboutEntry = new ListEntry(menu) {
-		text: 'About Scriptographer...',
-		onSelect: function() {
-			aboutDialog.doModal();
-		}
-	};
-
-	var referenceEntry = new ListEntry(menu) {
-		text: 'Reference...',
-		onSelect: function() {
-			illustrator.launch('file://' + new File(
-					scriptographer.pluginDirectory,
-					'Reference/index.html'));
-		}
-	};
-
-	var separator2Entry = new ListEntry(menu) {
-		separator: true
-	};
-
-	var reloadEntry = new ListEntry(menu) {
-		text: 'Reload',
-		onSelect: function() {
-			ScriptographerEngine.reload();
-		}
-	};
-
 	// Event Handlers
 
 	global.onActivate = function() {
@@ -833,11 +690,170 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
-	// Buttons:
+	// Menus
+
+	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES,
+			MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
+
+	var scriptographerItem = new MenuItem(scriptographerGroup) {
+		text: 'Scriptographer'
+	};
+
+	new MenuItem(scriptographerItem) {
+		onSelect: function() {
+			mainDialog.visible = !mainDialog.visible;
+		},
+		onUpdate: function() {
+			this.text = (mainDialog.visible ? 'Hide' : 'Show')
+					+ ' Main Palette';
+		}
+	}.setCommand('`', MenuItem.MODIFIER_OPTION | MenuItem.MODIFIER_COMMAND);
+
+	new MenuItem(scriptographerItem) {
+		onSelect: function() {
+			consoleDialog.visible = !consoleDialog.visible;
+		},
+		onUpdate: function() {
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
+					+ ' Console Palette';
+		}
+	}.setCommand('`', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_OPTION
+			| MenuItem.MODIFIER_COMMAND);
+
+	new MenuItem(scriptographerItem) {
+		text: 'About...',
+		onSelect: function() {
+			aboutDialog.doModal();
+		}
+	};
+
+	new MenuItem(scriptographerItem) {
+		separator: true
+	};
+
+	new MenuItem(scriptographerItem) {
+		text: 'Reload',
+		onSelect: function() {
+			ScriptographerEngine.reload.delay(0);
+		}
+	};
+
+	// UI Descriptions
+
+	var texts = {
+		execute: getDescription('Execute Script', 'e', { command: true }),
+		stopAll: getDescription('Stop Running Scripts', '.', { command: true }),
+		createScript: getDescription('Create a New Script...', 'n',
+				{ shift: true, option: true, command: true }),
+		console: 'Show / Hide Console',
+		repositories: 'Manage Repositories...',
+		adjustOrigin: 'Automatically Adjust Ruler Origin',
+		about: 'About Scriptographer...',
+		reference: 'Reference...',
+		reload: 'Reload'
+	};
+
+	// Popup Menu
+
+	var menu = this.popupMenu;
+
+	var executeEntry = new ListEntry(menu) {
+		text: texts.execute,
+		onSelect: execute
+	};
+
+	var stopAllEntry = new ListEntry(menu) {
+		text: texts.stopAll,
+		onSelect: stopAll
+	};
+
+	var createScriptEntry = new ListEntry(menu) {
+		text: texts.createScript,
+		onSelect: createScript
+	};
+
+	var consoleEntry = new ListEntry(menu) {
+		text: texts.console,
+		onSelect: function() {
+			consoleDialog.visible = !consoleDialog.visible;
+		},
+		onUpdate: function() {
+			// TODO: Make onUpdate work in ListEntry
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show')
+					+ ' Console Palette';
+		}
+	};
+
+	var separator1Entry = new ListEntry(menu) {
+		separator: true
+	};
+
+	var repositoriesEntry = new ListEntry(menu) {
+		text: texts.repositories,
+		onSelect: function() {
+			var repositories = repositoriesDialog.choose(scriptRepositories);
+			if (repositories) {
+				scriptRepositories = repositories;
+				script.preferences.repositories = repositories;
+				stopAll();
+				initAll();
+			}
+		}
+	};
+
+	if (illustrator.version < 15) {
+		// Add a menu item that controls whether origins are automatically 
+		// adjusted. Default is true:
+		if (script.preferences.adjustOrigin === undefined)
+			script.preferences.adjustOrigin = true;
+
+		var adjustOriginEntry = new ListEntry(menu) {
+			text: texts.adjustOrigin,
+			checked: script.preferences.adjustOrigin,
+			onSelect: function() {
+				this.checked = !this.checked;
+				script.preferences.adjustOrigin = this.checked;
+			}
+		};
+	}
+
+	var separator2Entry = new ListEntry(menu) {
+		separator: true
+	};
+
+	var aboutEntry = new ListEntry(menu) {
+		text: texts.about,
+		onSelect: function() {
+			aboutDialog.doModal();
+		}
+	};
+
+	var referenceEntry = new ListEntry(menu) {
+		text: texts.reference,
+		onSelect: function() {
+			illustrator.launch('file://' + new File(
+					scriptographer.pluginDirectory,
+					'Reference/index.html'));
+		}
+	};
+
+	var separator2Entry = new ListEntry(menu) {
+		separator: true
+	};
+
+	var reloadEntry = new ListEntry(menu) {
+		text: texts.reload,
+		onSelect: function() {
+			ScriptographerEngine.reload();
+		}
+	};
+
+	// Buttons
+
 	var playButton = new ImageButton(this) {
 		image: getImage('play.png'),
 		size: buttonSize,
-		toolTip: 'Execute Script ',
+		toolTip: texts.execute,
 		onClick: function() {
 			execute();
 		}
@@ -846,7 +862,7 @@ var mainDialog = new FloatingDialog(
 	var stopButton = new ImageButton(this) {
 		image: getImage('stop.png'),
 		size: buttonSize,
-		toolTip: 'Stop Running Scripts',
+		toolTip: texts.stopAll,
 		onClick: stopAll
 	};
 
@@ -861,14 +877,14 @@ var mainDialog = new FloatingDialog(
 	var newScriptButton = new ImageButton(this) {
 		image: getImage('script.png'),
 		size: buttonSize,
-		toolTip: 'Create a New Script...',
+		toolTip: texts.createScript,
 		onClick: createScript
 	};
 
 	var consoleButton = new ImageButton(this) {
 		image: getImage('console.png'),
 		size: buttonSize,
-		toolTip: 'Show / Hide Console',
+		toolTip: texts.console,
 		onClick: function() {
 			consoleDialog.visible = !consoleDialog.visible;
 		}
