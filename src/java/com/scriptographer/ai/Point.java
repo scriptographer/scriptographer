@@ -482,10 +482,9 @@ public class Point implements ChangeEmitter {
 		if (object instanceof Point) {
 			Point pt = (Point) object;
 			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
 		}
+		// TODO: support other point types?
+		return false;
 	}
 
 	public Point transform(Matrix matrix) {

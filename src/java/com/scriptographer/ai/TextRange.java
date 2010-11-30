@@ -689,7 +689,7 @@ public class TextRange extends DocumentObject implements Committable,
 			// get text of first token that has changed. split it again and
 			// adjust list accordingly
 			if (list.size() > 0) {
-				TextRange range = (TextRange) get(0);
+				TextRange range = get(0);
 				String content = range.getContent();
 				StringTokenizer st = new StringTokenizer(content, delimiter, false);
 				int count = 0;
@@ -716,7 +716,7 @@ public class TextRange extends DocumentObject implements Committable,
 			// adjust list accordingly
 			int size = list.size();
 			if (size > 0) {
-				TextRange range = (TextRange) get(size - 1);
+				TextRange range = get(size - 1);
 				String content = range.getContent();
 				StringTokenizer st = new StringTokenizer(content, delimiter,
 						false);
@@ -743,7 +743,7 @@ public class TextRange extends DocumentObject implements Committable,
 			int end = position + len;
 			Token token;
 			if (index < list.size()) {
-				token = (Token) list.get(index);
+				token = list.get(index);
 				if (token == null) {
 					token = new Token();
 					list.set(index, token);
@@ -757,7 +757,7 @@ public class TextRange extends DocumentObject implements Committable,
 		}
 
 		public TextRange get(int index) {
-			Token token = (Token) list.get(index);
+			Token token = list.get(index);
 			return token.getRange();
 		}
 	}
@@ -775,7 +775,7 @@ public class TextRange extends DocumentObject implements Committable,
 		 * of the ranges update here accordingly
 		 */
 		void adjustStart(int oldLength) {
-			TextRange range = (TextRange) list.get(0);
+			TextRange range = list.get(0);
 			// the starting point of the range needs to be moved and then removed from the
 			// list so a new one is return for this index
 			if (range != null) {
@@ -795,7 +795,7 @@ public class TextRange extends DocumentObject implements Committable,
 		void adjustEnd(int oldLength) {
 			int index = oldLength - 1;
 			if (index >= 0 && index < list.size()) {
-				TextRange range = (TextRange) list.get(index);
+				TextRange range = list.get(index);
 				// the end point of the range needs to be moved so it
 				// has length 1 again. it can stay in the list
 				if (range != null) {
@@ -806,7 +806,7 @@ public class TextRange extends DocumentObject implements Committable,
 		}
 
 		public TextRange get(int index) {
-			TextRange range = (TextRange) list.get(index);
+			TextRange range = list.get(index);
 			if (range == null) {
 				range = getSubRange(index, index + 1);
 				list.set(index, range);

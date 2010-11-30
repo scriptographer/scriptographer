@@ -138,8 +138,8 @@ public class Preferences extends AbstractMap {
 			ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 			Context cx = Context.getCurrentContext();
 			Object json = NativeJSON.stringify(cx,
-					((RhinoScope) engine.getGlobalScope()).getScope(),
-					(Scriptable) value, null, null);
+					((RhinoScope) engine.getGlobalScope()).getScope(), value,
+					null, null);
 			prefs.put(keyStr, json  != null ? json.toString() : "null");
 		} else if (value instanceof String) {
 			prefs.put(keyStr, value.toString());

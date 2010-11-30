@@ -200,7 +200,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	protected static Document wrapHandle(int handle) {
 		if (handle == 0)
 			return null;
-		Document doc = (Document) documents.get(handle);
+		Document doc = documents.get(handle);
 		if (doc == null) {
 			doc = new Document(handle);
 			documents.put(handle, doc);
@@ -298,7 +298,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 			return "{ branch: " + branch + ", level: " + level
 					+ ", start: " + start + ", end: " + end + " }";
 		}
-	};
+	}
 
 	private void resetHistory() {
 		undoLevel = -1;
@@ -962,7 +962,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * The symbol which is selected in the Symbols menu.
 	 */
 	public Symbol getActiveSymbol() {
-		return (Symbol) Symbol.wrapHandle(getActiveSymbolHandle(), this);
+		return Symbol.wrapHandle(getActiveSymbolHandle(), this);
 	}
 
 	/**

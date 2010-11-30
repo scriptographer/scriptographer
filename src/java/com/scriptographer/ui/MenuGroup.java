@@ -293,7 +293,7 @@ public class MenuGroup extends NativeObject {
 	}
 
 	private static MenuGroup getGroup(int handle) {
-		return (MenuGroup) getGroups().get(handle);
+		return getGroups().get(handle);
 	}
 
 	private static IntMap<MenuGroup> getGroups() {

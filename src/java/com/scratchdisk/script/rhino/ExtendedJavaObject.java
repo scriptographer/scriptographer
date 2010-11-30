@@ -106,28 +106,26 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	}
 
 	public Object get(String name, Scriptable start) {
+		// See whether this object defines the property.
 		// Properties need to come first, as they might override something
 		// defined in the underlying Java object
-		if (properties != null && properties.containsKey(name)) {
-			// See whether this object defines the property.
+		if (properties != null && properties.containsKey(name))
 			return properties.get(name);
-		} else {
-			if (changeReceiver != null)
-				fetchChangeReceiver();
-			Scriptable prototype = getPrototype();
-			Object result = prototype.get(name, this);
-			if (result != Scriptable.NOT_FOUND)
-				return result;
-			result = members.get(this, name, javaObject, false);
-			if (result != Scriptable.NOT_FOUND) {
-				if (javaObject instanceof ChangeReceiver)
-					handleChangeEmitter(result, name);
-				return result;
-			}
-			if (name.equals("prototype"))
-				return prototype;
-			return Scriptable.NOT_FOUND;
+		if (changeReceiver != null)
+			fetchChangeReceiver();
+		Scriptable prototype = getPrototype();
+		Object result = prototype.get(name, this);
+		if (result != Scriptable.NOT_FOUND)
+			return result;
+		result = members.get(this, name, javaObject, false);
+		if (result != Scriptable.NOT_FOUND) {
+			if (javaObject instanceof ChangeReceiver)
+				handleChangeEmitter(result, name);
+			return result;
 		}
+		if (name.equals("prototype"))
+			return prototype;
+		return Scriptable.NOT_FOUND;
 	}
 
 	public void put(String name, Scriptable start, Object value) {
@@ -186,9 +184,8 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			properties.keySet().toArray(ids);
 			System.arraycopy(javaIds, 0, ids, numProps, javaIds.length);
 			return ids;
-		} else {
-			return javaIds;
 		}
+		return javaIds;
 	}
 
 	public Object getDefaultValue(Class<?> hint) {

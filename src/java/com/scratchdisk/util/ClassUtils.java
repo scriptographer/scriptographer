@@ -60,7 +60,7 @@ public class ClassUtils {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			return (String[]) lines.toArray(new String[lines.size()]);
+			return lines.toArray(new String[lines.size()]);
 		}
 		return null;
 	}

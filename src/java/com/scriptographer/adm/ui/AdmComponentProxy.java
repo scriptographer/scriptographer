@@ -182,7 +182,7 @@ public class AdmComponentProxy extends ComponentProxy {
 			};
 		}
 		break;
-		case CHECKBOX: {
+		case BOOLEAN: {
 			item = new CheckBox(dialog) {
 				protected void onClick() {
 					AdmComponentProxy.this.onChange(true);
@@ -326,41 +326,39 @@ public class AdmComponentProxy extends ComponentProxy {
 	}
 
 	public Object getValue() {
-		if (item == null) {
+		if (item == null)
 			return component.getDefaultValue();
-		} else {
-			switch (component.getType()) {
-			case STRING:
-			case TEXT:
-				return ((TextValueItem) item).getText();
-			case BUTTON:
-				return ((Button) item).getText();
-			case NUMBER:
-				return ((ValueItem) item).getValue();
-			case SLIDER:
-				double value = (double) ((ValueItem) item).getValue() / factor;
-				Double inc = component.getIncrement();
-				if (inc != null) {
-					double pre = value;
-					value = Math.round(value / inc) * inc;
-					if (pre != value)
-						((ValueItem) item).setValue((float) (value * factor));
-				}
-				return value;
-			case CHECKBOX:
-				return ((ToggleItem) item).isChecked();
-			case LIST:
-				ListEntry selected = ((PopupList) item).getSelectedEntry();
-				if (selected != null)
-					return component.getOption(selected.getIndex());
-				break;
-			case COLOR:
-				return ((ColorButton) item).getColor();
-			case FONT:
-				return ((FontPopupList) item).getFontWeight();
+		switch (component.getType()) {
+		case STRING:
+		case TEXT:
+			return ((TextValueItem) item).getText();
+		case BUTTON:
+			return ((Button) item).getText();
+		case NUMBER:
+			return ((ValueItem) item).getValue();
+		case SLIDER:
+			double value = ((ValueItem) item).getValue() / factor;
+			Double inc = component.getIncrement();
+			if (inc != null) {
+				double pre = value;
+				value = Math.round(value / inc) * inc;
+				if (pre != value)
+					((ValueItem) item).setValue((float) (value * factor));
 			}
-			return null;
+			return value;
+		case BOOLEAN:
+			return ((ToggleItem) item).isChecked();
+		case LIST:
+			ListEntry selected = ((PopupList) item).getSelectedEntry();
+			if (selected != null)
+				return component.getOption(selected.getIndex());
+			break;
+		case COLOR:
+			return ((ColorButton) item).getColor();
+		case FONT:
+			return ((FontPopupList) item).getFontWeight();
 		}
+		return null;
 	}
 
 	public boolean setValue(Object value) {
@@ -390,18 +388,19 @@ public class AdmComponentProxy extends ComponentProxy {
 					(float) (ConversionUtils.toDouble(value) * factor));
 		}
 		break;
-		case CHECKBOX: {
+		case BOOLEAN: {
 			((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
 		}
 		break;
 		case LIST: {
 			PopupList list = (PopupList) item;
-			ListEntry selected = null;
 			int index = selectedIndex != null ? selectedIndex : 0;
-			for (int i = 0, l = list.size(); i < l && selected == null; i++) {
+			for (int i = 0, l = list.size(); i < l; i++) {
 				Object option = component.getOption(i);
-				if (ConversionUtils.equals(value, option))
+				if (ConversionUtils.equals(value, option)) {
 					index = i;
+					break;
+				}
 			}
 			setSelectedIndex(index, false);
 			// No need to call onChange, as setSelectionIndex already does:

@@ -187,7 +187,7 @@ public class Segment implements Committable, ChangeReceiver {
 	}
 
 	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
-		Point point = (Point) reader.readObject(name, Point.class);
+		Point point = reader.readObject(name, Point.class);
 		return allowNull || point != null ? point : new Point();
 	}
 
@@ -450,9 +450,8 @@ public class Segment implements Committable, ChangeReceiver {
 			// The curves list handles closing curves, so the curves.size
 			// is adjusted accordingly. just check to be in the boundaries here: 
 			return index < curves.size() ? (Curve) curves.get(index) : null;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/**

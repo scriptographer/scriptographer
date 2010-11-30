@@ -64,11 +64,11 @@ public class LayoutConverter extends ArgumentConverter<LayoutManager> {
 			} else {
 				reader.revert();
 				// Try if there's an array now:
-				Object[] array = (Object[]) reader.readObject(Object[].class);
+				Object[] array = reader.readObject(Object[].class);
 				if (array != null) {
 					// TableLayout
 					return new TableLayout(array,
-							(Object[]) reader.readObject(Object[].class),
+							reader.readObject(Object[].class),
 							reader.readInteger(0),
 							reader.readInteger(0));
 				} else {
@@ -89,14 +89,16 @@ public class LayoutConverter extends ArgumentConverter<LayoutManager> {
 							reader.readInteger("", 0),
 							reader.readInteger(0));
 				} else {
-					Object[] array = (Object[]) reader.readObject("columns", Object[].class);
+					Object[] array = reader.readObject("columns",
+							Object[].class);
 					if (array != null) {
 						return new TableLayout(array,
-								(Object[]) reader.readObject("rows", Object[].class),
+								reader.readObject("rows", Object[].class),
 								reader.readInteger("hgap", 0),
 								reader.readInteger("vgap", 0));
 					} else {
-						throw new RuntimeException("Unsupported format for TableLayout");
+						throw new RuntimeException(
+								"Unsupported format for TableLayout");
 					}
 				}
 			} else if (reader.has("alignment")) {
@@ -108,7 +110,9 @@ public class LayoutConverter extends ArgumentConverter<LayoutManager> {
 							reader.readInteger("hgap", 0),
 							reader.readInteger("vgap", 0));
 				} else {
-					throw new RuntimeException("Unsupported alignment for FlowLayout: " + alignment);
+					throw new RuntimeException(
+							"Unsupported alignment for FlowLayout: "
+							+ alignment);
 				}
 			} else {
 				return new BorderLayout(

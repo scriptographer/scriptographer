@@ -107,8 +107,7 @@ public class CurveLocation {
 	public int getIndex() {
 		if (curve != null)
 			return curve.getIndex();
-		else
-			return -1;
+		return -1;
 	}
 	
 	/**

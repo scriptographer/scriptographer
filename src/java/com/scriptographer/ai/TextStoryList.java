@@ -64,7 +64,7 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 		// native get returns the old cached value in case it's
 		// referencing the same object, otherwise it wraps the new
 		// story and returns it
-		TextStory story = (TextStory) list.get(index);
+		TextStory story = list.get(index);
 		int oldHandle = story != null ? story.handle : 0;
 		int newHandle = nativeGet(handle, index, oldHandle);
 		// update cache if story has changed

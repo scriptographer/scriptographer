@@ -82,7 +82,7 @@ public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexLi
 		FontFamily family = null;
 		if (name != null) {
 			name = name.toLowerCase();
-			family = (FontFamily) fontsByName.get(name);
+			family = fontsByName.get(name);
 			if (family != null && !family.isValid()) {
 				fontsByName.remove(name);
 				family = null;
@@ -91,12 +91,14 @@ public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexLi
 			if (family == null) {
 				int len = size();
 				for (int i = 0; i < len; i++) {
-					FontFamily f = (FontFamily) get(i);
-					String n = f.getName().toLowerCase();
-					fontsByName.put(n, f);
-					if (f != null && n.equals(name)) {
-						family = f;
-						break;
+					FontFamily f = get(i);
+					if (f != null) {
+						String n = f.getName().toLowerCase();
+						fontsByName.put(n, f);
+						if (n.equals(name)) {
+							family = f;
+							break;
+						}
 					}
 				}
 			}

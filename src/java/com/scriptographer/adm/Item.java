@@ -461,7 +461,7 @@ public abstract class Item extends Component {
 			if (list.size() > 0) {
 				size = new Size(0, 0);
 				for (int i = 0, l = list.size(); i < l; i++) {
-					ListEntry entry = (ListEntry) list.get(i);
+					ListEntry entry = list.get(i);
 					String text = entry.getText();
 					Size entrySize = getTextSize(text, maxWidth != -1
 							? maxWidth - addSize.width : -1, true);

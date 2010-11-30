@@ -419,7 +419,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 			this.version = version;
 			this.handle = handle;
 		}
-	};
+	}
 	
 	protected void changeHandle(int newHandle, int docHandle,
 			boolean clearDictionary) {
@@ -926,8 +926,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * </code>
 	 */
 	public BlendMode getBlendMode() {
-		return (BlendMode) IntegerEnumUtils.get(BlendMode.class,
-				nativeGetBlendMode());
+		return IntegerEnumUtils.get(BlendMode.class, nativeGetBlendMode());
 	}
 
 	public void setBlendMode(BlendMode blend) {
@@ -961,7 +960,7 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	private native void nativeSetKnockout(int knockout);
 
 	public Knockout getKnockout(boolean inherited) {
-		return (Knockout) IntegerEnumUtils.get(Knockout.class,
+		return IntegerEnumUtils.get(Knockout.class,
 				nativeGetKnockout(inherited));
 	}
 

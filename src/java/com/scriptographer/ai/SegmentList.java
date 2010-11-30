@@ -343,11 +343,11 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	 * @return the new segment
 	 */
 	public Segment add(int index, Point point) {
-		return add(index, new Segment((Point) point));
+		return add(index, new Segment(point));
 	}
 
 	public Segment add(Point point) {
-		return add(new Segment((Point) point));
+		return add(new Segment(point));
 	}
 
 	public Segment set(int index, Point point) {

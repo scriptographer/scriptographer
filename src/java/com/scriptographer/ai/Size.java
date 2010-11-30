@@ -380,10 +380,9 @@ public class Size implements ChangeEmitter {
 		if (object instanceof Size) {
 			Size size = (Size) object;
 			return size.width == width && size.height == height;
-		} else {
-			// TODO: support other point types?
-			return false;
 		}
+		// TODO: support other point types?
+		return false;
 	}
 
 	/**

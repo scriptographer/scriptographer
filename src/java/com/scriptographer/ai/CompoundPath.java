@@ -234,7 +234,7 @@ public class CompoundPath extends PathItem {
 						moveTo(f[0], f[1]);
 						break;
 					} else {
-						Point pt = ((Segment) prevPath.getSegments().getLast()).point;
+						Point pt = prevPath.getSegments().getLast().point;
 						if (pt.x == f[0] && pt.y == f[1])
 							break;
 					}
@@ -265,7 +265,7 @@ public class CompoundPath extends PathItem {
 	@Override
 	public GeneralPath toShape() {
 		Path path = (Path) getFirstChild();
-		GeneralPath shape = (GeneralPath) path.toShape();
+		GeneralPath shape = path.toShape();
 		while ((path = (Path) path.getNextSibling()) != null) {
 			shape.append(path.toShape(), false);
 		}

@@ -63,8 +63,11 @@ public class JythonScope extends Scope {
 	public Object get(String name) {
 		try {
 			PyObject obj = scope.__getitem__(Py.java2py(name));
-			if (obj.isCallable()) return new JythonCallable(obj);
-			else return (obj == null) ? null : obj.__tojava__(Object.class);
+			if (obj == null)
+				return null;
+			if (obj.isCallable())
+				return new JythonCallable(obj);
+			return obj.__tojava__(Object.class);
 		} catch (PyException e) {
 			// catch not defined exception
 			return null;

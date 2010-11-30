@@ -98,8 +98,7 @@ public class Gradient extends DocumentObject {
 	 * The type of the gradient.
 	 */
 	public GradientType getType() {
-		return (GradientType) IntegerEnumUtils.get(GradientType.class,
-				nativeGetType());
+		return IntegerEnumUtils.get(GradientType.class, nativeGetType());
 	}
 
 	public void setType(GradientType type) {

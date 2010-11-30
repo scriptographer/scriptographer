@@ -118,7 +118,7 @@ public class Curve implements ChangeReceiver {
 
 	private static Point getPoint(ArgumentReader reader, String name,
 			boolean allowNull) {
-		Point point = (Point) reader.readObject(name, Point.class);
+		Point point = reader.readObject(name, Point.class);
 		return allowNull || point != null ? point : new Point();
 	}
 
@@ -150,12 +150,12 @@ public class Curve implements ChangeReceiver {
 			if (segment1 == null || segment1.index != index1 ||
 					segments != segment1.segments || segments.path != null &&
 					segments.path.needsUpdate(segment1.version))
-				segment1 = (Segment) segments.get(index1);
+				segment1 = segments.get(index1);
 
 			if (segment2 == null || segment2.index != index2 ||
 					segments != segment2.segments || segments.path != null &&
 					segments.path.needsUpdate(segment2.version))
-				segment2 = (Segment) segments.get(index2);
+				segment2 = segments.get(index2);
 		}
 	}
 
@@ -872,7 +872,7 @@ public class Curve implements ChangeReceiver {
 			res = (fLeft * right - fRight * left) / (fLeft - fRight);
 			if (Math.abs(right - left) < error * Math.abs(right + left))
 				break;
-			double fRes = getLeftLength(curve, res, temp) - length;;
+			double fRes = getLeftLength(curve, res, temp) - length;
 			if (fRes * fRight > 0) {
 				right = res; fRight = fRes;
 				if (side == -1)

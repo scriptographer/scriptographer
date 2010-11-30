@@ -87,7 +87,7 @@ public class EnumUtils {
 
 		Lookup(Class<T> cls) {
 			try {
-				T values[] = (T[]) cls.getEnumConstants();
+				T values[] = cls.getEnumConstants();
 				for (T value : values) {
 					// Put both variants (Java name and script name) in:
 					lookup.put(getScriptName(value), value);

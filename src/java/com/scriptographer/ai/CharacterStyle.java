@@ -395,8 +395,7 @@ public class CharacterStyle extends PathStyle {
 	 * </code>
 	 */
 	public KerningType getKerningType() {
-		return (KerningType) IntegerEnumUtils.get(KerningType.class,
-				nativeGetKerningType());
+		return IntegerEnumUtils.get(KerningType.class, nativeGetKerningType());
 	}
 
 	public void setKerningType(KerningType type) {
@@ -467,7 +466,7 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetOpenTypePosition(Integer position);
 
 	public StrikethroughPosition getStrikethroughPosition() {
-		return (StrikethroughPosition) IntegerEnumUtils.get(StrikethroughPosition.class,
+		return IntegerEnumUtils.get(StrikethroughPosition.class,
 				nativeGetStrikethroughPosition());
 	}
 
@@ -479,7 +478,7 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetStrikethroughPosition(Integer position);
 	
 	public UnderlinePosition getUnderlinePosition() {
-		return (UnderlinePosition) IntegerEnumUtils.get(UnderlinePosition.class,
+		return IntegerEnumUtils.get(UnderlinePosition.class,
 				nativeGetUnderlinePosition());
 	}
 
@@ -543,8 +542,7 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetFigureStyle(Integer caps);
 
 	public FigureStyle getFigureStyle() {
-		return (FigureStyle) IntegerEnumUtils.get(FigureStyle.class,
-				nativeGetFigureStyle());
+		return IntegerEnumUtils.get(FigureStyle.class, nativeGetFigureStyle());
 	}
 
 	public void setFigureStyle(FigureStyle type) {

@@ -95,7 +95,7 @@ public class Debugger extends Dim implements
 		Object node = path.getLastPathComponent();
 		if (node == null)
 			return;
-		String sourceName = (String) scriptNames.get(node);
+		String sourceName = scriptNames.get(node);
 		if (sourceName == null)
 			return;
 		gui.showFileWindow(sourceName, -1);
@@ -253,8 +253,7 @@ public class Debugger extends Dim implements
 				setVisible(true);
 			if (!sourceName.equals(currentSourceUrl)) {
 				updateFunctionList(sourceName);
-				DebuggerTreeNode node = (DebuggerTreeNode) treeNodes
-					.get(sourceName);
+				DebuggerTreeNode node = treeNodes.get(sourceName);
 				if (node != null) {
 					TreePath path = new TreePath(node.getPath());
 					tree.setSelectionPath(path);

@@ -787,9 +787,8 @@ public class ScriptographerEngine {
 				progressMax++;
 			}
 			return !allowScriptCancelation || ret;
-		} else {
-			return true;
 		}
+		return true;
 	}
 
 	private static native void nativeCloseProgress();

@@ -111,8 +111,8 @@ public class StrokeStyle implements Style {
 		this.color = hasColor && color == null ? Color.NONE : color;
 		this.overprint = overprint >= 0 ? new Boolean(overprint != 0) : null;
 		this.width = width >= 0 ? new Float(width) : null;
-		this.cap = (StrokeCap) IntegerEnumUtils.get(StrokeCap.class, cap);
-		this.join = (StrokeJoin) IntegerEnumUtils.get(StrokeJoin.class, join);
+		this.cap = IntegerEnumUtils.get(StrokeCap.class, cap);
+		this.join = IntegerEnumUtils.get(StrokeJoin.class, join);
 		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
 		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
 		this.setDashArray(dashArray, false);

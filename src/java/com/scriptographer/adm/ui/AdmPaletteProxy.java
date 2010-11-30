@@ -85,7 +85,7 @@ public class AdmPaletteProxy extends PaletteProxy {
 		// Calculate title size. Temporarily set bold font
 		dialog.setFont(DialogFont.PALETTE_BOLD);
 		String title = palette.getTitle();
-		int width = (int) Math.round(dialog.getTextSize(upperCase 
+		int width = Math.round(dialog.getTextSize(upperCase 
 				? title.toUpperCase() : title).width);
 		dialog.setFont(DialogFont.PALETTE);
 		// UI Requires 64px more to show title fully in palette windows.

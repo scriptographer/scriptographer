@@ -77,7 +77,7 @@ public abstract class TextItem extends Item implements TextStoryProvider {
 	 * The orientation of the text in the text item.
 	 */
 	public TextOrientation getOrientation() {
-		return (TextOrientation) IntegerEnumUtils.get(TextOrientation.class,
+		return IntegerEnumUtils.get(TextOrientation.class,
 				nativeGetOrientation());
 	}
 

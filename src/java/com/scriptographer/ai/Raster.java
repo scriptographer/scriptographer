@@ -209,8 +209,7 @@ public class Raster extends Item {
 	 * The color type of the raster.
 	 */
 	public ColorType getType() {
-		return (ColorType) IntegerEnumUtils.get(ColorType.class,
-				nativeGetType());
+		return IntegerEnumUtils.get(ColorType.class, nativeGetType());
 	}
 
 	public void setType(ColorType type) {

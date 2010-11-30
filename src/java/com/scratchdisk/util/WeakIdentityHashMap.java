@@ -86,7 +86,7 @@ import java.util.Set;
  * @see IdentityHashMap
  * @see LinkedHashMap
  */
-public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V> {
+public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> {
 	/**
 	 * The default capacity for an instance of HashMap.
 	 * Sun's documentation mildly suggests that this (11) is the correct

@@ -159,29 +159,25 @@ public class CommitManager {
 
 		public Committable put(Object key, Committable obj) {
 			int valueHash = System.identityHashCode(obj);
-			if (values.containsKey(valueHash)) {
+			if (values.containsKey(valueHash))
 				return null;
-			} else {
-				values.put(valueHash, obj);
-				int keyHash = System.identityHashCode(key);
-				Committable prev = committables.get(keyHash);
-				if (prev != null) {
-					if (prev instanceof CommittableGroup) {
-						// Add to existing group
-						((CommittableGroup) prev).add(obj);
-						return prev;
-					} else {
-						// Create a new group, add both, and put back
-						CommittableGroup list = new CommittableGroup();
-						list.add(prev);
-						list.add(obj);
-						return committables.put(keyHash, list);
-					}
-				} else {
-					// Simply add this object
-					return committables.put(keyHash, obj);
+			values.put(valueHash, obj);
+			int keyHash = System.identityHashCode(key);
+			Committable prev = committables.get(keyHash);
+			if (prev != null) {
+				if (prev instanceof CommittableGroup) {
+					// Add to existing group
+					((CommittableGroup) prev).add(obj);
+					return prev;
 				}
+				// Create a new group, add both, and put back
+				CommittableGroup list = new CommittableGroup();
+				list.add(prev);
+				list.add(obj);
+				return committables.put(keyHash, list);
 			}
+			// Simply add this object
+			return committables.put(keyHash, obj);
 		}
 
 		public Committable get(Object key) {

@@ -108,7 +108,7 @@ public class Content extends AbstractExtendedList<Component> implements
 				if (comp == component) {
 					container.remove(i);
 					constraints.remove(name);
-					removeComponent((Component) element);
+					removeComponent(element);
 					return element;
 				}
 			}
@@ -134,7 +134,7 @@ public class Content extends AbstractExtendedList<Component> implements
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component);
-			addComponent((Component) element);
+			addComponent(element);
 			return element;
 		}
 		return null;
@@ -144,7 +144,7 @@ public class Content extends AbstractExtendedList<Component> implements
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component, index);
-			addComponent((Component) element);
+			addComponent(element);
 			return element;
 		}
 		return null;
@@ -176,7 +176,7 @@ public class Content extends AbstractExtendedList<Component> implements
 		if (component != null) {
 			Component previous = this.get(name);
 			getAWTContainer().add(component, name);
-			addComponent((Component) element);
+			addComponent(element);
 			constraints.put(name, element);
 			return previous;
 		}

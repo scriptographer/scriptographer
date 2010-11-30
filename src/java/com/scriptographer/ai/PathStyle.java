@@ -184,7 +184,7 @@ public class PathStyle extends NativeObject implements Style, Committable {
 
 		this.clip = clip >= 0 ? new Boolean(clip != 0) : null;
 		this.lockClip = lockClip >= 0 ? new Boolean(lockClip != 0) : null;
-		this.windingRule = IntegerEnumUtils.get(WindingRule.class, (int) windingRule);
+		this.windingRule = IntegerEnumUtils.get(WindingRule.class, windingRule);
 		this.resolution = resolution >= 0 ? new Float(resolution) : null;
 	}
 	

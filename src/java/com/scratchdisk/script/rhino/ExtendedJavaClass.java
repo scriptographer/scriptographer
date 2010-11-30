@@ -267,7 +267,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 	
 	protected static ExtendedJavaClass getClassWrapper(Scriptable scope, Class javaClass) {
-		ExtendedJavaClass cls = (ExtendedJavaClass) classes.get(javaClass);
+		ExtendedJavaClass cls = classes.get(javaClass);
 		if (cls == null) {
 			// Search for the ExtendedJavaClass by splitting the full name into bits
 			// separated by '.', and walk up the Packages chain:

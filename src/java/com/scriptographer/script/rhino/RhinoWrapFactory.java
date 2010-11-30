@@ -81,7 +81,7 @@ public class RhinoWrapFactory extends
 		else if (javaObj instanceof Color)
 			return new ColorWrapper(scope, (Color) javaObj, staticType, true);
 		else if (javaObj instanceof java.awt.Color)
-			return new ColorWrapper(scope, (Color) new RGBColor(
+			return new ColorWrapper(scope, new RGBColor(
 					(java.awt.Color) javaObj), staticType, true);
 		else {
 			Function ctor = mappedJavaClasses.get(staticType);

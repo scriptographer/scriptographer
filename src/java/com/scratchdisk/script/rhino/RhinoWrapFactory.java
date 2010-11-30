@@ -208,10 +208,9 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				if (Map.class.isAssignableFrom(to)) {
 					// If there are two version of a method, e.g. one with Map
 					// and the other with EnumMap prefer the more general one:
-					if (Map.class.equals(to))
-						return CONVERSION_TRIVIAL + 1;
-					else
-						return CONVERSION_TRIVIAL + 2;
+					return Map.class.equals(to)
+							? CONVERSION_TRIVIAL + 1
+							: CONVERSION_TRIVIAL + 2;
 				}
 				// Try and see if unwrapping NativeObjects through JS unwrap
 				// method brings us to the right type.
@@ -232,11 +231,10 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 					// Size and Point prefer the one that has the same simple
 					// name, to encourage conversion between ADM and AI Size,
 					// Rectangle, Point objects!
-					if (unwrapped.getClass().getSimpleName().equals(
-							to.getSimpleName()))
-						return CONVERSION_TRIVIAL + 1;
-					else
-						return CONVERSION_TRIVIAL + 2;
+					return unwrapped.getClass().getSimpleName().equals(
+							to.getSimpleName())
+							? CONVERSION_TRIVIAL + 1
+							: CONVERSION_TRIVIAL + 2;
 				}
 			}
 		}
@@ -275,34 +273,32 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			// Let through string as well, for ArgumentReader
 			// TODO: Add support for constructor detection that receives the
 			// passed value, or can convert to it.
-			if (Map.class.isAssignableFrom(type)) {
+			if (Map.class.isAssignableFrom(type))
 				return toMap((Scriptable) value);
-			} else {
-				// Try and see if unwrapping NativeObjects through JS unwrap
-				// method brings us to the right type.
-				boolean isNativeObject = value instanceof NativeObject;
-				if (isNativeObject) {
-					unwrapped = unwrap(value);
-					if (unwrapped != value && type.isInstance(unwrapped))
-						return unwrapped;
-				}
-				ArgumentReader reader = null;
-				if (ArgumentReader.canConvert(type)
-						&& (reader = getArgumentReader(value)) != null) {
-					return ArgumentReader.convert(reader, unwrapped, type, this);
-				} else if (isNativeObject) {
-					Constructor ctor = getZeroArgumentConstructor(type);
-					if (ctor != null) {
-						try {
-							Object result = ctor.newInstance();
-							// As a conversion, use setProperties through
-							// argument reader to set all values on the newly
-							// created object.
-							setProperties(result, getArgumentReader(value));
-							return result;
-						} catch (Exception e) {
-				            throw Context.throwAsScriptRuntimeEx(e);
-						}
+			// Try and see if unwrapping NativeObjects through JS unwrap
+			// method brings us to the right type.
+			boolean isNativeObject = value instanceof NativeObject;
+			if (isNativeObject) {
+				unwrapped = unwrap(value);
+				if (unwrapped != value && type.isInstance(unwrapped))
+					return unwrapped;
+			}
+			ArgumentReader reader = null;
+			if (ArgumentReader.canConvert(type)
+					&& (reader = getArgumentReader(value)) != null) {
+				return ArgumentReader.convert(reader, unwrapped, type, this);
+			} else if (isNativeObject) {
+				Constructor ctor = getZeroArgumentConstructor(type);
+				if (ctor != null) {
+					try {
+						Object result = ctor.newInstance();
+						// As a conversion, use setProperties through argument
+						// reader to set all values on the newly
+						// created object.
+						setProperties(result, getArgumentReader(value));
+						return result;
+					} catch (Exception e) {
+			            throw Context.throwAsScriptRuntimeEx(e);
 					}
 				}
 			}

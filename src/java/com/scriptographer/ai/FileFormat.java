@@ -209,6 +209,6 @@ public class FileFormat extends NativeObject {
 	}
 
 	protected static FileFormat getFormat(int handle) {
-		return (FileFormat) lookup.get(handle);
+		return lookup.get(handle);
 	}
 }

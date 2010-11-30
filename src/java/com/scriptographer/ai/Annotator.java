@@ -202,7 +202,7 @@ public class Annotator extends NativeObject {
 	}
 
 	private static Annotator getAnnotator(int handle) {
-		return (Annotator) annotators.get(handle);
+		return annotators.get(handle);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class Annotator extends NativeObject {
 	 * @param portHandle
 	 */
 	private static Drawer createDrawer(int portHandle) {
-		Drawer drawer = (Drawer) drawers.get(portHandle);
+		Drawer drawer = drawers.get(portHandle);
 		if (drawer == null) {
 			drawer = nativeCreateDrawer(portHandle);
 			drawers.put(portHandle, drawer);

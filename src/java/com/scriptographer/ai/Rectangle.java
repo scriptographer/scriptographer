@@ -419,10 +419,9 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 			Rectangle rt = (Rectangle) object;
 			return rt.x == x && rt.y == y &&
 					rt.width == width && rt.height == height;
-		} else {
-			// TODO: support other rect types?
-			return false;
 		}
+		// TODO: support other rect types?
+		return false;
 	}
 
 	/**

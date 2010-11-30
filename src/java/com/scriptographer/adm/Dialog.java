@@ -275,7 +275,7 @@ public abstract class Dialog extends Component {
 	public static void destroyAll(boolean ignoreKeepAlive, boolean force) {
 		// Loop backwards since destroy removes from the list
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
-			Dialog dialog = (Dialog) dialogs.get(i);
+			Dialog dialog = dialogs.get(i);
 			if (force || dialog.canRemove(ignoreKeepAlive))
 				dialog.destroy();
 		}

@@ -101,9 +101,7 @@ public enum ItemType {
 		ItemType type = types.get(name);
 		if (type != null)
 			return type;
-		else {
-			System.err.println("ItemType not found " + name);
-			return null;
-		}
+		System.err.println("ItemType not found " + name);
+		return null;
 	}
 }

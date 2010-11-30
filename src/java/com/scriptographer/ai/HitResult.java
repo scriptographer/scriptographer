@@ -79,7 +79,7 @@ public class HitResult extends CurveLocation {
 				index = index == 0 ? curves.size() - 1 : index - 1;
 			}
 			if (index < curves.size()) {
-				curve = (Curve) curves.get(index);
+				curve = curves.get(index);
 				// if parameter == -1 and index is valid, we're hitting
 				// a segment point. just set parameter to 0 and the
 				// curve / parameter pair is valid

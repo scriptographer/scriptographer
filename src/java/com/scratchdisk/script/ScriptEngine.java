@@ -85,13 +85,13 @@ public abstract class ScriptEngine {
 	public static ScriptEngine getEngineByName(String name) {
 		if (!loaded)
 			loadEngines();
-		return (ScriptEngine) enginesByName.get(name);
+		return enginesByName.get(name);
 	}
 	
 	public static ScriptEngine getEngineByExtension(String extension) {
 		if (!loaded)
 			loadEngines();
-		return (ScriptEngine) enginesByExtension.get(extension);
+		return enginesByExtension.get(extension);
 	}
 	
 	public static ScriptEngine getEngineByFile(File file) {
@@ -156,7 +156,7 @@ public abstract class ScriptEngine {
 	 */
 	public Script compile(File file)
 			throws ScriptException, IOException {
-		Script script = (Script) scriptCache.get(file);
+		Script script = scriptCache.get(file);
 		if (script == null || script.hasChanged()) {
 			script = compileScript(file);
 			scriptCache.put(file, script);

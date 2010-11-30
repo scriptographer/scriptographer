@@ -95,7 +95,7 @@ public class Component implements ChangeReceiver {
 				else if (defaultValue instanceof Number)
 					type = ComponentType.NUMBER;
 				else if (defaultValue instanceof Boolean)
-					type = ComponentType.CHECKBOX;
+					type = ComponentType.BOOLEAN;
 				else if (defaultValue instanceof String) 
 					type = ComponentType.STRING;
 			}
@@ -177,7 +177,7 @@ public class Component implements ChangeReceiver {
 	 * @jshide
 	 */
 	public Component(String description, boolean value) {
-		this(ComponentType.CHECKBOX, description, value);
+		this(ComponentType.BOOLEAN, description, value);
 	}
 
 	/**
@@ -585,9 +585,8 @@ public class Component implements ChangeReceiver {
 					int numDigits = Math.max(0, 2 - (int) Math.ceil(Math.log10(range)));
 					double inc = 1.0 / Math.pow(10, numDigits);
 					return inc > 1.0 ? 1.0 : inc;
-				} else {
-					return 1.0;
 				}
+				return 1.0;
 			}
 			return increment;
 		}

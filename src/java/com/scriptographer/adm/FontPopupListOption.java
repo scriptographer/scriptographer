@@ -39,4 +39,4 @@ public enum FontPopupListOption {
 	VERTICAL,
 	EDITABLE,
 	SIZE;
-};
+}

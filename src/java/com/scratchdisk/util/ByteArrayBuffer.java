@@ -74,11 +74,11 @@ public class ByteArrayBuffer {
 
 	public short readShort() {
 		if (bigEndian) {
-			return (short) (((int)(buffer[offset++] & 0xff) << 8) |
-				((int)(buffer[offset++] & 0xff) << 0));
+			return (short) (((buffer[offset++] & 0xff) << 8) |
+				((buffer[offset++] & 0xff) << 0));
 		} else {
-			return (short) (((int)(buffer[offset++] & 0xff) << 0) |
-				((int)(buffer[offset++] & 0xff) << 8));
+			return (short) (((buffer[offset++] & 0xff) << 0) |
+				((buffer[offset++] & 0xff) << 8));
 		}
 	}
 
@@ -88,15 +88,15 @@ public class ByteArrayBuffer {
 
 	public int readInt() {
 		if (bigEndian) {
-			return ((int)(buffer[offset++] & 0xff) << 24) |
-				((int)(buffer[offset++] & 0xff) << 16) |
-				((int)(buffer[offset++] & 0xff) << 8) |
-				((int)(buffer[offset++] & 0xff) << 0);
+			return ((buffer[offset++] & 0xff) << 24) |
+				((buffer[offset++] & 0xff) << 16) |
+				((buffer[offset++] & 0xff) << 8) |
+				((buffer[offset++] & 0xff) << 0);
 		} else {
-			return ((int)(buffer[offset++] & 0xff) << 0) |
-				((int)(buffer[offset++] & 0xff) << 8) |
-				((int)(buffer[offset++] & 0xff) << 16) |
-				((int)(buffer[offset++] & 0xff) << 24);
+			return ((buffer[offset++] & 0xff) << 0) |
+				((buffer[offset++] & 0xff) << 8) |
+				((buffer[offset++] & 0xff) << 16) |
+				((buffer[offset++] & 0xff) << 24);
 		}
 	}
 

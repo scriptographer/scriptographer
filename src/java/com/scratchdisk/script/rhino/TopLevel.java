@@ -161,8 +161,8 @@ public class TopLevel extends ImporterTopLevel {
 		Object obj = thisObj;
 		if (thisObj instanceof Wrapper) {
 			obj = ((Wrapper) thisObj).unwrap();
-		} else if (thisObj instanceof Scriptable) {
-			if ("Date".equals(((Scriptable) thisObj).getClassName())) {
+		} else {
+			if ("Date".equals(thisObj.getClassName())) {
 				return new NativeJavaObject(topLevel,
 						new Date((long) ScriptRuntime.toNumber(thisObj)), null);
 			}

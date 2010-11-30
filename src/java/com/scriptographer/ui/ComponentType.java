@@ -40,6 +40,10 @@ public enum ComponentType {
 	NUMBER("number"),
 	TEXT("text"),
 	RULER("ruler"),
+	BOOLEAN("boolean"),
+	/**
+	* @deprecated
+	*/
 	CHECKBOX("checkbox"),
 	LIST("list"),
 	BUTTON("button"),

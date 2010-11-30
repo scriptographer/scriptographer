@@ -180,10 +180,9 @@ public class Point {
 		if (object instanceof Point) {
 			Point pt = (Point) object;
 			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
 		}
+		// TODO: support other point types?
+		return false;
 	}
 
 	public boolean isInside(Rectangle rect) {

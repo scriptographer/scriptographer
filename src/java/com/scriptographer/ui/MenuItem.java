@@ -277,7 +277,7 @@ public class MenuItem extends NativeObject{
 	}
 
 	private static MenuItem getItem(int handle) {
-		return (MenuItem) getItems().get(handle);
+		return getItems().get(handle);
 	}
 
 	private static IntMap<MenuItem> getItems() {

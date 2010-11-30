@@ -554,9 +554,8 @@ public class Path extends PathItem {
 		if (length <= getLength()) {
 			Curve curve = curves.getLast();
 			return new CurveLocation(curve, 1);
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	/**
@@ -799,7 +798,7 @@ public class Path extends PathItem {
 						break;
 					}
 					if (size >= 1) {
-						Point pt = ((Segment) segments.getLast()).point;
+						Point pt = segments.getLast().point;
 						if (pt.x == f[0] && pt.y == f[1])
 							break;
 					}

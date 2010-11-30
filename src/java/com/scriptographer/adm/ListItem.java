@@ -72,7 +72,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 
 	protected ListItem(Dialog dialog, int handle, boolean isChild) {
 		super(dialog, handle, isChild);
-		listHandle = nativeInit((int) handle);
+		listHandle = nativeInit(handle);
 	}
 
 	/**

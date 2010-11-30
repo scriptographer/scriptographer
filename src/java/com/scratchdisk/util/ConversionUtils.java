@@ -80,17 +80,19 @@ public class ConversionUtils {
 	}
 
 	public static int toInt(Object val) {
-		if (val instanceof Integer)
+		if (val instanceof Integer) {
 			return ((Integer) val).intValue();
-		else 
+		} else {
 			return (int) Math.round(toDouble(val));
+		}
 	}
 
 	public static int toInt(Object val, int defaultValue) {
-		if (val instanceof Integer)
+		if (val instanceof Integer) {
 			return ((Integer) val).intValue();
-		else 
+		} else {
 			return (int) Math.round(toDouble(val, defaultValue));
+		}
 	}
 
 	public static boolean toBoolean(Object val) {

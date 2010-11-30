@@ -107,9 +107,8 @@ public class Border {
 			Border border = (Border) object;
 			return border.top == top && border.right == right
 				&& border.bottom == bottom && border.left == left;
-		} else {
-			// TODO: support other margin types?
-			return false;
 		}
+		// TODO: support other margin types?
+		return false;
 	}
 }

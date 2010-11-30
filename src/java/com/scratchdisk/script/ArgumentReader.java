@@ -178,11 +178,13 @@ public abstract class ArgumentReader {
 			ArgumentConverter<T> converter = getConverter(type);
 			T res;
 			if (converter != null) {
-				// Make a new ArgumentReader for this object first, using convert:
-				ArgumentReader reader = (ArgumentReader) this.converter.convert(
-						obj, ArgumentReader.class);
+				// Make a new ArgumentReader for this object first,
+				// using convert:
+				ArgumentReader reader = this.converter.convert(obj,
+						ArgumentReader.class);
 				if (reader == null)
-					throw new IllegalArgumentException("Cannot read from " + obj);
+					throw new IllegalArgumentException("Cannot read from "
+							+ obj);
 				res = converter.convert(reader, this.converter.unwrap(obj));
 			} else {
 				try {
@@ -235,32 +237,29 @@ public abstract class ArgumentReader {
 
 	public static Object convert(ArgumentReader reader, Object from, Class<?> to,
 			Converter converter) {
-		if (ArgumentReader.class.isAssignableFrom(to)) {
+		if (ArgumentReader.class.isAssignableFrom(to))
 			return reader;
+		ArgumentConverter argumentConverter = converters.get(to);
+		if (argumentConverter != null) {
+			Object result = argumentConverter.convert(reader, from);
+			// ArgumentConverter can return another convertible type, to be
+			// passed forward to the Converter. This is used e.g. for
+			// java.awt.Color <-> com.scriptographer.script.ColorConverter which
+			// returns com.scriptographer.ai.Color...
+			if (to.isInstance(result))
+				return result;
+			else if (converter != null)
+				return converter.convert(result, to);
 		} else {
-			ArgumentConverter argumentConverter = converters.get(to);
-			if (argumentConverter != null) {
-				Object result = argumentConverter.convert(reader, from);
-				// ArgumentConverter can return another convertible type,
-				// to be passed forward to the Converter. This is used
-				// e.g. for java.awt.Color <->
-				// com.scriptographer.script.ColorConverter which returns
-				// com.scriptographer.ai.Color...
-				if (to.isInstance(result))
-					return result;
-				else if (converter != null)
-					return converter.convert(result, to);
-			} else {
-				Constructor ctor = getArgumentReaderConstructor(to);
-				if (ctor != null) {
-					// Create an object using the rgumentReader constructor.
-					// Argument readers can either be created from
-					// a NativeArray or a Scriptable object
-					try {
-						return ctor.newInstance(new Object[] { reader });
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+			Constructor ctor = getArgumentReaderConstructor(to);
+			if (ctor != null) {
+				// Create an object using the rgumentReader constructor.
+				// Argument readers can either be created from a NativeArray or
+				// a Scriptable object
+				try {
+					return ctor.newInstance(new Object[] { reader });
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}

@@ -173,7 +173,7 @@ public class Timer extends NativeObject {
 	}
 
 	private static Timer getTimer(int handle) {
-		return (Timer) timers.get(handle);
+		return timers.get(handle);
 	}
 
 	protected void finalize() {
