@@ -621,7 +621,7 @@ public class ScriptographerEngine {
 		if (t instanceof ScriptException) {
 			ScriptographerEngine.reportError(t);
 		} else if (t instanceof ScriptCanceledException) {
-			System.out.println(file != null ? file.getName() + " canceled"
+			logConsole(file != null ? file.getName() + " canceled"
 					: "Execution canceled");
 		}
 		allowScriptCancelation = true;
