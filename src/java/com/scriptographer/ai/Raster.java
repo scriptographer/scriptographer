@@ -373,7 +373,7 @@ public class Raster extends Item {
 		int width = getWidth();
 		int height = getHeight();
 		int startX = 0;
-		int startY = -height;
+		int startY = 0;
 		if (shape != null) {
 			Matrix inverse = getInverseMatrix();
 			if (inverse == null)
@@ -401,7 +401,7 @@ public class Raster extends Item {
 		} else {
 			path = null;
 		}
-		BufferedImage img = getSubImage(startX, -startY - height, width, height);
+		BufferedImage img = getSubImage(startX, startY, width, height);
 
 	//	Raster check = new Raster(img);
 	//	check.setPosition(rect.getCenterX(), rect.getCenterY());
