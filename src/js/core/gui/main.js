@@ -694,15 +694,16 @@ var mainDialog = new FloatingDialog(
 				if (/up|down/.test(event.keyCode)) {
 					var down = event.keyCode == 'down';
 					// Step into open folders when moving down
-					if (down && entry.data.isDirectory && entry.expanded) {
+					if (down && entry.data.isDirectory && entry.expanded
+							&& !entry.childList.isEmpty()) {
 						next = entry.childList.first;
 					} else {
 						var index = entry.index + (down ? 1 : -1);
 						var next = entry.list[index];
 						if (next) {
 							// Step into open foldres when moving up
-							if (!down && next.data.isDirectory
-									&& next.expanded) {
+							if (!down && next.data.isDirectory && next.expanded
+									&& !next.childList.isEmpty()) {
 								next = next.childList.last;
 							}
 						} else {
