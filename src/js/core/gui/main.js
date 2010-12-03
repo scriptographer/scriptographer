@@ -571,8 +571,9 @@ var mainDialog = new FloatingDialog(
 			return res;
 		case 'array':
 			var res = [];
-			for (var i = 0, l = obj.length; i < l; i++)
-				res[i] = filterScope(key[i]);
+			for (var i = 0, l = obj.length; i < l; i++) {
+				res[i] = filterScope(obj[i]);
+			}
 			return res;
 		case 'java':
 		case 'function':
