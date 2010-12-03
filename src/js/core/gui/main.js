@@ -608,9 +608,10 @@ var mainDialog = new FloatingDialog(
 			// palette definition in local variables, so it can be used to
 			// display a Dialog.prompt() instead in onEditParameters below.
 			Palette: function(title, components, values) {
-				palette = {
-					title: title, components: components, values: values
-				};
+				palette = this;
+				this.title = title;
+				this.components = components;
+				this.values = values;
 			}
 		});
 		if (scope) {
@@ -645,8 +646,7 @@ var mainDialog = new FloatingDialog(
 										? scope.get(palette.valuesName)
 										: palette.values;
 								Dialog.prompt(palette.title,
-										palette.components, values) 
-										&& palette.valuesName);
+										palette.components, values);
 								// No need to place back the updated values
 								// object in the scope, as Dialog.prompt
 								// modifies it directly.
