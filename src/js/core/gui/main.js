@@ -345,10 +345,14 @@ var mainDialog = new FloatingDialog(
 		return i == l ? entry : null;
 	}
 
-	function compileScope(entry, handler) {
+	function compileScope(entry, handler, populate) {
 		var scr = ScriptographerEngine.compile(entry.data.file);
 		if (scr) {
 			var scope = entry.data.scope = scr.engine.createScope();
+			if (populate) {
+				for (var i in populate)
+					scope.put(i, populate[i]);
+			}
 			if (handler instanceof ToolHandler) {
 				scope.put('tool', handler, true);
 			}
@@ -598,7 +602,17 @@ var mainDialog = new FloatingDialog(
 		// effects otherwise does not create deep copies of parameters, which
 		// breaks storing values in JS objects which would get converted to
 		// shared Dictionaries otherwise.
-		var scope = compileScope(entry, handler);
+		var palette;
+		var scope = compileScope(entry, handler, {
+			// Override the Palette constructor with one that just stores the
+			// palette definition in local variables, so it can be used to
+			// display a Dialog.prompt() instead in onEditParameters below.
+			Palette: function(title, components, values) {
+				palette = {
+					title: title, components: components, values: values
+				};
+			}
+		});
 		if (scope) {
 			scope.put('effect', effect, true);
 			if (isTool) {
@@ -611,7 +625,12 @@ var mainDialog = new FloatingDialog(
 						if (event.parameters.scope)
 							restoreScope(scope, toolHandler, event.parameters);
 						try {
-							toolHandler.onHandleEvent('edit-options', null);
+							if (palette) {
+								palette.values = Dialog.prompt(palette.title,
+										palette.components, palette.values);
+							} else {
+								toolHandler.onHandleEvent('edit-options', null);
+							}
 						} finally {
 							// Save the new values from the scope.
 							saveScope(scope, toolHandler, event.parameters);
