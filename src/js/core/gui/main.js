@@ -34,7 +34,7 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 
 // Effect
 
-var hasEffects = false; // Work in progress, turn off for now
+var hasEffects = true; // Work in progress, turn off for now
 var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
 var mainDialog = new FloatingDialog(
@@ -380,6 +380,8 @@ var mainDialog = new FloatingDialog(
 	}
 
 	function executeEffect(entry) {
+		if (!entry)
+			entry = getSelectedScriptEntry();
 		if (entry && /^(tool|effect)$/.test(entry.data.type)) {
 			// This works even for multiple selections, as the path style
 			// apparently is applied to all of the selected items. Fine
@@ -391,11 +393,11 @@ var mainDialog = new FloatingDialog(
 					item.addEffect(effect, parameters);
 					item.editEffect(effect, parameters);
 				}
-			}
-			else
+			} else {
 				Dialog.alert('In order to assign Scriptographer Effects\n'
 					+ 'to items, please select some items\n'
 					+ 'before executing the script.');
+			}
 		}
 	}
 
@@ -802,6 +804,7 @@ var mainDialog = new FloatingDialog(
 
 	var texts = {
 		execute: getDescription('Execute Script', 'e', { command: true }),
+		effect: 'Apply Script as Live Effect...',
 		stopAll: getDescription('Stop Running Scripts', '.', { command: true }),
 		editScript: getDescription('Edit Script...', null, { enter: true }),
 		createScript: getDescription('Create a New Script...', 'n',
@@ -822,6 +825,11 @@ var mainDialog = new FloatingDialog(
 	var executeEntry = new ListEntry(menu) {
 		text: texts.execute,
 		onSelect: execute
+	};
+
+	var effectEntry = hasEffects && new ListEntry(menu) {
+		text: texts.effect,
+		onSelect: executeEffect
 	};
 
 	var stopAllEntry = new ListEntry(menu) {
@@ -939,9 +947,15 @@ var mainDialog = new FloatingDialog(
 		disabledImage: getImage('play-disabled.png'),
 		size: buttonSize,
 		toolTip: texts.execute,
-		onClick: function() {
-			execute();
-		}
+		onClick: execute
+	};
+
+	var effectButton = hasEffects && new ImageButton(this) {
+		image: getImage('effect.png'),
+		disabledImage: getImage('effect-disabled.png'),
+		size: buttonSize,
+		toolTip: texts.effect,
+		onClick: executeEffect
 	};
 
 	var stopButton = new ImageButton(this) {
@@ -950,15 +964,6 @@ var mainDialog = new FloatingDialog(
 		size: buttonSize,
 		toolTip: texts.stopAll,
 		onClick: stopAll
-	};
-
-	var effectButton = hasEffects && new ImageButton(this) {
-		image: getImage('effect.png'),
-		disabledImage: getImage('effect-disabled.png'),
-		size: buttonSize,
-		onClick: function() {
-			executeEffect(getSelectedScriptEntry());
-		}
 	};
 
 	var editScriptButton = new ImageButton(this) {
@@ -998,16 +1003,19 @@ var mainDialog = new FloatingDialog(
 		// Update buttons and menu entries according to selected script or
 		// directory.
 		var entry = getSelectedScriptEntry();
-		// See if a script is selected
-		var selectedScript = entry ? !entry.data.isDirectory : false;
+		// Make sure it's not a directory
+		if (entry && entry.data.isDirectory)
+			entry = null;
 		// Do not allow creation of new items inside sealed repositories
 		var canCreate = createScriptButton.enabled = entry
 				? !(entry.data.isDirectory && entry.childList
 						|| entry.list).data.sealed
 				: false;
 		// Now update the actual items
-		executeEntry.enabled = executeButton.enabled = selectedScript;
-		editScriptEntry.enabled = editScriptButton.enabled = selectedScript;
+		executeEntry.enabled = executeButton.enabled = !!entry;
+		if (hasEffects)
+			effectEntry.enabled = effectButton.enabled = isEffect(entry);
+		editScriptEntry.enabled = editScriptButton.enabled = !!entry;
 		createScriptEntry.enabled = createScriptButton.enabled = canCreate;
 		createDirectoryEntry.enabled = createDirectoryButton.enabled = canCreate;
 	}
