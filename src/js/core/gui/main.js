@@ -355,6 +355,8 @@ var mainDialog = new FloatingDialog(
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.data.file, scope);
+			if (ScriptographerEngine.lastError)
+				return null;
 			adjustOrigin(scope);
 			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
@@ -379,14 +381,18 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
+	function isEffect(entry) {
+		return entry ? /^(tool|effect)$/.test(entry.data.type) : false;
+	}
+
 	function executeEffect(entry) {
 		if (!entry)
 			entry = getSelectedScriptEntry();
-		if (entry && /^(tool|effect)$/.test(entry.data.type)) {
+		if (isEffect(entry)) {
 			// This works even for multiple selections, as the path style
 			// apparently is applied to all of the selected items. Fine
 			// with us... But not so clean...
-			var item = document.selectedItems.first;
+			var item = document && document.selectedItems.first;
 			if (item) {
 				var parameters = new LiveEffectParameters();
 				if (compileEffect(entry, parameters)) {
