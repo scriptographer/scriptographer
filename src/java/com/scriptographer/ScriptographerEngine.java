@@ -421,10 +421,8 @@ public class ScriptographerEngine {
 		Script script = scope != null ? (Script) scope.get("script") : null;
 
 		// Only call Document.beginExecution for the first script in the call
-		// stack. Exclude core scripts from the stack, so UI stuff does not
-		// cause beginExecution() calls.
-		boolean coreScript = script != null && script.isCoreScript();
-		if (!coreScript && scriptStack.empty()) {
+		// stack.
+		if (scriptStack.empty()) {
 			// Set script coordinate system and angle units on each execution,
 			// at the beginning of the script stack.
 			anglesInDegrees = AngleUnits.DEGREES == (script != null
@@ -463,8 +461,7 @@ public class ScriptographerEngine {
 		}
 		// Push script even if it is null, as we're always popping again in
 		// endExecution.
-		if (!coreScript)
-			scriptStack.push(script);
+		scriptStack.push(script);
 	}
 
 	public static void beginExecution() {
