@@ -614,6 +614,19 @@ var mainDialog = new FloatingDialog(
 			}
 		});
 		if (scope) {
+			if (palette) {
+				// Since we need to modify the original values object in the
+				// scope, scan through the scope for its value and keep a
+				// reference to its name, so we can always get the current
+				// values from any effect's scope.
+				scope.getKeys().each(function(key) {
+					var value = scope.get(key);
+					if (value == palette.values) {
+						palette.valuesName = key;
+						throw Base.stop;
+					}
+				});
+			}
 			scope.put('effect', effect, true);
 			if (isTool) {
 				var toolHandler = handler;
@@ -626,8 +639,17 @@ var mainDialog = new FloatingDialog(
 							restoreScope(scope, toolHandler, event.parameters);
 						try {
 							if (palette) {
-								palette.values = Dialog.prompt(palette.title,
-										palette.components, palette.values);
+								// Now fetch the values object under its
+								// determined name:
+								var values = palette.valuesName
+										? scope.get(palette.valuesName)
+										: palette.values;
+								Dialog.prompt(palette.title,
+										palette.components, values) 
+										&& palette.valuesName);
+								// No need to place back the updated values
+								// object in the scope, as Dialog.prompt
+								// modifies it directly.
 							} else {
 								toolHandler.onHandleEvent('edit-options', null);
 							}
