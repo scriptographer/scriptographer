@@ -51,7 +51,7 @@ var components = {
 	mouseOffset: {
 		label: 'Dynamic size', type: 'checkbox',
 		onChange: function(checked) {
-			palette.components.offset.enabled = !checked;
+			components.offset.enabled = !checked;
 		}
 	},
 	offset: {
