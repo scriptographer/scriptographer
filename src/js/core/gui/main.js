@@ -550,8 +550,14 @@ var mainDialog = new FloatingDialog(
 
 	function restoreScope(scope, tool, parameters) {
 		var values = Json.decode(parameters.scope);
-		for (var key in values)
-			scope.put(key, values[key]);
+		for (var key in values) {
+			// Merge the stored values into the current scope values, in order
+			// to preserve things like handler functions, which are filtered out
+			// by filterScope().
+			// TODO: See if there is a better way to handle this? If a script
+			// replaces handler functions dynamically this would not work!
+			scope.put(key, Hash.merge(scope.get(key), values[key]));
+		}
 		tool.distanceThreshold = parameters.distanceThreshold;
 	}
 
