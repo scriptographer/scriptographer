@@ -401,7 +401,8 @@ var mainDialog = new FloatingDialog(
 				var parameters = new LiveEffectParameters();
 				if (compileEffect(entry, parameters)) {
 					item.addEffect(effect, parameters);
-					item.editEffect(effect, parameters);
+					if (!item.editEffect(effect, parameters))
+						item.removeEffect(effect, parameters);
 				}
 			} else {
 				Dialog.alert('In order to assign Scriptographer Effects\n'
@@ -619,12 +620,14 @@ var mainDialog = new FloatingDialog(
 				// Since we need to modify the original values object in the
 				// scope, scan through the scope for its value and keep a
 				// reference to its name, so we can always get the current
-				// values from any effect's scope.
+				// values from any effect's scope. Also scan for components,
+				// as these might be accessed again as well.
 				scope.getKeys().each(function(key) {
 					var value = scope.get(key);
 					if (value == palette.values) {
 						palette.valuesName = key;
-						throw Base.stop;
+					} else if (value == palette.components) {
+						palette.componentsName = key;
 					}
 				});
 			}
@@ -642,11 +645,14 @@ var mainDialog = new FloatingDialog(
 							if (palette) {
 								// Now fetch the values object under its
 								// determined name:
-								var values = palette.valuesName
-										? scope.get(palette.valuesName)
-										: palette.values;
-								Dialog.prompt(palette.title,
-										palette.components, values);
+								if (palette.valuesName)
+									palette.values =
+											scope.get(palette.valuesName);
+								if (palette.componentsName)
+									palette.components =
+											scope.get(palette.componentsName);
+								Dialog.prompt(palette.title, palette.components,
+											palette.values);
 								// No need to place back the updated values
 								// object in the scope, as Dialog.prompt
 								// modifies it directly.
