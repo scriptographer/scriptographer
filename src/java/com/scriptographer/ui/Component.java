@@ -1083,14 +1083,6 @@ public class Component implements ChangeReceiver {
 		return null;
 	}
 
-	protected static Component[] getComponents(Map<String,
-			Object>[] components) {
-		Component[] promptItems = new Component[components.length];
-		for (int i = 0; i < components.length; i++)
-			promptItems[i] = getComponent(components[i], null, null);
-		return promptItems;
-	}
-
 	/**
 	 * @jshide
 	 */
