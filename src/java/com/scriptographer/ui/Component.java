@@ -75,6 +75,12 @@ public class Component implements ChangeReceiver {
 	protected ComponentProxy proxy;
 	protected Palette palette;
 	private boolean initialized;
+	/**
+	 * A reference to the original object that defined this componenet, to
+	 * be able to replace it again in components at the end of execution.
+	 * (Needed by LiveEffect scope restauration).
+	 */
+	private Map<String, Object> definition;
 
 	/**
 	 * @jshide
@@ -248,6 +254,9 @@ public class Component implements ChangeReceiver {
 			break;
 		}
 		this.type = type;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("type", type);
 	}
 
 	/**
@@ -260,6 +269,9 @@ public class Component implements ChangeReceiver {
 	public void setValue(Object value) {
 		if (proxy == null || !proxy.setValue(value))
 			defaultValue = value;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("value", value);
 	}
 
 	/**
@@ -295,6 +307,9 @@ public class Component implements ChangeReceiver {
 
 	public void setName(String name) {
 		this.name = name;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("name", name);
 	}
 
 	/**
@@ -307,6 +322,9 @@ public class Component implements ChangeReceiver {
 
 	public void setLabel(String label) {
 		this.label = label;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("label", label);
 	}
 
 	/**
@@ -356,6 +374,9 @@ public class Component implements ChangeReceiver {
 		this.visible = visible;
 		if (proxy != null)
 			proxy.setVisible(visible);
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("visible", visible);
 	}
 
 	/**
@@ -393,6 +414,9 @@ public class Component implements ChangeReceiver {
 		this.enabled = enabled;
 		if (proxy != null)
 			proxy.setEnabled(enabled);
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("enabled", enabled);
 	}
 
 	/**
@@ -406,13 +430,16 @@ public class Component implements ChangeReceiver {
 		return fullSize;
 	}
 
-	public void setFullSize(boolean fit) {
-		this.fullSize = fit;
-		if (fit) {
+	public void setFullSize(boolean fullSize) {
+		this.fullSize = fullSize;
+		if (fullSize) {
 			width = null;
 			length = null;
 			columns = null;
 		}
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("fullSize", fullSize);
 	}
 
 	/**
@@ -429,6 +456,9 @@ public class Component implements ChangeReceiver {
 		columns = null;
 		length = null;
 		updateSize();
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("width", width);
 	}
 
 	/**
@@ -443,6 +473,9 @@ public class Component implements ChangeReceiver {
 		// Clear rows when setting height and vice versa.
 		rows = null;
 		updateSize();
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("height", height);
 	}
 	
 	/**
@@ -483,6 +516,9 @@ public class Component implements ChangeReceiver {
 			setRange(null, null);
 		else
 			setRange(range[0], range[1]);
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("range", range);
 	}
 
 	/**
@@ -532,6 +568,9 @@ public class Component implements ChangeReceiver {
 
 	public void setMin(Double min) {
 		setRange(min, max);
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("min", min);
 	}
 
 	/**
@@ -557,6 +596,9 @@ public class Component implements ChangeReceiver {
 
 	public void setMax(Double max) {
 		setRange(min, max);
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("max", max);
 	}
 
 	/**
@@ -608,6 +650,9 @@ public class Component implements ChangeReceiver {
 			// by getIncrement.
 			if (proxy != null)
 				proxy.setIncrement(getIncrement());
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("increment", increment);
 		}
 	}
 
@@ -626,6 +671,9 @@ public class Component implements ChangeReceiver {
 			this.fractionDigits = fractionDigits;
 			if (proxy != null)
 				proxy.setFractionDigits(fractionDigits);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("fractionDigits", fractionDigits);
 		}
 	}
 	
@@ -669,6 +717,9 @@ public class Component implements ChangeReceiver {
 			this.units = units;
 			if (proxy != null)
 				proxy.setUnits(units);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("units", units);
 		}
 	}
 
@@ -686,6 +737,9 @@ public class Component implements ChangeReceiver {
 			this.steppers = steppers;
 			if (proxy != null)
 				proxy.setSteppers(steppers);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("steppers", steppers);
 		}
 	}
 
@@ -737,6 +791,9 @@ public class Component implements ChangeReceiver {
 			this.options = options;
 			if (proxy != null)
 				proxy.setOptions(options, current);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("options", options);
 		}
 	}
 
@@ -781,6 +838,9 @@ public class Component implements ChangeReceiver {
 				&& (options == null || index < options.length)) {
 			if (proxy != null && proxy.setSelectedIndex(index, callback))
 				onChange(callback);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("selectedIndex", index);
 		}
 	}
 
@@ -803,6 +863,9 @@ public class Component implements ChangeReceiver {
 			width = null;
 			columns = null;
 			updateSize();
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("length", length);
 		}
 	}
 
@@ -835,6 +898,9 @@ public class Component implements ChangeReceiver {
 			this.maxLength = maxLength;
 			if (proxy != null)
 				proxy.setMaxLength(maxLength);
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("maxLength", maxLength);
 		}
 	}
 
@@ -875,6 +941,9 @@ public class Component implements ChangeReceiver {
 				rows = null;
 			}
 			this.multiline = multiline;
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("multiline", multiline);
 		}
 	}
 
@@ -906,6 +975,9 @@ public class Component implements ChangeReceiver {
 			width = null;
 			length = null;
 			updateSize();
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("columns", columns);
 		}
 	}
 
@@ -937,6 +1009,9 @@ public class Component implements ChangeReceiver {
 			// Clear height when setting rows and vice versa.
 			height = null;
 			updateSize();
+			// Update definition as well, so LiveEffect scope restoration works
+			if (definition != null)
+				definition.put("rows", rows);
 		}
 	}
 
@@ -970,6 +1045,9 @@ public class Component implements ChangeReceiver {
 
 	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("onChange", onChange);
 	}
 
 	protected void onChange(boolean callback) {
@@ -1008,6 +1086,9 @@ public class Component implements ChangeReceiver {
 
 	public void setOnClick(Callable onClick) {
 		this.onClick = onClick;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("onClick", onClick);
 	}
 
 	protected void onClick() {
@@ -1040,6 +1121,9 @@ public class Component implements ChangeReceiver {
 
 	public void setOnSelect(Callable onSelect) {
 		this.onSelect = onSelect;
+		// Update definition as well, so LiveEffect scope restoration works
+		if (definition != null)
+			definition.put("onSelect", onSelect);
 	}
 
 	protected void onSelect() {
@@ -1075,7 +1159,9 @@ public class Component implements ChangeReceiver {
 						// inherit all converter functionality from it.
 						reader = new MapArgumentReader(reader, clone);
 					}
-					return new Component(reader);
+					Component component = new Component(reader);
+					component.definition = (Map) object;
+					return component;
 				} catch (IllegalArgumentException e) {
 				}
 			}
