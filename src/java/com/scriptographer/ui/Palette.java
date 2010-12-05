@@ -70,10 +70,11 @@ public class Palette implements PropertyObserver, Committable {
 		Component[] comps =
 			Component.getComponents(components, values);
 		hasLabels = false;
+		// Store references to palette in each component, and determine if there
+		// are labels
 		for (Component component : comps) {
 			if (component != null) {
 				component.palette = this;
-				components.put(component.getName(), component);
 				String label = component.getLabel();
 				if (label != null && !"".equals(label))
 					hasLabels = true;

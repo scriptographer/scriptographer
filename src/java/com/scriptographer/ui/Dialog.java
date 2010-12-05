@@ -63,21 +63,16 @@ public class Dialog {
 			components = new LinkedHashMap<String, Object>();
 		Component[] comps =
 				Component.getComponents(components, values);
-		// Make sure we're putting the produced components back into the 
-		// passed comonents Map, so they can be accessed from code (e.g. to
-		// toggle the enabled flag).
-		for (Component component : comps) {
-			if (component != null)
-				components.put(component.getName(), component);
-		}
 		Object[] results = prompt(title, comps);
+		Component.restoreComponentDefinitions(components);
 		if (results != null) {
 			if (values == null)
 				values = new LinkedHashMap<String, Object>();
 			for (int i = 0; i < comps.length; i++)
 				values.put(comps[i].getName(), results[i]);
+			return values;
 		}
-		return values;
+		return null;
 	}
 
 	public static Map<String, Object> prompt(String title,

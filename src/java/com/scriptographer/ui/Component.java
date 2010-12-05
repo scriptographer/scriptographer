@@ -1174,16 +1174,37 @@ public class Component implements ChangeReceiver {
 	 */
 	public static Component[] getComponents(
 			Map<String, Object> components, Map<String, Object> values) {
-		ArrayList<Component> promptItems =
+		ArrayList<Component> comps =
 				new ArrayList<Component>();
 		for (Map.Entry<String, Object> entry : components.entrySet()) {
 			String name = entry.getKey();
-			Object map = entry.getValue();
-			Object value = values != null ? values.get(entry.getKey()) : null;
-			Component component = getComponent(map, name, value);
-			if (component != null)
-				promptItems.add(component);
+			Object object = entry.getValue();
+			Object value = values != null ? values.get(name) : null;
+			Component component = getComponent(object, name, value);
+			if (component != null) {
+				comps.add(component);
+				// Make sure we're putting the produced components back into the 
+				// passed comonents Map, so they can be accessed directly from
+				// the script (e.g. to toggle the enabled flag).
+				components.put(name, component);
+			}
 		}
-		return promptItems.toArray(new Component[promptItems.size()]);
+		return comps.toArray(new Component[comps.size()]);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static void restoreComponentDefinitions(
+			Map<String, Object> components) {
+		for (Map.Entry<String, Object> entry : components.entrySet()) {
+			String name = entry.getKey();
+			Object object = entry.getValue();
+			if (object instanceof Component) {
+				Component component = (Component) object;
+				if (component.definition != null)
+					components.put(name, component.definition);
+			}
+		}
 	}
 }
