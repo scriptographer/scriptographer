@@ -1048,7 +1048,7 @@ public class Component implements ChangeReceiver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Component getItem(Object object, String name,
+	private static Component getComponent(Object object, String name,
 			Object value) {
 		if (object != null) {
 			if (object instanceof Component) {
@@ -1087,7 +1087,7 @@ public class Component implements ChangeReceiver {
 			Object>[] components) {
 		Component[] promptItems = new Component[components.length];
 		for (int i = 0; i < components.length; i++)
-			promptItems[i] = getItem(components[i], null, null);
+			promptItems[i] = getComponent(components[i], null, null);
 		return promptItems;
 	}
 
@@ -1102,7 +1102,7 @@ public class Component implements ChangeReceiver {
 			String name = entry.getKey();
 			Object map = entry.getValue();
 			Object value = values != null ? values.get(entry.getKey()) : null;
-			Component component = getItem(map, name, value);
+			Component component = getComponent(map, name, value);
 			if (component != null)
 				promptItems.add(component);
 		}
