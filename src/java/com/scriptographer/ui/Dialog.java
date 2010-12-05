@@ -58,8 +58,18 @@ public class Dialog {
 
 	public static Map<String, Object> prompt(String title,
 			Map<String, Object> components, Map<String, Object> values) {
+		// Similar code as in Palette
+		if (components == null)
+			components = new LinkedHashMap<String, Object>();
 		Component[] comps =
 				Component.getComponents(components, values);
+		// Make sure we're putting the produced components back into the 
+		// passed comonents Map, so they can be accessed from code (e.g. to
+		// toggle the enabled flag).
+		for (Component component : comps) {
+			if (component != null)
+				components.put(component.getName(), component);
+		}
 		Object[] results = prompt(title, comps);
 		if (results != null) {
 			if (values == null)
