@@ -353,7 +353,8 @@ var mainDialog = new FloatingDialog(
 				for (var i in populate)
 					scope.put(i, populate[i]);
 			}
-			if (handler instanceof ToolHandler) {
+			var isTool = handler instanceof ToolHandler;
+			if (isTool) {
 				scope.put('tool', handler, true);
 			}
 			// Don't call scr.execute directly, since we handle SG
@@ -362,7 +363,7 @@ var mainDialog = new FloatingDialog(
 			if (ScriptographerEngine.lastError)
 				return null;
 			adjustOrigin(scope);
-			if (handler instanceof ToolHandler) {
+			if (isTool) {
 				// Tell tool about the script it is associated with, so it
 				// can get coordinate system information from it.
 				handler.script = scope.get('script');
@@ -385,14 +386,14 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
-	function isEffect(entry) {
+	function isEffectEntry(entry) {
 		return entry ? /^(tool|effect)$/.test(entry.data.type) : false;
 	}
 
 	function executeEffect(entry) {
 		if (!entry)
 			entry = getSelectedScriptEntry();
-		if (isEffect(entry)) {
+		if (isEffectEntry(entry)) {
 			// This works even for multiple selections, as the path style
 			// apparently is applied to all of the selected items. Fine
 			// with us... But not so clean...
@@ -1063,19 +1064,21 @@ var mainDialog = new FloatingDialog(
 		// Update buttons and menu entries according to selected script or
 		// directory.
 		var entry = getSelectedScriptEntry();
-		// Make sure it's not a directory
-		if (entry && entry.data.isDirectory)
-			entry = null;
+		// Prevent execution of directories
+		var isScript = entry
+				? !entry.data.isDirectory
+				: false;
+		var isEffect = isScript && isEffectEntry(entry);
 		// Do not allow creation of new items inside sealed repositories
-		var canCreate = createScriptButton.enabled = entry
-				? !(entry.data.isDirectory && entry.childList
-						|| entry.list).data.sealed
+		var canCreate = entry
+				? !(entry.data.isDirectory ? entry.childList
+						: entry.list).data.sealed
 				: false;
 		// Now update the actual items
-		executeEntry.enabled = executeButton.enabled = !!entry;
+		executeEntry.enabled = executeButton.enabled = isScript;
 		if (hasEffects)
-			effectEntry.enabled = effectButton.enabled = isEffect(entry);
-		editScriptEntry.enabled = editScriptButton.enabled = !!entry;
+			effectEntry.enabled = effectButton.enabled = isEffect;
+		editScriptEntry.enabled = editScriptButton.enabled = isScript;
 		createScriptEntry.enabled = createScriptButton.enabled = canCreate;
 		createDirectoryEntry.enabled = createDirectoryButton.enabled = canCreate;
 	}
