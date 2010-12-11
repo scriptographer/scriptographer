@@ -58,16 +58,21 @@ public class Dialog {
 
 	public static Map<String, Object> prompt(String title,
 			Map<String, Object> components, Map<String, Object> values) {
+		// Similar code as in Palette
+		if (components == null)
+			components = new LinkedHashMap<String, Object>();
 		Component[] comps =
 				Component.getComponents(components, values);
 		Object[] results = prompt(title, comps);
+		Component.restoreComponentDefinitions(components);
 		if (results != null) {
 			if (values == null)
 				values = new LinkedHashMap<String, Object>();
 			for (int i = 0; i < comps.length; i++)
 				values.put(comps[i].getName(), results[i]);
+			return values;
 		}
-		return values;
+		return null;
 	}
 
 	public static Map<String, Object> prompt(String title,

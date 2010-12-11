@@ -397,6 +397,7 @@ public class ScriptographerEngine {
 	
 	private static Stack<Script> scriptStack = new Stack<Script>();
 	private static boolean allowScriptCancelation = true;
+	private static Throwable lastError;
 
 	public static Script getCurrentScript() {
 		// There can be 'holes' in the script stack, so find the first non-null
@@ -421,10 +422,8 @@ public class ScriptographerEngine {
 		Script script = scope != null ? (Script) scope.get("script") : null;
 
 		// Only call Document.beginExecution for the first script in the call
-		// stack. Exclude core scripts from the stack, so UI stuff does not
-		// cause beginExecution() calls.
-		boolean coreScript = script != null && script.isCoreScript();
-		if (!coreScript && scriptStack.empty()) {
+		// stack.
+		if (scriptStack.empty()) {
 			// Set script coordinate system and angle units on each execution,
 			// at the beginning of the script stack.
 			anglesInDegrees = AngleUnits.DEGREES == (script != null
@@ -463,8 +462,7 @@ public class ScriptographerEngine {
 		}
 		// Push script even if it is null, as we're always popping again in
 		// endExecution.
-		if (!coreScript)
-			scriptStack.push(script);
+		scriptStack.push(script);
 	}
 
 	public static void beginExecution() {
@@ -524,6 +522,7 @@ public class ScriptographerEngine {
 	 * changes after execution.
 	 */
 	public static Object invoke(Callable callable, Object obj, Object... args) {
+		lastError = null;
 		Scope scope;
 		if (obj instanceof Scope) {
 			scope = (Scope) obj;
@@ -590,6 +589,7 @@ public class ScriptographerEngine {
 	 */
 	public static Object execute(com.scratchdisk.script.Script script,
 			File file, Scope scope) throws ScriptException, IOException {
+		lastError = null;
 		Object ret = null;
 		Throwable throwable = null;
 		try {
@@ -610,21 +610,26 @@ public class ScriptographerEngine {
 		return ret;
 	}
 
-	private static void handleException(Throwable t, File file) {
-		// Do not allow script cancellation during error reporting, as this is
-		// now handled by scripts too
+	private static void handleException(Throwable throwable, File file) {
+		// Do not allow script cancellation during error reporting, as printing
+		// of errors is handled by coreScripts too
 		allowScriptCancelation = false;
 		// Unwrap ScriptCanceledExceptions
-		Throwable cause = t.getCause();
+		Throwable cause = throwable.getCause();
 		if (cause instanceof ScriptCanceledException)
-			t = cause;
-		if (t instanceof ScriptException) {
-			ScriptographerEngine.reportError(t);
-		} else if (t instanceof ScriptCanceledException) {
+			throwable = cause;
+		if (throwable instanceof ScriptException) {
+			ScriptographerEngine.reportError(throwable);
+		} else if (throwable instanceof ScriptCanceledException) {
 			logConsole(file != null ? file.getName() + " canceled"
 					: "Execution canceled");
 		}
+		lastError = throwable;
 		allowScriptCancelation = true;
+	}
+
+	public static Throwable getLastError() {
+		return lastError;
 	}
 
 	private static Script getScript(Scope scope) {

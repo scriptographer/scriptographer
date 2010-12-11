@@ -49,9 +49,9 @@ var components = {
 		}
 	},
 	mouseOffset: {
-		label: 'Dynamic size', type: 'checkbox',
+		label: 'Dynamic size', type: 'boolean',
 		onChange: function(checked) {
-			palette.components.offset.enabled = !checked;
+			components.offset.enabled = !checked;
 		}
 	},
 	offset: {

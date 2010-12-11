@@ -60,7 +60,7 @@ var components = {
 
 	flip: {
 		label: 'Flip',
-		type: 'checkbox'
+		type: 'boolean'
 	}
 };
 

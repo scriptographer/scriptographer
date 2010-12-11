@@ -67,19 +67,20 @@ public class Palette implements PropertyObserver, Committable {
 		this.title = title;
 		this.values = values;
 		this.components = components;
-		Component[] paletteComponents =
+		Component[] comps =
 			Component.getComponents(components, values);
 		hasLabels = false;
-		for (Component component : paletteComponents) {
+		// Store references to palette in each component, and determine if there
+		// are labels
+		for (Component component : comps) {
 			if (component != null) {
 				component.palette = this;
-				this.components.put(component.getName(), component);
 				String label = component.getLabel();
 				if (label != null && !"".equals(label))
 					hasLabels = true;
 			}
 		}
-		proxy = UiFactory.getInstance().createPalette(this, paletteComponents);
+		proxy = UiFactory.getInstance().createPalette(this, comps);
 	}
 
 	public Palette(String title, Map<String, Object> components) {

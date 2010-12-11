@@ -201,14 +201,14 @@ var components = {
 		label: 'Length', type: 'number', units: 'point', length: 10
 	},
 	fixLength: {
-		label: 'Fix', type: 'checkbox'
+		label: 'Fix', type: 'boolean'
 	},
 	angle: {
 		label: 'Angle', type: 'number', units: 'degree', length: 10,
 		range: [-360, 360]
 	},
 	fixAngle: {
-		label: 'Fix', type: 'checkbox'
+		label: 'Fix', type: 'boolean'
 	},
 	ruler1: { label: 'Coordinates', type: 'ruler' },
 	x: {
@@ -219,13 +219,13 @@ var components = {
 	},
 	ruler2: { label: 'Display', type: 'ruler' },
 	showAngleLength: {
-		label: 'Vector', type: 'checkbox'
+		label: 'Vector', type: 'boolean'
 	},
 	showCoordinates: {
-		label: 'Coordinates', type: 'checkbox'
+		label: 'Coordinates', type: 'boolean'
 	},
 	showCircle: {
-		label: 'Circle', type: 'checkbox'
+		label: 'Circle', type: 'boolean'
 	},
 	ruler3: { label: 'Instructions', type: 'ruler' },
 	instructions: {

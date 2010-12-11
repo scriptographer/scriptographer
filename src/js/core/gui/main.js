@@ -34,7 +34,7 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 
 // Effect
 
-var hasEffects = false; // Work in progress, turn off for now
+var hasEffects = true; // Work in progress, turn off for now
 var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
 var mainDialog = new FloatingDialog(
@@ -345,16 +345,22 @@ var mainDialog = new FloatingDialog(
 		return i == l ? entry : null;
 	}
 
-	function compileScope(entry, handler) {
+	function compileScope(entry, handler, populate) {
 		var scr = ScriptographerEngine.compile(entry.data.file);
 		if (scr) {
 			var scope = entry.data.scope = scr.engine.createScope();
+			if (populate) {
+				for (var i in populate)
+					scope.put(i, populate[i]);
+			}
 			if (handler instanceof ToolHandler) {
 				scope.put('tool', handler, true);
 			}
 			// Don't call scr.execute directly, since we handle SG
 			// specific things in ScriptographerEngine.execute:
 			ScriptographerEngine.execute(scr, entry.data.file, scope);
+			if (ScriptographerEngine.lastError)
+				return null;
 			adjustOrigin(scope);
 			if (handler instanceof ToolHandler) {
 				// Tell tool about the script it is associated with, so it
@@ -379,23 +385,30 @@ var mainDialog = new FloatingDialog(
 		}
 	}
 
+	function isEffect(entry) {
+		return entry ? /^(tool|effect)$/.test(entry.data.type) : false;
+	}
+
 	function executeEffect(entry) {
-		if (entry && /^(tool|effect)$/.test(entry.data.type)) {
+		if (!entry)
+			entry = getSelectedScriptEntry();
+		if (isEffect(entry)) {
 			// This works even for multiple selections, as the path style
 			// apparently is applied to all of the selected items. Fine
 			// with us... But not so clean...
-			var item = document.selectedItems.first;
+			var item = document && document.selectedItems.first;
 			if (item) {
 				var parameters = new LiveEffectParameters();
 				if (compileEffect(entry, parameters)) {
 					item.addEffect(effect, parameters);
-					item.editEffect(effect, parameters);
+					if (!item.editEffect(effect, parameters))
+						item.removeEffect(effect, parameters);
 				}
-			}
-			else
+			} else {
 				Dialog.alert('In order to assign Scriptographer Effects\n'
 					+ 'to items, please select some items\n'
 					+ 'before executing the script.');
+			}
 		}
 	}
 
@@ -537,8 +550,14 @@ var mainDialog = new FloatingDialog(
 
 	function restoreScope(scope, tool, parameters) {
 		var values = Json.decode(parameters.scope);
-		for (var key in values)
-			scope.put(key, values[key]);
+		for (var key in values) {
+			// Merge the stored values into the current scope values, in order
+			// to preserve things like handler functions, which are filtered out
+			// by filterScope().
+			// TODO: See if there is a better way to handle this? If a script
+			// replaces handler functions dynamically this would not work!
+			scope.put(key, Hash.merge(scope.get(key), values[key]));
+		}
 		tool.distanceThreshold = parameters.distanceThreshold;
 	}
 
@@ -563,8 +582,9 @@ var mainDialog = new FloatingDialog(
 			return res;
 		case 'array':
 			var res = [];
-			for (var i = 0, l = obj.length; i < l; i++)
-				res[i] = filterScope(key[i]);
+			for (var i = 0, l = obj.length; i < l; i++) {
+				res[i] = filterScope(obj[i]);
+			}
 			return res;
 		case 'java':
 		case 'function':
@@ -589,8 +609,34 @@ var mainDialog = new FloatingDialog(
 		// effects otherwise does not create deep copies of parameters, which
 		// breaks storing values in JS objects which would get converted to
 		// shared Dictionaries otherwise.
-		var scope = compileScope(entry, handler);
+		var palette;
+		var scope = compileScope(entry, handler, {
+			// Override the Palette constructor with one that just stores the
+			// palette definition in local variables, so it can be used to
+			// display a Dialog.prompt() instead in onEditParameters below.
+			Palette: function(title, components, values) {
+				palette = this;
+				this.title = title;
+				this.components = components;
+				this.values = values;
+			}
+		});
 		if (scope) {
+			if (palette) {
+				// Since we need to modify the original values object in the
+				// scope, scan through the scope for its value and keep a
+				// reference to its name, so we can always get the current
+				// values from any effect's scope. Also scan for components,
+				// as these might be accessed again as well.
+				scope.getKeys().each(function(key) {
+					var value = scope.get(key);
+					if (value == palette.values) {
+						palette.valuesName = key;
+					} else if (value == palette.components) {
+						palette.componentsName = key;
+					}
+				});
+			}
 			scope.put('effect', effect, true);
 			if (isTool) {
 				var toolHandler = handler;
@@ -602,7 +648,23 @@ var mainDialog = new FloatingDialog(
 						if (event.parameters.scope)
 							restoreScope(scope, toolHandler, event.parameters);
 						try {
-							toolHandler.onHandleEvent('edit-options', null);
+							if (palette) {
+								// Now fetch the values object under its
+								// determined name:
+								if (palette.valuesName)
+									palette.values =
+											scope.get(palette.valuesName);
+								if (palette.componentsName)
+									palette.components =
+											scope.get(palette.componentsName);
+								Dialog.prompt(palette.title, palette.components,
+											palette.values);
+								// No need to place back the updated values
+								// object in the scope, as Dialog.prompt
+								// modifies it directly.
+							} else {
+								toolHandler.onHandleEvent('edit-options', null);
+							}
 						} finally {
 							// Save the new values from the scope.
 							saveScope(scope, toolHandler, event.parameters);
@@ -802,6 +864,7 @@ var mainDialog = new FloatingDialog(
 
 	var texts = {
 		execute: getDescription('Execute Script', 'e', { command: true }),
+		effect: 'Apply Script as Live Effect...',
 		stopAll: getDescription('Stop Running Scripts', '.', { command: true }),
 		editScript: getDescription('Edit Script...', null, { enter: true }),
 		createScript: getDescription('Create a New Script...', 'n',
@@ -822,6 +885,11 @@ var mainDialog = new FloatingDialog(
 	var executeEntry = new ListEntry(menu) {
 		text: texts.execute,
 		onSelect: execute
+	};
+
+	var effectEntry = hasEffects && new ListEntry(menu) {
+		text: texts.effect,
+		onSelect: executeEffect
 	};
 
 	var stopAllEntry = new ListEntry(menu) {
@@ -939,9 +1007,15 @@ var mainDialog = new FloatingDialog(
 		disabledImage: getImage('play-disabled.png'),
 		size: buttonSize,
 		toolTip: texts.execute,
-		onClick: function() {
-			execute();
-		}
+		onClick: execute
+	};
+
+	var effectButton = hasEffects && new ImageButton(this) {
+		image: getImage('effect.png'),
+		disabledImage: getImage('effect-disabled.png'),
+		size: buttonSize,
+		toolTip: texts.effect,
+		onClick: executeEffect
 	};
 
 	var stopButton = new ImageButton(this) {
@@ -950,15 +1024,6 @@ var mainDialog = new FloatingDialog(
 		size: buttonSize,
 		toolTip: texts.stopAll,
 		onClick: stopAll
-	};
-
-	var effectButton = hasEffects && new ImageButton(this) {
-		image: getImage('effect.png'),
-		disabledImage: getImage('effect-disabled.png'),
-		size: buttonSize,
-		onClick: function() {
-			executeEffect(getSelectedScriptEntry());
-		}
 	};
 
 	var editScriptButton = new ImageButton(this) {
@@ -998,16 +1063,19 @@ var mainDialog = new FloatingDialog(
 		// Update buttons and menu entries according to selected script or
 		// directory.
 		var entry = getSelectedScriptEntry();
-		// See if a script is selected
-		var selectedScript = entry ? !entry.data.isDirectory : false;
+		// Make sure it's not a directory
+		if (entry && entry.data.isDirectory)
+			entry = null;
 		// Do not allow creation of new items inside sealed repositories
 		var canCreate = createScriptButton.enabled = entry
 				? !(entry.data.isDirectory && entry.childList
 						|| entry.list).data.sealed
 				: false;
 		// Now update the actual items
-		executeEntry.enabled = executeButton.enabled = selectedScript;
-		editScriptEntry.enabled = editScriptButton.enabled = selectedScript;
+		executeEntry.enabled = executeButton.enabled = !!entry;
+		if (hasEffects)
+			effectEntry.enabled = effectButton.enabled = isEffect(entry);
+		editScriptEntry.enabled = editScriptButton.enabled = !!entry;
 		createScriptEntry.enabled = createScriptButton.enabled = canCreate;
 		createDirectoryEntry.enabled = createDirectoryButton.enabled = canCreate;
 	}

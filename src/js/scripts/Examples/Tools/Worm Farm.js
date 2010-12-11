@@ -80,7 +80,7 @@ var components = {
 		} 
 	},
 	varyThickness: {
-		type: 'checkbox', label: 'Vary Thickness'
+		type: 'boolean', label: 'Vary Thickness'
 	}
 };
 
