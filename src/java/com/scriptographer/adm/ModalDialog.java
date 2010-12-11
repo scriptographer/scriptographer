@@ -130,7 +130,8 @@ public class ModalDialog extends Dialog {
 						// Make sure that the focus goes back to whoever was
 						// active before this invisible modal dialog got wrongly
 						// activated.
-						if (previousActiveDialog != null)
+						if (previousActiveDialog != null
+								&& previousActiveDialog != ModalDialog.this)
 							previousActiveDialog.setActive(true);
 						setActive(false);
 					}
