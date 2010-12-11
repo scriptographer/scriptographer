@@ -200,6 +200,9 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
 						: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
 				keyCode = keyCode >= 0 && keyCode < 0xff
 						? s_keycodeMacToJava[keyCode] : 0xff;
+				// gEngine->println(NULL,
+				//		"Keyboard Event: #%i, type: %i, code: %x, char: %c",
+				//		kind, type, keyCode, uniChar);
 				handled = gEngine->callOnHandleKeyEvent(type, keyCode,
 						uniChar, modifiers);
 			}
@@ -225,12 +228,10 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
 				WindowClass wndClass;
 				WindowAttributes attributes;
 				if (wndClass != kDocumentWindowClass) {
-					/*
-					ControlPartCode code;
-					SetPortWindowPort(window);
-					GlobalToLocal(&point);
-					ControlRef view = FindControlUnderMouse(point, window, &code);
-					*/
+					// ControlPartCode code;
+					// SetPortWindowPort(window);
+					// GlobalToLocal(&point);
+					// ControlRef view = FindControlUnderMouse(point, window, &code);
 					HIViewRef view;
 					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event,
 							&view) == noErr && view != NULL) {
@@ -247,15 +248,14 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
 									|| CFStringCompare(viewClass,
 										CFSTR("com.adobe.owl.dock"), 0) == 0)) {
 								dragging = true;
-								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
+								gEngine->callOnHandleEvent(
+										com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
 							}
-							/*
-							const char *str = CFStringGetCStringPtr(viewClass,
-									kCFStringEncodingMacRoman);
-							gEngine->println(gEngine->getEnv(),
-									"Mouse Event: #%i, x: %i y: %i, view: %x, class: %s",
-									kind, point.h, point.v, view, str);
-							*/
+							// const char *str = CFStringGetCStringPtr(viewClass,
+							// 		kCFStringEncodingMacRoman);
+							// gEngine->println(NULL,
+							// 		"Mouse Event: #%i, x: %i y: %i, view: %x, class: %s",
+							// 		kind, point.h, point.v, view, str);
 						}
 					}
 				}
@@ -264,7 +264,8 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler,
 			case kEventMouseUp: {
 				if (dragging) {
 					dragging = false;
-					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
+					gEngine->callOnHandleEvent(
+							com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
 				}
 			}
 			break;
@@ -299,14 +300,12 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg,
 			}
 			if (type != -1)
 				gEngine->callOnHandleEvent(type);
-#ifdef WIN_ENV
 		} else if (uMsg == WM_PARENTNOTIFY && wParam > 0x200) {
 			// Deactivate ADM Dialogs on Windows whenever a click happens
 			// outside the ADM palettes or documents. In this case 
 			// WM_PARENTNOTIFY is sent with wParam set to one of the mouse
 			// button events (> 0x200).
 			gEngine->deactivateActiveDialog();
-#endif // WIN_ENV
 		}
 	}
 	return ::CallWindowProc(s_defaultAppWindowProc, hwnd, uMsg, wParam, lParam);
