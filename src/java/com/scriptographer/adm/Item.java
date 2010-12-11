@@ -78,7 +78,14 @@ public abstract class Item extends Component {
 	 * @param options
 	 */
 	protected Item(Dialog dialog, ItemType type, int options) {
-		init(dialog, nativeCreate(dialog, type.name, options), type);
+		// Tell the dialog to ignore notifications during item creation, as on
+		// some versions of Illustrator (CS2 and below), window activation 
+		// notifications seem to be triggered by item creation, confusing 
+		// dialog.initialize() calls.
+		dialog.ignoreNotifications = true;
+		int handle = nativeCreate(dialog, type.name, options);
+		dialog.ignoreNotifications = false;
+		init(dialog, handle, type);
 		setFont(dialog.getFont());
 	}
 

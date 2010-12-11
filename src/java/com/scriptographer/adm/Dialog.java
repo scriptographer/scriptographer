@@ -95,6 +95,9 @@ public abstract class Dialog extends Component {
 	private Size maxSize = null;
 	private boolean isResizing = false;
 	private boolean isNotifying = false;
+	// Required in Item to filter out notifications that are triggered wrongly
+	// during Item.nativeCreate() calls.
+	protected boolean ignoreNotifications = false;
 	private String title = "";
 	private String name = "";
 	private boolean visible = false;
@@ -583,6 +586,10 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onNotify(Notifier notifier) {
+		// Do not process this notification if we're told to ignore it. See
+		// Item constructor for explanations.
+		if (ignoreNotifications)
+			return;
 		isNotifying = true;
 		try {
 			switch (notifier) {
