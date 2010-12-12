@@ -33,7 +33,8 @@
  * com.scriptographer.ai.Dictionary
  */
 
-#define KEY_VISIBLE(KEY) KEY && KEY != gEngine->m_artHandleKey && KEY != gEngine->m_docReflowKey
+#define KEY_VISIBLE(KEY) KEY && KEY != gEngine->m_artHandleKey \
+		&& KEY != gEngine->m_docReflowKey
 
 int Dictionary_size(AIDictionaryRef dictionary) {
 	int size = sAIDictionary->Size(dictionary);
@@ -47,7 +48,8 @@ int Dictionary_size(AIDictionaryRef dictionary) {
 /*
  * int nativeCreate()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreate(JNIEnv *env, jclass obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreate(
+		JNIEnv *env, jclass obj) {
 	try {
 		AIDictionaryRef dictionary = NULL;
 		sAIDictionary->CreateDictionary(&dictionary);
@@ -59,7 +61,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreate(JNIEnv
 /*
  * int nativeCreateLiveEffectParameters()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreateLiveEffectParameters(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreateLiveEffectParameters(
+		JNIEnv *env, jclass cls) {
 	try {
 		AILiveEffectParameters parameters = NULL;
 		// AI SDK: "The dictionary created by this function supports Undo operations,
@@ -73,19 +76,21 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreateLiveEff
 /*
  * java.lang.Object nativeGet(int handle, int docHandle, java.lang.Object key)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject key) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(
+		JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject key) {
 	jobject res = NULL;
 	try {
 		AIDictionaryRef dictionary = (AIDictionaryRef) handle;
 		AIDocumentHandle document = (AIDocumentHandle) docHandle;
-		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));
+		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(
+				key, gEngine->mid_Object_toString));
 		AIDictKey dictKey = sAIDictionary->Key(str);
 		delete str;
 		if (KEY_VISIBLE(dictKey)) {
 			AIEntryRef entry = sAIDictionary->Get(dictionary, dictKey);
 			if (entry != NULL) {
-				// Keep track of wether the entry was converted to a value or not, 
-				// so we know if it was auto-released or not. See below.
+				// Keep track of wether the entry was converted to a value or
+				// not, so we know if it was auto-released or not. See below.
 				bool converted = false;
 				AIEntryType type = sAIEntry->GetType(entry);
 				switch (type) {
@@ -94,14 +99,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						 UnknownType,
 						 // array
 						 ArrayType,
-						 // Binary data. if the data is stored to file it is the clients responsibility to
+						 // Binary data. if the data is stored to file it is the
+						 // clients responsibility to
 						 deal with the endianess of the data.
 						 BinaryType,
 						 // a reference to a pattern
 						 PatternRefType,
 						 // a reference to a brush pattern
 						 BrushPatternRefType,
-						 // a reference to a custom color (either spot or global process)
+						 // a reference to a custom color (either spot or global
+						 // process)
 						 CustomColorRefType,
 						 // a reference to a gradient
 						 GradientRefType,
@@ -126,6 +133,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						 // a graphical object
 						 GraphicObjectType
 						 */
+					case BinaryType: {
+						ASInt32 size;
+						void *value;
+						// So far, only NULL values are supported for binary
+						// types. See nativePut()
+						if (!sAIEntry->ToBinary(entry, NULL, &size)
+								&& size == sizeof(void *)
+								&& !sAIEntry->ToBinary(entry, &value, &size)
+								&& value == NULL) {
+							converted = true;
+							res = NULL;
+						}
+					} break;
 					case IntegerType: {
 						ASInt32 value;
 						if (converted = !sAIEntry->ToInteger(entry, &value))
@@ -153,21 +173,26 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						if (converted = !sAIEntry->ToArt(entry, &art)) {
 							res = gEngine->wrapArtHandle(env, art, document);
 							// And set its dictionary
-							gEngine->setItemDictionary(env, res, dictionary, dictKey);
+							gEngine->setItemDictionary(env, res, dictionary,
+									dictKey);
 						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {
-							res = gEngine->wrapDictionaryHandle(env, dict, document, obj);
+							res = gEngine->wrapDictionaryHandle(env, dict,
+									document, obj);
 						}
 					} break;
 					case PointType: {
 						AIRealPoint point;
 						if (converted = !sAIEntry->ToRealPoint(entry, &point))
-							res = gEngine->convertPoint(env, kArtboardCoordinates, &point);
+							res = gEngine->convertPoint(env,
+									kArtboardCoordinates, &point);
 					} break;
 					case MatrixType: {
 						AIRealMatrix matrix;
 						// TODO: Test if conersion is correct
 						if (converted = !sAIEntry->ToRealMatrix(entry, &matrix))
-							res = gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &matrix);
+							res = gEngine->convertMatrix(env,
+									kCurrentCoordinates, kArtboardCoordinates,
+									&matrix);
 					} break;
 					case FillStyleType: {
 						AIFillStyle fill;
@@ -181,8 +206,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 							res = gEngine->convertStrokeStyle(env,&stroke);
 					}
 				}
-				// If the entry was not converted through any of the sAIEntry->To* methods,
-				// which all auto-release the entry, we need to release it manually.
+				// If the entry was not converted through any of the
+				// sAIEntry->To* methods, which all auto-release the entry, we
+				// need to release it manually.
 				if (!converted)
 					sAIEntry->Release(entry);
 			}
@@ -194,11 +220,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 /*
  * boolean nativePut(int handle, java.lang.String key, java.lang.Object value)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEnv *env, jobject obj, jint handle, jstring key, jobject value) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(
+		JNIEnv *env, jobject obj, jint handle, jstring key, jobject value) {
 	jboolean res = false;
 	try {
 		AIDictionaryRef dictionary = (AIDictionaryRef) handle;
-		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));
+		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(
+				key, gEngine->mid_Object_toString));
 		AIDictKey dictKey = sAIDictionary->Key(str);
 		delete str;
 		if (KEY_VISIBLE(dictKey)) {
@@ -210,7 +238,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 				 UnknownType,
 				 // array
 				 ArrayType,
-				 // Binary data. if the data is stored to file it is the clients responsibility to
+				 // Binary data. if the data is stored to file it is the clients
+				 // responsibility to
 				 deal with the endianess of the data.
 				 BinaryType,
 				 // a reference to a pattern
@@ -243,45 +272,59 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 				 GraphicObjectType
 				 */
 				if (value == NULL) {
-					sAIDictionary->SetBinaryEntry(dictionary, dictKey, NULL, 0); 
+					res = !sAIDictionary->SetBinaryEntry(dictionary, dictKey,
+							&value, sizeof(void *)); 
 				} else {
 					bool isDict = false;
 					if (env->IsInstanceOf(value, gEngine->cls_Integer)) {
-						entry = sAIEntry->FromInteger(gEngine->convertInteger(env, value));
+						entry = sAIEntry->FromInteger(gEngine->convertInteger(
+								env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_Boolean)) {
-						entry = sAIEntry->FromBoolean(gEngine->convertBoolean(env, value));
+						entry = sAIEntry->FromBoolean(gEngine->convertBoolean(
+								env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_Float)) {
-						entry = sAIEntry->FromReal(gEngine->convertFloat(env, value));
+						entry = sAIEntry->FromReal(gEngine->convertFloat(env,
+								value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_Double)) {
-						entry = sAIEntry->FromReal(gEngine->convertDouble(env, value));
+						entry = sAIEntry->FromReal(gEngine->convertDouble(env,
+								value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_String)) {
-						char *strValue = gEngine->convertString(env, (jstring) value);
+						char *strValue = gEngine->convertString(env,
+								(jstring) value);
 						entry = sAIEntry->FromString(strValue);
 						delete strValue;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Item)) {
 						AIArtHandle art = gEngine->getArtHandle(env, value);
-						res = !sAIDictionary->MoveArtToEntry(dictionary, dictKey, art);
+						res = !sAIDictionary->MoveArtToEntry(dictionary,
+								dictKey, art);
 						if (res)
-							gEngine->setItemDictionary(env, value, dictionary, dictKey);
-					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
-						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
+							gEngine->setItemDictionary(env, value, dictionary,
+									dictKey);
+					} else if (env->IsInstanceOf(value,
+							gEngine->cls_ai_Dictionary)) {
+						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(
+								env, value));
 						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_Map)) {
-						// Convert Map to Dictionary through Dictionary constructor, then
-						// use its handle:
-						value = gEngine->newObject(env, gEngine->cls_ai_Dictionary,
-							gEngine->cid_ai_Dictionary, value);
-						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
+						// Convert Map to Dictionary through Dictionary
+						// constructor, then  use its handle:
+						value = gEngine->newObject(env,
+								gEngine->cls_ai_Dictionary,
+								gEngine->cid_ai_Dictionary, value);
+						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(
+								env, value));
 						isDict = true;
-					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
-							   env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
+					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point)
+							|| env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
 						AIRealPoint point;
-						gEngine->convertPoint(env, kArtboardCoordinates, value, &point);
+						gEngine->convertPoint(env, kArtboardCoordinates, value,
+								&point);
 						entry = sAIEntry->FromRealPoint(&point);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Matrix)) {
 						AIRealMatrix matrix;
 						// TODO: Test if conersion is correct
-						gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, value, &matrix);
+						gEngine->convertMatrix(env, kCurrentCoordinates,
+								kArtboardCoordinates, value, &matrix);
 						entry = sAIEntry->FromRealMatrix(&matrix);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_FillStyle)) {
 						AIFillStyle style;
@@ -295,7 +338,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 					if (entry != NULL) {
 						res = !sAIDictionary->Set(dictionary, dictKey, entry);
 						if (isDict)
-							gEngine->callVoidMethod(env, value, gEngine->mid_ai_Dictionary_setValidation, obj);
+							gEngine->callVoidMethod(env, value,
+									gEngine->mid_ai_Dictionary_setValidation,
+									obj);
 					}
 				}
 			} catch(std::exception *e) {
@@ -313,10 +358,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 /*
  * boolean nativeRemove(int handle, java.lang.Object key)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativeRemove(JNIEnv *env, jobject obj, jint handle, jobject key) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativeRemove(
+		JNIEnv *env, jobject obj, jint handle, jobject key) {
 	try {
 		AIDictionaryRef dictionary = (AIDictionaryRef) handle;
-		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));
+		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(
+				key, gEngine->mid_Object_toString));
 		AIDictKey dictKey = sAIDictionary->Key(str);
 		delete str;
 		if (KEY_VISIBLE(dictKey))
@@ -328,13 +375,16 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativeRemove(JN
 /*
  * boolean containsKey(java.lang.Object key)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_containsKey(JNIEnv *env, jobject obj, jobject key) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_containsKey(
+		JNIEnv *env, jobject obj, jobject key) {
 	try {
 		AIDictionaryRef dictionary = gEngine->getDictionaryHandle(env, obj);
-		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));
+		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(
+				key, gEngine->mid_Object_toString));
 		AIDictKey dictKey = sAIDictionary->Key(str);
 		delete str;
-		return KEY_VISIBLE(dictKey) && sAIDictionary->IsKnown(dictionary, dictKey);
+		return KEY_VISIBLE(dictKey) && sAIDictionary->IsKnown(dictionary,
+				dictKey);
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -342,7 +392,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_containsKey(JNI
 /*
  * int size()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_size(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_size(JNIEnv *env,
+		jobject obj) {
 	try {
 		AIDictionaryRef dictionary = gEngine->getDictionaryHandle(env, obj);
 		return Dictionary_size(dictionary);
@@ -353,18 +404,21 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_size(JNIEnv *env, j
 /*
  * java.lang.String[] keys()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Dictionary_keys(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Dictionary_keys(
+		JNIEnv *env, jobject obj) {
 	try {
 		AIDictionaryRef dictionary = gEngine->getDictionaryHandle(env, obj);
 		AIDictionaryIterator iterator;
 		if (!sAIDictionary->Begin(dictionary, &iterator)) {
 			int index = 0;
-			jobjectArray array = env->NewObjectArray(Dictionary_size(dictionary), gEngine->cls_String, NULL);
+			jobjectArray array = env->NewObjectArray(Dictionary_size(dictionary),
+					gEngine->cls_String, NULL);
 			while (!sAIDictionaryIterator->AtEnd(iterator)) {
 				AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
 				if (KEY_VISIBLE(key)) {
 					const char *str = sAIDictionary->GetKeyString(key);
-					env->SetObjectArrayElement(array, index++, gEngine->convertString(env, str));
+					env->SetObjectArrayElement(array, index++,
+							gEngine->convertString(env, str));
 				}
 				sAIDictionaryIterator->Next(iterator);
 			}
@@ -378,7 +432,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Dictionary_keys(JNIEnv
 /*
  * void nativeRelease(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Dictionary_nativeRelease(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Dictionary_nativeRelease(
+		JNIEnv *env, jobject obj, jint handle) {
 	try {
 		sAIDictionary->Release((AIDictionaryRef) handle);
 	} EXCEPTION_CONVERT(env);
