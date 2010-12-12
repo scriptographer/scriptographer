@@ -34,7 +34,7 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 
 // Effect
 
-var hasEffects = false; // Work in progress, turn off for now
+var hasEffects = true; // Work in progress, turn off for now
 var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
 var mainDialog = new FloatingDialog(
@@ -512,9 +512,9 @@ var mainDialog = new FloatingDialog(
 	var effectEntries = {};
 
 	function followItem(item, speed, handler, first) {
-		if (first && handler.distanceThreshold > 0) {
-			speed = handler.distanceThreshold;
-			handler.distanceThreshold = 0;
+		if (first && handler.minDistance > 0) {
+			speed = handler.minDistance / 10;
+//			handler.minDistance = 0;
 		}
 		if (item instanceof Group || item instanceof CompoundPath
 			|| item instanceof Layer) {
@@ -545,8 +545,9 @@ var mainDialog = new FloatingDialog(
 					this[key] = value;
 			}
 		}, {}));
-		// We also need to backup and restore distanceThreshold
-		parameters.distanceThreshold = tool.distanceThreshold;
+		// We also need to backup min and maxDistance
+		parameters.minDistance = tool.minDistance;
+		parameters.maxDistance = tool.maxDistance;
 	}
 
 	function restoreScope(scope, tool, parameters) {
@@ -559,7 +560,9 @@ var mainDialog = new FloatingDialog(
 			// replaces handler functions dynamically this would not work!
 			scope.put(key, Hash.merge(scope.get(key), values[key]));
 		}
-		tool.distanceThreshold = parameters.distanceThreshold;
+		// Restore min and maxDistance
+		tool.minDistance = parameters.minDistance;
+		tool.maxDistance = parameters.maxDistance;
 	}
 
 	function filterScope(obj) {
@@ -641,6 +644,8 @@ var mainDialog = new FloatingDialog(
 			scope.put('effect', effect, true);
 			if (isTool) {
 				var toolHandler = handler;
+				// Save the initial parameters
+				saveScope(scope, toolHandler, parameters);
 				handler = {
 					onEditParameters: function(event) {
 						// Restore previously saved values into scope,
