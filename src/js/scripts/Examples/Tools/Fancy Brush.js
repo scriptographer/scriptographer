@@ -7,14 +7,15 @@ tool.fixedDistance = 15;
 
 var path;
 var strokeEnds = 6;
+var lastPoint;
 
 function onMouseDown(event) {
 	path = new Path();
 	path.fillColor = document.swatches.pick().color;
 	path.strokeColor = null;
+	lastPoint = null;
 }
 
-var lastPoint;
 function onMouseDrag(event) {
 	// If this is the first drag event,
 	// add the strokes at the start:
@@ -45,11 +46,13 @@ function onMouseDrag(event) {
 }
 
 function onMouseUp(event) {
-	var delta = event.point - lastPoint;
-	delta.length = tool.maxDistance;
-	addStrokes(event.point, delta);
-	path.closed = true;
-	path.smooth();
+	if (lastPoint) {
+		var delta = event.point - lastPoint;
+		delta.length = tool.maxDistance;
+		addStrokes(event.point, delta);
+		path.closed = true;
+		path.smooth();
+	}
 }
 
 function addStrokes(point, delta) {
