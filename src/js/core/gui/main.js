@@ -513,8 +513,8 @@ var mainDialog = new FloatingDialog(
 
 	function followItem(item, speed, handler, first) {
 		if (first && handler.minDistance > 0) {
-			speed = handler.minDistance / 10;
-//			handler.minDistance = 0;
+			speed = handler.minDistance; // / 10;
+			handler.minDistance = 0;
 		}
 		if (item instanceof Group || item instanceof CompoundPath
 			|| item instanceof Layer) {
