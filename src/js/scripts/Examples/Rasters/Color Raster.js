@@ -74,7 +74,7 @@ if (!raster || !dot) {
 					illustrator.updateProgress(y * raster.width + x + 1, pixelCount);
 					var col = raster.getPixel(x, y);
 					if (white != col) {
-						group.appendTop(createDot(x, raster.height - y, dot, col));
+						group.appendTop(createDot(x, y, dot, col));
 					}
 				}
 				document.redraw();
