@@ -44,7 +44,7 @@ public class FillStyle implements Style {
 	}
 
 	protected FillStyle(FillStyle fill, PathStyle style) {
-		init(fill.color, fill.overprint);
+		this(fill);
 		this.style = style;
 	}
 
@@ -54,7 +54,9 @@ public class FillStyle implements Style {
 	}
 
 	public FillStyle(FillStyle fill) {
-		init(fill.color, fill.overprint);
+		if (fill != null) {
+			init(fill.color, fill.overprint);
+		}
 	}
 
 	public FillStyle(Color color, Boolean overprint) {

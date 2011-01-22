@@ -48,9 +48,11 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(StrokeStyle stroke) {
-		init(stroke.color, stroke.overprint, stroke.width,
-				stroke.cap, stroke.join, stroke.miterLimit, 
-				stroke.dashOffset, stroke.dashArray);
+		if (stroke != null) {
+			init(stroke.color, stroke.overprint, stroke.width,
+					stroke.cap, stroke.join, stroke.miterLimit, 
+					stroke.dashOffset, stroke.dashArray);
+		}
 	}
 
 	public StrokeStyle(Color color, Boolean overprint, Float width,
