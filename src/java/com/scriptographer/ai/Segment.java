@@ -443,19 +443,36 @@ public class Segment implements Committable, ChangeReceiver {
 	 * {@grouptitle Sibling Segments}
 	 * 
 	 * The next segment in the {@link Path#getSegments()} array that the segment
-	 * belongs to.
+	 * belongs to. If the segments belongs to a closed path, the first segment
+	 * is returned for the last segment of the path.
 	 */
 	public Segment getNext() {
-		return segments != null && index < segments.size() - 1
-				? segments.get(index + 1) : null;
+		if (segments != null) {
+			if (index < segments.size() - 1) {
+				return segments.get(index + 1);
+			} else {
+				return segments.path != null && segments.path.isClosed()
+						? segments.getFirst() : null;
+			}
+		}
+		return null;
 	}
 	
 	/**
 	 * The previous segment in the {@link Path#getSegments()} array that the
-	 * segment belongs to.
+	 * segment belongs to. If the segments belongs to a closed path, the last
+	 * segment is returned for the first segment of the path.
 	 */
 	public Segment getPrevious() {
-		return segments != null && index > 0 ? segments.get(index - 1) : null;
+		if (segments != null) {
+			if (index > 0) {
+				return segments.get(index - 1);
+			} else {
+				return segments.path != null && segments.path.isClosed()
+						? segments.getLast() : null;
+			}
+		}
+		return null;
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {
