@@ -681,7 +681,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getControlBounds(JNIEn
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
-		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kControlBounds | kExcludeGuideBounds, &rt);
+		// TODO: This does not seem to actually return control bounds!
+		sAIArt->GetArtTransformBounds(art, NULL, kControlBounds | kExcludeGuideBounds, &rt);
 		return gEngine->convertRectangle(env, kArtboardCoordinates, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
