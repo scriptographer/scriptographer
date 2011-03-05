@@ -27,6 +27,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *en
 		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
 		AIPatternHandle symbol = NULL;
+		// Commit pending changes first
+		Item_commit(env, (AIArtHandle) artHandle);
 #if kPluginInterfaceVersion >= kAI15
 		// TODO: Test these parameters registrationPoint, transformDefinitionArt, decide wether to pass
 		// them and compare with behavior in CS4...
@@ -99,6 +101,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setDefinition(JNIEnv *e
 	try {
 		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj, true);
 		AIArtHandle art = gEngine->getArtHandle(env, item);
+		// Commit pending changes first
+		Item_commit(env, art);
 		// TODO: see what happens if symbol and art are not from the same document!
 		// consider adding a special case where this could work if it does not already (Using Item_copyTo?)
 #if kPluginInterfaceVersion >= kAI15
