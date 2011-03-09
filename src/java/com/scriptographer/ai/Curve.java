@@ -305,25 +305,6 @@ public class Curve implements ChangeReceiver {
 		return getControlBounds(getCurveValues());
 	}
 
-/*
-	public double getJavaLength() {
-		updateSegments();
-		return getJavaLength(getCurveValues());
-	}
-
-	public static double getJavaLength(double[][] curve) {
-		if (isFlat(curve)) {
-			double x = curve[3][0] - curve[0][0];
-			double y = curve[3][1] - curve[0][1];
-			return Math.sqrt(x * x + y * y);
-		} else {
-			double[][] right = new double[4][];
-			subdivide(curve, curve, right);
-			return getJavaLength(curve) + getJavaLength(right);
-		}
-	}
-*/
-
 	/*
 	 * Instead of using the underlying AI functions and loose time for calling
 	 * natives, let's do the dirty work ourselves:
@@ -844,37 +825,73 @@ public class Curve implements ChangeReceiver {
 		if (length >= bezierLength)
 			return 1;
 		double[][] temp = new double[4][];
-		// Let's use the Regula Falsi method to find the right length in 
-		// few iterations. Generally only 4 - 7 are required.
-		double left = 0;
-		double right = 1;
-		double error = 5e-15;
-		double fLeft = getLeftLength(curve, left, temp) - length;
-		double fRight = getLeftLength(curve, right, temp) - length;
-		double res = 0;
-		int n = 0, side = 0;
-		do {
-			res = (fLeft * right - fRight * left) / (fLeft - fRight);
-			if (Math.abs(right - left) < error * Math.abs(right + left))
-				break;
-			double fRes = getLeftLength(curve, res, temp) - length;
-			if (fRes * fRight > 0) {
-				right = res; fRight = fRes;
-				if (side == -1)
-					fLeft /= 2;
-				side = -1;
-			} else if (fLeft * fRes > 0) {
-				left = res;  fLeft = fRes;
-				if (side == +1)
-					fRight /= 2;
-				side = +1;
-			} else {
-				break;
+
+		// Let's use the Van Wijngaarden–Dekker–Brent Method to find solutions
+		// more reliably than with False Position Method.
+		double tol = 10e-6;
+		double a = 0;
+		double b = length / bezierLength; // Initial guess to bring us closer
+		double c = b, d = 0, e = 0;
+		double fa = getLeftLength(curve, a, temp) - length;
+		double fb = getLeftLength(curve, b, temp) - length;
+		double fc = fb;
+
+		for (int i = 1; i <= 16; i++) {
+			if ((fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0)) {
+				c = a;
+				fc = fa;
+				e = d = b - a;
 			}
-		} while(n++ < 100);
-//		System.out.println("n: " + n + "r: " + res + "f(r): "
-//				+ getLeftLength(curve, res, temp) + ", len: " + length);
-		return res;
+			if (Math.abs(fc) < Math.abs(fb)) {
+				a = b;
+				b = c;
+				c = a;
+				fa = fb;
+				fb = fc;
+				fc = fa;
+			}
+			double tol1 = 2 * Float.MIN_NORMAL * Math.abs(b) + 0.5 * tol;
+			double xm = 0.5 * (c - b);
+			if (Math.abs(xm) <= tol1 || fb == 0.0) {
+				return b;
+			}
+			if (Math.abs(e) >= tol1 && Math.abs(fa) > Math.abs(fb)) {
+				double p, q, r, s;
+				s = fb / fa;
+				if (a == c) {
+					p = 2.0 * xm * s;
+					q = 1.0 - s;
+				} else {
+					q = fa / fc;
+					r = fb / fc;
+					p = s * (2.0 * xm * q * (q - r) - (b - a) * (r - 1.0));
+					q = (q - 1.0) * (r - 1.0) * (s - 1.0);
+				}
+				if (p > 0.0)
+					q = -q;
+				p = Math.abs(p);
+				double min1 = 3.0 * xm * q - Math.abs(tol1 * q);
+				double min2 = Math.abs(e * q);
+				if (2.0 * p < (min1 < min2 ? min1 : min2)) {
+					e = d;
+					d = p / q;
+				} else {
+					d = xm;
+					e = d;
+				}
+			} else {
+				d = xm;
+				e = d;
+			}
+			a = b;
+			fa = fb;
+			if (Math.abs(d) > tol1)
+				b += d;
+			else
+				b += xm >= 0.0 ? Math.abs(tol1) : -Math.abs(tol1);
+			fb = getLeftLength(curve, b, temp) - length;
+		}
+		return b;
 	}
 
 	private static double getLeftLength(double curve[][], double parameter,
@@ -1035,7 +1052,7 @@ public class Curve implements ChangeReceiver {
 
 	private static int solveCubicRoots(double v1, double v2, double v3,
 			double v4, double v, double roots[], double epsilon) {
-		// conversion from the point coordinates (v1 .. v4) to the polynomal
+		// conversion from the point coordinates (v1 .. v4) to the polynomial
 		// coefficients:
 		double v1m3 = 3.0 * v1;
 		double v2m3 = 3.0 * v2;
