@@ -104,8 +104,16 @@ public class Point implements ChangeEmitter {
 	 * @jshide
 	 */
 	public Point(ArgumentReader reader) {
-		this(reader.has("x") ? reader.readDouble("x", 0) : reader.readDouble("width", 0),
-				reader.has("y") ? reader.readDouble("y", 0) : reader.readDouble("height", 0));
+		if (reader.has("x")) {
+			this.x = reader.readDouble("x", 0);
+			this.y = reader.readDouble("y", 0);
+		} else if (reader.has("width")) {
+			this.x = reader.readDouble("width", 0);
+			this.y = reader.readDouble("height", 0);
+		} else if (reader.has("length")) {
+			this.x = reader.readDouble("length", 0);
+			this.setAngle(reader.readDouble("angle", 0));
+		}
 	}
 
 	/**
