@@ -24,7 +24,6 @@ public enum ComponentType {
 	STRING("string"),
 	NUMBER("number"),
 	TEXT("text"),
-	RULER("ruler"),
 	BOOLEAN("boolean"),
 	/**
 	* @deprecated
@@ -39,6 +38,7 @@ public enum ComponentType {
 	RANGE("range"),
 	COLOR("color"),
 	FONT("font"),
+	RULER("ruler"),
 	MENU_ENTRY("menu-entry"),
 	MENU_SEPARATOR("menu-separator");
 
