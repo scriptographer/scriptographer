@@ -326,6 +326,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);
+		if (x < 0 || x >= data->info.bounds.right - data->info.bounds.left
+			|| y < 0 || y >= data->info.bounds.bottom - data->info.bounds.top)
+			return NULL;	
 
 		// just get a 1 pixelValues big tile from the raster
 
