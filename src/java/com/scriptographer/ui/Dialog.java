@@ -61,8 +61,8 @@ public class Dialog {
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Object> items) {
-		return prompt(title, items, null);
+			Map<String, Object> components) {
+		return prompt(title, components, null);
 	}
 
 	/**
