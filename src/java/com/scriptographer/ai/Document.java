@@ -1342,14 +1342,35 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * </code>
 	 * 
 	 * @param rect
-	 * @param size the size of the rounded corners
+	 * @param cornerSize the size of the rounded corners
 	 * @return the newly created path
 	 * 
 	 * @jshide
 	 */
-	public Path createRoundRectangle(Rectangle rect, Size size) {
+	public Path createRoundRectangle(Rectangle rect, Size cornerSize) {
 		activate(false, true);
-		return nativeCreateRoundRectangle(rect, size);
+		return nativeCreateRoundRectangle(rect, cornerSize);
+	}
+	/**
+	 * Creates a rectangular Path Item with rounded corners.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.RoundRectangle(new Point(100, 100),
+	 *         new Size(100, 100), new Size(30, 30));
+	 * </code>
+	 * 
+	 * @param point the bottom left point of the rectangle
+	 * @param size the size of the rectangle
+	 * @param cornerSize the size of the rounded corners
+	 * @return the newly created path
+	 * 
+	 * @jshide
+	 */
+	public Path createRoundRectangle(Point point, Size size, Size cornerSize) {
+		activate(false, true);
+		return nativeCreateRoundRectangle(new Rectangle(point, size),
+				cornerSize);
 	}
 
 	/**
