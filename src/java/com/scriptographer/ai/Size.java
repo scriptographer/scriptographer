@@ -44,6 +44,15 @@ public class Size implements ChangeEmitter {
 	}
 
 	/**
+	 * Creates a Size object with the given value for both width and height.
+	 * 
+	 * @param size The width and height of the Size
+	 */
+	public Size(double size) {
+		set(size, size);
+	}
+
+	/**
 	 * Creates a Size object using the x and y coordinates of the given Point
 	 * object.
 	 * 
