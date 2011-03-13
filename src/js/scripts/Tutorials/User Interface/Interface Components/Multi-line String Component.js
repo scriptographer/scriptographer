@@ -6,8 +6,8 @@
 var components = {
 	string: {
 		type: 'string', label: 'String',
-		value: 'This is a string\nwith multiple lines.',
-		rows: 6, columns: 30
+		value: 'This is a string\nwith multiple lines',
+		multiline: true, rows: 6, columns: 32
 	}
 };
 

@@ -4,9 +4,11 @@
 // http://scriptographer.org/tutorials/user-interface/creating-palette-windows/
 
 var components = { 
-    threshold: {
+    minDistance: {
 		type: 'number', label: 'Minimum Distance',
 		units: 'point', value: 0,
+		// Define the onChange() handler which is fired each time
+		// the user changes the minDistance value.
 		onChange: function(value) {
 			print('Minimum Distance was changed to', value);
 			tool.minDistance = value;
