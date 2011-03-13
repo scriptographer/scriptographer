@@ -94,7 +94,31 @@ public class CurveLocation {
 			return curve.getIndex();
 		return -1;
 	}
+
+	/**
+	 * The length of the path from its beginning up to the location described
+	 * by this object.
+	 */
+	public Double getLength() {
+		Path path = curve.getPath();
+		if (path != null)
+			return path.getLength(this);
+		return null;
+	}
 	
+	/**
+	 * The length of the curve from its beginning up to the location described
+	 * by this object.
+	 */
+	public Double getCurveLength() {
+		if (curve != null) {
+			Double parameter = getParameter();
+			if (parameter != null)
+				return curve.getPartLength(0, parameter);
+		}
+		return null;
+	}
+
 	/**
 	 * The curve parameter, as used by various bezier curve calculations. It is
 	 * value between {@code 0} (beginning of the curve) and {@code 1} (end of
@@ -121,7 +145,7 @@ public class CurveLocation {
 	 * The item this curve belongs to, if any.
 	 */
 	public Item getItem() {
-		return curve.getPath();
+		return curve != null ? curve.getPath() : null;
 	}
 
 	public String toString() {

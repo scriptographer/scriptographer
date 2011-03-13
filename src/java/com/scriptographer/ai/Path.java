@@ -550,7 +550,7 @@ public class Path extends PathItem {
 		return getLocation(length);
 	}
 
-	public double getLength(CurveLocation location) {
+	protected double getLength(CurveLocation location) {
 		int index = location.getIndex();
 		if (index != -1) {
 			double length = 0;
