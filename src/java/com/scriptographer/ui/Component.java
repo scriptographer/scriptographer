@@ -420,7 +420,6 @@ public class Component implements ChangeReceiver {
 		if (fullSize) {
 			width = null;
 			length = null;
-			columns = null;
 		}
 		// Update definition as well, so LiveEffect scope restoration works
 		if (definition != null)
@@ -941,7 +940,7 @@ public class Component implements ChangeReceiver {
 	 *     text: { 
 	 *         type: 'string',
 	 *         value: 'This is a string component\nwith 6 rows and 30 columns', 
-	 *         rows: 6, columns: 30
+	 *         rows: 6, columns: 32
 	 *     } 
 	 * }; 
 	 * var palette = new Palette('Text', components);
@@ -953,7 +952,7 @@ public class Component implements ChangeReceiver {
 
 	public void setColumns(Integer columns) {
 		if (type == ComponentType.STRING) {
-			this.multiline = true;
+			this.setMultiline(true);
 			this.columns = columns;
 			// Clear width and length when setting columns and vice versa.
 			fullSize = false;
@@ -989,7 +988,7 @@ public class Component implements ChangeReceiver {
 
 	public void setRows(Integer rows) {
 		if (type == ComponentType.STRING) {
-			this.multiline = rows > 1;
+			this.setMultiline(rows > 1);
 			this.rows = rows;
 			// Clear height when setting rows and vice versa.
 			height = null;
