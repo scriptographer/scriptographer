@@ -116,8 +116,10 @@ public class ModalDialog extends Dialog {
 						// active before this invisible modal dialog got wrongly
 						// activated.
 						if (previousActiveDialog != null
-								&& previousActiveDialog != ModalDialog.this)
+								&& previousActiveDialog != ModalDialog.this
+								&& previousActiveDialog.isActive()) {
 							previousActiveDialog.setActive(true);
+						}
 						setActive(false);
 					}
 				}
