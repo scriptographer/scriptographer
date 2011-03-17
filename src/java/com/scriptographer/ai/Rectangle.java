@@ -466,10 +466,10 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 	 *         intersect each other}
 	 */
 	public boolean intersects(Rectangle rect) {
-		return rect.x + rect.width > this.x
-				&& rect.y + rect.height > this.y
-				&& rect.x < this.x + this.width
-				&& rect.y < this.y + this.height;
+		return rect.x + rect.width >= this.x
+				&& rect.y + rect.height >= this.y
+				&& rect.x <= this.x + this.width
+				&& rect.y <= this.y + this.height;
 	}
 
 	/**
