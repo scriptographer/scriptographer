@@ -64,13 +64,22 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	if (selected != NULL) {
 		long count = 0;
 		sAIArtSet->CountArtSet(selected, &count);
-		// We're expecting exactly one result from Pathfinder. Either a simple object, a Group or a CompoundPath
-		if (count != 1)
-			throw new StringException("Received more than one object back from Pathfinder.");
 		AIArtHandle art = NULL;
 		sAIArtSet->IndexArtSet(selected, 0, &art);
-		if (art != NULL)
-			result = gEngine->wrapArtHandle(env, art, NULL, true);
+		if (art != NULL) {
+			// Group the results if they are more than one and were not grouped
+			// by Pathfinder already
+			if (count != 1) {
+				AIArtHandle group = NULL;
+				sAIArt->NewArt(kGroupArt, kPlaceAbove, art, &group);
+				for (int i = 0; i < count; i++) {
+					sAIArtSet->IndexArtSet(selected, i, &art);
+					sAIArt->ReorderArt(art, kPlaceInsideOnTop, group);
+				}
+				art = group;
+			}
+		}
+		result = gEngine->wrapArtHandle(env, art, NULL, true);
 		sAIArtSet->DisposeArtSet(&selected);
 	}
 	Item_deselectAll();
