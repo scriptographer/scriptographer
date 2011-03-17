@@ -19,7 +19,7 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 
 // Effect
 
-var hasEffects = true; // Work in progress, turn off for now
+var hasEffects = false; // Work in progress, turn off for now
 var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
 var mainDialog = new FloatingDialog(
