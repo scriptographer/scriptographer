@@ -89,10 +89,10 @@ public class CurveLocation {
 	 * The index of the curve within the {@link Path#getCurves()} list, if the
 	 * curve is part of a {@link Path} item.
 	 */
-	public int getIndex() {
+	public Integer getIndex() {
 		if (curve != null)
 			return curve.getIndex();
-		return -1;
+		return null;
 	}
 
 	/**
