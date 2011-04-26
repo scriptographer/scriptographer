@@ -61,12 +61,13 @@ public class CurveLocation {
 	public Segment getSegment() {
 		if (segment == null) {
 			// Determine the segment closest to the hit point
-			if (parameter == 0) {
+			Double parameter = getParameter();
+			if (parameter == null) {
+				return null;
+			} else if (parameter == 0) {
 				segment = curve.getSegment1();
 			} else if (parameter == 1) {
 				segment = curve.getSegment2();
-			} else if (parameter == -1) {
-				return null;
 			} else {
 				// Determine the closest segment by comparing curve lengths
 				Curve rightCurve = ((Curve) curve.clone()).divide(parameter);
@@ -86,13 +87,18 @@ public class CurveLocation {
 	}
 
 	/**
+	 * The path on which the location is defined.
+	 */
+	public Path getPath() {
+		return curve != null ? curve.getPath() : null;
+	}
+
+	/**
 	 * The index of the curve within the {@link Path#getCurves()} list, if the
 	 * curve is part of a {@link Path} item.
 	 */
 	public Integer getIndex() {
-		if (curve != null)
-			return curve.getIndex();
-		return null;
+		return curve != null ? curve.getIndex() : null;
 	}
 
 	/**
@@ -100,9 +106,11 @@ public class CurveLocation {
 	 * by this object.
 	 */
 	public Double getLength() {
-		Path path = curve.getPath();
-		if (path != null)
-			return path.getLength(this);
+		if (curve != null) {
+			Path path = curve.getPath();
+			if (path != null)
+				return path.getLength(this);
+		}
 		return null;
 	}
 	
@@ -125,9 +133,8 @@ public class CurveLocation {
 	 * the curve).
 	 */
 	public Double getParameter() {
-		if (parameter == -1 && point != null) {
+		if (parameter == -1 && point != null && curve != null)
 			parameter = curve.getParameter(point);
-		}
 		return parameter != -1 ? parameter : null;
 	}
 	
@@ -136,9 +143,32 @@ public class CurveLocation {
 	 * {@link #getParameter()}.
 	 */
 	public Point getPoint() {
-		if (point == null && curve != null)
-			point = curve.getPoint(parameter);
+		if (point == null && curve != null) {
+			Double parameter = getParameter();
+			if (parameter != null)
+				point = curve.getPoint(parameter);
+		}
 		return point;
+	}
+
+	/**
+	 * The tangential vector to the {@link #getCurve()} at the given location.
+	 */
+	public Point getTangent() {
+		Double parameter = getParameter();
+		return parameter != null && curve != null
+				? curve.getTangent(parameter)
+				: null;
+	}
+
+	/**
+	 * The normal vector to the {@link #getCurve()} at the given location.
+	 */
+	public Point getNormal() {
+		Double parameter = getParameter();
+		return parameter != null && curve != null
+				? curve.getNormal(parameter)
+				: null;
 	}
 
 	/**
@@ -156,7 +186,8 @@ public class CurveLocation {
 		int index = getIndex();
 		if (index >= 0)
 			buf.append(", index: ").append(index);
-		if (parameter != -1)
+		Double parameter = getParameter();
+		if (parameter != null)
 			buf.append(", parameter: ").append(parameter);
 		// Replace the first ',' with a '{', no matter which one came first.
 		buf.setCharAt(0, '{');

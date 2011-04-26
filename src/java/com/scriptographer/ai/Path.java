@@ -584,22 +584,24 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * Returns the tangent to the path at the given length as a vector point.
+	 * Returns the tangential vector to the path at the given length as a vector
+	 * point.
 	 */
 	public Point getTangent(double length) {
 		CurveLocation loc = getLocation(length);
 		if (loc != null)
-			return loc.getCurve().getTangent(loc.getParameter());
+			return loc.getTangent();
 		return null;
 	}
 
 	/**
-	 * Returns the normal to the path at the given length as a vector point.
+	 * Returns the normal vector to the path at the given length as a vector
+	 * point.
 	 */
 	public Point getNormal(double length) {
 		CurveLocation loc = getLocation(length);
 		if (loc != null)
-			return loc.getCurve().getNormal(loc.getParameter());
+			return loc.getNormal();
 		return null;
 	}
 
