@@ -4,7 +4,7 @@ function createDot(x, y, dot, radius) {
 	var item = dot.clone();
 	item.strokeWidth = radius * values.scale;
 	item.position += new Point(x, y) * values.size;
-	item.rotate(radius * Math.PI * 2);
+	item.rotate(radius * 360);
 	return item;
 }
 
