@@ -87,9 +87,9 @@ public class CurveLocation {
 	}
 
 	/**
-	 * The path on which the location is defined.
+	 * The item this curve belongs to, if any.
 	 */
-	public Path getPath() {
+	public Item getItem() {
 		return curve != null ? curve.getPath() : null;
 	}
 
@@ -169,13 +169,6 @@ public class CurveLocation {
 		return parameter != null && curve != null
 				? curve.getNormal(parameter)
 				: null;
-	}
-
-	/**
-	 * The item this curve belongs to, if any.
-	 */
-	public Item getItem() {
-		return curve != null ? curve.getPath() : null;
 	}
 
 	public String toString() {
