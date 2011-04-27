@@ -69,8 +69,8 @@ public class CurveLocation {
 				segment = curve.getSegment2();
 			} else {
 				// Determine the closest segment by comparing curve lengths
-				Curve rightCurve = ((Curve) curve.clone()).divide(parameter);
-				segment = rightCurve.getLength() > curve.getLength() / 2
+				segment = curve.getLength(0, parameter) 
+					< curve.getLength(parameter, 1)
 						? curve.getSegment1()
 						: curve.getSegment2();
 			}
