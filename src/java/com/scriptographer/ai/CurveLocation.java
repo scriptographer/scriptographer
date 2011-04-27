@@ -22,8 +22,7 @@ package com.scriptographer.ai;
  * {@link Path#getCurves()} list is also provided.
  * 
  * The class is in use in many places, such as {@link Path#getLocation(double)},
- * {@link Path#getLength(CurveLocation)}, {@link Path#getPoint(double)},
- * {@link Path#split(CurveLocation)},
+ * {@link Path#getPoint(double)}, {@link Path#split(CurveLocation)},
  * {@link PathItem#getIntersections(PathItem)}, etc.
  * 
  * @author lehni
@@ -105,20 +104,27 @@ public class CurveLocation {
 	 * The length of the path from its beginning up to the location described
 	 * by this object.
 	 */
-	public Double getLength() {
+	public Double getOffset() {
 		if (curve != null) {
 			Path path = curve.getPath();
 			if (path != null)
-				return path.getLength(this);
+				return path.getOffset(this);
 		}
 		return null;
 	}
-	
+
+	/**
+	 * @deprecated
+	 */
+	public Double getLength() {
+		return getOffset();
+	}
+
 	/**
 	 * The length of the curve from its beginning up to the location described
 	 * by this object.
 	 */
-	public Double getCurveLength() {
+	public Double getCurveOffset() {
 		if (curve != null) {
 			Double parameter = getParameter();
 			if (parameter != null)
@@ -127,6 +133,13 @@ public class CurveLocation {
 		return null;
 	}
 
+	/**
+	 * @deprecated
+	 */
+	public Double getCurveLength() {
+		return getCurveOffset();
+	}
+	
 	/**
 	 * The curve parameter, as used by various bezier curve calculations. It is
 	 * value between {@code 0} (beginning of the curve) and {@code 1} (end of

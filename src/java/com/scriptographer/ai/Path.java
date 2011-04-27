@@ -550,7 +550,7 @@ public class Path extends PathItem {
 		return getLocation(length);
 	}
 
-	protected double getLength(CurveLocation location) {
+	protected double getOffset(CurveLocation location) {
 		int index = location.getIndex();
 		if (index != -1) {
 			double length = 0;
@@ -570,7 +570,7 @@ public class Path extends PathItem {
 	 * @deprecated
 	 */
 	public double getLengthOfPosition(CurveLocation location) {
-		return getLength(location);
+		return getOffset(location);
 	}
 
 	/**

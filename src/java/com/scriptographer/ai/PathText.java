@@ -67,7 +67,7 @@ public class PathText extends TextItem {
 			segment--;
 			param = 1;
 		}
-		return path.getLength(new CurveLocation(path, segment, param));
+		return path.getOffset(new CurveLocation(path, segment, param));
 	}
 
 	private void setOffset(int index, double offset) {
