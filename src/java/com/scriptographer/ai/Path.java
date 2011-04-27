@@ -569,12 +569,12 @@ public class Path extends PathItem {
 	protected Double getOffset(CurveLocation location) {
 		Integer index = location.getIndex();
 		if (index != null) {
-			double length = 0;
+			double offset = 0;
 			CurveList curves = getCurves();
 			for (int i = 0; i < index; i++)
-				length += curves.get(i).getLength();
+				offset += curves.get(i).getLength();
 			Curve curve = curves.get(index);
-			return length + curve.getLength(0, location.getParameter());
+			return offset + curve.getLength(0, location.getParameter());
 		}
 		return null;
 	}
