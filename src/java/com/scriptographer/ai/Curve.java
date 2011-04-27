@@ -279,6 +279,15 @@ public class Curve implements ChangeReceiver {
 				: null;
 	}
 
+	public void setSelected(boolean selected) {
+		this.getHandle1().setSelected(selected);
+		this.getHandle2().setSelected(selected);
+	}
+
+	public boolean isSelected() {
+		return this.getHandle1().isSelected() && this.getHandle2().isSelected();
+	}
+
 	private static native double nativeGetLength(double p1x, double p1y,
 			double h1x, double h1y, double h2x, double h2y, double p2x,
 			double p2y);
