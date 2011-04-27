@@ -309,6 +309,19 @@ public class Curve implements ChangeReceiver {
 		);
 	}
 
+	public double getLength(double from, double to) {
+		updateSegments();
+		double[][] curve = getCurveValues();
+		return getLength(curve, from, to, curve);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public double getPartLength(double from, double to) {
+		return getLength(from, to);
+	}
+
 	public Rectangle getControlBounds() {
 		updateSegments();
 		return getControlBounds(getCurveValues());
@@ -599,12 +612,6 @@ public class Curve implements ChangeReceiver {
 		}
 	}
 
-	public double getPartLength(double fromParameter, double toParameter) {
-		updateSegments();
-		double[][] curve = getCurveValues();
-		return getPartLength(curve, fromParameter, toParameter, curve);
-	}
-
 	public Object clone() {
 		updateSegments();
 		return new Curve(segment1, segment2);
@@ -828,6 +835,7 @@ public class Curve implements ChangeReceiver {
 	}
 
 	protected static double getParameter(double[][] curve, double length) {
+		// TODO: Port root finding algorithm from Paper.js back
 		if (length <= 0)
 			return 0;
 		double bezierLength = getLength(curve);
@@ -879,27 +887,30 @@ public class Curve implements ChangeReceiver {
 	}
 
 	/**
-	 * curve is only modified if it is passed as tempCurve as well. this is
-	 * needed in getParameterWithLength above...
+	 * Curve is only modified if it is passed as tempCurve as well. this is
+	 * needed in #getLength() above...
+	 * 
+	 * TODO: Port Gauss-Legendre Numerical Integration method from Paper.js
+	 * to Scriptographer and stop relying on internal Adobe code.
 	 */
-	private static double getPartLength(double curve[][], double fromParameter,
-			double toParameter, double tempCurve[][]) {
-		if (fromParameter > toParameter) {
-			double temp = fromParameter;
-			fromParameter = toParameter;
-			toParameter = temp;
-		} else if (fromParameter == toParameter) {
+	private static double getLength(double curve[][], double from, double to,
+			double tempCurve[][]) {
+		if (from > to) {
+			double temp = from;
+			from = to;
+			to = temp;
+		} else if (from == to) {
 			return 0;
 		}
 
-		if (fromParameter < 0)
-			fromParameter = 0;
+		if (from < 0)
+			from = 0;
 
-		if (toParameter > 1)
-			toParameter = 1;
+		if (to > 1)
+			to = 1;
 
-		return getLeftLength(curve, toParameter, tempCurve)
-			- getLeftLength(curve, fromParameter, tempCurve);
+		return getLeftLength(curve, to, tempCurve)
+			- getLeftLength(curve, from, tempCurve);
 	}
 
 	protected static double getParameter(double[][] curve, double x,

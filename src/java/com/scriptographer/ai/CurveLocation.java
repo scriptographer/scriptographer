@@ -128,7 +128,7 @@ public class CurveLocation {
 		if (curve != null) {
 			Double parameter = getParameter();
 			if (parameter != null)
-				return curve.getPartLength(0, parameter);
+				return curve.getLength(0, parameter);
 		}
 		return null;
 	}
@@ -189,8 +189,8 @@ public class CurveLocation {
 		Point point = getPoint();
 		if (point != null)
 			buf.append(", point: ").append(getPoint());
-		int index = getIndex();
-		if (index >= 0)
+		Integer index = getIndex();
+		if (index != null)
 			buf.append(", index: ").append(index);
 		Double parameter = getParameter();
 		if (parameter != null)

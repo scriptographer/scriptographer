@@ -112,8 +112,11 @@ public class HitResult extends CurveLocation {
 		if (point != null)
 			buf.append(", point: ").append(getPoint());
 		Curve curve = getCurve();
-		if (curve != null)
-			buf.append(", index: ").append(getIndex());
+		if (curve != null) {
+			Integer index = getIndex();
+			if (index != null)
+				buf.append(", index: ").append(index);
+		}
 		Double parameter = getParameter();
 		if (parameter != null)
 			buf.append(", parameter: ").append(parameter);

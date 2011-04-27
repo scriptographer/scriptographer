@@ -566,26 +566,23 @@ public class Path extends PathItem {
 		return getLocation(length);
 	}
 
-	protected double getOffset(CurveLocation location) {
-		int index = location.getIndex();
-		if (index != -1) {
+	protected Double getOffset(CurveLocation location) {
+		Integer index = location.getIndex();
+		if (index != null) {
 			double length = 0;
 			CurveList curves = getCurves();
 			for (int i = 0; i < index; i++)
 				length += curves.get(i).getLength();
-			// Clone the curve as we're going to divide it to get the length.
-			// Without cloning it, this would modify the path.
-			Curve curve = (Curve) curves.get(index).clone();
-			curve.divide(location.getParameter());
-			return length + curve.getLength();
+			Curve curve = curves.get(index);
+			return length + curve.getLength(0, location.getParameter());
 		}
-		return -1;
+		return null;
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public double getLengthOfPosition(CurveLocation location) {
+	public Double getLengthOfPosition(CurveLocation location) {
 		return getOffset(location);
 	}
 

@@ -56,7 +56,7 @@ public class PathText extends TextItem {
 		return (Path) getFirstChild();
 	}
 
-	private double getOffset(int index) {
+	private Double getOffset(int index) {
 		double[] offsets = nativeGetPathOffsets();
 		double param = offsets[index];
 		int segment = (int) param;
@@ -86,7 +86,7 @@ public class PathText extends TextItem {
 		nativeSetPathOffsets(offsets[0], offsets[1]);
 	}
 
-	public double getStartOffset() {
+	public Double getStartOffset() {
 		return getOffset(0);
 	}
 
@@ -94,7 +94,7 @@ public class PathText extends TextItem {
 		setOffset(0, offset);
 	}
 
-	public double getEndOffset() {
+	public Double getEndOffset() {
 		return getOffset(1);
 	}
 
