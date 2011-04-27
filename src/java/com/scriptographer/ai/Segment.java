@@ -561,6 +561,14 @@ public class Segment implements Committable, ChangeReceiver {
 		}
 	}
 
+	public boolean isSelected() {
+		return isSelected(point);
+	}
+
+	public void setSelected(boolean selected) {
+		setSelected(point, selected);
+	}
+
 	/**
 	 * Retruns the reversed the curve, without modifying the curve itself.
 	 */
