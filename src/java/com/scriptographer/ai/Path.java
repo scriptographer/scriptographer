@@ -390,8 +390,8 @@ public class Path extends PathItem {
 		reduceSegments(0.1f);
 	}
 	
-	public Path split(double length) {
-		return split(getLocation(length));
+	public Path split(double offset) {
+		return split(getLocation(offset));
 	}
 
 	public Path split(CurveLocation location) {
@@ -537,22 +537,22 @@ public class Path extends PathItem {
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?
-	public CurveLocation getLocation(double length) {
+	public CurveLocation getLocation(double offset) {
 		CurveList curves = getCurves();
 		double currentLength = 0;
 		for (int i = 0, l = curves.size(); i < l; i++) {
 			double startLength = currentLength;
 			Curve curve = curves.get(i);
 			currentLength += curve.getLength();
-			if (currentLength >= length) {
+			if (currentLength >= offset) {
 				// found the segment within which the length lies
-				double t = curve.getParameter(length - startLength);
+				double t = curve.getParameter(offset - startLength);
 				return new CurveLocation(curve, t);
 			}
 		}
 		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
-		if (length <= getLength()) {
+		if (offset <= getLength()) {
 			Curve curve = curves.getLast();
 			return new CurveLocation(curve, 1);
 		}
@@ -587,32 +587,32 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * Returns the point of the path at the given length.
+	 * Returns the point of the path at the given offset.
 	 */
-	public Point getPoint(double length) {
-		CurveLocation loc = getLocation(length);
+	public Point getPoint(double offset) {
+		CurveLocation loc = getLocation(offset);
 		if (loc != null)
 			return loc.getPoint();
 		return null;
 	}
 
 	/**
-	 * Returns the tangential vector to the path at the given length as a vector
+	 * Returns the tangential vector to the path at the given offset as a vector
 	 * point.
 	 */
-	public Point getTangent(double length) {
-		CurveLocation loc = getLocation(length);
+	public Point getTangent(double offset) {
+		CurveLocation loc = getLocation(offset);
 		if (loc != null)
 			return loc.getTangent();
 		return null;
 	}
 
 	/**
-	 * Returns the normal vector to the path at the given length as a vector
+	 * Returns the normal vector to the path at the given offset as a vector
 	 * point.
 	 */
-	public Point getNormal(double length) {
-		CurveLocation loc = getLocation(length);
+	public Point getNormal(double offset) {
+		CurveLocation loc = getLocation(offset);
 		if (loc != null)
 			return loc.getNormal();
 		return null;
