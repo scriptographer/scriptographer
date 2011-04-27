@@ -243,6 +243,22 @@ public class Path extends PathItem {
 		return curves;
 	}
 
+	public Segment getFirstSegment() {
+		return segments.getFirst();
+	}
+
+	public Segment getLastSegment() {
+		return segments.getLast();
+	}
+
+	public Curve getFirstCurve() {
+		return getCurves().getFirst();
+	}
+
+	public Curve getLastCurve() {
+		return getCurves().getLast();
+	}
+
 	/**
 	 * Specifies whether the path is closed. If it is closed, Illustrator
 	 * connects the first and last segments.
