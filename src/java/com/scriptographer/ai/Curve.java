@@ -265,18 +265,30 @@ public class Curve implements ChangeReceiver {
 	 * The next curve in the {@link Path#getCurves()} array.
 	 */
 	public Curve getNext() {
-		return segments != null && index1 + 1 < segments.size()
-				? segments.get(index1 + 1).getCurve()
-				: null;
+		if (segments != null) {
+			if (index1 + 1 < segments.size()) {
+				return segments.get(index1 + 1).getCurve();
+			} else {
+				return segments.path != null && segments.path.isClosed()
+						? segments.getFirst().getCurve() : null;
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * The previous curve in the {@link Path#getCurves()} array.
 	 */
 	public Curve getPrevious() {
-		return segments != null && index1 > 0
-				? segments.get(index1 - 1).getCurve()
-				: null;
+		if (segments != null) {
+			if (index1 > 0) {
+				return segments.get(index1 - 1).getCurve();
+			} else {
+				return segments.path != null && segments.path.isClosed()
+						? segments.getLast().getCurve() : null;
+			}
+		}
+		return null;
 	}
 
 	public void setSelected(boolean selected) {

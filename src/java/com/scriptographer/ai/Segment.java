@@ -448,7 +448,7 @@ public class Segment implements Committable, ChangeReceiver {
 	 */
 	public Segment getNext() {
 		if (segments != null) {
-			if (index < segments.size() - 1) {
+			if (index + 1 < segments.size()) {
 				return segments.get(index + 1);
 			} else {
 				return segments.path != null && segments.path.isClosed()
@@ -500,20 +500,17 @@ public class Segment implements Committable, ChangeReceiver {
 		boolean handleOutSelected = selectionState == SELECTION_HANDLE_OUT
 						|| selectionState == SELECTION_HANDLE_BOTH;
 		boolean changed = false;
-		Segment previous = getPrevious();
-		if (previous == null && segments.path.isClosed())
-			previous = segments.getLast();
-		Segment next = getNext();
-		if (next == null && segments.path.isClosed())
-			next = segments.getFirst();
 		if (pt == point) {
 			if (pointSelected != selected) {
 				if (selected) {
 					handleInSelected = false;
 					handleOutSelected = false;
 				} else {
-					// When deselecting a point, the handles get selected instead
-					// depending on the selection state of their neighbors.
+					Segment previous = getPrevious();
+					Segment next = getNext();
+					// When deselecting a point, the handles get selected
+					// instead depending on the selection state of their
+					// neighbors.
 					handleInSelected = previous != null
 							&& (previous.getPoint().isSelected()
 									|| previous.getHandleOut().isSelected());
