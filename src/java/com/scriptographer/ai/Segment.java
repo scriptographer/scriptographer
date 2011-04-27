@@ -432,9 +432,14 @@ public class Segment implements Committable, ChangeReceiver {
 	public Curve getCurve() {
 		if (segments  != null && segments.path != null) {
 			CurveList curves = segments.path.getCurves();
+			int index = this.index;
+			// The last segment of an open path belongs to the last curve
+			if (!segments.path.isClosed() && index == segments.size() - 1)
+				index--;
 			// The curves list handles closing curves, so the curves.size
 			// is adjusted accordingly. just check to be in the boundaries here: 
-			return index < curves.size() ? (Curve) curves.get(index) : null;
+			if (index < curves.size())
+				return curves.get(index);
 		}
 		return null;
 	}
