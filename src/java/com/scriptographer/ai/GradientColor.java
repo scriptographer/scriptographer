@@ -142,8 +142,7 @@ public class GradientColor extends Color {
 			return gradient.equals(color.gradient)
 				&& origin.equals(color.origin)
 				&& destination.equals(color.destination)
-				&& hilite.equals(color.hilite)
-				&& gradient.equals(color.gradient);
+				&& hilite.equals(color.hilite);
 		}
 		return false;
 	}
