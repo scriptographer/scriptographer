@@ -159,6 +159,9 @@ public class Path extends PathItem {
 		return getSegments().remove(index);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Segment remove(Segment segment) {
 		return getSegments().remove(segment);
 	}
