@@ -188,7 +188,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			ReadOnlyList list = (ReadOnlyList) javaObject;
 			for (int i = 0, l = list.size(); i < l; i++) {
 				if (i > 0)
-					buffer.append(", ");
+					buffer.append(",");
 				Object entry = list.get(i);
 				if (entry != null) {
 	                Scriptable obj = Context.toObject(entry, this);
