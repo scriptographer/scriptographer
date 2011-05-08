@@ -262,7 +262,7 @@ public class Tool extends ToolHandler {
 
 	public void onHandleEvent(ToolEventType type, Point pt, int pressure,
 			int modifiers) {
-		if (type == ToolEventType.MOUSE_DOWN) {
+		if (type == ToolEventType.MOUSEDOWN) {
 			try {
 				Item.collectCreatedItems();
 				super.onHandleEvent(type, pt, pressure, modifiers);
@@ -297,15 +297,15 @@ public class Tool extends ToolHandler {
 							: null),
 					// Activate the underlying Artboard if the mouse is pressed,
 					// as Ai only activates on mouse-up.
-					type == ToolEventType.MOUSE_DOWN,
+					type == ToolEventType.MOUSEDOWN,
 					// Update coordinates system when tool is selected, mouse
 					// is clicked or released, and when the we're not in a drag
 					// movement. During a drag movement, the coordinates won't
 					// change and therefore do not need an update.
 					type == ToolEventType.SELECT
-					|| type == ToolEventType.MOUSE_DOWN
-					|| type == ToolEventType.MOUSE_UP
-					|| type == ToolEventType.MOUSE_MOVE,
+					|| type == ToolEventType.MOUSEDOWN
+					|| type == ToolEventType.MOUSEUP
+					|| type == ToolEventType.MOUSEMOVE,
 					x, y);
 			tool.onHandleEvent(type, point, pressure, modifiers);
 		}

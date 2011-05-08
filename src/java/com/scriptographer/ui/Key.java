@@ -38,7 +38,7 @@ public class Key {
 	 * </code>
 	 * @return {@true if the key is pressed}
 	 */
-	public static boolean isDown(KeyCode key) {
+	public static boolean isDown(KeyIdentifier key) {
 		return ScriptographerEngine.isKeyDown(key);
 	}
 }

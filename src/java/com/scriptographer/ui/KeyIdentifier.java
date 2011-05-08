@@ -24,7 +24,7 @@ import com.scriptographer.ScriptographerEngine;
 /* 
  * TODO Merge with Tracker constants and onKeyDown handling?
  */
-public enum KeyCode implements IntegerEnum {
+public enum KeyIdentifier implements IntegerEnum {
 	/**
 	 * Same as META on Mac and CONTROL on Windows
 	 */
@@ -59,6 +59,7 @@ public enum KeyCode implements IntegerEnum {
 	PERIOD('.'),
 	SLASH('/'),
 	// Shame we can't just used numbers as names
+	// TODO: Have the Rhino layer translate them
 	NUM_0('0'),
 	NUM_1('1'),
 	NUM_2('2'),
@@ -180,7 +181,7 @@ public enum KeyCode implements IntegerEnum {
 
 	protected int code;
 
-	private KeyCode(int code) {
+	private KeyIdentifier(int code) {
 		this.code = code;
 	}
 

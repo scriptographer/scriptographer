@@ -350,12 +350,12 @@ public class ToolHandler extends NativeObject {
 		lastPoint = point;
 		point = pt;
 		switch (type) {
-		case MOUSE_DOWN:
+		case MOUSEDOWN:
 			lastPoint = downPoint;
 			downPoint = point;
 			downCount++;
 			break;
-		case MOUSE_UP:
+		case MOUSEUP:
 			// Mouse up events return the down point for last point,
 			// so delta is spanning over the whole drag.
 			lastPoint = downPoint;
@@ -374,12 +374,12 @@ public class ToolHandler extends NativeObject {
 			int modifiers) {
 		try {
 			switch (type) {
-			case MOUSE_DOWN:
+			case MOUSEDOWN:
 				updateEvent(type, pt, pressure, null, null, true, false, false);
-				onMouseDown(new ToolEvent(this, ToolEventType.MOUSE_DOWN,
+				onMouseDown(new ToolEvent(this, ToolEventType.MOUSEDOWN,
 						modifiers));
 				break;
-			case MOUSE_DRAG:
+			case MOUSEDRAG:
 				// In order for idleInterval drag events to work, we need to
 				// not check the first call for a change of position. 
 				// Subsequent calls required by min/maxDistance functionality
@@ -394,7 +394,7 @@ public class ToolHandler extends NativeObject {
 						maxDistance, false, needsChange, matchMaxDistance)) {
 					try {
 						onMouseDrag(new ToolEvent(this,
-								ToolEventType.MOUSE_DRAG, modifiers));
+								ToolEventType.MOUSEDRAG, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
@@ -402,15 +402,15 @@ public class ToolHandler extends NativeObject {
 					matchMaxDistance = true;
 				}
 				break;
-			case MOUSE_UP:
+			case MOUSEUP:
 				// If the last mouse drag happened in a different place, call
 				// mouse drag first, then mouse up.
 				if ((point.x != pt.x || point.y != pt.y) && updateEvent(
-						ToolEventType.MOUSE_DRAG, pt, pressure,
+						ToolEventType.MOUSEDRAG, pt, pressure,
 						minDistance, maxDistance, false, false, false)) {
 					try {
 						onMouseDrag(new ToolEvent(this,
-								ToolEventType.MOUSE_DRAG, modifiers));
+								ToolEventType.MOUSEDRAG, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
@@ -418,7 +418,7 @@ public class ToolHandler extends NativeObject {
 				updateEvent(type, pt, pressure, null, maxDistance, false,
 						false, false);
 				try {
-					onMouseUp(new ToolEvent(this, ToolEventType.MOUSE_UP,
+					onMouseUp(new ToolEvent(this, ToolEventType.MOUSEUP,
 							modifiers));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
@@ -427,12 +427,12 @@ public class ToolHandler extends NativeObject {
 				updateEvent(type, pt, pressure, null, null, true, false, false);
 				firstMove = true;
 				break;
-			case MOUSE_MOVE:
+			case MOUSEMOVE:
 				while (updateEvent(type, pt, pressure, minDistance,
 						maxDistance, firstMove, true, false)) {
 					try {
 						onMouseMove(new ToolEvent(this,
-								ToolEventType.MOUSE_MOVE, modifiers));
+								ToolEventType.MOUSEMOVE, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}

@@ -43,7 +43,7 @@ import com.scriptographer.ai.Timer;
 import com.scriptographer.sg.AngleUnits;
 import com.scriptographer.sg.CoordinateSystem;
 import com.scriptographer.sg.Script;
-import com.scriptographer.ui.KeyCode;
+import com.scriptographer.ui.KeyIdentifier;
 import com.scriptographer.ui.KeyEvent;
 import com.scriptographer.ui.MenuItem;
 
@@ -702,12 +702,13 @@ public class ScriptographerEngine {
 	/**
 	 * To be called from the native environment.
 	 */
-	private static boolean onHandleKeyEvent(int type, int keyCode,
+	private static boolean onHandleKeyEvent(int type, int identifier,
 			char character, int modifiers) {
 		// TODO: There is currently no way to use these callbacks in a Java-only
 		// use of the API. Find one?
-		return callCallbacks(callbackNames[type],
-				new Object[] { new KeyEvent(type, keyCode, character, modifiers) });
+		return callCallbacks(callbackNames[type], new Object[] {
+				new KeyEvent(type, identifier, character, modifiers)
+		});
 	}
 	
 	/**
@@ -730,7 +731,7 @@ public class ScriptographerEngine {
 
 	private static native boolean nativeIsDown(int keyCode);
 
-	public static boolean isKeyDown(KeyCode key) {
+	public static boolean isKeyDown(KeyIdentifier key) {
 		return key != null ? nativeIsDown(key.value()) : false;
 	}
 

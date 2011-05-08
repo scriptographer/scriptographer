@@ -37,18 +37,18 @@ import com.scriptographer.sg.Event;
  */
 public class KeyEvent extends Event {
 
-	private KeyCode keyCode;
+	private KeyIdentifier key;
 	private char character;
 	private KeyEventType type;
 
 	/**
 	 * @jshide
 	 */
-	public KeyEvent(int type, int keyCode, char character, int modifiers) {
+	public KeyEvent(int type, int identifier, char character, int modifiers) {
 		super(modifiers);
 		this.type = type == ScriptographerEngine.EVENT_KEY_DOWN
-			? KeyEventType.KEY_DOWN : KeyEventType.KEY_UP;
-		this.keyCode = IntegerEnumUtils.get(KeyCode.class, keyCode);
+			? KeyEventType.KEYDOWN : KeyEventType.KEYUP;
+		this.key = IntegerEnumUtils.get(KeyIdentifier.class, identifier);
 		this.character = character;
 	}
 
@@ -62,12 +62,19 @@ public class KeyEvent extends Event {
 	}
 
 	/**
-	 * Specifies the virtual key code of the key that caused this key event.
+	 * Specifies the identifier of the key that caused this key event.
 	 * 
-	 * @return the virtual key code.
+	 * @return the key identifier.
 	 */
-	public KeyCode getKeyCode() {
-		return keyCode;
+	public KeyIdentifier getKey() {
+		return key;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public KeyIdentifier getKeyCode() {
+		return key;
 	}
 
 	/**
@@ -83,7 +90,7 @@ public class KeyEvent extends Event {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{ type: ").append(EnumUtils.getScriptName(type));
-		buf.append(", keyCode: ").append(keyCode);
+		buf.append(", key: ").append(key);
 		buf.append(", character: ").append(character);
 		buf.append(", modifiers: ").append(getModifiers());
 		buf.append(" }");

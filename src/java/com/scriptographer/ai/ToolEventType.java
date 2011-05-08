@@ -21,10 +21,10 @@ import java.util.HashMap;
  *
  */
 public enum ToolEventType {
-	MOUSE_DOWN("AI Mouse Down"),
-	MOUSE_UP("AI Mouse Up"),
-	MOUSE_DRAG("AI Mouse Drag"),
-	MOUSE_MOVE("AI Track Cursor"),
+	MOUSEDOWN("AI Mouse Down"),
+	MOUSEUP("AI Mouse Up"),
+	MOUSEDRAG("AI Mouse Drag"),
+	MOUSEMOVE("AI Track Cursor"),
 
 	EDIT_OPTIONS("AI Edit Options"),
 

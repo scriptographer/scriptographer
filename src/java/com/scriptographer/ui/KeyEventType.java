@@ -19,6 +19,6 @@ package com.scriptographer.ui;
  *
  */
 public enum KeyEventType {
-	KEY_DOWN,
-	KEY_UP
+	KEYDOWN,
+	KEYUP
 }

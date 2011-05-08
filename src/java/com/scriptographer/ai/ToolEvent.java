@@ -197,8 +197,8 @@ public class ToolEvent extends Event {
 	 */
 	public int getCount() {
 		switch (type) {
-		case MOUSE_DOWN:
-		case MOUSE_UP:
+		case MOUSEDOWN:
+		case MOUSEUP:
 			// Return downCount for both mouse down and up, since
 			// the count is the same.
 			return tool.downCount;
@@ -209,8 +209,8 @@ public class ToolEvent extends Event {
 
 	public void setCount(int count) {
 		switch (type) {
-		case MOUSE_DOWN:
-		case MOUSE_UP:
+		case MOUSEDOWN:
+		case MOUSEUP:
 			tool.downCount = count;
 			break;
 		default:
