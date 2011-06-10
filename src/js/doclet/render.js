@@ -91,7 +91,7 @@ function renderTags(param) {
 		// that stems from the space after the * in the comment and replace <code>
 		// with <pre>, to fix a IE problem where lighter.js does not receive
 		// linebreaks from code tags weven when white-space: pre is set.
-		return '<pre>' + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
+		return '<pre class="code">' + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
 			return lineBreak;
 		}) + '</pre>';
 	});
