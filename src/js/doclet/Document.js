@@ -42,6 +42,8 @@ Document = Object.extend({
 
 		// Only add extension if it wasn't already
 		var fileName = name.indexOf('.') != -1 ? name : name + '.html';
+		if (settings.templates)
+			fileName = fileName.toLowerCase();
 
 		this.writer = new java.io.PrintWriter(
 				new java.io.FileWriter(settings.destDir + path + fileName));
