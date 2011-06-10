@@ -69,6 +69,12 @@ function stripTags(str, tag) {
  */
 function renderTags(param) {
 	var str = renderTemplate('tags', param);
+
+	// Close last nested heading again
+	if (param.nestHeadings && param.nestHeadings.nested) {
+		str += '</ul>';
+	}
+
 	// Convert any type of lineBreak to the one we're using now:
 	str = str.replace(/(\r\n|\n|\r)/g, function(match, lineBreak) {
 		return Template.lineBreak;

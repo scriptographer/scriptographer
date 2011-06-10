@@ -175,7 +175,18 @@ HeadingTag = Tag.extend({
 
 	render: function(param) {
 		var [all, level, str] = this.text().match(/^(\d*)\s*(.*)$/) || [];
-		if (level) return heading_filter(str, param, level);
+		if (level) {
+			var html = heading_filter(str, param, level);
+			if (level == 2 && param.nestHeadings) {
+				if (param.nestHeadings.nested) {
+					html = '</ul>' + html;
+					param.nestHeadings.nested = false;
+				}
+				html += '<ul>';
+				param.nestHeadings.nested = true;
+			}
+			return html;
+		}
 	}
 });
 
