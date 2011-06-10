@@ -41,8 +41,7 @@ Document = Object.extend({
 		out.push();
 
 		// Only add extension if it wasn't already
-		var fileName = name.indexOf('.') != -1 ? name :
-				name + (settings.templates ? '.jstl' : '.html');
+		var fileName = name.indexOf('.') != -1 ? name : name + '.html';
 
 		this.writer = new java.io.PrintWriter(
 				new java.io.FileWriter(settings.destDir + path + fileName));
