@@ -1,7 +1,7 @@
 <% $id = this.getId() %>
 <%= data.group.title | heading 3 %>
 <%= data.group.text prefix='<div class="member-group-text">' suffix='</div>' %>
-<div id="<%= $id %>" class="member">
+<div id="<%= $id %>-member" class="member">
 <div id="<%= $id %>-link" class="member-link">
 <a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);"><%= param.collapsedTitle || $title %></a>
 </div>
