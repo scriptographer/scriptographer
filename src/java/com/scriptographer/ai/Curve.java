@@ -516,15 +516,6 @@ public class Curve implements ChangeReceiver {
 		}
 	}
 
-	public Curve transform(Matrix matrix) {
-		updateSegments();
-		return new Curve(
-				matrix.transform(segment1.point),
-				matrix.transform(segment1.handleOut),
-				matrix.transform(segment2.handleIn),
-				matrix.transform(segment2.point));
-	}
-
 	/**
 	 * Retruns the reversed the curve, without modifying the curve itself.
 	 */
@@ -758,17 +749,17 @@ public class Curve implements ChangeReceiver {
 
 	protected static void getIntersections(Curve curve, double[][] curve1,
 			double[][] curve2, ArrayList<CurveLocation> intersections) {
-		/*
-		Path line = Document.getActiveDocument().createRectangle(
-				getControlBounds(curve1));
-		line.setStrokeColor(java.awt.Color.green);
-		line.setStrokeWidth(1f);
+		if (false) {
+			Path line = Document.getActiveDocument().createRectangle(
+					getControlBounds(curve1));
+			line.setStrokeColor(java.awt.Color.green);
+			line.setStrokeWidth(1f);
 
-		line = Document.getActiveDocument().createRectangle(
-				getControlBounds(curve2));
-		line.setStrokeColor(java.awt.Color.red);
-		line.setStrokeWidth(1f);
-		*/
+			line = Document.getActiveDocument().createRectangle(
+					getControlBounds(curve2));
+			line.setStrokeColor(java.awt.Color.red);
+			line.setStrokeWidth(1f);
+		}
 		if (getControlBounds(curve1).intersects(getControlBounds(curve2))) {
 			if (isSufficientlyFlat(curve1) && isSufficientlyFlat(curve2)) {
 				// Treat both curves as lines and see if their parametric
@@ -806,21 +797,21 @@ public class Curve implements ChangeReceiver {
 	private static boolean isSufficientlyFlat(double[][] curve) {
 		// Thanks to Kaspar Fischer for the following:
 		// http://www.inf.ethz.ch/personal/fischerk/pubs/bez.pdf
-		double x0 = curve[0][0];
-		double y0 = curve[0][1];
-		double x1 = curve[1][0];
-		double y1 = curve[1][1];
-		double x2 = curve[2][0];
-		double y2 = curve[2][1];
-		double x3 = curve[3][0];
-		double y3 = curve[3][1];
-		double ux = 3.0 * x1 - 2.0 * x0 - x3;
+		double p1x = curve[0][0];
+		double p1y = curve[0][1];
+		double c1x = curve[1][0];
+		double c1y = curve[1][1];
+		double c2x = curve[2][0];
+		double c2y = curve[2][1];
+		double p2x = curve[3][0];
+		double p2y = curve[3][1];
+		double ux = 3.0 * c1x - 2.0 * p1x - p2x;
 		ux *= ux;
-		double uy = 3.0 * y1 - 2.0 * y0 - y3;
+		double uy = 3.0 * c1y - 2.0 * p1y - p2y;
 		uy *= uy;
-		double vx = 3.0 * x2 - 2.0 * x3 - x0;
+		double vx = 3.0 * c2x - 2.0 * p2x - p1x;
 		vx *= vx;
-		double vy = 3.0 * y2 - 2.0 * y3 - y0;
+		double vy = 3.0 * c2y - 2.0 * p2y - p1y;
 		vy *= vy;
 		if (ux < vx)
 			ux = vx;
@@ -1007,7 +998,7 @@ public class Curve implements ChangeReceiver {
 		// If the polynomial is actually quadratic or linear (because	
 		// coefficients a or b are zero), we forward the problem to
 		// the quadratic/linear solver and return the appropriate 1 or 2
-		// roots.								
+		// roots.
 		// After _Numerical Recipes in C_, 2nd edition, Press et al.,	
 		// page 184, although with some added case testing and forwarding.
 		// This is better than the _Graphics Gems_ technique, which admits
@@ -1016,14 +1007,14 @@ public class Curve implements ChangeReceiver {
 		if (Math.abs(a) < epsilon) {
 			return solveQuadraticRoots(b, c, d, roots, epsilon);
 		}
-		// Normalize							
+		// Normalize					
 		b /= a; c /= a; d /= a; a = 1.0;
 		// Compute discriminants						
 		double Q = (b * b - 3.0 * c) / 9.0;
 		double QQQ = Q * Q * Q;
 		double R = (2.0 * b * b * b - 9.0 * b * c + 27.0 * d) / 54.0;
 		double RR = R * R;
-		if (RR <= QQQ) { // Three real roots
+		if (RR < QQQ) { // Three real roots
 			// This sqrt and division is safe, since RR >= 0, so QQQ > RR,	
 			// so QQQ > 0.  The acos is also safe, since RR/QQQ < 1, and	
 			// thus R/sqrt(QQQ) < 1.					
