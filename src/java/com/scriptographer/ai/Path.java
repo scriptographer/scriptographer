@@ -559,7 +559,7 @@ public class Path extends PathItem {
 		}
 		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
-		if (offset <= getLength()) {
+		if (curves.size() > 0 && offset <= getLength()) {
 			Curve curve = curves.getLast();
 			return new CurveLocation(curve, 1);
 		}
