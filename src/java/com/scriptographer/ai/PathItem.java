@@ -336,7 +336,7 @@ public abstract class PathItem extends Item {
 	 * @return {@true if the point is contained within the path}
 	 */
 	public boolean contains(Point point) {
-		return new Area(this.toShape()).contains(point.toPoint2D());
+		return this.toShape().contains(point.toPoint2D());
 	}
 
 	/**
