@@ -88,6 +88,7 @@ import com.scriptographer.ai.GrayColor;
 import com.scriptographer.ai.Group;
 import com.scriptographer.ai.HitResult;
 import com.scriptographer.ai.Layer;
+import com.scriptographer.ai.Line;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.LiveEffectParameters;
 import com.scriptographer.ai.Matrix;
@@ -151,6 +152,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		HitResult.class,
 		com.scriptographer.ai.Item.class,
 		Layer.class,
+		Line.class,
 		LiveEffect.class,
 		LiveEffectParameters.class,
 		Matrix.class,
