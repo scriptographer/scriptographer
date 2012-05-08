@@ -587,6 +587,17 @@ public class Segment implements Committable, ChangeReceiver {
 		return new Segment(this);
 	}
 
+	public boolean equals(Object object) {
+		if (object instanceof Segment) {
+			Segment sg = (Segment) object;
+			return point.equals(sg.point)
+					&& handleOut.equals(sg.handleOut)
+					&& handleIn.equals(sg.handleIn)
+					&& corner == sg.corner;
+		}
+		return false;
+	}
+
 	public boolean remove() {
 		if (segments != null)
 			return segments.remove(index) != null;
