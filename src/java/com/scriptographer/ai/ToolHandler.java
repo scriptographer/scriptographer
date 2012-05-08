@@ -347,7 +347,9 @@ public class ToolHandler extends NativeObject {
 			if (needsChange && pt.equals(point))
 				return false;
 		}
-		lastPoint = point;
+		// Make sure mousemove events have lastPoint set even for the first move
+		// so event.delta is always defined for them.
+		lastPoint = start && type == ToolEventType.MOUSEMOVE ? pt : point;
 		point = pt;
 		switch (type) {
 		case MOUSEDOWN:
