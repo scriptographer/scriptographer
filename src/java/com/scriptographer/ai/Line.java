@@ -34,10 +34,18 @@ public class Line {
 		this.extend = extend;
 	}
 
+	public Line(Point point1, Point point2) {
+		this(point1, point2, false);
+	}
+
 	public Line(double x1, double y1, double x2, double y2, boolean extend) {
 		this.point1 = new Point(x1, y1);
 		this.point2 = new Point(x2, y2);
 		this.extend = extend;
+	}
+
+	public Line(double x1, double y1, double x2, double y2) {
+		this(x1, y1, x2, y2, false);
 	}
 
 	public Point intersect(Line line) {
@@ -45,7 +53,7 @@ public class Line {
 				line.point1.x, line.point1.y, line.point2.x, line.point2.y,
 				line.extend);
 	}
-
+	
 	public double getSide(Point p) {
 		Point v1 = point2.subtract(point1);
 		Point v2 = p.subtract(point1);
@@ -59,6 +67,14 @@ public class Line {
 			}
 		}
 		return ccw < 0.0 ? -1 : ccw > 0.0 ? 1 : 0;
+	}
+
+	public Point getPoint1() {
+		return point1;
+	}
+
+	public Point getPoint2() {
+		return point1;
 	}
 
 	public Point getVector() {
