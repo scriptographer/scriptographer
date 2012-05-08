@@ -14,6 +14,7 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Committable;
@@ -59,7 +60,8 @@ import com.scriptographer.Committable;
  * 
  * @author lehni
  */
-public class PathStyle extends NativeObject implements Style, Committable {
+public class PathStyle extends NativeObject implements Style, Committable,
+		ChangeReceiver {
 	protected FillStyle fill;
 
 	protected StrokeStyle stroke;

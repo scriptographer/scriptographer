@@ -17,12 +17,13 @@ package com.scriptographer.ai;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 
+import com.scratchdisk.script.ChangeEmitter;
 import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
  */
-public abstract class Color {
+public abstract class Color implements ChangeEmitter {
 
 	/**
 	 * @jshide
