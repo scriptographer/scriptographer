@@ -468,6 +468,10 @@ public class Path extends PathItem {
 		return split(index, 0);
 	}
 
+	public Path split(Point point) {
+		return split(getLocation(point));
+	}
+
 	public boolean join(Path path) {
 		if (path != null) {
 			SegmentList segments1 = getSegments();
