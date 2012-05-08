@@ -691,13 +691,10 @@ public class Point implements ChangeEmitter {
 	 * @param point
 	 */
 	public double getDirectedAngle(Point point) {
-		double angle = this.getAngle() - point.getAngle();
-		double bounds = ScriptographerEngine.anglesInDegrees ? 180.0 : Math.PI;
-		if (angle < -bounds)
-			return angle + bounds * 2;
-		else if (angle > bounds)
-			return angle - bounds * 2;
-		return angle;
+		double angle = Math.atan2(this.cross(point), this.dot(point));
+		return ScriptographerEngine.anglesInDegrees
+				? angle * 180 / Math.PI
+				: angle;
 	}
 
 	/**
