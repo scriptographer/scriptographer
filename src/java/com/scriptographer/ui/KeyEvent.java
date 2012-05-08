@@ -37,7 +37,7 @@ import com.scriptographer.sg.Event;
  */
 public class KeyEvent extends Event {
 
-	private KeyIdentifier key;
+	private KeyIdentifier identifier;
 	private char character;
 	private KeyEventType type;
 
@@ -48,7 +48,7 @@ public class KeyEvent extends Event {
 		super(modifiers);
 		this.type = type == ScriptographerEngine.EVENT_KEY_DOWN
 			? KeyEventType.KEYDOWN : KeyEventType.KEYUP;
-		this.key = IntegerEnumUtils.get(KeyIdentifier.class, identifier);
+		this.identifier = IntegerEnumUtils.get(KeyIdentifier.class, identifier);
 		this.character = character;
 	}
 
@@ -62,19 +62,19 @@ public class KeyEvent extends Event {
 	}
 
 	/**
-	 * Specifies the identifier of the key that caused this key event.
+	 * Specifies the key identifier of the key that caused this key event.
 	 * 
 	 * @return the key identifier.
 	 */
-	public KeyIdentifier getKey() {
-		return key;
+	public KeyIdentifier getIdentifier() {
+		return identifier;
 	}
 
 	/**
 	 * @deprecated
 	 */
 	public KeyIdentifier getKeyCode() {
-		return key;
+		return identifier;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class KeyEvent extends Event {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{ type: ").append(EnumUtils.getScriptName(type));
-		buf.append(", key: ").append(key);
+		buf.append(", identifier: ").append(identifier);
 		buf.append(", character: ").append(character);
 		buf.append(", modifiers: ").append(getModifiers());
 		buf.append(" }");
