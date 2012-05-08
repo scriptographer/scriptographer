@@ -91,7 +91,11 @@ public class Segment implements Committable, ChangeReceiver {
 	public Segment(Point pt, Point handleIn, Point handleOut) {
 		init(pt, handleIn, handleOut);
 	}
-	
+
+	public Segment(Point pt, Point handleIn) {
+		init(pt, handleIn, null);
+	}
+
 	public Segment(Point pt) {
 		init(pt, null, null);
 	}
