@@ -798,14 +798,32 @@ public class Point implements ChangeEmitter {
 	}
 
 	/**
-	 * Checks if the vector represented by this point is parallel (collinear) to
+	 * Checks if the vector represented by this point is collinear (parallel) to
 	 * another vector.
 	 * 
 	 * @param point the vector to check against
 	 * @return {@true if it is parallel}
 	 */
+	public boolean isColinear(Point point) {
+		return this.cross(point) < TOLERANCE;
+	}
+
+	/**
+	 * @deprecated
+	 */
 	public boolean isParallel(Point point) {
-		return Math.abs(x / point.x - y / point.y) < 0.00001;
+		return isColinear(point);
+	}
+
+	/**
+	 * Checks if the vector represented by this point is orthogonal
+	 * (perpendicular) to another vector.
+	 * 
+	 * @param point the vector to check against
+	 * @return {@true if it is orthogonal}
+	 */
+	public boolean isOrthogonal(Point point) {
+		return this.dot(point) < TOLERANCE;
 	}
 
 	/**

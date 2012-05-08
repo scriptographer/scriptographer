@@ -200,7 +200,7 @@ public class Segment implements Committable, ChangeReceiver {
 		handleIn = new SegmentPoint(this, 2, inX, inY);
 		handleOut = new SegmentPoint(this, 4, outX, outY);
 		// Calculate corner accordingly
-		corner = !handleIn.isParallel(handleOut);
+		corner = !handleIn.isColinear(handleOut);
 	}
 
 	protected void init(Point pt, Point in, Point out) {
@@ -208,7 +208,7 @@ public class Segment implements Committable, ChangeReceiver {
 		handleIn = new SegmentPoint(this, 2, in);
 		handleOut = new SegmentPoint(this, 4, out);
 		// Calculate corner accordingly
-		corner = !handleIn.isParallel(handleOut);
+		corner = !handleIn.isColinear(handleOut);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class Segment implements Committable, ChangeReceiver {
 	public void setHandleIn(Point pt) {
 		handleIn.set(pt);
 		// Update corner accordingly
-		corner = !handleIn.isParallel(handleOut);
+		corner = !handleIn.isColinear(handleOut);
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class Segment implements Committable, ChangeReceiver {
 	public void setHandleOut(Point pt) {
 		handleOut.set(pt);
 		// Update corner accordingly
-		corner = !handleIn.isParallel(handleOut);
+		corner = !handleIn.isColinear(handleOut);
 	}
 
 	/**
