@@ -32,6 +32,9 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class Point implements ChangeEmitter {
 
+	// TODO: Move TOLERANCE somewhere where it makes more sense
+	private static final double TOLERANCE = 10e-6;
+
 	protected double x;
 	protected double y;
 	// Caching of angle if used
