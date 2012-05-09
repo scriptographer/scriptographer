@@ -400,6 +400,87 @@
 		91C8B9021049C255002882FE /* IAIUnicodeString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9001049C255002882FE /* IAIUnicodeString.cpp */; };
 		91C8B9051049C27C002882FE /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9031049C27C002882FE /* IText.cpp */; };
 		91C8B9061049C27C002882FE /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9041049C27C002882FE /* IThrowException.cpp */; };
+		91D2C0DF155AB2CB0007B42C /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
+		91D2C0E0155AB2CB0007B42C /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
+		91D2C0E1155AB2CB0007B42C /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
+		91D2C0E2155AB2CB0007B42C /* exceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ADE0A20A45900F0EF9A /* exceptions.cpp */; };
+		91D2C0E3155AB2CB0007B42C /* com_scriptographer_ai_CharacterStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */; };
+		91D2C0E4155AB2CB0007B42C /* com_scriptographer_ai_LiveEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */; };
+		91D2C0E5155AB2CB0007B42C /* com_scriptographer_ai_LayerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */; };
+		91D2C0E6155AB2CB0007B42C /* com_scriptographer_ai_Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */; };
+		91D2C0E7155AB2CB0007B42C /* com_scriptographer_ai_FontWeight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE50A20A4B200F0EF9A /* com_scriptographer_ai_FontWeight.cpp */; };
+		91D2C0E8155AB2CB0007B42C /* com_scriptographer_ai_FontList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE60A20A4B200F0EF9A /* com_scriptographer_ai_FontList.cpp */; };
+		91D2C0E9155AB2CB0007B42C /* com_scriptographer_ai_FontFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE70A20A4B200F0EF9A /* com_scriptographer_ai_FontFamily.cpp */; };
+		91D2C0EA155AB2CB0007B42C /* com_scriptographer_ai_DocumentList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE80A20A4B200F0EF9A /* com_scriptographer_ai_DocumentList.cpp */; };
+		91D2C0EB155AB2CB0007B42C /* com_scriptographer_ai_Pathfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE90A20A4B200F0EF9A /* com_scriptographer_ai_Pathfinder.cpp */; };
+		91D2C0EC155AB2CB0007B42C /* com_scriptographer_ai_Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AEA0A20A4B200F0EF9A /* com_scriptographer_ai_Path.cpp */; };
+		91D2C0ED155AB2CB0007B42C /* com_scriptographer_ai_PathText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AEC0A20A4B200F0EF9A /* com_scriptographer_ai_PathText.cpp */; };
+		91D2C0EE155AB2CB0007B42C /* com_scriptographer_ai_PathStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AED0A20A4B200F0EF9A /* com_scriptographer_ai_PathStyle.cpp */; };
+		91D2C0EF155AB2CB0007B42C /* com_scriptographer_ai_Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF00A20A4B200F0EF9A /* com_scriptographer_ai_Document.cpp */; };
+		91D2C0F0155AB2CB0007B42C /* com_scriptographer_ai_Curve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF10A20A4B200F0EF9A /* com_scriptographer_ai_Curve.cpp */; };
+		91D2C0F1155AB2CB0007B42C /* com_scriptographer_ai_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF30A20A4B200F0EF9A /* com_scriptographer_ai_Color.cpp */; };
+		91D2C0F2155AB2CB0007B42C /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
+		91D2C0F3155AB2CB0007B42C /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		91D2C0F4155AB2CB0007B42C /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
+		91D2C0F5155AB2CB0007B42C /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
+		91D2C0F6155AB2CB0007B42C /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
+		91D2C0F7155AB2CB0007B42C /* com_scriptographer_ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */; };
+		91D2C0F8155AB2CB0007B42C /* com_scriptographer_ai_SegmentList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B090A20A4B200F0EF9A /* com_scriptographer_ai_SegmentList.cpp */; };
+		91D2C0F9155AB2CB0007B42C /* com_scriptographer_ai_Raster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B0A0A20A4B200F0EF9A /* com_scriptographer_ai_Raster.cpp */; };
+		91D2C0FA155AB2CB0007B42C /* com_scriptographer_ai_PointText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B0B0A20A4B200F0EF9A /* com_scriptographer_ai_PointText.cpp */; };
+		91D2C0FB155AB2CB0007B42C /* com_scriptographer_ai_AreaText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B0D0A20A4B200F0EF9A /* com_scriptographer_ai_AreaText.cpp */; };
+		91D2C0FC155AB2CB0007B42C /* com_scriptographer_ai_TextStory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B0E0A20A4B200F0EF9A /* com_scriptographer_ai_TextStory.cpp */; };
+		91D2C0FD155AB2CB0007B42C /* com_scriptographer_ai_Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B0F0A20A4B200F0EF9A /* com_scriptographer_ai_Group.cpp */; };
+		91D2C0FE155AB2CB0007B42C /* com_scriptographer_ai_Annotator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B110A20A4B200F0EF9A /* com_scriptographer_ai_Annotator.cpp */; };
+		91D2C0FF155AB2CB0007B42C /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AEB0A20A4B200F0EF9A /* com_scriptographer_ai_ParagraphStyle.cpp */; };
+		91D2C100155AB2CB0007B42C /* registerNatives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */; };
+		91D2C101155AB2CB0007B42C /* com_scriptographer_ai_Tracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 910AEF4E0A49D6CE00F0DBA3 /* com_scriptographer_ai_Tracing.cpp */; };
+		91D2C102155AB2CB0007B42C /* com_scriptographer_ai_PlacedFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109DC2F0AE4039400D4837B /* com_scriptographer_ai_PlacedFile.cpp */; };
+		91D2C103155AB2CB0007B42C /* com_scriptographer_ai_Symbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109DF1C0AE4C56F00D4837B /* com_scriptographer_ai_Symbol.cpp */; };
+		91D2C104155AB2CB0007B42C /* com_scriptographer_ai_SymbolList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109DF1E0AE4C57000D4837B /* com_scriptographer_ai_SymbolList.cpp */; };
+		91D2C105155AB2CB0007B42C /* com_scriptographer_ai_Swatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109E5440AE5AE8800D4837B /* com_scriptographer_ai_Swatch.cpp */; };
+		91D2C106155AB2CB0007B42C /* com_scriptographer_ai_SwatchList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109E5450AE5AE8800D4837B /* com_scriptographer_ai_SwatchList.cpp */; };
+		91D2C107155AB2CB0007B42C /* AppContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109E6D00AE5B64700D4837B /* AppContext.cpp */; };
+		91D2C108155AB2CB0007B42C /* com_scriptographer_ai_Gradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109E7C60AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp */; };
+		91D2C109155AB2CB0007B42C /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
+		91D2C10A155AB2CB0007B42C /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
+		91D2C10B155AB2CB0007B42C /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
+		91D2C10C155AB2CB0007B42C /* com_scriptographer_ai_FileFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */; };
+		91D2C10D155AB2CB0007B42C /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
+		91D2C10E155AB2CB0007B42C /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
+		91D2C10F155AB2CB0007B42C /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918052E90ED10171007CD826 /* com_scriptographer_ai_PlacedSymbol.cpp */; };
+		91D2C110155AB2CB0007B42C /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
+		91D2C111155AB2CB0007B42C /* com_scriptographer_ui_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053070ED108AB007CD826 /* com_scriptographer_ui_MenuItem.cpp */; };
+		91D2C112155AB2CB0007B42C /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
+		91D2C113155AB2CB0007B42C /* IAIFilePath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B8FF1049C255002882FE /* IAIFilePath.cpp */; };
+		91D2C114155AB2CB0007B42C /* IAIUnicodeString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9001049C255002882FE /* IAIUnicodeString.cpp */; };
+		91D2C115155AB2CB0007B42C /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9031049C27C002882FE /* IText.cpp */; };
+		91D2C116155AB2CB0007B42C /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91C8B9041049C27C002882FE /* IThrowException.cpp */; };
+		91D2C117155AB2CB0007B42C /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 911D195511B41C37004648CA /* com_scriptographer_ai_Timer.cpp */; };
+		91D2C118155AB2CB0007B42C /* com_scriptographer_adm_Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617111B51ADA00EFD8D4 /* com_scriptographer_adm_Button.cpp */; };
+		91D2C119155AB2CB0007B42C /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617211B51ADA00EFD8D4 /* com_scriptographer_adm_Dialog.cpp */; };
+		91D2C11A155AB2CB0007B42C /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617311B51ADA00EFD8D4 /* com_scriptographer_adm_Drawer.cpp */; };
+		91D2C11B155AB2CB0007B42C /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617411B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListBox.cpp */; };
+		91D2C11C155AB2CB0007B42C /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617511B51ADA00EFD8D4 /* com_scriptographer_adm_HierarchyListEntry.cpp */; };
+		91D2C11D155AB2CB0007B42C /* com_scriptographer_adm_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617611B51ADA00EFD8D4 /* com_scriptographer_adm_Image.cpp */; };
+		91D2C11E155AB2CB0007B42C /* com_scriptographer_adm_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617711B51ADA00EFD8D4 /* com_scriptographer_adm_ImagePane.cpp */; };
+		91D2C11F155AB2CB0007B42C /* com_scriptographer_adm_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617811B51ADA00EFD8D4 /* com_scriptographer_adm_Item.cpp */; };
+		91D2C120155AB2CB0007B42C /* com_scriptographer_adm_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617911B51ADA00EFD8D4 /* com_scriptographer_adm_ItemGroup.cpp */; };
+		91D2C121155AB2CB0007B42C /* com_scriptographer_adm_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617A11B51ADA00EFD8D4 /* com_scriptographer_adm_ListEntry.cpp */; };
+		91D2C122155AB2CB0007B42C /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617B11B51ADA00EFD8D4 /* com_scriptographer_adm_ListItem.cpp */; };
+		91D2C123155AB2CB0007B42C /* com_scriptographer_adm_ModalDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617C11B51ADA00EFD8D4 /* com_scriptographer_adm_ModalDialog.cpp */; };
+		91D2C124155AB2CB0007B42C /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617D11B51ADA00EFD8D4 /* com_scriptographer_adm_TextEditItem.cpp */; };
+		91D2C125155AB2CB0007B42C /* com_scriptographer_adm_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617E11B51ADA00EFD8D4 /* com_scriptographer_adm_TextItem.cpp */; };
+		91D2C126155AB2CB0007B42C /* com_scriptographer_adm_TextValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121617F11B51ADA00EFD8D4 /* com_scriptographer_adm_TextValueItem.cpp */; };
+		91D2C127155AB2CB0007B42C /* com_scriptographer_adm_ToggleItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618011B51ADA00EFD8D4 /* com_scriptographer_adm_ToggleItem.cpp */; };
+		91D2C128155AB2CB0007B42C /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618111B51ADA00EFD8D4 /* com_scriptographer_adm_Tracker.cpp */; };
+		91D2C129155AB2CB0007B42C /* com_scriptographer_adm_ValueItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9121618211B51ADA00EFD8D4 /* com_scriptographer_adm_ValueItem.cpp */; };
+		91D2C12A155AB2CB0007B42C /* IAIArtboards.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EB4A60124E4C3400725314 /* IAIArtboards.cpp */; };
+		91D2C12C155AB2CB0007B42C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
+		91D2C12D155AB2CB0007B42C /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
+		91D2C12E155AB2CB0007B42C /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
+		91D2C130155AB2CB0007B42C /* Scriptographer.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 91D4EDA40A255937002888A3 /* Scriptographer.rsrc */; };
+		91D2C131155AB2CB0007B42C /* PiPL_MachO_Universal.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C57210B13CBF900F14113 /* PiPL_MachO_Universal.rsrc */; };
 		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
 		91EB4A61124E4C3400725314 /* IAIArtboards.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EB4A60124E4C3400725314 /* IAIArtboards.cpp */; };
 		91F1E7D90D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
@@ -494,6 +575,8 @@
 		91C8B9031049C27C002882FE /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91C8B9041049C27C002882FE /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../adobe/Adobe Illustrator CS5 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		91CA8A6F0A22703F005E0C1A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		91D2C135155AB2CB0007B42C /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
+		91D2C136155AB2CB0007B42C /* Scriptographer CS5 copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Scriptographer CS5 copy-Info.plist"; path = "/Users/lehni/Development/Scriptographer/scriptographer/build/mac/Scriptographer CS5 copy-Info.plist"; sourceTree = "<absolute>"; };
 		91D4E9530A252070002888A3 /* CS_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Debug.pch; path = prefix/CS_Debug.pch; sourceTree = "<group>"; };
 		91D4E9540A252070002888A3 /* CS_Release.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Release.pch; path = prefix/CS_Release.pch; sourceTree = "<group>"; };
 		91D4E9550A252070002888A3 /* CS2_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS2_Debug.pch; path = prefix/CS2_Debug.pch; sourceTree = "<group>"; };
@@ -602,6 +685,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91D2C12B155AB2CB0007B42C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91D2C12C155AB2CB0007B42C /* Carbon.framework in Frameworks */,
+				91D2C12D155AB2CB0007B42C /* JavaVM.framework in Frameworks */,
+				91D2C12E155AB2CB0007B42C /* AppKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -612,6 +705,7 @@
 				089C167CFE841241C02AAC07 /* Resources */,
 				91CA8A6A0A227031005E0C1A /* Frameworks and Libraries */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
+				91D2C136155AB2CB0007B42C /* Scriptographer CS5 copy-Info.plist */,
 			);
 			name = TutorialCallMe;
 			sourceTree = "<group>";
@@ -647,6 +741,7 @@
 				914569D90AF7CADF000FD468 /* Scriptographer.aip */,
 				9185E51C0E7FC0DA000BD8BA /* Scriptographer.aip */,
 				91C8B8E41049C0D3002882FE /* Scriptographer.aip */,
+				91D2C135155AB2CB0007B42C /* Scriptographer.aip */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -963,13 +1058,32 @@
 			productReference = 91C8B8E41049C0D3002882FE /* Scriptographer.aip */;
 			productType = "com.apple.product-type.bundle";
 		};
+		91D2C0DC155AB2CB0007B42C /* Scriptographer CS6 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91D2C132155AB2CB0007B42C /* Build configuration list for PBXNativeTarget "Scriptographer CS6" */;
+			buildPhases = (
+				91D2C0DD155AB2CB0007B42C /* Resources */,
+				91D2C0DE155AB2CB0007B42C /* Sources */,
+				91D2C12B155AB2CB0007B42C /* Frameworks */,
+				91D2C12F155AB2CB0007B42C /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Scriptographer CS6";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = TutorialCallMe;
+			productReference = 91D2C135155AB2CB0007B42C /* Scriptographer.aip */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 10ABD5FF098835E000A7EB07 /* Build configuration list for PBXProject "Scriptographer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -990,6 +1104,7 @@
 				914569800AF7CADF000FD468 /* Scriptographer CS3 */,
 				9185E4C10E7FC0DA000BD8BA /* Scriptographer CS4 */,
 				91C8B88B1049C0D3002882FE /* Scriptographer CS5 */,
+				91D2C0DC155AB2CB0007B42C /* Scriptographer CS6 */,
 			);
 		};
 /* End PBXProject section */
@@ -1024,6 +1139,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		91C8B88C1049C0D3002882FE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91D2C0DD155AB2CB0007B42C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1074,6 +1196,15 @@
 			files = (
 				91C8B8DF1049C0D3002882FE /* Scriptographer.rsrc in Rez */,
 				91C8B8E01049C0D3002882FE /* PiPL_MachO_Universal.rsrc in Rez */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91D2C12F155AB2CB0007B42C /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91D2C130155AB2CB0007B42C /* Scriptographer.rsrc in Rez */,
+				91D2C131155AB2CB0007B42C /* PiPL_MachO_Universal.rsrc in Rez */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1490,6 +1621,89 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91D2C0DE155AB2CB0007B42C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91D2C0DF155AB2CB0007B42C /* ScriptographerEngine.cpp in Sources */,
+				91D2C0E0155AB2CB0007B42C /* ScriptographerPlugin.cpp in Sources */,
+				91D2C0E1155AB2CB0007B42C /* suites.cpp in Sources */,
+				91D2C0E2155AB2CB0007B42C /* exceptions.cpp in Sources */,
+				91D2C0E3155AB2CB0007B42C /* com_scriptographer_ai_CharacterStyle.cpp in Sources */,
+				91D2C0E4155AB2CB0007B42C /* com_scriptographer_ai_LiveEffect.cpp in Sources */,
+				91D2C0E5155AB2CB0007B42C /* com_scriptographer_ai_LayerList.cpp in Sources */,
+				91D2C0E6155AB2CB0007B42C /* com_scriptographer_ai_Layer.cpp in Sources */,
+				91D2C0E7155AB2CB0007B42C /* com_scriptographer_ai_FontWeight.cpp in Sources */,
+				91D2C0E8155AB2CB0007B42C /* com_scriptographer_ai_FontList.cpp in Sources */,
+				91D2C0E9155AB2CB0007B42C /* com_scriptographer_ai_FontFamily.cpp in Sources */,
+				91D2C0EA155AB2CB0007B42C /* com_scriptographer_ai_DocumentList.cpp in Sources */,
+				91D2C0EB155AB2CB0007B42C /* com_scriptographer_ai_Pathfinder.cpp in Sources */,
+				91D2C0EC155AB2CB0007B42C /* com_scriptographer_ai_Path.cpp in Sources */,
+				91D2C0ED155AB2CB0007B42C /* com_scriptographer_ai_PathText.cpp in Sources */,
+				91D2C0EE155AB2CB0007B42C /* com_scriptographer_ai_PathStyle.cpp in Sources */,
+				91D2C0EF155AB2CB0007B42C /* com_scriptographer_ai_Document.cpp in Sources */,
+				91D2C0F0155AB2CB0007B42C /* com_scriptographer_ai_Curve.cpp in Sources */,
+				91D2C0F1155AB2CB0007B42C /* com_scriptographer_ai_Color.cpp in Sources */,
+				91D2C0F2155AB2CB0007B42C /* com_scriptographer_ai_TextRange.cpp in Sources */,
+				91D2C0F3155AB2CB0007B42C /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				91D2C0F4155AB2CB0007B42C /* com_scriptographer_ai_DocumentView.cpp in Sources */,
+				91D2C0F5155AB2CB0007B42C /* com_scriptographer_ai_Tool.cpp in Sources */,
+				91D2C0F6155AB2CB0007B42C /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
+				91D2C0F7155AB2CB0007B42C /* com_scriptographer_ScriptographerEngine.cpp in Sources */,
+				91D2C0F8155AB2CB0007B42C /* com_scriptographer_ai_SegmentList.cpp in Sources */,
+				91D2C0F9155AB2CB0007B42C /* com_scriptographer_ai_Raster.cpp in Sources */,
+				91D2C0FA155AB2CB0007B42C /* com_scriptographer_ai_PointText.cpp in Sources */,
+				91D2C0FB155AB2CB0007B42C /* com_scriptographer_ai_AreaText.cpp in Sources */,
+				91D2C0FC155AB2CB0007B42C /* com_scriptographer_ai_TextStory.cpp in Sources */,
+				91D2C0FD155AB2CB0007B42C /* com_scriptographer_ai_Group.cpp in Sources */,
+				91D2C0FE155AB2CB0007B42C /* com_scriptographer_ai_Annotator.cpp in Sources */,
+				91D2C0FF155AB2CB0007B42C /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */,
+				91D2C100155AB2CB0007B42C /* registerNatives.cpp in Sources */,
+				91D2C101155AB2CB0007B42C /* com_scriptographer_ai_Tracing.cpp in Sources */,
+				91D2C102155AB2CB0007B42C /* com_scriptographer_ai_PlacedFile.cpp in Sources */,
+				91D2C103155AB2CB0007B42C /* com_scriptographer_ai_Symbol.cpp in Sources */,
+				91D2C104155AB2CB0007B42C /* com_scriptographer_ai_SymbolList.cpp in Sources */,
+				91D2C105155AB2CB0007B42C /* com_scriptographer_ai_Swatch.cpp in Sources */,
+				91D2C106155AB2CB0007B42C /* com_scriptographer_ai_SwatchList.cpp in Sources */,
+				91D2C107155AB2CB0007B42C /* AppContext.cpp in Sources */,
+				91D2C108155AB2CB0007B42C /* com_scriptographer_ai_Gradient.cpp in Sources */,
+				91D2C109155AB2CB0007B42C /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
+				91D2C10A155AB2CB0007B42C /* com_scriptographer_ai_Pattern.cpp in Sources */,
+				91D2C10B155AB2CB0007B42C /* com_scriptographer_ai_Item.cpp in Sources */,
+				91D2C10C155AB2CB0007B42C /* com_scriptographer_ai_FileFormat.cpp in Sources */,
+				91D2C10D155AB2CB0007B42C /* com_scriptographer_ai_Dictionary.cpp in Sources */,
+				91D2C10E155AB2CB0007B42C /* com_scriptographer_ai_TextItem.cpp in Sources */,
+				91D2C10F155AB2CB0007B42C /* com_scriptographer_ai_PlacedSymbol.cpp in Sources */,
+				91D2C110155AB2CB0007B42C /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
+				91D2C111155AB2CB0007B42C /* com_scriptographer_ui_MenuItem.cpp in Sources */,
+				91D2C112155AB2CB0007B42C /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
+				91D2C113155AB2CB0007B42C /* IAIFilePath.cpp in Sources */,
+				91D2C114155AB2CB0007B42C /* IAIUnicodeString.cpp in Sources */,
+				91D2C115155AB2CB0007B42C /* IText.cpp in Sources */,
+				91D2C116155AB2CB0007B42C /* IThrowException.cpp in Sources */,
+				91D2C117155AB2CB0007B42C /* com_scriptographer_ai_Timer.cpp in Sources */,
+				91D2C118155AB2CB0007B42C /* com_scriptographer_adm_Button.cpp in Sources */,
+				91D2C119155AB2CB0007B42C /* com_scriptographer_adm_Dialog.cpp in Sources */,
+				91D2C11A155AB2CB0007B42C /* com_scriptographer_adm_Drawer.cpp in Sources */,
+				91D2C11B155AB2CB0007B42C /* com_scriptographer_adm_HierarchyListBox.cpp in Sources */,
+				91D2C11C155AB2CB0007B42C /* com_scriptographer_adm_HierarchyListEntry.cpp in Sources */,
+				91D2C11D155AB2CB0007B42C /* com_scriptographer_adm_Image.cpp in Sources */,
+				91D2C11E155AB2CB0007B42C /* com_scriptographer_adm_ImagePane.cpp in Sources */,
+				91D2C11F155AB2CB0007B42C /* com_scriptographer_adm_Item.cpp in Sources */,
+				91D2C120155AB2CB0007B42C /* com_scriptographer_adm_ItemGroup.cpp in Sources */,
+				91D2C121155AB2CB0007B42C /* com_scriptographer_adm_ListEntry.cpp in Sources */,
+				91D2C122155AB2CB0007B42C /* com_scriptographer_adm_ListItem.cpp in Sources */,
+				91D2C123155AB2CB0007B42C /* com_scriptographer_adm_ModalDialog.cpp in Sources */,
+				91D2C124155AB2CB0007B42C /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				91D2C125155AB2CB0007B42C /* com_scriptographer_adm_TextItem.cpp in Sources */,
+				91D2C126155AB2CB0007B42C /* com_scriptographer_adm_TextValueItem.cpp in Sources */,
+				91D2C127155AB2CB0007B42C /* com_scriptographer_adm_ToggleItem.cpp in Sources */,
+				91D2C128155AB2CB0007B42C /* com_scriptographer_adm_Tracker.cpp in Sources */,
+				91D2C129155AB2CB0007B42C /* com_scriptographer_adm_ValueItem.cpp in Sources */,
+				91D2C12A155AB2CB0007B42C /* IAIArtboards.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -1681,7 +1895,6 @@
 				BUILD_VARIANTS = normal;
 				CARBON_HEADERS = "/System/Library/Frameworks/Carbon.framework/Headers /Developer/Headers/FlatCarbon/";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)/Scriptographer/Contents/MacOSClassic";
-				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_LOCATION = NO;
@@ -1997,7 +2210,7 @@
 					"$(JNI_HEADERS)",
 				);
 				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
-				INFOPLIST_FILE = /Users/lehni/Development/Scriptographer/Scriptographer/build/mac/resources/Info.plist;
+				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
@@ -2058,7 +2271,7 @@
 					"$(JNI_HEADERS)",
 				);
 				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS5 SDK/IllustratorAPI//**\"";
-				INFOPLIST_FILE = /Users/lehni/Development/Scriptographer/Scriptographer/build/mac/resources/Info.plist;
+				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
@@ -2077,6 +2290,120 @@
 				STRIP_STYLE = all;
 				SYMROOT = build/CS5;
 				VALID_ARCHS = "pcc i386";
+				WRAPPER_EXTENSION = aip;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		91D2C133155AB2CB0007B42C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AI_CONFIGURATION = debug;
+				AI_LOCALE = en_US;
+				AI_PLATFORM = xcode;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CARBON_HEADERS = "/System/Library/Frameworks/Carbon.framework/Headers /Developer/Headers/FlatCarbon/";
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				DSTROOT = build/CS6;
+				GCC_ENABLE_PASCAL_STRINGS = YES;
+				GCC_ONE_BYTE_BOOL = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = prefix/CS6_Debug.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_USE_GCC3_PFE_SUPPORT = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(CARBON_HEADERS)",
+					"$(JAVAVM_HEADERS)",
+					"$(ILLUSTRATOR_HEADERS)",
+					"$(JNI_HEADERS)",
+				);
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS6 SDK/IllustratorAPI//**\"";
+				INFOPLIST_FILE = resources/Info.plist;
+				INIT_ROUTINE = "";
+				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
+				JNI_HEADERS = ../../src/native/jni/;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OBJROOT = build;
+				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
+				OTHER_CFLAGS = "";
+				PREBINDING = YES;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
+				PRODUCT_NAME = Scriptographer;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = macosx10.6;
+				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
+				SKIP_INSTALL = YES;
+				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
+				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_STYLE = all;
+				SYMROOT = build/CS5;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = aip;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		91D2C134155AB2CB0007B42C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AI_CONFIGURATION = release;
+				AI_LOCALE = en_US;
+				AI_PLATFORM = xcode;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CARBON_HEADERS = "/System/Library/Frameworks/Carbon.framework/Headers /Developer/Headers/FlatCarbon/";
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				DSTROOT = build/CS6;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_PASCAL_STRINGS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_ONE_BYTE_BOOL = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = prefix/CS6_Release.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_USE_GCC3_PFE_SUPPORT = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(CARBON_HEADERS)",
+					"$(JAVAVM_HEADERS)",
+					"$(ILLUSTRATOR_HEADERS)",
+					"$(JNI_HEADERS)",
+				);
+				ILLUSTRATOR_HEADERS = "\"../../../adobe/Adobe Illustrator CS6 SDK/IllustratorAPI//**\"";
+				INFOPLIST_FILE = resources/Info.plist;
+				INIT_ROUTINE = "";
+				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
+				JNI_HEADERS = ../../src/native/jni/;
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OBJROOT = build;
+				OTHER_CFLAGS = "";
+				PREBINDING = YES;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
+				PRODUCT_NAME = Scriptographer;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = macosx10.6;
+				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
+				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
+				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_STYLE = all;
+				SYMROOT = build/CS5;
+				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = NO;
 			};
@@ -2135,6 +2462,15 @@
 			buildConfigurations = (
 				91C8B8E21049C0D3002882FE /* Debug */,
 				91C8B8E31049C0D3002882FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		91D2C132155AB2CB0007B42C /* Build configuration list for PBXNativeTarget "Scriptographer CS6" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91D2C133155AB2CB0007B42C /* Debug */,
+				91D2C134155AB2CB0007B42C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

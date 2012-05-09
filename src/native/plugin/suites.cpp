@@ -128,13 +128,15 @@ extern "C" {
 #if kPluginInterfaceVersion >= kAI12
 	AIFilePathSuite					*sAIFilePath;
 	AIUnicodeStringSuite			*sAIUnicodeString;
+#if kPluginInterfaceVersion <= kAI15
 	AITracingSuite					*sAITracing;
 	AITracingIPSuite				*sAITracingIP;
+#endif // kPluginInterfaceVersion <= kAI15
 #endif // kPluginInterfaceVersion >= kAI12
 
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 	AICropAreaSuite					*sAICropArea;
-#endif // kPluginInterfaceVersion >= kAI13
+#endif // kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 
 #if kPluginInterfaceVersion >= kAI15
 	AIArtboardSuite					*sAIArtboard;
@@ -354,11 +356,14 @@ ImportSuite postStartup[] = {
 	
 #if kPluginInterfaceVersion >= kAI12
 	kAIFilePathSuite, kAIFilePathSuiteVersion, &sAIFilePath, sizeof(AIFilePathSuite),
+#endif
+
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
 	kAITracingSuite, kAITracingSuiteVersion, &sAITracing, sizeof(AITracingSuite),
 	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif
 	
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI16
 	kAICropAreaSuite, kAICropAreaSuiteVersion, &sAICropArea, sizeof(AICropAreaSuite),
 #endif
 

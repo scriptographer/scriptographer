@@ -123,13 +123,13 @@
 #include "AIATECurrTextFeatures.h"
 #include "ATETextSuitesExtern.h"
 
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 #include "AITracing.h"
-#endif // kPluginInterfaceVersion >= kAI12
+#endif // kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 #include "AICropArea.h"
-#endif // kPluginInterfaceVersion >= kAI13
+#endif // kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 
 #if kPluginInterfaceVersion >= kAI15
 #include "AIArtboard.h"
@@ -383,13 +383,16 @@ extern "C" AITextStreamSuite				*sAITextStream;
 #if kPluginInterfaceVersion >= kAI12
 extern "C" AIFilePathSuite					*sAIFilePath;
 extern "C" AIUnicodeStringSuite				*sAIUnicodeString;
-extern "C" AITracingSuite					*sAITracing;
-extern "C" AITracingIPSuite					*sAITracingIP;
 #endif // kPluginInterfaceVersion >= kAI12
 
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
+extern "C" AITracingSuite					*sAITracing;
+extern "C" AITracingIPSuite					*sAITracingIP;
+#endif // kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
+
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 extern "C" AICropAreaSuite					*sAICropArea;
-#endif // kPluginInterfaceVersion >= kAI13
+#endif // kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 
 #if kPluginInterfaceVersion >= kAI15
 extern "C" AIArtboardSuite					* sAIArtboard;
