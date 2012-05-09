@@ -200,4 +200,12 @@ public class CurveLocation {
 		buf.append(" }");
 		return buf.toString();
 	}
+
+	public boolean equals(Object object) {
+		if (object instanceof CurveLocation) {
+			CurveLocation loc = (CurveLocation) object;
+			return getPoint().equals(loc.getPoint());
+		}
+		return false;
+	}
 }
