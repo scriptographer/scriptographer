@@ -10,7 +10,7 @@
  * All rights reserved. See LICENSE file for details.
  */
 
-#include "StdHeaders.h"
+#include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "AppContext.h"
