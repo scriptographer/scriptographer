@@ -23,7 +23,7 @@
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_FileFormat_getFileFormats(JNIEnv *env, jclass cls) {
 	try {
-		long count;
+		ai::int32 count;
 		if (!sAIFileFormat->CountFileFormats(&count)) {
 			jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
 			for (int i = 0; i < count; i++) {

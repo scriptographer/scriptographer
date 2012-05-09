@@ -45,7 +45,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_FontFamily_nativeGetName(JN
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontFamily_nativeSize(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		long length;
+		ai::int32 length;
 		if (!sAIFont->CountTypefaceStyles((AITypefaceKey) handle, &length))
 			return length;
 	} EXCEPTION_CONVERT(env);

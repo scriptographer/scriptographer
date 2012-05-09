@@ -23,7 +23,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontList_size(JNIEnv *env, jobject obj) {
 	try {
-		long length;
+		ai::int32 length;
 		if (!sAIFont->CountTypefaces(&length))
 			return length;
 	} EXCEPTION_CONVERT(env);

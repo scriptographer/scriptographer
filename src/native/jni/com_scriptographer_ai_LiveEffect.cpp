@@ -79,7 +79,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuIte
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects(JNIEnv *env, jclass cls) {
 	try {
 		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
-		long count;
+		ai::int32 count;
 		sAILiveEffect->CountLiveEffects(&count);
 		int prefixLen = strlen(NAME_PREFIX);
 		for (int i = 0; i < count; i++) {

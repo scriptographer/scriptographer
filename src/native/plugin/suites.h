@@ -16,6 +16,7 @@
 #define kAI13	0x13000001	// AI 13.0 (CS3)
 #define kAI14	0x14000001	// AI 14.0 (CS4)
 #define kAI15	0x15000001	// AI 15.0 (CS5)
+#define kAI16	0x16000001	// AI 16.0 (CS6)
 
 // Sweet Pea Headers
 #include "SPConfig.h"
@@ -169,6 +170,12 @@ namespace ATE {
 	typedef bool ATEBool8;
 }
 #endif // kPluginInterfaceVersion < kAI13
+
+#if kPluginInterfaceVersion < kAI16
+namespace ai {
+	typedef long int32;
+}
+#endif // kPluginInterfaceVersion < kAI16
 
 // ADM Suite versions for different versions of Illustrator
 // ADM Suites default to the oldest versions.
