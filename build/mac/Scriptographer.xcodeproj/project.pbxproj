@@ -1560,7 +1560,7 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = all;
 				SYMROOT = build/CS2;
-				VALID_ARCHS = pcc;
+				VALID_ARCHS = ppc;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = YES;
 			};
@@ -1612,7 +1612,7 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = all;
 				SYMROOT = build/CS2;
-				VALID_ARCHS = pcc;
+				VALID_ARCHS = ppc;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = NO;
 			};
