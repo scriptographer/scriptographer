@@ -963,88 +963,70 @@ public class Curve implements ChangeReceiver {
 	}
 
 	private static int solveQuadraticRoots(double a, double b, double c,
-			double roots[], double epsilon) {
-		// Solve, using closed form methods, the quadratic polynomial:	
-		//		a*x^2 + b*x + c = 0				
-		// for 2 real roots returned in root[0..1].  If error we return 0.
-		// We also return 0 or 1 real roots as appropriate, such as when
-		// the problem is actually linear.					
-		// After _Numerical Recipes in C_, 2nd edition, Press et al.,	
-		// page 183, although with some added case testing and forwarding.
-		// This is better than the _Graphics Gems_ technique, which admits
-		// the possibility of numerical errors cited in Press.		
-		int solutions = 0;
-		// If problem is actually linear, return 0 or 1 easy roots		
-		if (Math.abs(a) < epsilon) {
-			if (Math.abs(b) >= epsilon) {
-				roots[solutions++] = -c / b;
-			} else if (Math.abs(c) < epsilon) { 
-				// if all the coefficients are 0, infinite values are possible!
-				solutions = -1; // -1 indicates infinite solutions
+			double roots[], double tolerance) {
+		// After Numerical Recipes in C, 2nd edition, Press et al.,
+		// 5.6, Quadratic and Cubic Equations
+		// If problem is actually linear, return 0 or 1 easy roots
+		if (Math.abs(a) < tolerance) {
+			if (Math.abs(b) >= tolerance) {
+				roots[0] = -c / b;
+				return 1;
 			}
-			return solutions;
+			// If all the coefficients are 0, infinite values are
+			// possible!
+			if (Math.abs(c) < tolerance)
+				return -1; // Infinite solutions
+			return 0; // 0 solutions
 		}
-		double bb = b * b;
-		double q = bb - 4.0 * a * c;
-		if (q < 0.0)
-			return solutions;
+		double q = b * b - 4 * a * c;
+		if (q < 0)
+			return 0; // 0 solutions
 		q = Math.sqrt(q);
-		if (b < 0.0)
+		if (b < 0)
 			q = -q;
-		q = -0.5 * (b + q);
-		if (Math.abs(q) >= epsilon)
-			roots[solutions++] = c / q;
-		if (Math.abs(a) >= epsilon)
-			roots[solutions++] = q / a;
-		return solutions;
+		q = (b + q) * -0.5;
+		int n = 0;
+		if (Math.abs(q) >= tolerance)
+			roots[n++] = c / q;
+		if (Math.abs(a) >= tolerance)
+			roots[n++] = q / a;
+		return n; // 0, 1 or 2 solutions
 	}
 
 	private static int solveCubicRoots(double a, double b, double c, double d,
-			double roots[], double epsilon) {
-		// Solve, using closed form methods, the cubic polynomial:		
-		//		a*x^3 + b*x^2 + c*x + d = 0			
-		// for 1 real root returned in root[0], or 3 real roots returned
-		// in root[0..2].  If error we return 0.  Note: we alter c[].	
-		// If the polynomial is actually quadratic or linear (because	
-		// coefficients a or b are zero), we forward the problem to
-		// the quadratic/linear solver and return the appropriate 1 or 2
-		// roots.
-		// After _Numerical Recipes in C_, 2nd edition, Press et al.,	
-		// page 184, although with some added case testing and forwarding.
-		// This is better than the _Graphics Gems_ technique, which admits
-		// the possibility of numerical errors cited in Press.		
-		// Test for a quadratic or linear degeneracy			
-		if (Math.abs(a) < epsilon) {
-			return solveQuadraticRoots(b, c, d, roots, epsilon);
-		}
-		// Normalize					
-		b /= a; c /= a; d /= a; a = 1.0;
-		// Compute discriminants						
-		double Q = (b * b - 3.0 * c) / 9.0;
-		double QQQ = Q * Q * Q;
-		double R = (2.0 * b * b * b - 9.0 * b * c + 27.0 * d) / 54.0;
-		double RR = R * R;
-		if (RR < QQQ) { // Three real roots
-			// This sqrt and division is safe, since RR >= 0, so QQQ > RR,	
-			// so QQQ > 0.  The acos is also safe, since RR/QQQ < 1, and	
-			// thus R/sqrt(QQQ) < 1.					
-			double theta = Math.acos(R / Math.sqrt(QQQ));
-			// This sqrt is safe, since QQQ >= 0, and thus Q >= 0
-			double v1 = -2.0 * Math.sqrt(Q);
-			double v2 = b / 3.0;
-			roots[0] = v1 * Math.cos(theta / 3.0) - v2;
-			roots[1] = v1 * Math.cos((theta + 2 * Math.PI) / 3.0) - v2;
-			roots[2] = v1 * Math.cos((theta - 2 * Math.PI) / 3.0) - v2;
+			double roots[], double tolerance) {
+		// After Numerical Recipes in C, 2nd edition, Press et al.,
+		// 5.6, Quadratic and Cubic Equations
+		if (Math.abs(a) < tolerance)
+			return solveQuadraticRoots(b, c, d, roots, tolerance);
+		// Normalize
+		b /= a;
+		c /= a;
+		d /= a;
+		// Compute discriminants
+		double Q = (b * b - 3 * c) / 9,
+			R = (2 * b * b * b - 9 * b * c + 27 * d) / 54,
+			Q3 = Q * Q * Q,
+			R2 = R * R;
+		b /= 3; // Divide by 3 as that's required below
+		if (R2 < Q3) { // Three real roots
+			// This sqrt and division is safe, since R2 >= 0, so Q3 > R2,
+			// so Q3 > 0.  The acos is also safe, since R2/Q3 < 1, and
+			// thus R/sqrt(Q3) < 1.
+			double theta = Math.acos(R / Math.sqrt(Q3)),
+				// This sqrt is safe, since Q3 >= 0, and thus Q >= 0
+				q = -2 * Math.sqrt(Q);
+			roots[0] = q * Math.cos(theta / 3) - b;
+			roots[1] = q * Math.cos((theta + 2 * Math.PI) / 3) - b;
+			roots[2] = q * Math.cos((theta - 2 * Math.PI) / 3) - b;
 			return 3;
-		} else { // One real root							
-			double A = -Math.pow(Math.abs(R)+ Math.sqrt(RR - QQQ), 1.0 / 3.0);
-			if (A != 0.0) {
-				if (R < 0.0) A = -A;
-				roots[0] = A + Q / A - b / 3.0;
-				return 1;
-			}
+		} else { // One real root
+			double A = -Math.pow(Math.abs(R) + Math.sqrt(R2 - Q3), 1 / 3);
+			if (R < 0) A = -A;
+			double B = (Math.abs(A) < tolerance) ? 0 : Q / A;
+			roots[0] = (A + B) - b;
+			return 1;
 		}
-		return 0;
 	}
 
 	private static int solveCubicRoots(double v1, double v2, double v3,
