@@ -459,11 +459,12 @@ public class Rectangle implements ChangeEmitter, ChangeReceiver {
 
 	/**
 	 * Tests if the interior of this rectangle intersects the interior of
-	 * another rectangle.
+	 * another rectangle. Rectangles just touching each other are considered as
+	 * non-intersecting.
 	 * 
 	 * @param rect the specified rectangle
-	 * @return {@true if the rectangle and the specified rectangle
-	 *         intersect each other}
+	 * @return {@true if the rectangle and the specified rectangle intersect
+	 *         each other}
 	 */
 	public boolean intersects(Rectangle rect) {
 		return rect.x + rect.width > this.x
