@@ -771,7 +771,7 @@ public class Curve implements ChangeReceiver {
 				&& bounds1.y + bounds1.height >= bounds2.y
 				&& bounds1.x < bounds2.x + bounds2.width
 				&& bounds1.y < bounds2.y + bounds2.height) {
-			if (isSufficientlyFlat(curve1) && isSufficientlyFlat(curve2)) {
+			if (isFlatEnough(curve1) && isFlatEnough(curve2)) {
 				// Treat both curves as lines and see if their parametric
 				// equations interesct.
 				Point point = Line.intersect(
@@ -804,7 +804,7 @@ public class Curve implements ChangeReceiver {
 		}
 	}
 
-	private static boolean isSufficientlyFlat(double[][] curve) {
+	private static boolean isFlatEnough(double[][] curve) {
 		// Thanks to Kaspar Fischer for the following:
 		// http://www.inf.ethz.ch/personal/fischerk/pubs/bez.pdf
 		double p1x = curve[0][0];
@@ -815,19 +815,11 @@ public class Curve implements ChangeReceiver {
 		double c2y = curve[2][1];
 		double p2x = curve[3][0];
 		double p2y = curve[3][1];
-		double ux = 3.0 * c1x - 2.0 * p1x - p2x;
-		ux *= ux;
-		double uy = 3.0 * c1y - 2.0 * p1y - p2y;
-		uy *= uy;
-		double vx = 3.0 * c2x - 2.0 * p2x - p1x;
-		vx *= vx;
-		double vy = 3.0 * c2y - 2.0 * p2y - p1y;
-		vy *= vy;
-		if (ux < vx)
-			ux = vx;
-		if (uy < vy)
-			uy = vy;
-		return ux + uy <= 16 * EPSILON * EPSILON; // tolerance is 16 * tol ^ 2
+		double ux = 3 * c1x - 2 * p1x - p2x;
+		double uy = 3 * c1y - 2 * p1y - p2y;
+		double vx = 3 * c2x - 2 * p2x - p1x;
+		double vy = 3 * c2y - 2 * p2y - p1y;
+		return Math.max(ux * ux, vx * vx) + Math.max(uy * uy, vy * vy) < 1;
 	}
 
 	private static Rectangle getControlBounds(double[][] curve) {
