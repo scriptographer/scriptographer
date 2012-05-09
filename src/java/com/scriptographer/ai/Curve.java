@@ -760,7 +760,17 @@ public class Curve implements ChangeReceiver {
 			line.setStrokeColor(java.awt.Color.red);
 			line.setStrokeWidth(1f);
 		}
-		if (getControlBounds(curve1).intersects(getControlBounds(curve2))) {
+		Rectangle bounds1 = getControlBounds(curve1);
+		Rectangle bounds2 = getControlBounds(curve2);
+		// We are not using Rectangle#intersects() here, since in order to
+		// detect intersections that ly on curve bounds, we need to consider
+		// touching on one side of the tested rectangles as intersection as well
+		// If touch is condired at both sides, solutions lying on the border of
+		// bounds would turn up twice.
+		if (bounds1.x + bounds1.width >= bounds2.x
+				&& bounds1.y + bounds1.height >= bounds2.y
+				&& bounds1.x < bounds2.x + bounds2.width
+				&& bounds1.y < bounds2.y + bounds2.height) {
 			if (isSufficientlyFlat(curve1) && isSufficientlyFlat(curve2)) {
 				// Treat both curves as lines and see if their parametric
 				// equations interesct.
