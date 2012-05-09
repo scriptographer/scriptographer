@@ -930,7 +930,16 @@ public class Curve implements ChangeReceiver {
 			double y, double epsilon) {
 		double txs[] = { 0, 0, 0 }; 
 		double tys[] = { 0, 0, 0 };
-		
+
+		// Handle beginnings and end seperately, as they are not detected
+		// sometimes.
+		if (Math.abs(curve[0][0] - x) < epsilon
+				&& Math.abs(curve[0][1] - y) < epsilon)
+			return 0;
+		if (Math.abs(curve[3][0] - x) < epsilon
+				&& Math.abs(curve[3][1] - y) < epsilon)
+			return 1;
+
 		int sx = solveCubicRoots(curve[0][0], curve[1][0], curve[2][0],
 				curve[3][0], x, txs, epsilon);
 		int sy = solveCubicRoots(curve[0][1], curve[1][1], curve[2][1],
