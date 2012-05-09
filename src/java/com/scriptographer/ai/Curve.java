@@ -749,16 +749,17 @@ public class Curve implements ChangeReceiver {
 
 	protected static void getIntersections(Curve curve, double[][] curve1,
 			double[][] curve2, ArrayList<CurveLocation> intersections) {
-		if (false) {
-			Path line = Document.getActiveDocument().createRectangle(
+		boolean debug = false;
+		if (debug) {
+			Path rect = Document.getActiveDocument().createRectangle(
 					getControlBounds(curve1));
-			line.setStrokeColor(java.awt.Color.green);
-			line.setStrokeWidth(1f);
+			rect.setStrokeColor(java.awt.Color.green);
+			rect.setStrokeWidth(0.1f);
 
-			line = Document.getActiveDocument().createRectangle(
+			rect = Document.getActiveDocument().createRectangle(
 					getControlBounds(curve2));
-			line.setStrokeColor(java.awt.Color.red);
-			line.setStrokeWidth(1f);
+			rect.setStrokeColor(java.awt.Color.red);
+			rect.setStrokeWidth(0.1f);
 		}
 		Rectangle bounds1 = getControlBounds(curve1);
 		Rectangle bounds2 = getControlBounds(curve2);
@@ -774,6 +775,19 @@ public class Curve implements ChangeReceiver {
 			if (isFlatEnough(curve1) && isFlatEnough(curve2)) {
 				// Treat both curves as lines and see if their parametric
 				// equations interesct.
+				if (debug) {
+					Path line = Document.getActiveDocument().createLine(
+							new Point(curve1[0][0], curve1[0][1]),
+							new Point(curve1[3][0], curve1[3][1]));
+					line.setStrokeColor(java.awt.Color.green);
+					line.setStrokeWidth(0.1f);
+
+					line = Document.getActiveDocument().createLine(
+							new Point(curve2[0][0], curve2[0][1]),
+							new Point(curve2[3][0], curve2[3][1]));
+					line.setStrokeColor(java.awt.Color.red);
+					line.setStrokeWidth(0.1f);
+				}
 				Point point = Line.intersect(
 						curve1[0][0], curve1[0][1],
 						curve1[3][0], curve1[3][1], false,
