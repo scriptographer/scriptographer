@@ -94,6 +94,7 @@ import com.scriptographer.ai.LiveEffectParameters;
 import com.scriptographer.ai.Matrix;
 import com.scriptographer.ai.ParagraphStyle;
 import com.scriptographer.ai.Path;
+import com.scriptographer.ai.PathItem;
 import com.scriptographer.ai.PathStyle;
 import com.scriptographer.ai.PathText;
 import com.scriptographer.ai.Pathfinder;
@@ -159,6 +160,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ParagraphStyle.class,
 		Path.class,
 		Pathfinder.class,
+		PathItem.class,
 		PathStyle.class,
 		PathText.class,
 		Pattern.class,
