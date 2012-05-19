@@ -14,9 +14,7 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Shape;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
 
 import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
@@ -90,14 +88,6 @@ public class Path extends PathItem {
 
 	public Path(Segment[] segments) {
 		this(Lists.asList(segments));
-	}
-	
-	/**
-	 * @jshide
-	 */
-	public Path(Shape shape) {
-		this();
-		append(shape);
 	}
 
 	/**
@@ -773,61 +763,30 @@ public class Path extends PathItem {
 		setClosed(true);
 	}
 
-	/*
-	 * Convert to and from Java2D (java.awt.geom)
-	 */
-
 	/**
-	 * Appends the segments of a PathIterator to this Path. Optionally, the
-	 * initial {@link PathIterator#SEG_MOVETO}segment of the appended path is
-	 * changed into a {@link PathIterator#SEG_LINETO}segment.
+	 * Converts to a Java2D shape.
 	 * 
-	 * @param iter the PathIterator specifying which segments shall be appended.
-	 * @param connect {@code true} for substituting the initial
-	 *        {@link PathIterator#SEG_MOVETO}segment by a
-	 *        {@link PathIterator#SEG_LINETO}, or {@code false} for not
-	 *        performing any substitution. If this GeneralPath is currently
-	 *        empty, {@code connect} is assumed to be {@code false}, thus
-	 *        leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */
-	@Override
-	public void append(PathIterator iter, boolean connect) {
-		float[] f = new float[6];
+	public GeneralPath toShape() {
+		GeneralPath path = new GeneralPath();
 		SegmentList segments = getSegments();
-		int size = segments.size();
-		boolean open = true;
-		while (!iter.isDone() && open) {
-			switch (iter.currentSegment(f)) {
-				case PathIterator.SEG_MOVETO:
-					if (!connect || (size == 0)) {
-						moveTo(f[0], f[1]);
-						break;
-					}
-					if (size >= 1) {
-						Point pt = segments.getLast().point;
-						if (pt.x == f[0] && pt.y == f[1])
-							break;
-					}
-					// Fall through to lineto for connect!
-				case PathIterator.SEG_LINETO:
-					segments.lineTo(f[0], f[1]);
-					break;
-				case PathIterator.SEG_QUADTO:
-					segments.quadraticCurveTo(f[0], f[1], f[2], f[3]);
-					break;
-				case PathIterator.SEG_CUBICTO:
-					segments.cubicCurveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
-					break;
-				case PathIterator.SEG_CLOSE:
-					setClosed(true);
-					open = false;
-					break;
-			}
-
-			// connect = false;
-			iter.next();
+		Segment first = segments.getFirst();
+		path.moveTo((float) first.point.x, (float) first.point.y);
+		Segment seg = first;
+		for (int i = 1, l = segments.size(); i < l; i++) {
+			Segment next = segments.get(i);
+			addSegment(path, seg, next);
+			seg = next;
 		}
+		if (isClosed()) {
+			addSegment(path, seg, first);
+			path.closePath();
+		}
+		path.setWindingRule(getStyle().getWindingRule() == WindingRule.NON_ZERO
+				? GeneralPath.WIND_NON_ZERO
+				: GeneralPath.WIND_EVEN_ODD);
+		return path;
 	}
 
 	private static void addSegment(GeneralPath path, Segment current,
@@ -852,29 +811,6 @@ public class Path extends PathItem {
 					(float) point2.y
 			);
 		}
-	}
-	/**
-	 * @jshide
-	 */
-	public GeneralPath toShape() {
-		GeneralPath path = new GeneralPath();
-		SegmentList segments = getSegments();
-		Segment first = segments.getFirst();
-		path.moveTo((float) first.point.x, (float) first.point.y);
-		Segment seg = first;
-		for (int i = 1, l = segments.size(); i < l; i++) {
-			Segment next = segments.get(i);
-			addSegment(path, seg, next);
-			seg = next;
-		}
-		if (isClosed()) {
-			addSegment(path, seg, first);
-			path.closePath();
-		}
-		path.setWindingRule(getStyle().getWindingRule() == WindingRule.NON_ZERO
-				? GeneralPath.WIND_NON_ZERO
-				: GeneralPath.WIND_EVEN_ODD);
-		return path;
 	}
 
 	protected List<Curve> getAllCurves() {

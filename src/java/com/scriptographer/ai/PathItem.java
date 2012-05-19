@@ -14,10 +14,8 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
 import com.scratchdisk.list.List;
@@ -40,19 +38,12 @@ public abstract class PathItem extends Item {
 		super(type);
 	}
 
-	/*
-	 * Convert to and from Java2D (java.awt.geom)
-	 */
-	
 	/**
+	 * Converts to a Java2D shape.
+	 * 
 	 * @jshide
 	 */
 	public abstract GeneralPath toShape();
-
-	/**
-	 * @jshide
-	 */
-	public abstract void append(PathIterator iter, boolean connect);
 
 	/*
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
@@ -276,31 +267,6 @@ public abstract class PathItem extends Item {
 	 */
 	public abstract void closePath();
 
-
-	/**
-	 * @jshide
-	 */
-	public void append(PathIterator iter) {
-		append(iter, false);
-	}
-
-	/**
-	 * Appends the segments of a Shape to the path. If {@code connect} is
-	 * true, the new path segments are connected to the existing one with a
-	 * line. The winding rule of the Shape is ignored.
-	 * @jshide
-	 */
-	public void append(Shape shape, boolean connect) {
-		append(shape.getPathIterator(null), connect);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public void append(Shape shape) {
-		append(shape.getPathIterator(null), false);
-	}
-
 	/**
 	 * {@grouptitle Geometric Tests}
 	 * 
@@ -349,9 +315,9 @@ public abstract class PathItem extends Item {
 	public PathItem intersect(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.intersect(new Area(item.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
+		PathItem res = document.createPathItem(area);
+		res.setStyle(this.getStyle());
+		return res;
 	}
 
 	/**
@@ -363,9 +329,9 @@ public abstract class PathItem extends Item {
 	public PathItem unite(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.add(new Area(item.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
+		PathItem res = document.createPathItem(area);
+		res.setStyle(this.getStyle());
+		return res;
 	}
 
 	/**
@@ -377,9 +343,9 @@ public abstract class PathItem extends Item {
 	public PathItem exclude(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.subtract(new Area(item.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
+		PathItem res = document.createPathItem(area);
+		res.setStyle(this.getStyle());
+		return res;
 	}
 
 	/**

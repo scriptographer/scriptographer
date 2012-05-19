@@ -14,6 +14,8 @@
 
 package com.scriptographer.ai;
 
+import java.awt.Shape;
+import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.ref.SoftReference;
@@ -1211,11 +1213,66 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public boolean isInsertionEditable();
 	*/
 
-	private Path createPath() {
+	protected Path createPath() {
 		activate(false, true);
 		return new Path();
 	}
 
+	protected CompoundPath createCompoundPath() {
+		activate(false, true);
+		return new CompoundPath();
+	}
+
+	/**
+	 * Creates a PathItem from a given Java2D PathIterator. Determines weather a
+	 * CompoundPath or simple Path is sufficient.
+	 */
+	protected PathItem createPathItem(PathIterator iter) {
+		float[] f = new float[6];
+		Path path = null;
+		CompoundPath compound = null;
+		while (!iter.isDone()) {
+			switch (iter.currentSegment(f)) {
+				case PathIterator.SEG_MOVETO: {
+					// See if we used a simple Path so far, and turn it into
+					// a compound path once there is more than one MOVETO
+					// command.
+					if (path != null && compound == null) {
+						compound = createCompoundPath();
+						compound.appendTop(path);
+					}
+					path = createPath();
+					if (compound != null)
+						compound.appendTop(path);
+					path.moveTo(f[0], f[1]);
+				}
+				case PathIterator.SEG_LINETO:
+					path.lineTo(f[0], f[1]);
+					break;
+				case PathIterator.SEG_QUADTO:
+					path.quadraticCurveTo(f[0], f[1], f[2], f[3]);
+					break;
+				case PathIterator.SEG_CUBICTO:
+					path.cubicCurveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
+					break;
+				case PathIterator.SEG_CLOSE:
+					path.closePath();
+					break;
+			}
+			iter.next();
+		}
+		return compound != null ? compound : path;
+	}
+
+	/**
+	 * Creates a PathItem from a given Java2D Shape. Determines weather a
+	 * CompoundPath or simple Path is sufficient.
+	 */
+	protected PathItem createPathItem(Shape shape) {
+		return createPathItem(shape.getPathIterator(null));
+	}
+
+	
 	/**
 	 * Creates a Path Item with two anchor points forming a line.
 	 * 
@@ -1695,4 +1752,11 @@ public class Document extends NativeObject implements ChangeReceiver {
 	 * document.
 	 */
 	public native void paste();
+
+	/**
+	 * @jshide
+	 */
+	public DocumentGraphics2D getGraphics2D() {
+		return new DocumentGraphics2D(this, false);
+	}
 }
