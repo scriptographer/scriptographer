@@ -74,8 +74,6 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 
 	public void draw(Shape shape) {
 		// Only BasicStroke can be converted.
-		// If the GraphicContext's Stroke is not an instance of BasicStroke,
-		// then the stroked outline is filled.
 		Stroke stroke = gc.getStroke();
 		if (stroke instanceof BasicStroke) {
 			BasicStroke basicStroke = (BasicStroke) stroke;
@@ -111,11 +109,13 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 	}
 
 	public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
+		// TODO: Implement
 		return false;
 	}
 
 	public boolean drawImage(Image img, int x, int y, int width, int height,
 			ImageObserver observer) {
+		// TODO: Implement
 		return false;
 	}
 
