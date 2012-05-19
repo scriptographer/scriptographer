@@ -55,6 +55,7 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 
 	Document document;
 	boolean textAsShapes;
+	boolean firstShape = true;
 
 	public DocumentGraphics2D(Document document, boolean textAsShapes) {
 		super(textAsShapes);
@@ -63,22 +64,22 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 
     public DocumentGraphics2D(DocumentGraphics2D g) {
         super(g);
-		this.document = g.document;
-	    this.textAsShapes = g.textAsShapes;
+		document = g.document;
+	    textAsShapes = g.textAsShapes;
     }
 
 	private PathItem createPathItem(Shape s) {
 		return document.createPathItem(s.getPathIterator(gc.getTransform()));
 	}
 
-	public void draw(Shape s) {
+	public void draw(Shape shape) {
 		// Only BasicStroke can be converted.
 		// If the GraphicContext's Stroke is not an instance of BasicStroke,
 		// then the stroked outline is filled.
 		Stroke stroke = gc.getStroke();
 		if (stroke instanceof BasicStroke) {
 			BasicStroke basicStroke = (BasicStroke) stroke;
-			PathItem item = createPathItem(s);
+			PathItem item = createPathItem(shape);
 			java.awt.Color color = gc.getColor();
 			item.setStrokeColor(color);
 			item.setDashArray(basicStroke.getDashArray());
@@ -88,15 +89,21 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 			item.setStrokeWidth(basicStroke.getLineWidth());
 			item.setMiterLimit(basicStroke.getMiterLimit());
 			item.setFillColor(Color.NONE);
-			
 		}
+		firstShape = false;
 	}
 
-	public void fill(Shape s) {
-		PathItem item = createPathItem(s);
+	public void fill(Shape shape) {
 		java.awt.Color color = gc.getColor();
+		if (firstShape && shape instanceof java.awt.Rectangle
+				&& color.equals(java.awt.Color.WHITE)) {
+			firstShape = false;
+			return;
+		}
+		PathItem item = createPathItem(shape);
 		item.setFillColor(color);
 		item.setStrokeColor(Color.NONE);
+		firstShape = false;
 	}
 
 	public void copyArea(int x, int y, int width, int height, int dx, int dy) {
