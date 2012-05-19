@@ -14,6 +14,9 @@
 
 package com.scriptographer.ai;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
@@ -383,5 +386,30 @@ public abstract class PathItem extends Item {
 						locations);
 		}
 		return locations.toArray(new CurveLocation[locations.size()]);
+	}
+
+	/**
+	 * Draws the path's content into a Graphics2D object. Useful for
+	 * conversions.
+	 * 
+	 * @jshide
+	 */
+	public void paint(Graphics2D graphics) {
+		Shape shape = toShape();
+		PathStyle style = getStyle();
+		Color fillColor = style.getFillColor();
+		Color strokeColor = style.getStrokeColor();
+		if (fillColor != Color.NONE) {
+			graphics.setColor(fillColor.toAWTColor());
+			graphics.fill(shape);
+		}
+		if (strokeColor != Color.NONE) {
+			graphics.setColor(strokeColor.toAWTColor());
+			graphics.setStroke(new BasicStroke(style.getStrokeWidth(),
+					style.getStrokeCap().value, style.getStrokeJoin().value,
+					style.getMiterLimit(), style.getDashArray(),
+					style.getDashOffset()));
+			graphics.draw(shape);
+		}
 	}
 }

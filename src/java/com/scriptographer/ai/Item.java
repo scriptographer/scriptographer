@@ -14,6 +14,7 @@
 
 package com.scriptographer.ai;
 
+import java.awt.Graphics2D;
 import java.lang.ref.SoftReference;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -2045,4 +2046,13 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	 * once that works well.
 	 */
 	protected static native boolean isValid(int handle);
+
+	/**
+	 * Draws the item's content into a Graphics2D object. Useful for
+	 * conversions.
+	 * 
+	 * @jshide
+	 */
+	public void paint(Graphics2D graphics) {
+	}
 }

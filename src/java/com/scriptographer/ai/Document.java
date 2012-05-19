@@ -14,6 +14,7 @@
 
 package com.scriptographer.ai;
 
+import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.io.File;
@@ -1754,9 +1755,25 @@ public class Document extends NativeObject implements ChangeReceiver {
 	public native void paste();
 
 	/**
+	 * Returns a Graphics2D object that can be used to draw into the AI
+	 * document. Useful for conversions.
+	 * 
 	 * @jshide
 	 */
 	public DocumentGraphics2D getGraphics2D() {
 		return new DocumentGraphics2D(this, false);
+	}
+
+	/**
+	 * Draws the document's content into a Graphics2D object. Useful for
+	 * conversions.
+	 * 
+	 * @jshide
+	 */
+	public void paint(Graphics2D graphics) {
+		LayerList layers = getLayers();
+		for (int i = layers.size() - 1; i >= 0; i--) {
+			layers.get(i).paint(graphics);
+		}
 	}
 }
