@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package com.scriptographer.awt;
+package com.scratchdisk.awt;
 
 import java.awt.geom.AffineTransform;
 

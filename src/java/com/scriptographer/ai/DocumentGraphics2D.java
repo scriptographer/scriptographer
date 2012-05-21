@@ -45,7 +45,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.awt.AbstractGraphics2D;
+import com.scratchdisk.awt.AbstractGraphics2D;
 
 /**
  * @author lehni
