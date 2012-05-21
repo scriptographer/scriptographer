@@ -54,7 +54,6 @@ import com.scratchdisk.awt.AbstractGraphics2D;
 public class DocumentGraphics2D extends AbstractGraphics2D {
 
 	Document document;
-	boolean textAsShapes;
 	boolean firstShape = true;
 
 	public DocumentGraphics2D(Document document, boolean textAsShapes) {
@@ -62,14 +61,13 @@ public class DocumentGraphics2D extends AbstractGraphics2D {
 		this.document = document;
 	}
 
-    public DocumentGraphics2D(DocumentGraphics2D g) {
-        super(g);
-		document = g.document;
-	    textAsShapes = g.textAsShapes;
+    public DocumentGraphics2D(DocumentGraphics2D graphics) {
+        super(graphics);
+		document = graphics.document;
     }
 
-	private PathItem createPathItem(Shape s) {
-		return document.createPathItem(s.getPathIterator(gc.getTransform()));
+	private PathItem createPathItem(Shape shape) {
+		return document.createPathItem(shape.getPathIterator(gc.getTransform()));
 	}
 
 	public void draw(Shape shape) {

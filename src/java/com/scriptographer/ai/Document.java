@@ -1246,6 +1246,7 @@ public class Document extends NativeObject implements ChangeReceiver {
 					if (compound != null)
 						compound.appendTop(path);
 					path.moveTo(f[0], f[1]);
+					break;
 				}
 				case PathIterator.SEG_LINETO:
 					path.lineTo(f[0], f[1]);
