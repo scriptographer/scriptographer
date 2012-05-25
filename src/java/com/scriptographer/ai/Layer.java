@@ -14,7 +14,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Graphics2D;
 
 /**
  * The Layer item represents a layer in an Illustrator document.
@@ -169,18 +168,5 @@ public class Layer extends Item {
 		if (getParent() == null)
 			return nativeGetPreviousLayer();
 		return super.getPreviousSibling();
-	}
-
-	/**
-	 * Draws the layer's content into a Graphics2D object. Useful for
-	 * conversions.
-	 * 
-	 * @jshide
-	 */
-	public void paint(Graphics2D graphics) {
-		ItemList children = getChildren();
-		for (int i = children.size() - 1; i >= 0; i--) {
-			children.get(i).paint(graphics);
-		}
 	}
 }
