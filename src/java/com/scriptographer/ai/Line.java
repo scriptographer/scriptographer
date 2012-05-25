@@ -74,7 +74,7 @@ public class Line {
 	}
 
 	public Point getPoint2() {
-		return point1;
+		return point2;
 	}
 
 	public Point getVector() {
