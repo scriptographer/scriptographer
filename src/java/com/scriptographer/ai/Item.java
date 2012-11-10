@@ -2058,7 +2058,9 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	public void paint(Graphics2D graphics) {
 		ItemList children = getChildren();
 		for (int i = children.size() - 1; i >= 0; i--) {
-			children.get(i).paint(graphics);
+			Item child = children.get(i);
+			if (child.isVisible())
+				child.paint(graphics);
 		}
 	}
 }

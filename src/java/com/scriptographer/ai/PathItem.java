@@ -396,19 +396,21 @@ public abstract class PathItem extends Item {
 	 */
 	public void paint(Graphics2D graphics) {
 		Shape shape = toShape();
-		PathStyle style = getStyle();
-		Color fillColor = style.getFillColor();
-		Color strokeColor = style.getStrokeColor();
+		Color fillColor = getFillColor();
+		Color strokeColor = getStrokeColor();
 		if (fillColor != Color.NONE) {
 			graphics.setColor(fillColor.toAWTColor());
 			graphics.fill(shape);
 		}
 		if (strokeColor != Color.NONE) {
+			float[] dashArray = getDashArray();
+			if (dashArray.length == 0)
+				dashArray = null;
 			graphics.setColor(strokeColor.toAWTColor());
-			graphics.setStroke(new BasicStroke(style.getStrokeWidth(),
-					style.getStrokeCap().value, style.getStrokeJoin().value,
-					style.getMiterLimit(), style.getDashArray(),
-					style.getDashOffset()));
+			graphics.setStroke(new BasicStroke(getStrokeWidth(),
+					getStrokeCap().value, getStrokeJoin().value,
+					getMiterLimit(), dashArray,
+					getDashOffset()));
 			graphics.draw(shape);
 		}
 	}
