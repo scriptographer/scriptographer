@@ -147,19 +147,24 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	 */
 	public int getConversionWeight(Object from, Object unwrapped, Class<?> to,
 	        int defaultWeight) {
-		Class fromClass = unwrapped.getClass();
-		IdentityHashMap<Class, Integer> fromCache =
-				conversionCache.get(fromClass);
-		if (fromCache == null) {
-			fromCache = new IdentityHashMap<Class, Integer>();
-			conversionCache.put(fromClass, fromCache);
+		IdentityHashMap<Class, Integer> fromCache = null;
+		if (unwrapped != null) {
+			Class fromClass = unwrapped.getClass();
+			fromCache =
+					conversionCache.get(fromClass);
+			if (fromCache == null) {
+				fromCache = new IdentityHashMap<Class, Integer>();
+				conversionCache.put(fromClass, fromCache);
+			}
+			Integer res = fromCache.get(to);
+			if (res != null)
+				return res;
 		}
-		Integer res = fromCache.get(to);
-		if (res != null)
-			return res;
 		int weight = calculateConversionWeight(from, unwrapped, to,
 				defaultWeight);
-		fromCache.put(to, weight);
+		if (fromCache != null) {
+			fromCache.put(to, weight);
+		}
 		return weight;
 	}
 
