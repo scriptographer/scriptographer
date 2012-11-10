@@ -607,7 +607,9 @@ public class Item extends DocumentObject implements Style, ChangeReceiver {
 	public Object clone() {
 		Item parent = getParent();
 		// TODO: parent == null: dictionary item -> return valid parent?
-		return parent != null ? copyTo(parent) : copyTo(document);
+		Item clone = parent != null ? copyTo(parent) : copyTo(document);
+		clone.moveAbove(this);
+		return clone;
 	}
 
 	/**
