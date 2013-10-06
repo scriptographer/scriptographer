@@ -1,0 +1,340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Native">
+      <UniqueIdentifier>{10c81125-d64e-4803-8c28-f250bd87dc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\JNI">
+      <UniqueIdentifier>{14a6c68f-d19f-476b-8036-b1978060896e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\JNI\AI">
+      <UniqueIdentifier>{7666db48-1863-4c28-a958-173ee43a3fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\JNI\ADM">
+      <UniqueIdentifier>{ae9c3ade-8e98-4fe5-b33c-66bd5b84cc2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\JNI\UI">
+      <UniqueIdentifier>{76c0160c-06ef-44a3-abbf-6dc5855cd796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin">
+      <UniqueIdentifier>{5c3496b7-47c6-44c2-9d2f-f80bc3afb4b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS">
+      <UniqueIdentifier>{d136d609-ba04-47f9-adcd-3c3661d2bcc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS2">
+      <UniqueIdentifier>{950ed43d-7e2d-4bbb-8b36-a0e138b13eb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS3">
+      <UniqueIdentifier>{75d1c20b-8800-4148-b3da-ace7ee2129a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS4">
+      <UniqueIdentifier>{2539eb1b-19f5-418f-9f19-cedbf38b0d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS5">
+      <UniqueIdentifier>{dc75b423-7fbb-4f0c-8c36-e1052d8fbaee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{1f194e11-236a-43ec-bddf-e2fbb1328434}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\native\jni\admGlobals.h">
+      <Filter>Native\JNI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\jni\aiGlobals.h">
+      <Filter>Native\JNI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\AppContext.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\Array.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\exceptions.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\jniMacros.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\win\loadJava.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\win\platform.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\resourceIds.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\ScriptographerEngine.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\ScriptographerPlugin.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\stdHeaders.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\native\plugin\suites.h">
+      <Filter>Native\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp">
+      <Filter>Native\JNI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\registerNatives.cpp">
+      <Filter>Native\JNI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Color.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Curve.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Document.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_FontList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Group.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Item.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Layer.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Path.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_PathText.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_PlacedSymbol.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_PointText.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Raster.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Timer.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Tool.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp">
+      <Filter>Native\JNI\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Button.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Dialog.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Drawer.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_HierarchyListBox.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_HierarchyListEntry.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Image.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ImagePane.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Item.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ItemGroup.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ListEntry.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ListItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ModalDialog.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_TextEditItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_TextItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_TextValueItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ToggleItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_Tracker.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_adm_ValueItem.cpp">
+      <Filter>Native\JNI\ADM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp">
+      <Filter>Native\JNI\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp">
+      <Filter>Native\JNI\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\AppContext.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\exceptions.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\win\loadJava.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\ScriptographerEngine.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\ScriptographerPlugin.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\stdHeaders.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\plugin\suites.cpp">
+      <Filter>Native\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\illustrator\IAIArtboards.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\ate\IText.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\ate\IThrowException.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\icon.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\PiPL.bin">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\plugin.rc.in">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\tool.cur">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\plugin.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
