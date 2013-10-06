@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="build/java/build/lib/jython.jar" sourcepath="/jython"/>
 	<classpathentry kind="lib" path="build/java/build/lib/js.jar" sourcepath="/rhino"/>
 	<classpathentry kind="lib" path="build/java/build/lib/debugger.jar" sourcepath="/debugger"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.7.0_40/lib/tools.jar"/>
 	<classpathentry kind="output" path="build/java/build/classes"/>
 </classpath>
