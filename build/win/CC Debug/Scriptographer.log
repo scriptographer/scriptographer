@@ -1,12 +1,10 @@
-﻿Build started 17/10/2013 4:51:47 PM.
+﻿Build started 17/10/2013 5:37:08 PM.
      1>Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching "CC Debug\Scriptographer.unsuccessfulbuild".
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\plugin\stdHeaders.cpp
-         stdHeaders.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp ..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp ..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp ..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp ..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Color.cpp ..\..\src\native\jni\com_scriptographer_ai_Curve.cpp ..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp ..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp ..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp ..\..\src\native\jni\com_scriptographer_ai_FontList.cpp ..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp ..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp ..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp ..\..\src\native\jni\com_scriptographer_ai_Group.cpp ..\..\src\native\jni\com_scriptographer_ai_Item.cpp ..\..\src\native\jni\com_scriptographer_ai_Layer.cpp ..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp ..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp ..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_PathText.cpp ..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp ..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedSymbol.cpp ..\..\src\native\jni\com_scriptographer_ai_PointText.cpp ..\..\src\native\jni\com_scriptographer_ai_Raster.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp ..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp ..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp ..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp ..\..\src\native\jni\com_scriptographer_ai_Timer.cpp ..\..\src\native\jni\com_scriptographer_ai_Tool.cpp ..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp ..\..\src\native\jni\registerNatives.cpp ..\..\src\native\plugin\AppContext.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp ..\..\src\native\plugin\exceptions.cpp ..\..\src\native\plugin\suites.cpp ..\..\src\native\win\loadJava.cpp
-         suites.cpp
+         All outputs are up-to-date.
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_Item.cpp ..\..\src\native\jni\com_scriptographer_ai_Layer.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\jni\com_scriptographer_ai_Tool.cpp ..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp
          ScriptographerPlugin.cpp
      1>..\..\src\native\plugin\ScriptographerPlugin.cpp(535): error C2039: 'GetPluginFileSpecification' : is not a member of 'SPPluginsSuite'
                  C:\_testprojects\aiplugins\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp\SPPlugs.h(111) : see declaration of 'SPPluginsSuite'
@@ -29,78 +27,11 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\plugin\ScriptographerEngine.cpp(1544): error C2664: 'AIErr (ai::int32,AIFloatSampleComponent *,ai::int32,AIFloatSampleComponent *,const AIColorConvertOptions &,AIBoolean *)' : cannot convert parameter 1 from 'AIBoolean *' to 'ai::int32'
                  There is no context in which this conversion is possible
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
+     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'ai::int32 *' to 'size_t *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1958): error C2065: 'sAITracing' : undeclared identifier
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1958): error C2227: left of '->IsTracing' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2112): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2112): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AIArtHandle ***'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2170): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2170): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2198): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2198): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2213): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2213): error C2664: 'AIErr (ai::int32 *,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2232): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(2232): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AIArtHandle ***'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ui_MenuItem.cpp
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(64): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(82): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(99): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(109): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(111): error C2664: 'AIErr (AIMenuItemHandle,AIMenuItemOption *)' : cannot convert parameter 2 from 'long *' to 'AIMenuItemOption *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(111): error C2664: 'AIErr (AIMenuItemHandle,AIMenuItemOption *)' : cannot convert parameter 1 from 'long *' to 'AIMenuItemHandle'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(122): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(136): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(149): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(159): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(172): error C2039: 'getMenuItemHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-         com_scriptographer_ui_MenuGroup.cpp
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp(48): error C2039: 'getMenuGroupHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp(58): error C2039: 'getMenuGroupHandle' : is not a member of 'ScriptographerEngine'
-                 C:\_testprojects\aiplugins\scriptographer\src\native\plugin\ScriptographerEngine.h(33) : see declaration of 'ScriptographerEngine'
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp(60): error C2664: 'AIErr (AIMenuGroup,AIMenuGroupOption *)' : cannot convert parameter 2 from 'long *' to 'AIMenuGroupOption *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp(60): error C2664: 'AIErr (AIMenuGroup,AIMenuGroupOption *)' : cannot convert parameter 1 from 'long *' to 'AIMenuGroup'
+     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'ai::int32 *' to 'AIArtSet'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_Tracing.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(30): error C2065: 'sAITracing' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(30): error C2227: left of '->AcquireTracingOptions' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(40): error C2065: 'sAITracing' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(40): error C2227: left of '->AcquireTracingOptions' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(69): error C2065: 'sAITracing' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(69): error C2227: left of '->CreateTracing' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(85): error C2065: 'sAITracing' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(85): error C2227: left of '->Update' must point to class/struct/union/generic type
-                 type is ''unknown-type''
      1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(99): error C2065: 'kTracingResampleKey' : undeclared identifier
      1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(113): error C2065: 'kTracingResampleKey' : undeclared identifier
      1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(127): error C2065: 'kTracingResampleResolutionKey' : undeclared identifier
@@ -108,8 +39,6 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(127): fatal error C1903: unable to recover from previous error(s); stopping compilation
          com_scriptographer_ai_Tool.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Tool.cpp(72): error C2664: 'AIErr (ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Tool.cpp(165): error C2664: 'AIErr (AIToolHandle,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Tool.cpp(165): error C2664: 'AIErr (AIToolHandle,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AIToolHandle'
@@ -195,13 +124,9 @@
          com_scriptographer_ai_SegmentList.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(57): error C2664: 'JNIEnv_::SetFloatArrayRegion' : cannot convert parameter 4 from 'AIReal [7]' to 'const jfloat *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(62): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat *' to 'AIReal *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(78): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat *' to 'AIReal *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(94): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat [7]' to 'AIReal *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(99): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat *' to 'AIReal *'
+     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(93): error C2664: 'JNIEnv_::GetFloatArrayRegion' : cannot convert parameter 4 from 'AIReal [7]' to 'jfloat *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(116): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat *' to 'AIReal *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
@@ -210,10 +135,6 @@
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(138): error C2664: 'ScriptographerEngine::convertSegments' : cannot convert parameter 2 from 'jfloat *' to 'AIReal *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_PlacedFile.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(96): error C2664: 'AIErr (AIArtHandle,ai::int32,ai::int32 *)' : cannot convert parameter 3 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(96): error C2664: 'AIErr (AIArtHandle,ai::int32,ai::int32 *)' : cannot convert parameter 1 from 'AIArtUserAttr' to 'AIArtHandle'
-                 Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(142): error C2039: 'GetAsSPPlatformFileSpec' : is not a member of 'ai::FilePath'
                  c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\IAIFilePath.hpp(49) : see declaration of 'ai::FilePath'
          com_scriptographer_ai_Pathfinder.cpp
@@ -243,21 +164,6 @@
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(187): error C2664: 'AIErr (ai::int32,AIPathSegment *,ai::int32 *,AIPathConstructionPoint **,AIReal,AIReal,AIPathConstructionMemoryObject *)' : cannot convert parameter 3 from 'long *' to 'ai::int32 *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(187): error C2664: 'AIErr (ai::int32,AIPathSegment *,ai::int32 *,AIPathConstructionPoint **,AIReal,AIReal,AIPathConstructionMemoryObject *)' : cannot convert parameter 2 from 'AIReal' to 'AIPathSegment *'
-         com_scriptographer_ai_LiveEffect.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(97): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(97): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AILiveEffectHandle'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(98): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(98): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AILiveEffectHandle'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(99): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *,ai::int32 *)' : cannot convert parameter 3 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(99): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(99): error C2664: 'AIErr (AILiveEffectHandle,ai::int32 *,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AILiveEffectHandle'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_Layer.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_Layer.cpp(118): error C2664: 'jobject ScriptographerEngine::convertColor(JNIEnv *,ADMRGBColor *)' : cannot convert parameter 1 from 'AIColor *' to 'JNIEnv *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
@@ -268,9 +174,9 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(66): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
+     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'ai::int32 *' to 'size_t *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
+     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'ai::int32 *' to 'AIArtSet'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(129): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
@@ -303,11 +209,6 @@
      1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(1136): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(1136): error C2664: 'AIErr (AIArtHandle ***,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AIArtHandle ***'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_FileFormat.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp(39): error C2664: 'AIErr (AIFileFormatHandle,ai::int32 *)' : cannot convert parameter 2 from 'long *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp(39): error C2664: 'AIErr (AIFileFormatHandle,ai::int32 *)' : cannot convert parameter 1 from 'long *' to 'AIFileFormatHandle'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_Document.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_Document.cpp(290): error C2065: 'sAICropArea' : undeclared identifier
@@ -343,175 +244,9 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(146): error C2664: 'AIErr (AIEntryRef,AIReal *)' : cannot convert parameter 1 from 'ASReal *' to 'AIEntryRef'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_ArtboardList.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(32): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(32): error C2227: left of '->GetCount' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(49): error C2065: 'AICropAreaPtr' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(49): error C2146: syntax error : missing ';' before identifier 'area'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(49): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(51): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(51): error C2227: left of '->Delete' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(51): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(53): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(53): error C2227: left of '->GetCount' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(71): error C2065: 'AICropAreaPtr' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(71): error C2146: syntax error : missing ';' before identifier 'area'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(71): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(72): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(72): error C2227: left of '->Get' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(72): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(76): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(76): error C2227: left of '->m_CropAreaRect' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(77): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(77): error C2227: left of '->m_bShowCenter' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(77): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(77): error C2227: left of '->m_bShowCrossHairs' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(78): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(78): error C2227: left of '->m_bShowSafeAreas' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(78): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(79): error C2227: left of '->m_fPAR' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2146: syntax error : missing ';' before identifier 'area'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2070: ''unknown-type'': illegal sizeof operand
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2228: left of '.m_CropAreaRect' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2228: left of '.m_fPAR' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2228: left of '.m_bShowCenter' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2228: left of '.m_bShowCrossHairs' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(125): error C2228: left of '.m_bShowSafeAreas' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(127): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(127): error C2227: left of '->GetCount' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(131): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(131): error C2146: syntax error : missing ';' before identifier 'empty'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(131): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(132): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(132): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(132): error C2070: ''unknown-type'': illegal sizeof operand
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(134): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(134): error C2227: left of '->AddNew' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(134): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(138): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(138): error C2227: left of '->AddNew' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(138): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(143): error C2065: 'AICropAreaPtr' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(143): error C2146: syntax error : missing ';' before identifier 'prev'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(143): error C2659: '=' : function as left operand
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(144): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(144): error C2227: left of '->Get' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(146): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(146): error C2227: left of '->AddNew' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(151): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(151): error C2227: left of '->Get' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(153): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(153): error C2227: left of '->Update' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(156): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(156): error C2227: left of '->Update' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(156): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2146: syntax error : missing ';' before identifier 'area'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2070: ''unknown-type'': illegal sizeof operand
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2228: left of '.m_CropAreaRect' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2228: left of '.m_fPAR' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2228: left of '.m_bShowCenter' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2228: left of '.m_bShowCrossHairs' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2065: 'area' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(179): error C2228: left of '.m_bShowSafeAreas' must have class/struct/union
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(183): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(183): error C2227: left of '->GetCount' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(185): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(185): error C2146: syntax error : missing ';' before identifier 'empty'
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(185): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(186): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(186): error C2065: 'AICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(186): error C2070: ''unknown-type'': illegal sizeof operand
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(188): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(188): error C2227: left of '->AddNew' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(188): error C2065: 'empty' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(191): error C2065: 'sAICropArea' : undeclared identifier
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(191): error C2227: left of '->Update' must point to class/struct/union/generic type
-                 type is ''unknown-type''
-     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(191): error C2065: 'area' : undeclared identifier
          Generating Code...
-         Skipping... (no relevant changes detected)
-         loadJava.cpp
-         exceptions.cpp
-         AppContext.cpp
-         registerNatives.cpp
-         com_scriptographer_ai_Timer.cpp
-         com_scriptographer_ai_TextStoryList.cpp
-         com_scriptographer_ai_TextStory.cpp
-         com_scriptographer_ai_SymbolList.cpp
-         com_scriptographer_ai_Symbol.cpp
-         com_scriptographer_ai_SwatchList.cpp
-         com_scriptographer_ai_Swatch.cpp
-         com_scriptographer_ai_Raster.cpp
-         com_scriptographer_ai_PointText.cpp
-         com_scriptographer_ai_PlacedSymbol.cpp
-         com_scriptographer_ai_Pattern.cpp
-         com_scriptographer_ai_PathText.cpp
-         com_scriptographer_ai_PathStyle.cpp
-         com_scriptographer_ai_ParagraphStyle.cpp
-         com_scriptographer_ai_LayerList.cpp
-         com_scriptographer_ai_Group.cpp
-         com_scriptographer_ai_GradientStopList.cpp
-         com_scriptographer_ai_Gradient.cpp
-         com_scriptographer_ai_FontWeight.cpp
-         com_scriptographer_ai_FontList.cpp
-         com_scriptographer_ai_FontFamily.cpp
-         com_scriptographer_ai_DocumentViewList.cpp
-         com_scriptographer_ai_DocumentView.cpp
-         com_scriptographer_ai_DocumentList.cpp
-         com_scriptographer_ai_Curve.cpp
-         com_scriptographer_ai_Color.cpp
-         com_scriptographer_ai_CharacterStyle.cpp
-         com_scriptographer_ai_AreaText.cpp
-         com_scriptographer_ai_Annotator.cpp
-         com_scriptographer_ScriptographerEngine.cpp
      1>Done Building Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" (build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:07.90
+Time Elapsed 00:00:02.14

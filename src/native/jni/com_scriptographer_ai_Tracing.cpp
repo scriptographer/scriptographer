@@ -25,7 +25,7 @@
 // Use inline functions outside the macros because #if is not possible within macros
 
 inline AIDictionaryRef Tracing_getOptions(AIArtHandle art) {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 &&  kPluginInterfaceVersion <= kAI16
 	AIDictionaryRef dict = NULL;
 	sAITracing->AcquireTracingOptions(art, &dict);
 	return dict;
@@ -35,7 +35,7 @@ inline AIDictionaryRef Tracing_getOptions(AIArtHandle art) {
 }
 
 inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 &&  kPluginInterfaceVersion <= kAI16
 	AIDictionaryRef dict = NULL;
 	sAITracing->AcquireTracingOptions(art, &dict);
 	return dict;
@@ -62,7 +62,7 @@ inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint artHandle) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
 		AIArtHandle tracing = NULL;
 		Document_activate((AIDocumentHandle) docHandle);
 		// we just pass the image itself for prep. TODO: find out what we're supposed to pass here!
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_update(JNIEnv *env, jobject obj) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITracing->Update(art);
 #else

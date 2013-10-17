@@ -61,6 +61,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuItem_nativeRemove(JNIEnv *
  */
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_MenuItem_getText(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 
 #if kPluginInterfaceVersion < kAI12
@@ -70,6 +71,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_MenuItem_getText(JNIEnv *en
 #endif
 		if (!sAIMenu->GetItemText(item, text))
 			return gEngine->convertString(env, text);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -79,6 +81,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_MenuItem_getText(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
 		char *textStr = gEngine->convertString(env, text);
@@ -88,6 +91,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setText(JNIEnv *env, 
 		ai::UnicodeString textStr = gEngine->convertString_UnicodeString(env, text);
 		sAIMenu->SetItemText(item, textStr);
 #endif
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -96,8 +100,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setText(JNIEnv *env, 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setOptions(JNIEnv *env, jobject obj, jint options) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->SetMenuItemOptions(item, options);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -106,10 +112,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setOptions(JNIEnv *en
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuItem_getOptions(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		long options = 0;
 		sAIMenu->GetMenuItemOptions(item, &options);
 		return options;
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -119,12 +127,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuItem_getOptions(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		if (enabled) {
 			sAIMenu->EnableItem(item);
 		} else {
 			sAIMenu->DisableItem(item);
 		}
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -133,10 +143,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setEnabled(JNIEnv *en
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isEnabled(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		ASBoolean enabled = false;
 		sAIMenu->IsItemEnabled(item, &enabled);
 		return enabled;
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -146,8 +158,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isEnabled(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setChecked(JNIEnv *env, jobject obj, jboolean checked) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->CheckItem(item, checked);
+#endif //#ifndef ADM_FREE
+
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -156,10 +171,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setChecked(JNIEnv *en
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isChecked(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		ASBoolean checked = false;
 		sAIMenu->IsItemChecked(item, &checked);
 		return checked;
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -169,6 +186,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isChecked(JNIEnv 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv *env, jobject obj, jstring key, jint modifiers) {
 	try {
+#ifndef ADM_FREE
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		char *chars = gEngine->convertString(env, key);
 		int len = strlen(chars);
@@ -178,6 +196,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv
 			return !sAIMenu->SetItemFunctionKey(item, strtol(&chars[1], NULL, 10), modifiers);
 		}
 		delete chars;
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return false;
 }

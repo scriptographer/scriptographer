@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 			// Now write this values into the float array that was passed and we're done. 
 			env->SetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data); 
 		} else {
-			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL); 
+			AIReal *data = (AIReal *) env->GetPrimitiveArrayCritical(values, NULL); 
 			AIPathSegment *segments = (AIPathSegment *) data;
 			ASErr error = sAIPath->GetPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			gEngine->convertSegments(env, data, count, kArtboardCoordinates, true);
@@ -89,13 +89,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIII_3F
 		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
-			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
+			AIReal data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
 			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
 			gEngine->convertSegments(env, data, 1, kArtboardCoordinates, false);
 			if (sAIPath->SetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot set path segment");
 		} else {
-			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
+			AIReal *data = (AIReal *) env->GetPrimitiveArrayCritical(values, NULL);
 			gEngine->convertSegments(env, data, count, kArtboardCoordinates, false);
 			ASErr error = sAIPath->SetPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			env->ReleasePrimitiveArrayCritical(values, data, 0);

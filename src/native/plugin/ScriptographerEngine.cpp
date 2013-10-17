@@ -1635,7 +1635,7 @@ void ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
 jobject ScriptographerEngine::convertItemSet(JNIEnv *env,
 		AIArtSet set, bool layerOnly) {
 	Item_filter(set, layerOnly);
-	long count = 0;
+	ai::int32 count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	jobject itemSet = newObject(env, cls_ai_ItemList, cid_ItemList); 
 	for (long i = 0; i < count; i++) {
@@ -1954,7 +1954,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art,
 			sAITextFrame->GetType(art, &textType);
 		} else if (type == kPluginArt) {
 			// TODO: Add handling of special types
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
 			if (sAITracing->IsTracing(art))
 				type = com_scriptographer_ai_Item_TYPE_TRACING;
 #endif
@@ -2108,7 +2108,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		ASErr error;
 //		long t = getNanoTime();
 		AIArtHandle **matches;
-		long numMatches;
+		ai::int32 numMatches;
 		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
 		jintArray artHandles;
 		if (numMatches > 0) {
@@ -2166,7 +2166,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		}
 
 		// Pass undoLevel and redoLevel to onSelectionChanged as well.
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2194,7 +2194,7 @@ ASErr ScriptographerEngine::onUndo() {
 	JNIEnv *env = getEnv();
 	try {
 		ASErr error;
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2209,7 +2209,7 @@ ASErr ScriptographerEngine::onRedo() {
 	JNIEnv *env = getEnv();
 	try {
 		ASErr error;
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2228,7 +2228,7 @@ ASErr ScriptographerEngine::onClear() {
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
 		if (doc != NULL) {
 			AIArtHandle **matches;
-			long numMatches;
+			ai::int32 numMatches;
 			RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
 			jintArray artHandles;
 			if (numMatches > 0) {

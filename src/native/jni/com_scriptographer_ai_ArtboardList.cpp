@@ -25,7 +25,7 @@
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(
 		JNIEnv *env, jclass cls, jint handle) {
 	// On cropping areas aresomething else than artboards, so use CS4 and above
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI14 &&  kPluginInterfaceVersion <= kAI16
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		ASInt32 count = 0;
@@ -43,7 +43,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGetSize(
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ArtboardList_nativeRemove(
 		JNIEnv *env, jclass cls, jint handle, jint fromIndex, jint toIndex) {
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI14 &&  kPluginInterfaceVersion <= kAI16
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		AICropAreaPtr area = NULL;
@@ -67,7 +67,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeGet(
 		JNIEnv *env, jclass cls, jint handle, jint index, jobject artboard) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI14 && kPluginInterfaceVersion <= kAI16
 		AICropAreaPtr area = NULL;
 		if (sAICropArea->Get(index, &area))
 			throw new StringException("Cannot get artboard");
@@ -119,7 +119,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeInsert(
 		JNIEnv *env, jclass cls, jint handle, jint index, jobject bounds,
 		jboolean showCenter, jboolean showCrossHairs, jboolean showSafeAreas,
 		jdouble pixelAspectRatio) {
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI14 && kPluginInterfaceVersion <= kAI15 
 	try {
 		Document_activate((AIDocumentHandle) handle);
 		DEFINE_CROPAREA();
@@ -175,7 +175,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_ArtboardList_nativeSet(
 		jdouble pixelAspectRatio) {
 	try {
 		Document_activate((AIDocumentHandle) handle);
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI14 && kPluginInterfaceVersion <= kAI15 
 		DEFINE_CROPAREA();
 		// If index is bigger than array size, add empty artboards until we
 		// reach the needed size, then update that field.

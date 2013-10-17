@@ -45,9 +45,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuGroup_nativeCreate(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuGroup_setOptions(JNIEnv *env, jobject obj, jint options) {
 	try {
+#ifndef ADM_FREE
 		AIMenuGroup group = gEngine->getMenuGroupHandle(env, obj);
 		sAIMenu->SetMenuGroupOptions(group, options);
+#endif	//#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
+
 }
 
 /*
@@ -55,10 +58,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuGroup_setOptions(JNIEnv *e
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuGroup_getOptions(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AIMenuGroup group = gEngine->getMenuGroupHandle(env, obj);
 		long options = 0;
 		sAIMenu->GetMenuGroupOptions(group, &options);
 		return options;
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

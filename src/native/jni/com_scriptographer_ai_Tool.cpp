@@ -68,7 +68,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(
 		if (gEngine != NULL) {
 			jobject array = gEngine->newObject(env, gEngine->cls_ArrayList,
 					gEngine->cid_ArrayList);
-			long count;
+			ai::int32 count;
 			sAITool->CountTools(&count);
 			SPPluginRef plugin = gPlugin->getPluginRef();
 			for (int i = 0; i < count; i++) {

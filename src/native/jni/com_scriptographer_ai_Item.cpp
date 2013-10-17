@@ -83,7 +83,7 @@ AIArtSet Item_getSelected(bool filter) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
 			if (filter) {
 				// Now filter out objects of which the parents are selected too
-				long count;
+				ai::int32 count;
 				sAIArtSet->CountArtSet(set, &count);
 				for (long i = count - 1; i >= 0; i--) {
 					AIArtHandle art;
