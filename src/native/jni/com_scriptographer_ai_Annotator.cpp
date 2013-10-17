@@ -40,7 +40,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Annotator_nativeCreate(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeGetAnnotators(JNIEnv *env, jclass cls) {
 	try {
 		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
-		long count;
+		ai::int32 count;
 		sAIAnnotator->CountAnnotators(&count);
 		SPPluginRef plugin = gPlugin->getPluginRef();
 		for (int i = 0; i < count; i++) {
@@ -85,12 +85,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		// This is a nice trick: (Ab)use the ADMDrawer for drawing into
 		// the current view's viewport, as the ports are compatible!
 		// use a rect that is big enough
+#ifndef ADM_FREE
 		ADMRect rect;
 		rect.left = 0;
 		rect.top = 0;
 		rect.right = 10000;
 		rect.bottom = 10000;
-#ifndef ADM_FREE
+
 		// on windows, ADMPortRef and AIPortRef is the same
 		// on mac, ADMPortRef is a GrafPort *, and AIPortRef is a OpaqueGrafPtr *
 		// but for some reason, assuming it's a ADMPortRef works on both, so it 

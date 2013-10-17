@@ -88,7 +88,7 @@ AIArtSet Item_getSelected(bool filter) {
 				for (long i = count - 1; i >= 0; i--) {
 					AIArtHandle art;
 					if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-						long values;
+						ai::int32 values;
 						if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values)
 							&& !(values & kArtFullySelected)) {
 							sAIArtSet->RemoveArtFromArtSet(set, art);

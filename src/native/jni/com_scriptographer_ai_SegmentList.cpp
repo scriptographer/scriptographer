@@ -48,7 +48,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 		sAIPath->GetPathSegmentCount((AIArtHandle) handle, &c);
 		if (count == 1) {
 			// For only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
-			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
+			AIReal data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
 			data[6] = 0; // make shure the upper 3 bytes are not set to arbitrary values
 			if (sAIPath->GetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot get path segment");

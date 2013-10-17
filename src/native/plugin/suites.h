@@ -29,8 +29,10 @@
 
 #if kPluginInterfaceVersion >= kAI16 
 	#define ADM_FREE
+	
 #else
 	#undef ADM_FREE
+	
 #endif // kPluginInterfaceVersion >= kAI16  
 
 // Sweet Pea Suites
