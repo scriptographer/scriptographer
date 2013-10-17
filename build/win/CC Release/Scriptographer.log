@@ -1,0 +1,166 @@
+﻿Build started 17/10/2013 11:24:57 AM.
+     1>Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "CC Release\Scriptographer.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Release\Scriptographer.pch" /Fo"CC Release\\" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp ..\..\src\native\jni\registerNatives.cpp ..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp ..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp ..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp ..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Color.cpp ..\..\src\native\jni\com_scriptographer_ai_Curve.cpp ..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp ..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp ..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp ..\..\src\native\jni\com_scriptographer_ai_FontList.cpp ..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp ..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp ..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp ..\..\src\native\jni\com_scriptographer_ai_Group.cpp ..\..\src\native\jni\com_scriptographer_ai_Item.cpp ..\..\src\native\jni\com_scriptographer_ai_Layer.cpp ..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp ..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp ..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp ..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_PathText.cpp ..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedSymbol.cpp ..\..\src\native\jni\com_scriptographer_ai_PointText.cpp ..\..\src\native\jni\com_scriptographer_ai_Raster.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp ..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp ..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp ..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp ..\..\src\native\jni\com_scriptographer_ai_Timer.cpp ..\..\src\native\jni\com_scriptographer_ai_Tool.cpp ..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp ..\..\src\native\jni\com_scriptographer_adm_Button.cpp ..\..\src\native\jni\com_scriptographer_adm_Dialog.cpp ..\..\src\native\jni\com_scriptographer_adm_Drawer.cpp ..\..\src\native\jni\com_scriptographer_adm_HierarchyListBox.cpp ..\..\src\native\jni\com_scriptographer_adm_HierarchyListEntry.cpp ..\..\src\native\jni\com_scriptographer_adm_Image.cpp ..\..\src\native\jni\com_scriptographer_adm_ImagePane.cpp ..\..\src\native\jni\com_scriptographer_adm_Item.cpp ..\..\src\native\jni\com_scriptographer_adm_ItemGroup.cpp ..\..\src\native\jni\com_scriptographer_adm_ListEntry.cpp ..\..\src\native\jni\com_scriptographer_adm_ListItem.cpp ..\..\src\native\jni\com_scriptographer_adm_ModalDialog.cpp ..\..\src\native\jni\com_scriptographer_adm_TextEditItem.cpp ..\..\src\native\jni\com_scriptographer_adm_TextItem.cpp ..\..\src\native\jni\com_scriptographer_adm_TextValueItem.cpp ..\..\src\native\jni\com_scriptographer_adm_ToggleItem.cpp ..\..\src\native\jni\com_scriptographer_adm_Tracker.cpp ..\..\src\native\jni\com_scriptographer_adm_ValueItem.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp ..\..\src\native\plugin\AppContext.cpp ..\..\src\native\plugin\exceptions.cpp ..\..\src\native\win\loadJava.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp ..\..\src\native\plugin\stdHeaders.cpp ..\..\src\native\plugin\suites.cpp "..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\IAIFilePath.cpp"
+         com_scriptographer_ScriptographerEngine.cpp
+     1>..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         registerNatives.cpp
+     1>..\..\src\native\jni\registerNatives.cpp(2): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Annotator.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_AreaText.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_ArtboardList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_CharacterStyle.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Color.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Color.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Curve.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Curve.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Dictionary.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Document.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Document.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_DocumentList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_DocumentView.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_DocumentViewList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_FileFormat.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_FontFamily.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_FontList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_FontList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_FontWeight.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Gradient.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_GradientStopList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Group.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Group.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         Generating Code...
+         Compiling...
+         com_scriptographer_ai_Item.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Layer.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Layer.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_LayerList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_LiveEffect.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_ParagraphStyle.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Path.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Pathfinder.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_PathStyle.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_PathText.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_PathText.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Pattern.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_PlacedFile.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_PlacedSymbol.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_PlacedSymbol.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_PointText.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_PointText.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Raster.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Raster.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_SegmentList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Swatch.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_SwatchList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Symbol.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_SymbolList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_TextItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         Generating Code...
+         Compiling...
+         com_scriptographer_ai_TextRange.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_TextStory.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_TextStoryList.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Timer.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Timer.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Tool.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Tool.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ai_Tracing.cpp
+     1>..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Button.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Button.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Dialog.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Dialog.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Drawer.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Drawer.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_HierarchyListBox.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_HierarchyListBox.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_HierarchyListEntry.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_HierarchyListEntry.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Image.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Image.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ImagePane.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ImagePane.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Item.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Item.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ItemGroup.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ItemGroup.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ListEntry.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ListEntry.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ListItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ListItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ModalDialog.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ModalDialog.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_TextEditItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_TextEditItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_TextItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_TextItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         Generating Code...
+         Compiling...
+         com_scriptographer_adm_TextValueItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_TextValueItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ToggleItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ToggleItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_Tracker.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_Tracker.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_adm_ValueItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_adm_ValueItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ui_MenuGroup.cpp
+     1>..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         com_scriptographer_ui_MenuItem.cpp
+     1>..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         AppContext.cpp
+     1>..\..\src\native\plugin\AppContext.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         exceptions.cpp
+     1>..\..\src\native\plugin\exceptions.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         loadJava.cpp
+     1>..\..\src\native\win\loadJava.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         ScriptographerEngine.cpp
+     1>..\..\src\native\plugin\ScriptographerEngine.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         ScriptographerPlugin.cpp
+     1>..\..\src\native\plugin\ScriptographerPlugin.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         stdHeaders.cpp
+     1>..\..\src\native\plugin\stdHeaders.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         suites.cpp
+     1>..\..\src\native\plugin\suites.cpp(13): fatal error C1083: Cannot open precompiled header file: 'CC Release\Scriptographer.pch': No such file or directory
+         IAIFilePath.cpp
+     1>c1xx : fatal error C1083: Cannot open source file: '..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\IAIFilePath.cpp': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.28

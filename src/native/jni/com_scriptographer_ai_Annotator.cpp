@@ -71,8 +71,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Annotator_nativeSetActive(
  * void nativeInvalidate(int viewHandle, int x, int y, int width, int height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Annotator_nativeInvalidate(JNIEnv *env, jobject obj, jint viewHandle, jint x, jint y, jint width, jint height) {
+#ifndef ADM_FREE
 	DEFINE_ADM_RECT(rect, x, y, width, height);
 	sAIAnnotator->InvalAnnotationRect((AIDocumentViewHandle) viewHandle, &rect);
+#endif //#ifndef ADM_FREE
 }
 
 /*
@@ -88,7 +90,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		rect.top = 0;
 		rect.right = 10000;
 		rect.bottom = 10000;
-
+#ifndef ADM_FREE
 		// on windows, ADMPortRef and AIPortRef is the same
 		// on mac, ADMPortRef is a GrafPort *, and AIPortRef is a OpaqueGrafPtr *
 		// but for some reason, assuming it's a ADMPortRef works on both, so it 
@@ -99,6 +101,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont);
 #endif
 		return gEngine->newObject(env, gEngine->cls_adm_Drawer, gEngine->cid_adm_Drawer, (jint) drawer);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

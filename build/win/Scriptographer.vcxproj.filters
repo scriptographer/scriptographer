@@ -2,40 +2,46 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Native">
-      <UniqueIdentifier>{10c81125-d64e-4803-8c28-f250bd87dc9f}</UniqueIdentifier>
+      <UniqueIdentifier>{907c3c33-25e3-4d7a-889e-935109fe4c9e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\JNI">
-      <UniqueIdentifier>{14a6c68f-d19f-476b-8036-b1978060896e}</UniqueIdentifier>
+      <UniqueIdentifier>{a88af4a9-9949-485d-bbfd-28bd790436d1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\JNI\AI">
-      <UniqueIdentifier>{7666db48-1863-4c28-a958-173ee43a3fee}</UniqueIdentifier>
+      <UniqueIdentifier>{e94ef3be-df49-4942-a2c2-1d0b67ec7fae}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\JNI\ADM">
-      <UniqueIdentifier>{ae9c3ade-8e98-4fe5-b33c-66bd5b84cc2a}</UniqueIdentifier>
+      <UniqueIdentifier>{c874857c-5d6e-4306-8e56-b98a46c9c5dd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\JNI\UI">
-      <UniqueIdentifier>{76c0160c-06ef-44a3-abbf-6dc5855cd796}</UniqueIdentifier>
+      <UniqueIdentifier>{5cfee1ea-dd92-4fbe-acd8-df3083f9ae19}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin">
-      <UniqueIdentifier>{5c3496b7-47c6-44c2-9d2f-f80bc3afb4b5}</UniqueIdentifier>
+      <UniqueIdentifier>{756a69c6-a719-4872-87b0-0d8b36bb872c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin\CS">
-      <UniqueIdentifier>{d136d609-ba04-47f9-adcd-3c3661d2bcc5}</UniqueIdentifier>
+      <UniqueIdentifier>{b002e550-c597-4f8d-9fc3-730a11a6360c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin\CS2">
-      <UniqueIdentifier>{950ed43d-7e2d-4bbb-8b36-a0e138b13eb6}</UniqueIdentifier>
+      <UniqueIdentifier>{c26e1006-ffe1-4948-b401-dc01fe2e4739}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin\CS3">
-      <UniqueIdentifier>{75d1c20b-8800-4148-b3da-ace7ee2129a4}</UniqueIdentifier>
+      <UniqueIdentifier>{8f14a687-3770-4181-91fb-63a3566af455}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin\CS4">
-      <UniqueIdentifier>{2539eb1b-19f5-418f-9f19-cedbf38b0d4b}</UniqueIdentifier>
+      <UniqueIdentifier>{54d9d1ae-5563-4011-9c6a-2f9869d7ec21}</UniqueIdentifier>
     </Filter>
     <Filter Include="Native\Plugin\CS5">
-      <UniqueIdentifier>{dc75b423-7fbb-4f0c-8c36-e1052d8fbaee}</UniqueIdentifier>
+      <UniqueIdentifier>{a1e2859e-28fe-4103-b0d2-0ea4599b2701}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources">
-      <UniqueIdentifier>{1f194e11-236a-43ec-bddf-e2fbb1328434}</UniqueIdentifier>
+      <UniqueIdentifier>{0f96a66b-3b99-4ac6-93da-15e84911eb3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CS6">
+      <UniqueIdentifier>{e3d68c4f-3b3e-4aab-9fac-594702a18fcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Native\Plugin\CC">
+      <UniqueIdentifier>{20af3f50-2fe9-4b97-bc51-e04d03fe21ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -302,7 +308,52 @@
     <ClCompile Include="..\..\src\native\plugin\suites.cpp">
       <Filter>Native\Plugin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\IText.cpp">
+      <Filter>Native\Plugin\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\IThrowException.cpp">
+      <Filter>Native\Plugin\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IText.cpp">
+      <Filter>Native\Plugin\CS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IThrowException.cpp">
+      <Filter>Native\Plugin\CS2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\ate\IText.cpp">
+      <Filter>Native\Plugin\CS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS3 SDK\illustratorapi\ate\IThrowException.cpp">
+      <Filter>Native\Plugin\CS3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS4 SDK\illustratorapi\illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CS4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS4 SDK\illustratorapi\illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CS4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS4 SDK\illustratorapi\ate\IText.cpp">
+      <Filter>Native\Plugin\CS4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS4 SDK\illustratorapi\ate\IThrowException.cpp">
+      <Filter>Native\Plugin\CS4</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\illustrator\IAIArtboards.cpp">
+      <Filter>Native\Plugin\CS5</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\ate\IThrowException.cpp">
       <Filter>Native\Plugin\CS5</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\illustrator\IAIFilePath.cpp">
@@ -314,8 +365,35 @@
     <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\ate\IText.cpp">
       <Filter>Native\Plugin\CS5</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS5 SDK\illustratorapi\ate\IThrowException.cpp">
-      <Filter>Native\Plugin\CS5</Filter>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIArtboards.cpp">
+      <Filter>Native\Plugin\CC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate\IText.cpp">
+      <Filter>Native\Plugin\CC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate\IThrowException.cpp">
+      <Filter>Native\Plugin\CC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\illustrator\IAIArtboards.cpp">
+      <Filter>Native\Plugin\CS6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\ate\IThrowException.cpp">
+      <Filter>Native\Plugin\CS6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\illustrator\IAIFilePath.cpp">
+      <Filter>Native\Plugin\CS6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\illustrator\IAIUnicodeString.cpp">
+      <Filter>Native\Plugin\CS6</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\ate\IText.cpp">
+      <Filter>Native\Plugin\CS6</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

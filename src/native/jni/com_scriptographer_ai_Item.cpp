@@ -1080,7 +1080,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeDraw(JNIEnv *env, j
 		Item_commit(env, art);
 		AIRealRect rt;
 		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
-
+#ifndef ADM_FREE
 		ADMImageRef image = gEngine->getImageHandle(env, imageObj);
 		ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
 		ADMAGMPortPtr port = sADMDrawer->GetAGMPort(drawer);
@@ -1116,6 +1116,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeDraw(JNIEnv *env, j
 		// sAIDrawArt->EndDrawArt(&drawData, drawOptions); 
 		sADMImage->EndADMDrawer(image);
 #endif
+
+#endif
+
 	} EXCEPTION_CONVERT(env);
 }
 

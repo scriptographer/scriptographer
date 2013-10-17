@@ -610,6 +610,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 #ifdef WIN_ENV
 	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,
 			::GetModuleHandle(NULL), ::GetCurrentThreadId());
+#ifndef ADM_FREE
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC,
 			(LONG) appWindowProc);
@@ -619,6 +620,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	// on Windows, something seems to override it again after.
 	if (hWnd == ::GetParent(::GetForegroundWindow()))
 		appWindowProc(hWnd, WM_ACTIVATEAPP, WA_ACTIVE, 0);
+#endif //#ifndef ADM_FREE
 #endif
 	return error;
 }
@@ -629,8 +631,10 @@ ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 	// If we have overridden the default WindowProc, set it back now, since ours
 	// wont exist anymore after unloading and that will lead to a crash.
 	if (s_defaultAppWindowProc != NULL) {
+#ifndef ADM_FREE
 		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
+#endif //#ifndef ADM_FREE
 	}
 	UnhookWindowsHookEx(s_defaultGetMessageProc);
 #endif
@@ -804,7 +808,9 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path,
 }
 
 void ScriptographerPlugin::setCursor(int cursorID) {
+#ifndef ADM_FREE
 	sADMBasic->SetPlatformCursor(m_pluginRef, cursorID);
+#endif
 }
 
 ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
@@ -958,6 +964,7 @@ void ScriptographerPlugin::log(const char *str, ...) {
 
 void ScriptographerPlugin::reportError(const char* str, ...) {
 	ASBoolean gotBasic = false;
+#ifndef ADM_FREE
 	if (sADMBasic == NULL && sSPBasic != NULL) {
 		sSPBasic->AcquireSuite(kADMBasicSuite, kADMBasicSuiteVersion,
 				(const void **) &sADMBasic);
@@ -980,6 +987,7 @@ void ScriptographerPlugin::reportError(const char* str, ...) {
 		sSPBasic->ReleaseSuite(kADMBasicSuite, kADMBasicSuiteVersion);
 		sADMBasic = NULL;
 	}
+#endif
 }
 
 void ScriptographerPlugin::reportError(ASErr error) {
@@ -1022,10 +1030,12 @@ void ScriptographerPlugin::reportError(ASErr error) {
 }
 
 char *ScriptographerPlugin::getMsgString(int n, char *buf, int len) {
+#ifndef ADM_FREE
 	ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, buf, len);
 	if (err || buf[0] == '\0')
 		return NULL;
 	else
+#endif //#ifndef ADM_FREE
 		return buf;
 }
 
@@ -1033,6 +1043,7 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 	int n = 1;
 	while (true) {
 		char code[10];
+#ifndef ADM_FREE
 		ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, code,
 				sizeof(code));
 		// If we got an error, back off and use the last string, which should be
@@ -1041,6 +1052,7 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 			if (n == 1)
 				return NULL;		// no error strings found
 			else
+
 				return getMsgString(n--, buf, len);
 		}
 
@@ -1062,7 +1074,9 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 				return getMsgString(n++, buf, len);
 		}
 		n += 2;
+#endif //#ifndef ADM_FREE
 	}
+	
 }
 
 ASBoolean ScriptographerPlugin::filterError(ASErr error) {
@@ -1142,11 +1156,13 @@ ASErr ScriptographerPlugin::acquireSuite(ImportSuite *suite) {
 		if (!error)
 			createGluedSuite((void **) suite->suite, suite->size);
 #endif
+#ifndef ADM_FREE
 		if (error && sADMBasic != NULL) {
 			sprintf(message, "Error: %d, suite: %s, version: %d!", error,
 					suite->name, suite->version);
 			sADMBasic->MessageAlert(message);
 		}
+#endif //#ifndef ADM_FREE
 	}
 	return error;
 }

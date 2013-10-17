@@ -629,6 +629,10 @@ public:
 	ASErr Annotator_onDraw(AIAnnotatorMessage *message);
 	ASErr Annotator_onInvalidate(AIAnnotatorMessage *message);
 	
+	bool callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
+	ASErr callOnHandleEvent(int type);
+
+#ifndef ADM_FREE
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
 	void callOnNotify(jobject handler, char *notifier); 
@@ -636,8 +640,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	bool callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
-	ASErr callOnHandleEvent(int type);
+	
 
 	// ADM Handles
 	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);
@@ -699,7 +702,8 @@ public:
 	jobject getListObject(ADMHierarchyListRef list);
 	jobject getListEntryObject(ADMEntryRef list);
 	jobject getListEntryObject(ADMListEntryRef list);
-		
+#endif //#ifndef ADM_FREE
+
 	// JNI stuff:
 	JNIEnv *getEnv();
 	

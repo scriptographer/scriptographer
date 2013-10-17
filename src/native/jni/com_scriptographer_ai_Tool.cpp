@@ -110,12 +110,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 		
 		data.title = title;
 		data.tooltip = title;
-
+#ifndef ADM_FREE
 		data.icon =  iconHandle != 0 
 			? (ADMIconRef) iconHandle 
 			: sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL,
 					kEmptyIconID, 0);
-
+#else
+		//TODO:
+#endif
 		ASErr error = kNoErr;
 
 		// TODO: handle errors
@@ -295,7 +297,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetRolloverImage(
 		JNIEnv *env, jobject obj, jint iconHandle) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+#ifndef ADM_FREE
 		sAITool->SetToolRolloverIcon(tool, (ADMIconRef) iconHandle);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 }
 

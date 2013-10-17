@@ -331,6 +331,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setShowTransparen
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getMousePoint(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+#ifndef ADM_FREE
 		// get the mousepoint in screencoordinates from the ADMTracker:
 		ADMPoint pt;
 		sADMTracker->GetPoint(NULL, &pt);
@@ -356,6 +357,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getMousePoint(
 		AIRealPoint point;
 		sAIDocumentView->ViewPointToArtworkPoint(view, &pt, &point);
 		return gEngine->convertPoint(env, kCurrentCoordinates, &point);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

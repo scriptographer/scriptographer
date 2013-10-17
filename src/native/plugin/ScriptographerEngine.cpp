@@ -2276,10 +2276,12 @@ ASErr ScriptographerEngine::onRevert() {
 
 ASErr ScriptographerEngine::deactivateActiveDialog() {
 	JNIEnv *env = getEnv();
+#ifndef ADM_FREE
 	try {
 		callStaticVoidMethod(env, cls_adm_Dialog, mid_adm_Dialog_deactivateActiveDialog);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
+#endif //#ifndef ADM_FREE
 	return kExceptionErr;
 }
 
@@ -2435,6 +2437,7 @@ ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) 
 	return kExceptionErr;
 }
 
+#ifndef ADM_FREE
 
 /**
  * ADM CallbackListener
@@ -2601,6 +2604,7 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 	}
 	return obj;
 }
+#endif //#ifndef ADM_FREE
 
 /*
  *

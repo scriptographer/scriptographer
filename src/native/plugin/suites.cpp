@@ -89,7 +89,7 @@ extern "C" {
 	AIUserSuite						*sAIUser;
 	AIUndoSuite						*sAIUndo;
 	AIURLSuite						*sAIURL;
-
+#ifndef ADM_FREE
 	_ADMBasicSuite					*sADMBasic;
 	_ADMDialogSuite 				*sADMDialog;
 	_ADMItemSuite					*sADMItem;
@@ -111,6 +111,7 @@ extern "C" {
 #ifdef WIN_ENV
 	ADMWinHostSuite					*sADMWinHost;
 #endif // WIN_ENV
+#endif //#ifndef ADM_FREE
 
 #if kPluginInterfaceVersion >= kAI11
 	AITextFrameSuite				*sAITextFrame;
@@ -153,8 +154,10 @@ extern "C" {
 
 // startup: all suites that are needed immediatelly (onStartupPlugin)
 ImportSuite startup[] = {
-	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 
+#ifndef ADM_FREE
+	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
+#endif //#ifndef ADM_FREE
 	kSPBlocksSuite, kSPBlocksSuiteVersion, &sSPBlocks, sizeof(SPBlocksSuite),
 	kAIMdMemorySuite, kAIMdMemorySuiteVersion, &sAIMDMemory, sizeof(AIMdMemorySuite),
 	kSPAccessSuite, kSPAccessSuiteVersion, &sSPAccess, sizeof(SPAccessSuite),
@@ -181,6 +184,7 @@ ImportSuite startup[] = {
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 #endif
 
+#ifndef ADM_FREE
 	// ADM
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 	kADMDialogSuite, _kADMDialogSuiteVersion, &sADMDialog, sizeof(_ADMDialogSuite),
@@ -204,6 +208,7 @@ ImportSuite startup[] = {
 	#endif
 
 	NULL, 0, NULL, 0
+	#endif //#ifndef ADM_FREE
 };
 
 // postStartup: all suites that are needed after startup (onPostStartupPlugin)

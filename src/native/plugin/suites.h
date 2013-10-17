@@ -17,13 +17,21 @@
 #define kAI14	0x14000001	// AI 14.0 (CS4)
 #define kAI15	0x15000001	// AI 15.0 (CS5)
 #define kAI16	0x16000001	// AI 16.0 (CS6)
+#define kAI17	0x17000001	// AI 17.0 (CC)
 
 // Sweet Pea Headers
 #include "SPConfig.h"
 #include "SPTypes.h"
 
+
 // Illustrator Headers
 #include "AITypes.h"
+
+#if kPluginInterfaceVersion >= kAI16 
+	#define ADM_FREE
+#else
+	#undef ADM_FREE
+#endif // kPluginInterfaceVersion >= kAI16  
 
 // Sweet Pea Suites
 #include "SPBlocks.h"
@@ -33,6 +41,7 @@
 #include "SPSuites.h"
 #include "SPFiles.h"
 
+#ifndef ADM_FREE
 // ADM Suites
 #include "ADMBasic.h"
 #include "ADMDialog.h"
@@ -49,6 +58,8 @@
 #include "ADMTracker.h"
 #include "ADMDrawer.h"
 #include "ADMResource.h"
+
+#endif //#ifndef ADM_FREE
 
 // System Suites
 #include "AIPlugin.h"
@@ -177,6 +188,7 @@ namespace ai {
 }
 #endif // kPluginInterfaceVersion < kAI16
 
+#ifndef ADM_FREE
 // ADM Suite versions for different versions of Illustrator
 // ADM Suites default to the oldest versions.
 // Define symbols that point to the newest here und use these bellow:
@@ -273,6 +285,9 @@ namespace ai {
 #define _ADMDrawerSuite CONCAT(ADMDrawerSuite, _kADMDrawerSuiteVersion)
 #define _ADMHostSuite CONCAT(ADMHostSuite, _kADMHostSuiteVersion)
 
+
+#endif //#ifndef ADM_FREE
+
 // The basic suite doesn't need to be loaded:
 extern "C" SPBasicSuite 					*sSPBasic;
 
@@ -346,6 +361,8 @@ extern "C" AIUserSuite						*sAIUser;
 extern "C" AIUndoSuite						*sAIUndo;
 extern "C" AIURLSuite						*sAIURL;
 
+#ifndef ADM_FREE
+
 extern "C" _ADMBasicSuite					*sADMBasic;
 extern "C" _ADMDialogSuite 					*sADMDialog;
 extern "C" _ADMItemSuite					*sADMItem;
@@ -367,6 +384,8 @@ extern "C" ADMMacHostSuite					*sADMMacHost;
 #ifdef WIN_ENV
 extern "C" ADMWinHostSuite					*sADMWinHost;
 #endif // WIN_ENV
+
+#endif //#ifndef ADM_FREE
 
 #if kPluginInterfaceVersion >= kAI11
 extern "C" AITextFrameSuite					*sAITextFrame;
