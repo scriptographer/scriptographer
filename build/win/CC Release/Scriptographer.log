@@ -1,32 +1,80 @@
-﻿Build started 17/10/2013 10:37:12 PM.
+﻿Build started 18/10/2013 4:24:26 PM.
      1>Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching "CC Release\Scriptographer.unsuccessfulbuild".
        ClCompile:
          All outputs are up-to-date.
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Release\Scriptographer.pch" /Fo"CC Release\\" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Path.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Release\Scriptographer.pch" /Fo"CC Release\\" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp ..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp ..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp ..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp ..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Color.cpp ..\..\src\native\jni\com_scriptographer_ai_Curve.cpp ..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp ..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp ..\..\src\native\jni\com_scriptographer_ai_FileFormat.cpp ..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp ..\..\src\native\jni\com_scriptographer_ai_FontList.cpp ..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp ..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp ..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp ..\..\src\native\jni\com_scriptographer_ai_Group.cpp ..\..\src\native\jni\com_scriptographer_ai_Item.cpp ..\..\src\native\jni\com_scriptographer_ai_Layer.cpp ..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp ..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp ..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp ..\..\src\native\jni\com_scriptographer_ai_PathText.cpp ..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp ..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedSymbol.cpp ..\..\src\native\jni\com_scriptographer_ai_PointText.cpp ..\..\src\native\jni\com_scriptographer_ai_Raster.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp ..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp ..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp ..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextItem.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp ..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp ..\..\src\native\jni\com_scriptographer_ai_Timer.cpp ..\..\src\native\jni\com_scriptographer_ai_Tool.cpp ..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuGroup.cpp ..\..\src\native\jni\com_scriptographer_ui_MenuItem.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp
+         com_scriptographer_ScriptographerEngine.cpp
+         com_scriptographer_ai_Annotator.cpp
+         com_scriptographer_ai_AreaText.cpp
+         com_scriptographer_ai_ArtboardList.cpp
+         com_scriptographer_ai_CharacterStyle.cpp
+         com_scriptographer_ai_Color.cpp
+         com_scriptographer_ai_Curve.cpp
+         com_scriptographer_ai_Dictionary.cpp
+         com_scriptographer_ai_Document.cpp
+         com_scriptographer_ai_DocumentList.cpp
+         com_scriptographer_ai_DocumentView.cpp
+         com_scriptographer_ai_DocumentViewList.cpp
+         com_scriptographer_ai_FileFormat.cpp
+         com_scriptographer_ai_FontFamily.cpp
+         com_scriptographer_ai_FontList.cpp
+         com_scriptographer_ai_FontWeight.cpp
+         com_scriptographer_ai_Gradient.cpp
+         com_scriptographer_ai_GradientStopList.cpp
+         com_scriptographer_ai_Group.cpp
+         com_scriptographer_ai_Item.cpp
+         Generating Code...
+         Compiling...
+         com_scriptographer_ai_Layer.cpp
+         com_scriptographer_ai_LayerList.cpp
+         com_scriptographer_ai_LiveEffect.cpp
+         com_scriptographer_ai_ParagraphStyle.cpp
          com_scriptographer_ai_Path.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"CC Release\\" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt "..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIArtboards.cpp"
-         IAIArtboards.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"CC Release\IAIFilePath3.obj" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt "..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIFilePath.cpp"
-         IAIFilePath.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"CC Release\IAIUnicodeString3.obj" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt "..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\IAIUnicodeString.cpp"
-         IAIUnicodeString.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"CC Release\IText3.obj" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt "..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate\IText.cpp"
-         IText.cpp
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /nologo /W1 /WX- /Ox /Oy- /D WIN32 /D _WINDOWS /D WIN_ENV /D _VC80_UPGRADE=0x0710 /GF /Gm- /EHa /MTd /Zp4 /GS /Gy- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"CC Release\IThrowException3.obj" /Fd"CC Release\vc100.pdb" /FR"CC Release\\" /Gd /TP /analyze- /errorReport:prompt "..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate\IThrowException.cpp"
-         IThrowException.cpp
+         com_scriptographer_ai_PathStyle.cpp
+         com_scriptographer_ai_PathText.cpp
+         com_scriptographer_ai_Pathfinder.cpp
+         com_scriptographer_ai_Pattern.cpp
+         com_scriptographer_ai_PlacedFile.cpp
+         com_scriptographer_ai_PlacedSymbol.cpp
+         com_scriptographer_ai_PointText.cpp
+         com_scriptographer_ai_Raster.cpp
+         com_scriptographer_ai_SegmentList.cpp
+         com_scriptographer_ai_Swatch.cpp
+         com_scriptographer_ai_SwatchList.cpp
+         com_scriptographer_ai_Symbol.cpp
+         com_scriptographer_ai_SymbolList.cpp
+         com_scriptographer_ai_TextItem.cpp
+         com_scriptographer_ai_TextRange.cpp
+         Generating Code...
+         Compiling...
+         com_scriptographer_ai_TextStory.cpp
+         com_scriptographer_ai_TextStoryList.cpp
+         com_scriptographer_ai_Timer.cpp
+         com_scriptographer_ai_Tool.cpp
+         com_scriptographer_ai_Tracing.cpp
+         com_scriptographer_ui_MenuGroup.cpp
+         com_scriptographer_ui_MenuItem.cpp
+         ScriptographerEngine.cpp
+         ScriptographerPlugin.cpp
+         Generating Code...
+     1>c:\_testprojects\aiplugins\scriptographer\src\native\plugin\scriptographerengine.cpp(1574): warning C4700: uninitialized local variable 'dst' used
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+         All outputs are up-to-date.
        ResourceCompile:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _DEBUG /D _VC80_UPGRADE=0x0710 /l"0x0409" /Iresources /nologo /fo"CC Release\plugin.res" resources\plugin.rc 
        ManifestResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"CC Release\Scriptographer.exe.embed.manifest.res" "CC Release\Scriptographer_manifest.rc" 
+         All outputs are up-to-date.
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.exe) does not match the Linker's OutputFile property value (C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.aip). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(991,5): warning MSB8012: TargetExt(.exe) does not match the Linker's OutputFile property value (.aip). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.aip" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"CC Release\Scriptographer.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.lib" /MACHINE:X86 "CC Release\plugin.res"
          "CC Release\Scriptographer.exe.embed.manifest.res"
          "CC Release\com_scriptographer_ScriptographerEngine.obj"
-         "CC Release\registerNatives.obj"
          "CC Release\com_scriptographer_ai_Annotator.obj"
          "CC Release\com_scriptographer_ai_AreaText.obj"
          "CC Release\com_scriptographer_ai_ArtboardList.obj"
@@ -86,312 +134,14 @@
          "CC Release\IText3.obj"
          "CC Release\IThrowException3.obj"
             Creating library C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.lib and object C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.exp
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_setValue@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_getValue@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_setIncrements@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_getIncrements@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_setRange@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ValueItem_getRange@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getUpdateRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getFontInfo__I@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getFontInfo__@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawRightArrow@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawLeftArrow@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawDownArrow@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawUpArrow@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawTextInABox@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawTextRight@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawTextCentered@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawTextLeft@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawText@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getTextHeight@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getTextWidth@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeDrawImage__III@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2IIII@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_scriptographer_adm_Image_2IIIII@32
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2II@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_scriptographer_adm_Image_2III@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_fillOval@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawOval@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_invertRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawRaisedRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawSunkenRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_clearRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_fillRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_fillPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_drawLine@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeSetFont@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeGetFont@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeSetDrawMode@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeGetDrawMode@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeSetColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_setColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getColor@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_setOrigin@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getOrigin@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_subtractClipPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_unionClipPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_intersectClipPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_setClipPolygon@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_subtractClipRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_unionClipRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_intersectClipRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_setClipRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getClipRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_getBoundsRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_clear@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Drawer_nativeDestroy@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Button_nativeSetDisabledImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Button_nativeSetSelectedImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Button_nativeSetRolloverImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Button_nativeSetImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextItem_nativeSetText@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ItemGroup_nativeRemove@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ItemGroup_nativeAdd@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getExpandedEntryIndex@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getExpandedEntries@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_deselectAll@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_swap@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getUnnestedSelectedEntries@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getSelectedEntries@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getSelectedLeafEntry@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getLeafEntryAt@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getLeafEntryIndex@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getLeafEntries@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_invalidate@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getFlags@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setFlags@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_isDivided@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setDivided@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getGlobalLeftMargin@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getLocalLeftMargin@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setLocalLeftMargin@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getIndentationWidth@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setIndentationWidth@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_globalToLocal__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_localToGlobal__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_globalToLocal__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_localToGlobal__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_screenToLocal@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_localToScreen@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getLocalRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getNonLeafEntryTextRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setNonLeafEntryTextRect@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_getNonLeafEntryWidth@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setEntryTextRect@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_setEntrySize@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_nativeRemoveList@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListBox_nativeCreateChildList@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ToggleItem_setChecked@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ToggleItem_isChecked@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_getAllowUnits@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_setAllowUnits@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_getAllowMath@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_setAllowMath@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_selectAll@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_getSelection@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_setSelection@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_getMaxLength@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_setMaxLength@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_setFractionDigits@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextEditItem_getFractionDigits@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeEndDrawer@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeBeginDrawer@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeCreateIcon@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeSetPixels__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeGetPixels@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeDestroy@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Image_nativeCreate@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ImagePane_nativeSetImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_hideToolTip@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_showToolTip@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setToolTipEnabled@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_isToolTipEnabled@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetTooltip@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetCursor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeGetCursor@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeGetBackgroundColor@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetBackgroundColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetFont@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeGetFont@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_update@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_invalidate__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_invalidate__@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_screenToLocal__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_localToScreen__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_screenToLocal__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_localToScreen__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetSize@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetBounds@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeGetBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setWantsFocus@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_wantsFocus@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setKnown@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_isKnown@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setActive@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_isActive@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setEnabled@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_isEnabled@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setVisible@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_isVisible@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_getChildItemHandle@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeGetStyle@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetStyle@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_setTrackMask@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_getTrackMask@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_defaultDraw@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_defaultTrack@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetDrawCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeSetTrackCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeDestroy@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeInit@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Item_nativeCreate@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Tracker_releaseMouseCapture@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Tracker_abort@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Tracker_getCurrentModifiers@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_getText@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setText@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_nativeSetDisabledImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_nativeSetSelectedImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_nativeSetImage@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_update@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_invalidate__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_invalidate__@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_screenToLocal__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_localToScreen__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_screenToLocal__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_localToScreen__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_getBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_getLocalRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isSeparator@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setSeparator@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isChecked@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setChecked@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isActive@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setActive@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isEnabled@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setEnabled@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isInBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_makeInBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_isSelected@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_setSelected@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_getIndex@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_nativeDestroy@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_nativeCreate@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_defaultDraw@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListEntry_defaultTrack@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_nativeSetDividerColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_nativeSetBackgroundColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_nativeSetTextColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_nativeSetFont@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_setEntryItem@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_getEntryItem@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_setTextRect@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_getExpandArrowRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_areChildrenSelected@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_getVisualDepth@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_getDepth@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_isChildSelectable@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_setChildSelectable@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_isEntryNameHidden@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_setEntryNameHidden@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_isExpanded@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_setExpanded@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_HierarchyListEntry_getItem@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ModalDialog_endModal@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ModalDialog_nativeDoModal@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getScreenSize@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getPaletteLayoutBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_chooseColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_chooseDirectory@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeFileDialog@28
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetGroupInfo@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getGroupInfo@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setForcedOnScreen@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_isForcedOnScreen@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setUpdateEnabled@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_isUpdateEnabled@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_isCollapsed@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setCancelItem@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getCancelItem@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setDefaultItem@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getDefaultItem@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getItemHandle@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setIncrement@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getIncrement@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetMaximumSize@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetName@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetTitle@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetFont@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeGetFont@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetCursor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeGetCursor@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_update@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_invalidate__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_invalidate__@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_screenToLocal__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_localToScreen__IIII@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_screenToLocal__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_localToScreen__II@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setPosition@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getPosition@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetBounds@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeGetBounds@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetSize@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeGetSize@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetActive@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setEnabled@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_isEnabled@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetVisible@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeIsVisible@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_setTrackMask@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getTrackMask@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_defaultDraw@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_defaultTrack@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetDrawCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeSetTrackCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeDestroy@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_nativeCreate@20
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_dumpControlHierarchy@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_makeOverlay@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_Dialog_getWindowHandle@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_getShowUnits@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_setShowUnits@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_nativeGetUnits@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_nativeSetUnits@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_nativeGetJustification@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_nativeSetJustification@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_getText@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_TextValueItem_setText@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_remove@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_get__I@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_size@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getSelectedEntries@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getSelectedEntry@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getAt@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_get__Ljava_lang_String_2@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_selectByText@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_nativeSetBackgroundColor@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getEntryTextRect@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_setEntryTextRect@24
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getEntrySize@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_setEntrySize@16
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryCallback@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_getTrackEntryMask@8
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_setTrackEntryMask@12
-     1>registerNatives.obj : error LNK2001: unresolved external symbol _Java_com_scriptographer_adm_ListItem_nativeInit@12
      1>ScriptographerEngine.obj : error LNK2019: unresolved external symbol "public: int __thiscall ScriptographerEngine::callOnHandleEvent(int)" (?callOnHandleEvent@ScriptographerEngine@@QAEHH@Z) referenced in function "public: int __thiscall ScriptographerEngine::onStartup(void)" (?onStartup@ScriptographerEngine@@QAEHXZ)
      1>ScriptographerPlugin.obj : error LNK2001: unresolved external symbol "public: int __thiscall ScriptographerEngine::callOnHandleEvent(int)" (?callOnHandleEvent@ScriptographerEngine@@QAEHH@Z)
+     1>ScriptographerEngine.obj : error LNK2019: unresolved external symbol "public: void __thiscall ScriptographerEngine::registerNatives(struct JNIEnv_ *)" (?registerNatives@ScriptographerEngine@@QAEXPAUJNIEnv_@@@Z) referenced in function "public: void __thiscall ScriptographerEngine::init(void)" (?init@ScriptographerEngine@@QAEXXZ)
      1>ScriptographerPlugin.obj : error LNK2019: unresolved external symbol "public: bool __thiscall ScriptographerEngine::callOnHandleKeyEvent(int,unsigned int,unsigned short,unsigned int)" (?callOnHandleKeyEvent@ScriptographerEngine@@QAE_NHIGI@Z) referenced in function "public: static long __stdcall ScriptographerPlugin::getMessageProc(int,unsigned int,long)" (?getMessageProc@ScriptographerPlugin@@SGJHIJ@Z)
      1>LIBCMTD.lib(wincrt0.obj) : error LNK2019: unresolved external symbol _WinMain@16 referenced in function ___tmainCRTStartup
-     1>C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.aip : fatal error LNK1120: 302 unresolved externals
+     1>C:\_testprojects\aiplugins\scriptographer\build\win\CC Release\Scriptographer.aip : fatal error LNK1120: 4 unresolved externals
      1>Done Building Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" (build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:07.42
+Time Elapsed 00:00:16.66

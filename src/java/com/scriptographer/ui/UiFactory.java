@@ -21,6 +21,8 @@ import com.scriptographer.adm.ui.AdmUiFactory;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ui.Component;
 
+import com.scriptographer.swt.ui.SwtUiFactory;
+
 /**
  * @author lehni
  * 
@@ -35,7 +37,7 @@ public abstract class UiFactory {
 					? new AdmUiFactory()
 					// TODO: Implement SwtUiFactory
 					// new SwtUiFactory();
-					: null;
+					: new SwtUiFactory();
 		}
 		return factory;
 	}

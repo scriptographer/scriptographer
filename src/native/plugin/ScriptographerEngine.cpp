@@ -2496,29 +2496,6 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	return true;
 }
 
-ASErr ScriptographerEngine::callOnHandleEvent(int event) {
-	AppContext context;
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_ScriptographerEngine,
-				mid_ScriptographerEngine_onHandleEvent, event);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
-		ASUnicode character, ASUInt32 modifiers) {
-	AppContext context;
-	JNIEnv *env = getEnv();
-	try {
-		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine,
-				mid_ScriptographerEngine_onHandleKeyEvent,
-				type, keyCode, character, modifiers);
-	} EXCEPTION_CATCH_REPORT(env);
-	return false;
-}
-
 int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj,
 		const char *name) {
 	if (obj == NULL)
@@ -2607,6 +2584,31 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 	return obj;
 }
 #endif //#ifndef ADM_FREE
+
+ASErr ScriptographerEngine::callOnHandleEvent(int event) {
+	AppContext context;
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleEvent, event);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
+		ASUnicode character, ASUInt32 modifiers) {
+	AppContext context;
+	JNIEnv *env = getEnv();
+	try {
+		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleKeyEvent,
+				type, keyCode, character, modifiers);
+	} EXCEPTION_CATCH_REPORT(env);
+	return false;
+}
+
+
 
 /*
  *

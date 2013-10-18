@@ -92,9 +92,6 @@
     <ClCompile Include="..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp">
       <Filter>Native\JNI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\native\jni\registerNatives.cpp">
-      <Filter>Native\JNI</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp">
       <Filter>Native\JNI\AI</Filter>
     </ClCompile>
@@ -395,6 +392,7 @@
     <ClCompile Include="..\..\..\adobe\Adobe Illustrator CS6 SDK\illustratorapi\ate\IText.cpp">
       <Filter>Native\Plugin\CS6</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\registerNatives.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\icon.ico">
