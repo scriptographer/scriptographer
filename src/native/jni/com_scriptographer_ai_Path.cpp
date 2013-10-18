@@ -45,7 +45,7 @@ DEFINE_CALLBACK_PROC(Path_allocate);
 DEFINE_CALLBACK_PROC(Path_dispose);
 
 static AIPathConstructionMemoryObject Path_memoryObject = {
-	(void * (*)(long int)) CALLBACK_PROC(Path_allocate),
+	(void * (*)(sizet)) CALLBACK_PROC(Path_allocate),
 	(void (*)(void *)) CALLBACK_PROC(Path_dispose)
 };
 
@@ -147,7 +147,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 				ai::int32 pointCount;
 				pointCount = count;
 				ai::int32 segCount = 0;
-				ai::int32 radius = cornerRadius;
+				ai::int16 radius = cornerRadius;
 				segments = NULL;
 				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &Path_memoryObject) && segments != NULL) {
 					sAIPath->SetPathSegmentCount(handle, segCount);	

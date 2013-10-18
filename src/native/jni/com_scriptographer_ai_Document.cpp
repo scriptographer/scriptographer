@@ -478,10 +478,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(
 		SPPlatformFileSpecification fileSpec;
 #if kPluginInterfaceVersion < kAI12
 		if (!sAIDocument->GetDocumentFileSpecification(&fileSpec)) {
-#else
+#elif kPluginInterfaceVersion < kAI15
 		ai::FilePath filePath;
 		if (!sAIDocument->GetDocumentFileSpecification(filePath)) {
 			filePath.GetAsSPPlatformFileSpec(fileSpec);
+		
+#else
+		{ //todo
 #endif
 			file = gEngine->convertFile(env, &fileSpec);
 		}

@@ -62,7 +62,7 @@ jboolean Item_isLayer(AIArtHandle art) {
 
 void Item_filter(AIArtSet set, bool layerOnly) {
 	// takes out all kUnknownAr items and layergroups
-	long count = 0;
+	sizet count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	for (long i = count - 1; i >= 0; i--) {
 		AIArtHandle art = NULL;
@@ -83,7 +83,7 @@ AIArtSet Item_getSelected(bool filter) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
 			if (filter) {
 				// Now filter out objects of which the parents are selected too
-				ai::int32 count;
+				sizet count;
 				sAIArtSet->CountArtSet(set, &count);
 				for (long i = count - 1; i >= 0; i--) {
 					AIArtHandle art;
@@ -124,7 +124,7 @@ void Item_setSelected(AIArtHandle art, bool children) {
 }
 
 void Item_setSelected(AIArtSet set) {
-	long count;
+	sizet count;
 	if (set != NULL) {
 		sAIArtSet->CountArtSet(set, &count);
 		AIArtHandle art = NULL;
@@ -150,7 +150,7 @@ void Item_deselectAll() {
 }
 
 void Item_activateDocument(JNIEnv *env, AIArtSet set) {
-	long count = 0;
+	sizet count = 0;
 	// Walk through the items to find the first wrapped one and get the document handle from there.
 	sAIArtSet->CountArtSet(set, &count);
 	for (long i = 0; i < count; i++) {
@@ -204,7 +204,7 @@ AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution,
 	AIArtHandle raster = NULL;
 	// walk through the set and find the art that is blaced above all others:
 	AIArtHandle top = NULL;
-	long count;
+	sizet count;
 	sAIArtSet->CountArtSet(set, &count);
 	for (long i = count - 1; i >= 0; i--) {
 		AIArtHandle art;

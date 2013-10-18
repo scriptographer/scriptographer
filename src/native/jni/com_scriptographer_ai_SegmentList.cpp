@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 			if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot insert path segment");
 		} else {
-			AIReal *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
+			AIReal *data = (AIReal *) env->GetPrimitiveArrayCritical(values, NULL);
 			AIPathSegment *segments = (AIPathSegment *) data;
 			gEngine->convertSegments(env, data, count, kArtboardCoordinates, false);
 			ASErr error = sAIPath->InsertPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);

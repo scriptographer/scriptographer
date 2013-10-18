@@ -1,10 +1,10 @@
-﻿Build started 17/10/2013 6:11:25 PM.
+﻿Build started 17/10/2013 9:43:38 PM.
      1>Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching "CC Debug\Scriptographer.unsuccessfulbuild".
        ClCompile:
          All outputs are up-to-date.
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_Item.cpp ..\..\src\native\jni\com_scriptographer_ai_Layer.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp
          ScriptographerPlugin.cpp
      1>..\..\src\native\plugin\ScriptographerPlugin.cpp(535): error C2039: 'GetPluginFileSpecification' : is not a member of 'SPPluginsSuite'
                  C:\_testprojects\aiplugins\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp\SPPlugs.h(111) : see declaration of 'SPPluginsSuite'
@@ -19,10 +19,6 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\plugin\ScriptographerEngine.cpp(1544): error C2664: 'AIErr (ai::int32,AIFloatSampleComponent *,ai::int32,AIFloatSampleComponent *,const AIColorConvertOptions &,AIBoolean *)' : cannot convert parameter 1 from 'AIBoolean *' to 'ai::int32'
                  There is no context in which this conversion is possible
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'ai::int32 *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\plugin\ScriptographerEngine.cpp(1639): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'ai::int32 *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_TextRange.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp(35): error C2679: binary '=' : no operator found which takes a right-hand operand of type 'ATETextDOM::RealMatrix' (or there is no acceptable conversion)
                  c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\ASTypes.h(237): could be '_t_ASRealMatrix &_t_ASRealMatrix::operator =(const _t_ASRealMatrix &)'
@@ -63,19 +59,10 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(131): error C2664: 'JNIEnv_::GetFloatArrayRegion' : cannot convert parameter 4 from 'AIReal [7]' to 'jfloat *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(136): error C2440: 'initializing' : cannot convert from 'jfloat *' to 'AIReal *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_PlacedFile.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(142): error C2039: 'GetAsSPPlatformFileSpec' : is not a member of 'ai::FilePath'
                  c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\IAIFilePath.hpp(49) : see declaration of 'ai::FilePath'
-         com_scriptographer_ai_Pathfinder.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp(66): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp(66): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_Path.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(48): error C2440: 'initializing' : cannot convert from 'void *(__cdecl *)(long)' to 'void *(__cdecl *)(size_t)'
-                 This conversion requires a reinterpret_cast, a C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 8 from 'jfloat *' to 'AIReal *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 7 from 'ai::int32 *' to 'ai::int16 *'
@@ -86,53 +73,16 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 4 from 'ai::int32 *' to 'AIPathSegment **'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 2 from 'ai::int32 *' to 'AIPathConstructionPoint *'
+     1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 2 from 'ai::int16 *' to 'AIPathConstructionPoint *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 1 from 'AIPathConstructionMemoryObject *' to 'ai::int32 *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_Layer.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Layer.cpp(118): error C2664: 'jobject ScriptographerEngine::convertColor(JNIEnv *,ADMRGBColor *)' : cannot convert parameter 1 from 'AIColor *' to 'JNIEnv *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Layer.cpp(132): error C2664: 'jobject ScriptographerEngine::convertColor(JNIEnv *,ADMRGBColor *)' : cannot convert parameter 1 from 'AIRGBColor *' to 'JNIEnv *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_Item.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(66): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(66): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'ai::int32 *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(87): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'ai::int32 *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(129): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(129): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(155): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(155): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(208): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 2 from 'long *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Item.cpp(208): error C2664: 'AIErr (AIArtSet,size_t *)' : cannot convert parameter 1 from 'long *' to 'AIArtSet'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          com_scriptographer_ai_Document.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_Document.cpp(484): error C2039: 'GetAsSPPlatformFileSpec' : is not a member of 'ai::FilePath'
                  c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\IAIFilePath.hpp(49) : see declaration of 'ai::FilePath'
-         com_scriptographer_ai_Dictionary.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(126): error C2664: 'AIErr (AIEntryRef,void *,size_t *)' : cannot convert parameter 3 from 'ASInt32 *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(126): error C2664: 'AIErr (AIEntryRef,void *,size_t *)' : cannot convert parameter 2 from 'int' to 'void *'
-                 Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(126): error C2664: 'AIErr (AIEntryRef,void *,size_t *)' : cannot convert parameter 1 from 'int' to 'AIEntryRef'
-                 Conversion from integral type to pointer type requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(128): error C2664: 'AIErr (AIEntryRef,void *,size_t *)' : cannot convert parameter 3 from 'ASInt32 *' to 'size_t *'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-     1>..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp(128): error C2664: 'AIErr (AIEntryRef,void *,size_t *)' : cannot convert parameter 1 from 'void **' to 'AIEntryRef'
-                 Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
          Generating Code...
      1>Done Building Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" (build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:01.84
+Time Elapsed 00:00:01.22

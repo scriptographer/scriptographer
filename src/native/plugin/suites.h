@@ -29,9 +29,10 @@
 
 #if kPluginInterfaceVersion >= kAI16 
 	#define ADM_FREE
-	
+	typedef  size_t sizet; //klio todo: types.h
 #else
 	#undef ADM_FREE
+	typedef ai::int32 sizet; //klio todo: types.h namespace sc: types from kAI
 	
 #endif // kPluginInterfaceVersion >= kAI16  
 

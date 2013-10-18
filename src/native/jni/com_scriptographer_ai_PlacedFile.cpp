@@ -136,10 +136,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getFile(JNIEnv *
 		char path[kMaxPathLength];
 		if (!sAIPlaced->GetPlacedFilePathFromArt(art, path, kMaxPathLength) &&
 			!sAIUser->Path2SPPlatformFileSpecification(path, &fileSpec)) {
-#else
+#elif kPluginInterfaceVersion < kAI16
 		ai::UnicodeString path;
 		if (!sAIPlaced->GetPlacedFilePathFromArt(art, path)) {
 			ai::FilePath(path).GetAsSPPlatformFileSpec(fileSpec);
+#else
+		{ //todo
 #endif
 			return gEngine->convertFile(env, &fileSpec);
 		}

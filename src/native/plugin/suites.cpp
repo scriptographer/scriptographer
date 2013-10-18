@@ -363,12 +363,12 @@ ImportSuite postStartup[] = {
 	kAIFilePathSuite, kAIFilePathSuiteVersion, &sAIFilePath, sizeof(AIFilePathSuite),
 #endif
 
-#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 	kAITracingSuite, kAITracingSuiteVersion, &sAITracing, sizeof(AITracingSuite),
 	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif
 	
-#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI16
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 	kAICropAreaSuite, kAICropAreaSuiteVersion, &sAICropArea, sizeof(AICropAreaSuite),
 #endif
 

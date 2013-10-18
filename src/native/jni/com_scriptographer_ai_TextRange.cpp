@@ -67,7 +67,7 @@ public:
 				// A normal glyph, we can increase as usual
 				glyphIndex++;
 			}
-			ASRealPoint *point = new ASRealPoint;
+			ASRealPoint *point = new ASRealPoint; //klio: leak?
 			*point = origins.Item(i);
 			m_origins[charIndex++] = point;
 			// Otherwise, add them now

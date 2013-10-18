@@ -531,11 +531,14 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
+#if kPluginInterfaceVersion < kAI16
 	SPPlatformFileSpecification fileSpec;
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
 	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
-	
+#else 
+	//todo
+#endif
 	// Now find the last occurence of PATH_SEP_CHR and determine the string
 	// there:
 	*(strrchr(pluginPath, PATH_SEP_CHR) + 1) = '\0';
@@ -801,8 +804,13 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path,
 #else
 	// On Windows, things are much easier because we don't have to convert to a
 	// Posix path:
+#if kPluginInterfaceVersion < kAI16
 	if (sAIUser->Path2SPPlatformFileSpecification(path, fileSpec))
 		return false;
+#else
+			//todo
+#endif
+
 #endif
 	return true;
 }

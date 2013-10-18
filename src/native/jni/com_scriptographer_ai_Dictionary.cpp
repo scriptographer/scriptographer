@@ -119,7 +119,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(
 						 GraphicObjectType
 						 */
 					case BinaryType: {
-						ASInt32 size;
+						sizet size;
 						void *value;
 						// So far, only NULL values are supported for binary
 						// types. See nativePut()

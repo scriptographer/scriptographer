@@ -1635,7 +1635,7 @@ void ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
 jobject ScriptographerEngine::convertItemSet(JNIEnv *env,
 		AIArtSet set, bool layerOnly) {
 	Item_filter(set, layerOnly);
-	ai::int32 count = 0;
+	sizet count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	jobject itemSet = newObject(env, cls_ai_ItemList, cid_ItemList); 
 	for (long i = 0; i < count; i++) {
@@ -1954,7 +1954,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art,
 			sAITextFrame->GetType(art, &textType);
 		} else if (type == kPluginArt) {
 			// TODO: Add handling of special types
-#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 			if (sAITracing->IsTracing(art))
 				type = com_scriptographer_ai_Item_TYPE_TRACING;
 #endif

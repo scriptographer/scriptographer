@@ -62,7 +62,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	jobject result = NULL;
 	AIArtSet selected = Item_getSelected(true);
 	if (selected != NULL) {
-		long count = 0;
+		sizet count = 0;
 		sAIArtSet->CountArtSet(selected, &count);
 		AIArtHandle art = NULL;
 		sAIArtSet->IndexArtSet(selected, 0, &art);
