@@ -27,7 +27,7 @@ import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
-/*
+
 import com.scriptographer.adm.Border;
 import com.scriptographer.adm.Button;
 import com.scriptographer.adm.ChasingArrows;
@@ -65,7 +65,7 @@ import com.scriptographer.adm.TextPane;
 import com.scriptographer.adm.TextValueItem;
 import com.scriptographer.adm.ToggleItem;
 import com.scriptographer.adm.Tracker;
-*/
+
 
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.AreaText;

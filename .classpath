@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/scriptographer/adm/|com/scriptographer/adm/layout/|com/scriptographer/adm/ui/" kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="build/java/build/lib/jython.jar" sourcepath="/jython"/>
 	<classpathentry kind="lib" path="build/java/build/lib/js.jar" sourcepath="/rhino"/>
