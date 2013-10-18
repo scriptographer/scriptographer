@@ -1029,7 +1029,7 @@ void ScriptographerEngine::convertSegments(JNIEnv *env, AIReal *data, int count,
 	}
 	// Check if a conversion is needed at all?
 	if (xOrigin != 0 || yOrigin != 0 || m_topDownCoordinates) {
-		jfloat *ptr = data;
+		AIReal *ptr = data;
 		if (m_topDownCoordinates) {
 			// We need to flip coordinates both ways. When reading from Ai, we
 			// first subtract the yOrigin from the value and flip after.

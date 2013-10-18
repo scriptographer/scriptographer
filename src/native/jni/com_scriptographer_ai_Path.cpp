@@ -144,10 +144,10 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 					points[i].corner = segments[i].corner;
 				}
 				delete[] segments;
-				long pointCount;
+				ai::int32 pointCount;
 				pointCount = count;
-				long segCount = 0;
-				short radius = cornerRadius;
+				ai::int32 segCount = 0;
+				ai::int32 radius = cornerRadius;
 				segments = NULL;
 				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &Path_memoryObject) && segments != NULL) {
 					sAIPath->SetPathSegmentCount(handle, segCount);	
@@ -182,7 +182,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 					memcpy(&segments[count], &segments[0], sizeof(AIPathSegment));
 					count++;
 				}
-				long pointCount = 0;
+				ai::int32 pointCount = 0;
 				AIPathConstructionPoint *points = NULL;
 				if (!sAIPathConstruction->CurvesToPoints(count, segments, &pointCount, &points, maxPointDistance, flatness, &Path_memoryObject) && points != NULL) {
 					// convert points to segments:

@@ -857,7 +857,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->MenuItem_onSelect((AIMenuMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
-			long inArtwork, isSelected, isTrue;
+			ai::int32 inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
 			error = gEngine->MenuItem_onUpdate((AIMenuMessage *) message,
 					inArtwork, isSelected, isTrue);

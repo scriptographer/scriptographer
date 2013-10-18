@@ -141,7 +141,7 @@ void Item_deselectAll() {
 	// trick. Also, calling it seems to cause a screen refresh, something we 
 	// don't want to happen in Sg.
 	AIArtHandle **matches;
-	long numMatches;
+	ai::int32 numMatches;
 	if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
 		for (int i = 0; i < numMatches; i++)
 			sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
@@ -453,7 +453,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 		// to crashes that cannot be caught in a catch even (at least on Mac).
 		// We need to check for them to be valid. The check is simply seeing if
 		// GetArtUserAttr executes without problems...
-		long values;
+		ai::int32 values;
 		if (!sAIArt->GetArtUserAttr(art, kArtLocked, &values)) { 
 			// Treat the object differently if it's in a dictionary than in the
 			// normal artwork tree of the document:
@@ -735,7 +735,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setCenterVisible(JNIEnv *
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetAttributes(JNIEnv *env, jobject obj, jint attributes) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		long values;
+		ai::int32 values;
 		if (!sAIArt->GetArtUserAttr(art, attributes, &values))
 			return values;
 	} EXCEPTION_CONVERT(env);
@@ -759,7 +759,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isEditable(JNIEnv *en
 	ASBoolean res = false;
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		long values;
+		ai::int32 values;
 		// First check that the art is not hidden or locked
 		if (!sAIArt->GetArtUserAttr(art, kArtHidden | kArtLocked, &values) &&
 			!values) {
@@ -1132,7 +1132,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 		Item_commit(env, art);
 		// store old selected items:
 		AIArtHandle **selected = NULL;
-		long numSelected = 0;
+		ai::int32 numSelected = 0;
 		sAIMatchingArt->GetSelectedArt(&selected, &numSelected);
 		Item_deselectAll();
 		// now selected the art to be expanded, so the result is selected too:

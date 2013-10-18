@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIIFFFF
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
-		gEngine->convertSegments(env, (jfloat *) &segment, 1, kArtboardCoordinates, false);
+		gEngine->convertSegments(env, (AIReal *) &segment, 1, kArtboardCoordinates, false);
 		if (sAIPath->SetPathSegments((AIArtHandle) handle, index, 1, &segment))
 			throw new StringException("Cannot set path segments");
 	} EXCEPTION_CONVERT(env);
@@ -113,7 +113,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIIF
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
-		gEngine->convertSegments(env, (jfloat *) &segment, 1, kArtboardCoordinates, false);
+		gEngine->convertSegments(env, (AIReal *) &segment, 1, kArtboardCoordinates, false);
 		if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, &segment))
 			throw new StringException("Cannot insert path segments");
 	} EXCEPTION_CONVERT(env);
@@ -127,13 +127,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
-			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
+			AIReal data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
 			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
 			gEngine->convertSegments(env, data, 1, kArtboardCoordinates, false);
 			if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot insert path segment");
 		} else {
-			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
+			AIReal *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
 			AIPathSegment *segments = (AIPathSegment *) data;
 			gEngine->convertSegments(env, data, count, kArtboardCoordinates, false);
 			ASErr error = sAIPath->InsertPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);

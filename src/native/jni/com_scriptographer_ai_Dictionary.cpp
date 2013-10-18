@@ -142,7 +142,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(
 							res = gEngine->convertBoolean(env, value);
 					} break;
 					case RealType: {
-						ASReal value;
+						AIReal value;
 						if (converted = !sAIEntry->ToReal(entry, &value))
 							res = gEngine->convertFloat(env, value);
 					} break;

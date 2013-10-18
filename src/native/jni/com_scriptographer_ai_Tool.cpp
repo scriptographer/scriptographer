@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeGetOptions(
 		JNIEnv *env, jobject obj) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
-		long options = 0;
+		ai::int32 options = 0;
 		sAITool->GetToolOptions(tool, &options);
 		return (jint) options;
 	} EXCEPTION_CONVERT(env);
@@ -262,7 +262,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setSelected(JNIEnv *env,
 			// If we're deselecting, we need to select the previous or next tool
 			// instead
 			AIToolType toolNum;
-			long count;
+			ai::int32 count;
 			if (!sAITool->GetToolNumberFromHandle(tool, &toolNum)
 					&& !sAITool->CountTools(&count)) {
 				if (toolNum < count - 1)
@@ -285,8 +285,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setSelected(JNIEnv *env,
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetImage(
 		JNIEnv *env, jobject obj, jint iconHandle) {
 	try {
+#ifndef ADM_FREE
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		sAITool->SetToolIcon(tool, (ADMIconRef) iconHandle);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -313,7 +315,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_convertPoint(
 		jdouble x, jdouble y) {
 	try {
 		gEngine->setTopDownCoordinates(topDownCoordinates);
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 		if (activateArtboard) {
 			// As Ai only activates artboards on mouse-up, 
 			ASInt32 count = 0;

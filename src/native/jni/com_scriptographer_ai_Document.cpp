@@ -282,7 +282,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveSymbolHandle
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardIndex(
 		JNIEnv *env, jobject obj) {
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -301,7 +301,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardInde
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardIndex(
 		JNIEnv *env, jobject obj, jint index) {
-#if kPluginInterfaceVersion >= kAI13
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -524,7 +524,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(
 		
 		char *formatName = NULL;
 
-		long formatOptions;
+		ai::int32 formatOptions;
 
 		if (formatHandle != 0) {
 			sAIFileFormat->GetFileFormatName(
@@ -736,7 +736,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(
 		spec.whichAttr = kArtFullySelected;
 		spec.attr = 0;
 		AIArtHandle **matches;
-		long numMatches;
+		ai::int32 numMatches;
 		if (!sAIMatchingArt->GetMatchingArt(&spec, 1, &matches, &numMatches)) {
 			for (long i = 0; i < numMatches; i++)
 				sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, kArtSelected);
