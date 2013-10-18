@@ -1,15 +1,10 @@
-﻿Build started 17/10/2013 9:43:38 PM.
+﻿Build started 17/10/2013 10:05:56 PM.
      1>Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching "CC Debug\Scriptographer.unsuccessfulbuild".
        ClCompile:
          All outputs are up-to-date.
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Document.cpp ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp ..\..\src\native\plugin\ScriptographerPlugin.cpp
-         ScriptographerPlugin.cpp
-     1>..\..\src\native\plugin\ScriptographerPlugin.cpp(535): error C2039: 'GetPluginFileSpecification' : is not a member of 'SPPluginsSuite'
-                 C:\_testprojects\aiplugins\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp\SPPlugs.h(111) : see declaration of 'SPPluginsSuite'
-     1>..\..\src\native\plugin\ScriptographerPlugin.cpp(804): error C2039: 'Path2SPPlatformFileSpecification' : is not a member of 'AIUserSuite'
-                 C:\_testprojects\aiplugins\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\AIUser.h(404) : see declaration of 'AIUserSuite'
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\src\native\win /I..\..\src\native\jni /I..\..\src\native\plugin /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\adm" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\ate" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\general" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\pica_sp" /I"..\..\..\adobe\Adobe Illustrator CC SDK\illustratorapi\illustrator\legacy" /Zi /nologo /W1 /WX- /Od /Oy- /D _DEBUG /D WIN32 /D _WINDOWS /D WIN_ENV /D LOGFILE /D _VC80_UPGRADE=0x0710 /Gm /EHa /MTd /Zp4 /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdHeaders.h" /Fp"CC Debug\Scriptographer.pch" /Fo"CC Debug\\" /Fd"CC Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\native\jni\com_scriptographer_ai_Path.cpp ..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp ..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp ..\..\src\native\plugin\ScriptographerEngine.cpp
          ScriptographerEngine.cpp
      1>..\..\src\native\plugin\ScriptographerEngine.cpp(1544): error C2664: 'AIErr (ai::int32,AIFloatSampleComponent *,ai::int32,AIFloatSampleComponent *,const AIColorConvertOptions &,AIBoolean *)' : cannot convert parameter 4 from 'AISampleComponent [4]' to 'AIFloatSampleComponent *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
@@ -59,9 +54,6 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp(131): error C2664: 'JNIEnv_::GetFloatArrayRegion' : cannot convert parameter 4 from 'AIReal [7]' to 'jfloat *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_PlacedFile.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_PlacedFile.cpp(142): error C2039: 'GetAsSPPlatformFileSpec' : is not a member of 'ai::FilePath'
-                 c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\IAIFilePath.hpp(49) : see declaration of 'ai::FilePath'
          com_scriptographer_ai_Path.cpp
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 8 from 'jfloat *' to 'AIReal *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
@@ -77,12 +69,9 @@
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
      1>..\..\src\native\jni\com_scriptographer_ai_Path.cpp(152): error C2664: 'AIErr (ai::int32 *,AIPathConstructionPoint *,ai::int32 *,AIPathSegment **,AIReal *,AIReal *,ai::int16 *,AIReal *,AIPathConstructionMemoryObject *)' : cannot convert parameter 1 from 'AIPathConstructionMemoryObject *' to 'ai::int32 *'
                  Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-         com_scriptographer_ai_Document.cpp
-     1>..\..\src\native\jni\com_scriptographer_ai_Document.cpp(484): error C2039: 'GetAsSPPlatformFileSpec' : is not a member of 'ai::FilePath'
-                 c:\_testprojects\aiplugins\adobe\adobe illustrator cc sdk\illustratorapi\illustrator\IAIFilePath.hpp(49) : see declaration of 'ai::FilePath'
          Generating Code...
      1>Done Building Project "C:\_testprojects\aiplugins\scriptographer\build\win\Scriptographer.vcxproj" (build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:01.22
+Time Elapsed 00:00:00.84
