@@ -26,9 +26,9 @@ class GlyphRun {
 private:
 	int m_glyphSize;
 	int m_charSize;
-	ASRealMatrix m_matrix;
+	RealMatrix m_matrix;
 	ITextFrame m_textFrame;
-	ASRealPoint **m_origins;
+	RealPoint **m_origins;
 
 public:
 	GlyphRun(IGlyphRun run, int start, int end, Array<int> *glyphLengths, int glyphIndex) {
@@ -52,7 +52,7 @@ public:
 				m_charSize += glyphLength;
 			}
 		}
-		m_origins = new ASRealPoint *[m_charSize];
+		m_origins = new  RealPoint *[m_charSize];
 		int charIndex = 0;
 		for (int i = start; i < end; i++) {
 			int glyphLength = glyphLengths->get(glyphIndex);
@@ -67,7 +67,7 @@ public:
 				// A normal glyph, we can increase as usual
 				glyphIndex++;
 			}
-			ASRealPoint *point = new ASRealPoint; //klio: leak?
+			 RealPoint *point = new  RealPoint; //klio: leak?
 			*point = origins.Item(i);
 			m_origins[charIndex++] = point;
 			// Otherwise, add them now
@@ -78,7 +78,7 @@ public:
 
 	~GlyphRun() {
 		for (int i = 0; i < m_charSize; i++) {
-			ASRealPoint *point = m_origins[i];
+			RealPoint *point = m_origins[i];
 			if (point != NULL)
 				delete point;
 		}
@@ -93,13 +93,13 @@ public:
 		return m_charSize;
 	}
 
-	ASRealMatrix getMatrix() {
+	RealMatrix getMatrix() {
 		// From the SDK:
 		// The matrix returned specify the full transformation of the given run.
 		// You need to transform the origin by IGlyphRun::GetOrigins() and
 		// concat with ITextFrame::GetMatrix() in order to get the location of the glyphs.
-		ASRealMatrix textMatrix = m_textFrame.GetMatrix();
-		ASRealMatrix matrix;
+		RealMatrix textMatrix = m_textFrame.GetMatrix();
+		RealMatrix matrix;
 		sAIRealMath->AIRealMatrixConcat(&m_matrix, &textMatrix, &matrix);
 		sAIHardSoft->AIRealMatrixSoften(&matrix);
 		// Weird... Is ATE upside down? This seems to help, but why?
@@ -108,7 +108,7 @@ public:
 		return matrix;
 	}
 
-	inline ASRealPoint **getOrigins() {
+	inline RealPoint **getOrigins() {
 		return m_origins;
 	}
 };
@@ -154,10 +154,10 @@ public:
 		jobjectArray array = env->NewObjectArray(m_charSize, gEngine->cls_ai_Point, NULL);
 		for (int i = 0, l = m_runs.size(); i < l; i++) {
 			GlyphRun *run = get(i);
-			ASRealPoint **origins = run->getOrigins();
-			ASRealMatrix runMatrix = run->getMatrix();
+			RealPoint **origins = run->getOrigins();
+			RealMatrix runMatrix = run->getMatrix();
 			for (int j = 0, m = run->charSize(); j < m; j++) {
-				ASRealPoint *origin = origins[j];
+				RealPoint *origin = origins[j];
 				jobject point;
 				if (origin != NULL) {
 					AIRealPoint pt;
@@ -177,13 +177,13 @@ public:
 		jobjectArray array = env->NewObjectArray(m_charSize, gEngine->cls_ai_Matrix, NULL);
 		for (int i = 0; i < m_runs.size(); i++) {
 			GlyphRun *run = get(i);
-			ASRealPoint **origins = run->getOrigins();
-			ASRealMatrix runMatrix = run->getMatrix();
+			RealPoint **origins = run->getOrigins();
+			RealMatrix runMatrix = run->getMatrix();
 			for (int j = 0; j < run->charSize(); j++) {
-				ASRealPoint *origin = origins[j];
+				RealPoint *origin = origins[j];
 				jobject matrix;
 				if (origin != NULL) {
-					ASRealMatrix glyphMatrix;
+					RealMatrix glyphMatrix;
 					sAIRealMath->AIRealMatrixSetTranslate(&glyphMatrix, origin->h, origin->v);
 					sAIRealMath->AIRealMatrixConcat(&glyphMatrix, &runMatrix, &glyphMatrix);
 					matrix = gEngine->convertMatrix(env, kCurrentCoordinates, kArtboardCoordinates, &glyphMatrix);

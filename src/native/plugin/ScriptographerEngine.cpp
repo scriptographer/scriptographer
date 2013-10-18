@@ -1538,10 +1538,12 @@ bool ScriptographerEngine::convertColor(AIColor *srcCol,
 #if kPluginInterfaceVersion < kAI12
 		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
 				dst, &inGamut)) {
-#else
+#elif kPluginInterfaceVersion < kAI17
 		AIColorConvertOptions options;
 		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
 				dst, options, &inGamut)) {
+#else
+		{ //todo
 #endif
 			// Init the destCol with 0
 			// memset(dstCol, 0, sizeof(AIColor));

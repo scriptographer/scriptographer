@@ -54,7 +54,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 				throw new StringException("Cannot get path segment");
 			gEngine->convertSegments(env, data, 1, kArtboardCoordinates, true);
 			// Now write this values into the float array that was passed and we're done. 
-			env->SetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data); 
+			env->SetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, (const jfloat*)data); 
 		} else {
 			AIReal *data = (AIReal *) env->GetPrimitiveArrayCritical(values, NULL); 
 			AIPathSegment *segments = (AIPathSegment *) data;
@@ -90,7 +90,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIII_3F
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			AIReal data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
-			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
+			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT,  (jfloat*) data);
 			gEngine->convertSegments(env, data, 1, kArtboardCoordinates, false);
 			if (sAIPath->SetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot set path segment");
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			AIReal data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
-			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
+			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT,  (jfloat*) data);
 			gEngine->convertSegments(env, data, 1, kArtboardCoordinates, false);
 			if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot insert path segment");

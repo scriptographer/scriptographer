@@ -29,11 +29,12 @@
 
 #if kPluginInterfaceVersion >= kAI16 
 	#define ADM_FREE
-	typedef  size_t sizet; //klio todo: types.h
+
+
 #else
 	#undef ADM_FREE
-	typedef ai::int32 sizet; //klio todo: types.h namespace sc: types from kAI
-	
+
+
 #endif // kPluginInterfaceVersion >= kAI16  
 
 // Sweet Pea Suites
@@ -189,7 +190,19 @@ namespace ATE {
 namespace ai {
 	typedef long int32;
 }
+	typedef ai::int32 sizet; //klio todo: types.h namespace sc: types from kAI
+#else
+	typedef  size_t sizet; //klio todo: types.h
 #endif // kPluginInterfaceVersion < kAI16
+
+#if kPluginInterfaceVersion <= kAI16
+	typedef ASRealMatrix RealMatrix;
+	typedef ASRealPoint  RealPoint;
+#else
+	typedef ATETextDOM::RealMatrix RealMatrix;
+	typedef ATETextDOM::RealPoint  RealPoint;
+#endif
+
 
 #ifndef ADM_FREE
 // ADM Suite versions for different versions of Illustrator

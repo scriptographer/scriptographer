@@ -149,7 +149,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 				ai::int32 segCount = 0;
 				ai::int16 radius = cornerRadius;
 				segments = NULL;
-				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &Path_memoryObject) && segments != NULL) {
+				AIReal aiTolerance = tolerance;
+				AIReal aiThreshold = threshold;
+				AIReal aiScale = scale;
+
+				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &aiTolerance, &aiThreshold, &radius, &aiScale, &Path_memoryObject) && segments != NULL) {
 					sAIPath->SetPathSegmentCount(handle, segCount);	
 					sAIPath->SetPathSegments(handle, 0, segCount, segments);	
 					res = segCount;
