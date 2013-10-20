@@ -27,9 +27,6 @@
 		<property name="build.deprecation" value="off"/>
 
 		<property name="project.dir" location="../.."/>
-
-		<property name="ui.factory" value="swt"/>
-
 		<!-- Sources -->
 		<property name="src.java" location="${project.dir}/src/java"/>
 		<property name="src.jni" location="${project.dir}/src/native/jni"/>
@@ -447,6 +444,7 @@ Scriptographer build instructions
 		   	<class name="com.scriptographer.adm.Drawer" />
 		   	<class name="com.scriptographer.adm.Image" />
 		   	<class name="com.scriptographer.adm.Tracker" />
+
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="${src.js}/jni/jni.js">
@@ -454,7 +452,9 @@ Scriptographer build instructions
 			// create registerNatives.cpp by parsing the generated files by
 			// javah, see jni.js:
 			registerNatives(project.getProperty("src.jni"),
-				project.getProperty("src.jni") + "/registerNatives.cpp");
+				project.getProperty("src.jni") + "/registerNatives.cpp", "adm" );
+			registerNatives(project.getProperty("src.jni"),
+				project.getProperty("src.jni") + "/registerSwtNatives.cpp", "swt");
 		]]>
 		</script>
 	</target>
