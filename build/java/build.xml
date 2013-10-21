@@ -22,7 +22,7 @@
 		<property name="package.name" value="${project}-${version}"/>
 
 		<property name="build.debug" value="on"/>
-		<property name="build.optimize" value="on"/>
+		<property name="build.optimize" value="off"/>
 		<property name="build.version" value="1.5"/>
 		<property name="build.deprecation" value="off"/>
 
@@ -269,6 +269,12 @@ Scriptographer build instructions
 				file="${docs.dir}/License.txt" />
 
 		<!-- Packages -->
+		<antcall target="packages.platform">
+			<param name="target" value="CC"/>
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CS6"/>
+		</antcall>
 		<antcall target="packages.platform">
 			<param name="target" value="CS5"/>
 		</antcall>

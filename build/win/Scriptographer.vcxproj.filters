@@ -393,6 +393,7 @@
       <Filter>Native\Plugin\CS6</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\native\jni\registerNatives.cpp" />
+    <ClCompile Include="..\..\src\native\jni\registerSwtNatives.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\icon.ico">

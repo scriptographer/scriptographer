@@ -10,4 +10,6 @@ CS* Debug/
 CS* Release/
 CC Debug/
 CC Release/
+CC x64 Debug/
+CC x64 Release/
 ipch/

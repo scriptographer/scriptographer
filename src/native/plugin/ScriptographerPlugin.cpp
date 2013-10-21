@@ -537,7 +537,11 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
 #else 
-	//todo
+	SPPlatformFileReference fileSpec;
+	sSPPlugins->GetPluginFileReference(m_pluginRef, &fileSpec);
+	
+	if (!fileSpecToPath(&fileSpec, pluginPath))
+		return kCantHappenErr;
 #endif
 	// Now find the last occurence of PATH_SEP_CHR and determine the string
 	// there:
@@ -546,8 +550,8 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 #ifdef LOGFILE
 		// Create logfile:
 		char path[512];
-		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log",
-				pluginPath);
+		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log",pluginPath);
+		//sprintf(path, "c:\\temp\\native.log");
 		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
 #endif
