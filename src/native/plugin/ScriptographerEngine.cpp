@@ -2608,7 +2608,24 @@ bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
 	return false;
 }
 
-
+int ScriptographerEngine::getMenuObjectHandle(JNIEnv *env, jobject obj,
+		const char *name) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
+	if (!handle) {
+		// For HierarchyListBoxes it could be that the user wants to call item
+		// functions on a child list. report that this can only be called on the
+		// root list:
+		if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
+			throw new StringException("This function can only be called on the root hierarchy list.");
+		} else {
+			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
+		}
+	}
+	return handle;
+}
 
 /*
  *

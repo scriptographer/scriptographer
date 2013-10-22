@@ -646,14 +646,7 @@ public:
 	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);
 	int getADMListHandle(JNIEnv *env, jobject obj, const char *name);
 
-	// Menu items are in the ADM package in Scriptographer, although natively they belong to AI
-	inline AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj) {
-		return (AIMenuItemHandle) getADMObjectHandle(env, obj, "menu item");
-	}
 	
-	inline AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj) {
-		return (AIMenuGroup) getADMObjectHandle(env, obj, "menu group");
-	}
 
 	inline ADMDialogRef getDialogHandle(JNIEnv *env, jobject obj) {
 		return (ADMDialogRef) getADMObjectHandle(env, obj, "dialog");
@@ -703,6 +696,18 @@ public:
 	jobject getListEntryObject(ADMEntryRef list);
 	jobject getListEntryObject(ADMListEntryRef list);
 #endif //#ifndef ADM_FREE
+
+	//former getADMObjectHandle but for Menu
+	int getMenuObjectHandle(JNIEnv *env, jobject obj, const char *name);
+
+	// Menu items are in the ADM package in Scriptographer, although natively they belong to AI
+	inline AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuItemHandle) getMenuObjectHandle(env, obj, "menu item");
+	}
+	
+	inline AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuGroup) getMenuObjectHandle(env, obj, "menu group");
+	}
 
 	// JNI stuff:
 	JNIEnv *getEnv();

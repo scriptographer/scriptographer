@@ -132,6 +132,8 @@ public abstract class Dialog extends Component {
 		script = ScriptographerEngine.getCurrentScript();
 		preferences = ScriptographerEngine.getPreferences(script);
 		items = new ArrayList<Item>();
+		try
+		{
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
 		// Always set dialogs hidden first. 
 		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
@@ -145,6 +147,11 @@ public abstract class Dialog extends Component {
 
 		this.options = options != null ? options.clone()
 				: EnumSet.noneOf(DialogOption.class);
+		}
+		catch(Exception e)
+		{
+			ScriptographerEngine.logError(e);
+		}
 		if (handle != 0)
 			dialogs.add(this);
 	}
