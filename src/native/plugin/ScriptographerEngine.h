@@ -314,7 +314,7 @@ public:
 	jmethodID mid_ui_MenuItem_wrapHandle;
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
-
+#ifndef ADM_FREE
 // ADM:
 	jclass cls_adm_Rectangle;
 	jmethodID cid_adm_Rectangle;
@@ -378,7 +378,7 @@ public:
 	jclass cls_adm_TextEditItem;
 	jfieldID fid_adm_TextEditItem_setSelectionTimer;
 #endif
-
+#endif //	#ifndef ADM_FREE
 public:
 	ScriptographerEngine(const char *pluginPath);
 	~ScriptographerEngine();

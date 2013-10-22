@@ -193,7 +193,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		MenuGroup.class,
 		MenuItem.class,
 		Palette.class,
-		
+/*		
 		// ADM, alphabetically
 		Border.class,
 		Button.class,
@@ -232,6 +232,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Timer.class,
 		ToggleItem.class,
 		Tracker.class
+		*/
 	};
 
 	public TopLevel(Context context) {

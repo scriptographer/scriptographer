@@ -635,6 +635,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 
+#ifndef ADM_FREE
 // ADM:
 	cls_adm_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
 	cid_adm_Rectangle = getConstructorID(env, cls_adm_Rectangle, "(IIII)V");
@@ -698,6 +699,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_adm_TextEditItem = loadClass(env, "com/scriptographer/adm/TextEditItem");
 	fid_adm_TextEditItem_setSelectionTimer = getFieldID(env, cls_adm_TextEditItem, "setSelectionTimer", "I");
 #endif
+
+#endif //#ifndef ADM_FREE
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
@@ -1009,10 +1012,13 @@ void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 	if (env->IsInstanceOf(point, cls_ai_Point)) {
 		x = env->GetDoubleField(point, fid_ai_Point_x);
 		y = env->GetDoubleField(point, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
+	}
+#ifndef ADM_FREE	
+	else if (env->IsInstanceOf(point, cls_adm_Point)) {
 		x = env->GetIntField(point, fid_adm_Point_x);
 		y = env->GetIntField(point, fid_adm_Point_y);
 	}
+#endif //#ifndef ADM_FREE
 	convertPoint(env, system, x, y, res);
 }
 
@@ -1236,6 +1242,8 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 	return res;
 }
 
+#ifndef ADM_FREE
+
 // com.scriptographer.adm.Point <-> ADMPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 		ADMPoint *point, jobject res) {
@@ -1308,6 +1316,8 @@ void ScriptographerEngine::convertSize(JNIEnv *env,
 	res->v = env->GetIntField(size, fid_adm_Size_height);
 	EXCEPTION_CHECK(env);
 }
+
+#endif //#ifndef ADM_FREE
 
 // java.awt.Color <-> ADMRGBColor
 jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
@@ -2618,9 +2628,12 @@ int ScriptographerEngine::getMenuObjectHandle(JNIEnv *env, jobject obj,
 		// For HierarchyListBoxes it could be that the user wants to call item
 		// functions on a child list. report that this can only be called on the
 		// root list:
+#ifndef ADM_FREE
 		if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
-		} else {
+		} else 
+#endif //#ifndef ADM_FREE		
+		{
 			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
 		}
 	}

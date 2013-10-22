@@ -189,6 +189,7 @@ namespace ATE {
 #if kPluginInterfaceVersion < kAI16
 namespace ai {
 	typedef long int32;
+	typedef short int16;
 }
 	typedef ai::int32 sizet; //klio todo: types.h namespace sc: types from kAI
 #else
