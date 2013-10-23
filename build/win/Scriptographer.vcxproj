@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="CC x64 Debug|x64">
-      <Configuration>CC x64 Debug</Configuration>
+    <ProjectConfiguration Include="CCx64 Debug|x64">
+      <Configuration>CCx64 Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="CS Debug|Win32">
@@ -91,7 +91,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
@@ -162,7 +162,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
@@ -246,11 +246,11 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</LinkIncremental>
@@ -291,11 +291,11 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'" />
@@ -312,7 +312,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">C:\Program Files\Java\jdk1.7.0_40\include/win32;C:\Program Files\Java\jdk1.7.0_40\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CS2 Release|Win32'">
@@ -780,7 +780,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MkTypLibCompatible>true</MkTypLibCompatible>
@@ -898,9 +898,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -932,11 +932,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -982,11 +982,11 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CSC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
@@ -1046,11 +1046,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1063,11 +1063,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1080,11 +1080,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1097,11 +1097,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1114,11 +1114,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1131,11 +1131,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1148,11 +1148,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1165,11 +1165,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1182,11 +1182,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1199,11 +1199,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1216,11 +1216,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1233,11 +1233,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1250,11 +1250,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1267,11 +1267,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1284,11 +1284,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1301,11 +1301,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1318,11 +1318,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1335,11 +1335,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -1370,9 +1370,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1402,9 +1402,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1434,9 +1434,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1466,9 +1466,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1498,9 +1498,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1518,7 +1518,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\src\native\plugin\suites.cpp">
@@ -1547,9 +1547,9 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -1613,14 +1613,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1688,14 +1688,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1763,14 +1763,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1838,14 +1838,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1913,14 +1913,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1988,14 +1988,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -2063,15 +2063,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2138,15 +2138,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2213,15 +2213,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2288,15 +2288,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2363,15 +2363,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2438,15 +2438,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2513,15 +2513,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2588,15 +2588,15 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -2615,7 +2615,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS5 Debug|Win32'">
       </PrecompiledHeader>
@@ -2662,11 +2662,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2711,11 +2711,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2760,11 +2760,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2809,11 +2809,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2830,7 +2830,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS5 Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">
       </PrecompiledHeader>
@@ -2869,11 +2869,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2918,11 +2918,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -2967,11 +2967,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -3016,11 +3016,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
@@ -3048,7 +3048,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">true</ExcludedFromBuild>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
@@ -3092,12 +3092,12 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
@@ -3142,12 +3142,12 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
@@ -3192,11 +3192,11 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CSC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
@@ -3241,12 +3241,12 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
       </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
       </PrecompiledHeader>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
@@ -3284,9 +3284,9 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
