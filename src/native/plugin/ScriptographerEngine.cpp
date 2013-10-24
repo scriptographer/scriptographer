@@ -298,6 +298,7 @@ void ScriptographerEngine::init() {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Unable to create Java VM.");
 	}
+
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	if (cls_Loader == NULL)
 		throw new StringException("Unable to load loader.jar. Make sure that the java folder was copied together with the Scriptographer plugin.");

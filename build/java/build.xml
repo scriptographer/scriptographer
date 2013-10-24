@@ -270,6 +270,10 @@ Scriptographer build instructions
 
 		<!-- Packages -->
 		<antcall target="packages.platform">
+			<param name="target" value="CCx64"/> <!-- no spaces! --> 
+			<param name="build64" value="1" />
+		</antcall>
+		<antcall target="packages.platform">
 			<param name="target" value="CC"/>
 		</antcall>
 		<antcall target="packages.platform">
@@ -291,7 +295,7 @@ Scriptographer build instructions
 			<param name="target" value="CS"/>
 		</antcall>
 
-		<antcall target="packages.cleanup" />
+	<antcall target="packages.cleanup" /> 
 	</target>
 
 	<target name="packages.cleanup" depends="init">
@@ -329,19 +333,24 @@ Scriptographer build instructions
 		</exec>
 	</target>
 
+	
 	<target name="packages.platform.win" depends="init" if="build.platform.win">
-		<echo>Executing Windows specific tasks</echo>
-
+		<echo>Executing Windows specific tasks for ${target}  </echo>
 		<!-- Build the targets -->
-		<exec executable="cmd.exe" dir="${env.VS80COMNTOOLS}..\IDE">
-			<arg line="/C devenv.com"/>
+		<condition property="winplatform" value="x64" else="Win32">
+	    	 <isset property="build64"/>
+		</condition>
+		<exec executable="cmd.exe" dir="${env.VS100COMNTOOLS}..\IDE" failonerror="false">
+			<arg line="/C devenv.exe"/>
 			<arg value="${build.win}\Scriptographer.sln"/>
 			<arg value="/build"/>
-			<arg value="${target} Release"/>
+			<arg value="&quot;${target} Debug|${winplatform}&quot;"/><!--todo: !release! &  in .bat -->
+			<arg value="/project"/>
+			<arg value="scriptographer"/>
 		</exec>
-
+		<echo> ${build.win}/zipPackage.bat "${target} ${version}.${build.number} in ${target.packages}  </echo>
 		<!-- Make the packages -->
-		<exec executable="cmd.exe" dir="${target.packages}">
+			<exec executable="cmd.exe" dir="${target.packages}">
 			<arg value="/C"/>
 			<arg path="${build.win}/zipPackage.bat"/>
 			<arg path="${build.win}"/>
