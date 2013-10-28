@@ -12,7 +12,7 @@
  * File created on May 14, 2007.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import com.scratchdisk.script.ArgumentReader;
 
@@ -22,8 +22,8 @@ import com.scratchdisk.script.ArgumentReader;
  * @jshide
  */
 public class Point {
-	protected int x;
-	protected int y;
+	public int x;
+	public int y;
 
 	public Point() {
 		x = y = 0;
@@ -73,11 +73,11 @@ public class Point {
 		return x;
 	}
 	
-	public void getX(int x) {
+	public void setX(int x) {
 		this.x = x;
 	}
 
-	public void getX(double x) {
+	public void setX(double x) {
 		this.x = (int) Math.round(x);
 	}
 

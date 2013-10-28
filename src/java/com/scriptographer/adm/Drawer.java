@@ -15,7 +15,11 @@ package com.scriptographer.adm;
 import java.awt.Color;
 
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ui.DialogColor;
+import com.scriptographer.ui.DialogFont;
 import com.scriptographer.ui.NativeObject;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Point;
 
 /**
  * @author lehni
@@ -134,7 +138,7 @@ public class Drawer extends NativeObject {
 	private native void nativeSetColor(int color);
 	public void setColor(DialogColor color) {
 		if (color != null)
-			nativeSetColor(color.value);
+			nativeSetColor(color.value());
 	}
 	
 	private native int nativeGetDrawMode(); // Drawer.MODE_ segmentValues

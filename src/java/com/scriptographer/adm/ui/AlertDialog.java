@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import com.scriptographer.adm.Button;
 import com.scriptographer.adm.ImagePane;
 import com.scriptographer.adm.ModalDialog;
-import com.scriptographer.adm.Size;
+import com.scriptographer.ui.Size;
 import com.scriptographer.adm.TextPane;
 import com.scriptographer.adm.layout.TableLayout;
 

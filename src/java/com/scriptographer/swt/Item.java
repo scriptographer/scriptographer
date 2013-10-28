@@ -12,7 +12,7 @@
  * File created on 22.12.2004.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
 import java.awt.Dimension;
 
@@ -20,14 +20,11 @@ import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.adm.ComponentWrapper;
 import com.scriptographer.ui.DialogColor;
 import com.scriptographer.ui.Point;
 import com.scriptographer.ui.Size;
 import com.scriptographer.ui.Rectangle;
 import com.scriptographer.ui.Border;
-
-
 /**
  * @author lehni
  */
@@ -212,10 +209,10 @@ public abstract class Item extends Component {
 	 */
 	protected native void nativeSetTrackCallback(boolean enabled);
 	protected native void nativeSetDrawCallback(boolean enabled);
-
+/* TODO
 	public native boolean defaultTrack(Tracker tracker);
 	public native void defaultDraw(Drawer drawer);
-
+*/
 	public native int getTrackMask();
 	public native void setTrackMask(int mask);
 
@@ -430,6 +427,7 @@ public abstract class Item extends Component {
 		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
 		double factor = isSmall() ? 0.75 : 1;
+		/* TODO
 		switch (type) {
 		case PICTURE_STATIC:
 		case PICTURE_CHECKBOX:
@@ -508,13 +506,15 @@ public abstract class Item extends Component {
 				}
 			}
 		}
+		*/
 		if (size == null) {
 			// If it's not a button, use the current size of the object.
 			// This is needed e.g. for Spacers, where its current size
 			// is the preferred size too.
-			size = this instanceof Button
-					? new Size(120, 20).multiply(factor)
-					: getSize();
+			size = /* TODO 
+					this instanceof Button
+					? new Size(120, 20).multiply(factor) 
+					:*/ getSize();
 		}
 		// Add margins
 		size.width += margin.left + margin.right;
@@ -685,7 +685,7 @@ public abstract class Item extends Component {
 	private native int nativeGetCursor();
 	
 	private native void nativeSetCursor(int cursor);
-
+/* todo
 	public Cursor getCursor() {
 		return IntegerEnumUtils.get(Cursor.class, nativeGetCursor());
 	}
@@ -694,7 +694,7 @@ public abstract class Item extends Component {
 		if (cursor != null)
 			nativeSetCursor(cursor.value);
 	}
-	
+	*/
 	/*
 	 * Tooltips
 	 * 

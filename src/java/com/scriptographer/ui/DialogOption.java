@@ -12,7 +12,7 @@
  * File created on Apr 14, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import com.scratchdisk.util.IntegerEnum;
 

@@ -12,9 +12,9 @@
  * File created on Feb 9, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
-import com.scriptographer.adm.Component;
+import com.scriptographer.swt.Component;
 
 /**
  * An interface to allow the various component wrappers to return

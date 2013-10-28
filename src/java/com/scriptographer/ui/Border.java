@@ -12,7 +12,7 @@
  * File created on May 11, 2007.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import java.awt.Insets;
 

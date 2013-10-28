@@ -12,16 +12,13 @@
  * File created on Feb 9, 2008.
  */
 
-package com.scriptographer.adm;
-
-import com.scriptographer.adm.Component;
+package com.scriptographer.swt;
 
 /**
- * An interface to allow the various component wrappers to return
- * their component in a standardized way.
+ * Interface just to mark component classes that allow sub components
+ * in the AWT layouting scheme. Used by ItemGroup and Frame.
  * 
  * @author lehni
  */
-interface ComponentWrapper {
-	Component getComponent();
+interface ComponentGroup {
 }

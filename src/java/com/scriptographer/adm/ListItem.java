@@ -25,6 +25,10 @@ import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ui.DialogColor;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Size;
+import com.scriptographer.ui.Point;
 
 /**
  * ListItem is a UI list item (e.g. ListBox, PopupMenu, ...) and a
@@ -276,7 +280,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 	public void setBackgroundColor(DialogColor color) {
 		if (color != null) {
 			bgColor = color;
-			nativeSetBackgroundColor(color.value);
+			nativeSetBackgroundColor(color.value());
 		}
 	}
 

@@ -15,6 +15,8 @@
 package com.scriptographer.adm;
 
 import com.scriptographer.ai.Color;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Point;
 
 /**
  * @author lehni

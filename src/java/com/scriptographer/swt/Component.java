@@ -12,7 +12,7 @@
  * File created on 02.01.2005.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -27,12 +27,14 @@ import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
+
+
 import com.scriptographer.adm.layout.TableLayout;
 import com.scriptographer.ui.Border;
+import com.scriptographer.swt.ComponentWrapper;
 import com.scriptographer.ui.DialogFont;
-import com.scriptographer.adm.ComponentWrapper;
-import com.scriptographer.adm.Content;
 import com.scriptographer.ui.Size;
+
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -72,7 +74,7 @@ public abstract class Component extends NotificationHandler {
 
 	public Size getTextSize(String text, int maxWidth, boolean ignoreBreaks) {
 		// Create an image to get a drawer to calculate text sizes
-		Image image = new Image(1, 1, ImageType.RGB);
+		/*Image image = new Image(1, 1, ImageType.RGB);
 		Drawer drawer = image.getDrawer();
 		drawer.setFont(getFont());
 		// Split at new lines chars, and measure each line separately
@@ -98,6 +100,8 @@ public abstract class Component extends NotificationHandler {
 		}
 		drawer.dispose();
 		return size;
+		*/
+		return  new Size(10,10);
 	}
 
 	public Size getTextSize(String text) {
@@ -173,7 +177,7 @@ public abstract class Component extends NotificationHandler {
 	public Callable getOnTrack() {
 		return onTrack;
 	}
-
+/*
 	protected boolean onTrack(Tracker tracker) {
 		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyListBox
@@ -185,7 +189,7 @@ public abstract class Component extends NotificationHandler {
 		}
 		return true;
 	}
-
+*/
 	protected Callable onDraw = null;
 
 	public void setOnDraw(Callable func) {
@@ -197,6 +201,7 @@ public abstract class Component extends NotificationHandler {
 		return onDraw;
 	}
 
+	/*
 	protected boolean onDraw(Drawer drawer) {
 		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyListBox
@@ -208,7 +213,7 @@ public abstract class Component extends NotificationHandler {
 		}
 		return true;
 	}
-	
+	*/
 	protected Callable onResize = null;
 
 	public void setOnResize(Callable func) {

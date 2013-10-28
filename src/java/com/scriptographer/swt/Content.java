@@ -12,15 +12,15 @@
  * File created on Feb 9, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.StringIndexList;
-import com.scriptographer.adm.Component;
-import com.scriptographer.adm.Component.AWTContainer;
+import com.scriptographer.swt.Component;
+import com.scriptographer.swt.Component.AWTContainer;
 
 /**
  * Content handles the interface between the UI components and the

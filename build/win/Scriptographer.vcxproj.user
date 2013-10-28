@@ -4,5 +4,7 @@
     <ShowAllFiles>false</ShowAllFiles>
     <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">C:\Program Files\Adobe\Adobe Illustrator CC (64 Bit)\Support Files\Contents\Windows\Illustrator.exe</LocalDebuggerCommand>
     <DebuggerFlavor Condition="'$(Configuration)|$(Platform)'=='CC x64 Debug|x64'">WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">C:\Program Files\Adobe\Adobe Illustrator CC (64 Bit)\Support Files\Contents\Windows\Illustrator.exe</LocalDebuggerCommand>
+    <DebuggerFlavor Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

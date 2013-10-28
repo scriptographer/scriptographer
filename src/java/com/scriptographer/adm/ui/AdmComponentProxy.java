@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
-import com.scriptographer.adm.Border;
+import com.scriptographer.ui.Border;
 import com.scriptographer.adm.Button;
 import com.scriptographer.adm.CheckBox;
 import com.scriptographer.adm.ColorButton;
@@ -32,7 +32,7 @@ import com.scriptographer.adm.ItemGroup;
 import com.scriptographer.adm.ListEntry;
 import com.scriptographer.adm.PopupList;
 import com.scriptographer.adm.PopupMenu;
-import com.scriptographer.adm.Size;
+import com.scriptographer.ui.Size;
 import com.scriptographer.adm.Slider;
 import com.scriptographer.adm.SpinEdit;
 import com.scriptographer.adm.TextEdit;

@@ -13,6 +13,8 @@
 package com.scriptographer.adm;
 
 import java.io.IOException;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Point;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;

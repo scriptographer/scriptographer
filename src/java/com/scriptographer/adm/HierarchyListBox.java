@@ -20,6 +20,10 @@ import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.EnumUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 
+import com.scriptographer.ui.Point;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Size;
+
 /**
  * @author lehni
  */

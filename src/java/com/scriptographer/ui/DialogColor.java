@@ -12,33 +12,40 @@
  * File created on Apr 15, 2008.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import com.scratchdisk.util.IntegerEnum;
 
 /**
- * ADMFont
+ * ADMColor
  * 
  * @author lehni
  */
-public enum DialogFont implements IntegerEnum {
-	DEFAULT(0),
-	DIALOG(1),
-	DIALOG_ITALIC(3),
-	DIALOG_BOLD(5),
-	DIALOG_BOLD_ITALIC(7),
-	PALETTE(2),
-	PALETTE_ITALIC(4),
-	PALETTE_BOLD(6),
-	PALETTE_BOLD_ITALIC(8),
-	MONOSPACED(9),
-	MONOSPACED_ITALIC(10),
-	MONOSPACED_BOLD(11),
-	MONOSPACED_BOLD_ITALIC(12);
+public enum DialogColor implements IntegerEnum {
+	BLACK(0),
+	WHITE(1),
+	HILITE(2),
+	HILITE_TEXT(3),
+	LIGHT(4),
+	BACKGROUND(5),
+	SHADOW(6),
+	DISABLED(7),
+	BUTTON_UP(8),
+	BUTTON_DOWN(9),
+	BUTTON_DOWN_SHADOW(10),
+	TOOLTIP_BACKGROUND(11),
+	TOOLTIP_FOREGROUND(12),
+	WINDOW(13),
+	FOREGROUND(14),
+	TEXT(15),
+	RED(16),
+	TAB_BACKGROUND(17),
+	ACTIVE_TAB(18),
+	INACTIVE_TAB(19);
 
 	protected int value;
 
-	private DialogFont(int value) {
+	private DialogColor(int value) {
 		this.value = value;
 	}
 

@@ -15,6 +15,8 @@
 package com.scriptographer.adm;
 
 import java.util.EnumSet;
+import com.scriptographer.ui.Size;
+import com.scriptographer.ui.Border;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.Callable;

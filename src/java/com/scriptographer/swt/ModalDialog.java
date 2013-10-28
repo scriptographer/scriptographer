@@ -12,7 +12,7 @@
  * File created on 14.03.2005.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
 import java.util.EnumSet;
 

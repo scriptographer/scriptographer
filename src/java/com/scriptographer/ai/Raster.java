@@ -156,7 +156,7 @@ public class Raster extends Item {
 		handle = nativeConvert((short) -1, width, height);
 	}
 
-	public void setSize(com.scriptographer.adm.Size size) {
+	public void setSize(com.scriptographer.ui.Size size) {
 		setSize(size.width, size.height);
 	}
 

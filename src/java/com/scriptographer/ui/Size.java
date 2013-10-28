@@ -12,7 +12,7 @@
  * File created on May 16, 2007.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import java.awt.Dimension;
 

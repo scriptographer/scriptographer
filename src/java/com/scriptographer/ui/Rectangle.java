@@ -12,7 +12,7 @@
  * File created on May 14, 2007.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ui;
 
 import com.scratchdisk.script.ArgumentReader;
 

@@ -28,6 +28,7 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
 
+/*
 import com.scriptographer.adm.Border;
 import com.scriptographer.adm.Button;
 import com.scriptographer.adm.ChasingArrows;
@@ -65,7 +66,7 @@ import com.scriptographer.adm.TextPane;
 import com.scriptographer.adm.TextValueItem;
 import com.scriptographer.adm.ToggleItem;
 import com.scriptographer.adm.Tracker;
-
+*/
 
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.AreaText;
@@ -125,6 +126,13 @@ import com.scriptographer.ui.Key;
 import com.scriptographer.ui.MenuGroup;
 import com.scriptographer.ui.MenuItem;
 import com.scriptographer.ui.Palette;
+
+
+//tmp - add swt unconditionally
+import com.scriptographer.swt.FloatingDialog;
+import com.scriptographer.swt.ModalDialog;
+import com.scriptographer.swt.PopupDialog;
+
 /**
  * @author lehni
  */
@@ -138,7 +146,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		CharacterStyle.class,
 		Color.class,
 		CMYKColor.class,
-		DialogColor.class,
+
 		CompoundPath.class,
 		Curve.class,
 		Dictionary.class,
@@ -186,13 +194,21 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tool.class,
 		ToolHandler.class,
 		Tracing.class,
-	
+		Timer.class,
+		
 		// UI, alphabetically
 		Dialog.class,
 		Key.class,
 		MenuGroup.class,
 		MenuItem.class,
 		Palette.class,
+		
+		//not adm, but swt - unconditional to begin with!
+	 	FloatingDialog.class,
+	 	ModalDialog.class,
+	 	PopupDialog.class,
+		
+		
 /*		
 		// ADM, alphabetically
 		Border.class,
@@ -200,6 +216,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ChasingArrows.class,
 		Dial.class,
 		CheckBox.class,
+		DialogColor.class, 
 		DialogGroupInfo.class,
 		Drawer.class,
 		FloatingDialog.class,
@@ -229,7 +246,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextPane.class,
 		TextEdit.class,
 		TextValueItem.class,
-		Timer.class,
+	
 		ToggleItem.class,
 		Tracker.class
 		*/

@@ -12,7 +12,7 @@
  * File created on 22.12.2004.
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.swt;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -28,10 +28,11 @@ import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ai.Color;
 import com.scriptographer.sg.Script;
+import com.scriptographer.swt.Component.AWTContainer;
 import com.scriptographer.ui.DialogFont;
 import com.scriptographer.ui.DialogOption;
-import com.scriptographer.ui.Size;
 import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Size;
 import com.scriptographer.ui.Point;
 
 /**
@@ -139,13 +140,15 @@ public abstract class Dialog extends Component {
 		items = new ArrayList<Item>();
 		try
 		{
+		/* todo
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
+		
 		// Always set dialogs hidden first. 
 		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
 		// displayed in initialize
 		setVisible(false);
 		size = nativeGetSize();
-
+		 	*/
 		isResizing = style == STYLE_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
@@ -316,12 +319,14 @@ public abstract class Dialog extends Component {
 	public void savePreferences(String name) {
 		Preferences prefs = preferences.node(name);
 		// Saving the palette position, tab/dock preference.
+		/* TODO
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
 		prefs.putInt("positionCode", groupInfo.positionCode);
 		prefs.put("bounds", bounds.x + " " + bounds.y + " " +
 				bounds.width + " " + bounds.height);
+				*/
 	}
 
 	public boolean loadPreferences(String name) {
@@ -345,10 +350,12 @@ public abstract class Dialog extends Component {
 					bounds.setPoint(defaultBounds.x, defaultBounds.y);
 				}
 				String group = prefs.get("group", "");
+				/* TODO
 				int positionCode = prefs.getInt("positionCode",
 						DialogGroupInfo.POSITION_DEFAULT);
 				// Restore the position code of the dialog
 				setGroupInfo(group, positionCode);
+				*/
 				// Now set the bounds
 				BoundsSetter setter = new BoundsSetter(bounds);
 				setter.run();
@@ -631,13 +638,15 @@ public abstract class Dialog extends Component {
 					// again in CS4...
 					// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the
 					// other two).
+					/*todo
 					long code = this.getGroupInfo().positionCode;
 					if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
 						(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0 ||
 						(code & DialogGroupInfo.MASK_DOCK_CLOSED) != 0) {
 						fireOnClose = false;
 						onClose();
-					}
+					
+					}*/	
 				}
 				visible = false;
 				onHide();
@@ -743,11 +752,11 @@ public abstract class Dialog extends Component {
 	protected native void nativeSetTrackCallback(boolean enabled);
 
 	protected native void nativeSetDrawCallback(boolean enabled);
-
+/* todo
 	public native boolean defaultTrack(Tracker tracker);
 
 	public native void defaultDraw(Drawer drawer);
-
+*/
 	public native int getTrackMask();
 
 	public native void setTrackMask(int mask);
@@ -961,7 +970,7 @@ public abstract class Dialog extends Component {
 	private native int nativeGetCursor();
 	
 	private native void nativeSetCursor(int cursor);
-
+/* todo
 	public Cursor getCursor() {
 		return IntegerEnumUtils.get(Cursor.class, nativeGetCursor());
 	}
@@ -970,7 +979,8 @@ public abstract class Dialog extends Component {
 		if (cursor != null)
 			nativeSetCursor(cursor.value);
 	}
-
+*/
+	
 	/* 
 	 * Dialog text accessors
 	 *
@@ -1117,7 +1127,7 @@ public abstract class Dialog extends Component {
 	 */
 
 	protected native int getItemHandle(int itemID);
-
+/* todo
 	private PopupMenu popupMenu = null;
 
 	public PopupMenu getPopupMenu() {
@@ -1138,7 +1148,7 @@ public abstract class Dialog extends Component {
 		}
 		return resizeButton;
 	}
-
+*/
 	/* 
 	 * default/cancel items
 	 * 
@@ -1171,7 +1181,7 @@ public abstract class Dialog extends Component {
 	 * dialog group functions
 	 *
 	 */
-
+/* todo?
 	public native DialogGroupInfo getGroupInfo();
 	
 	private native void nativeSetGroupInfo(String group, int positionCode);
@@ -1190,7 +1200,8 @@ public abstract class Dialog extends Component {
 	public void setGroupInfo(DialogGroupInfo info) {
 		setGroupInfo(info.group, info.positionCode);
 	}
-
+*/
+	
 	/*
 	 * Support for various standard dialogs:
 	 */
