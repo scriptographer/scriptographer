@@ -185,7 +185,7 @@ Type = Base.extend(new function() {
 
 		isRectangle: function() {
 			return !this.isArray() && (this.hasSuperclass('com.scriptographer.ai.Rectangle') ||
-				this.hasSuperclass('com.scriptographer.adm.Rectangle'));
+				this.hasSuperclass('com.scriptographer.ui.Rectangle'));
 		},
 
 		isFile: function() {

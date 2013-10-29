@@ -72,7 +72,9 @@ public abstract class Item extends Component {
 		// notifications seem to be triggered by item creation, confusing 
 		// dialog.initialize() calls.
 		dialog.ignoreNotifications = true;
+/*	todo	
 		int handle = nativeCreate(dialog, type.name, options);
+*/		
 		dialog.ignoreNotifications = false;
 		init(dialog, handle, type);
 		setFont(dialog.getFont());

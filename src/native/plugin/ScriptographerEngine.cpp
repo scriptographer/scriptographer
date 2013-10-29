@@ -636,27 +636,30 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 
+	//moved out of adm
+	cls_ui_Rectangle = loadClass(env, "com/scriptographer/ui/Rectangle");
+	cid_ui_Rectangle = getConstructorID(env, cls_ui_Rectangle, "(IIII)V");
+	fid_ui_Rectangle_x = getFieldID(env, cls_ui_Rectangle, "x", "I");
+	fid_ui_Rectangle_y = getFieldID(env, cls_ui_Rectangle, "y", "I");
+	fid_ui_Rectangle_width = getFieldID(env, cls_ui_Rectangle, "width", "I");
+	fid_ui_Rectangle_height = getFieldID(env, cls_ui_Rectangle, "height", "I");
+	mid_ui_Rectangle_set = getMethodID(env, cls_ui_Rectangle, "set", "(IIII)V");
+	
+	cls_ui_Point = loadClass(env, "com/scriptographer/ui/Point");
+	cid_ui_Point = getConstructorID(env, cls_ui_Point, "(II)V");
+	fid_ui_Point_x = getFieldID(env, cls_ui_Point, "x", "I");
+	fid_ui_Point_y = getFieldID(env, cls_ui_Point, "y", "I");
+	mid_ui_Point_set = getMethodID(env, cls_ui_Point, "set", "(II)V");
+	
+	cls_ui_Size = loadClass(env, "com/scriptographer/ui/Size");
+	cid_ui_Size = getConstructorID(env, cls_ui_Size, "(II)V");
+	fid_ui_Size_width = getFieldID(env, cls_ui_Size, "width", "I");
+	fid_ui_Size_height = getFieldID(env, cls_ui_Size, "height", "I");
+	mid_ui_Size_set = getMethodID(env, cls_ui_Size, "set", "(II)V");
+
 #ifndef ADM_FREE
 // ADM:
-	cls_adm_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
-	cid_adm_Rectangle = getConstructorID(env, cls_adm_Rectangle, "(IIII)V");
-	fid_adm_Rectangle_x = getFieldID(env, cls_adm_Rectangle, "x", "I");
-	fid_adm_Rectangle_y = getFieldID(env, cls_adm_Rectangle, "y", "I");
-	fid_adm_Rectangle_width = getFieldID(env, cls_adm_Rectangle, "width", "I");
-	fid_adm_Rectangle_height = getFieldID(env, cls_adm_Rectangle, "height", "I");
-	mid_adm_Rectangle_set = getMethodID(env, cls_adm_Rectangle, "set", "(IIII)V");
 	
-	cls_adm_Point = loadClass(env, "com/scriptographer/adm/Point");
-	cid_adm_Point = getConstructorID(env, cls_adm_Point, "(II)V");
-	fid_adm_Point_x = getFieldID(env, cls_adm_Point, "x", "I");
-	fid_adm_Point_y = getFieldID(env, cls_adm_Point, "y", "I");
-	mid_adm_Point_set = getMethodID(env, cls_adm_Point, "set", "(II)V");
-	
-	cls_adm_Size = loadClass(env, "com/scriptographer/adm/Size");
-	cid_adm_Size = getConstructorID(env, cls_adm_Size, "(II)V");
-	fid_adm_Size_width = getFieldID(env, cls_adm_Size, "width", "I");
-	fid_adm_Size_height = getFieldID(env, cls_adm_Size, "height", "I");
-	mid_adm_Size_set = getMethodID(env, cls_adm_Size, "set", "(II)V");
 
 	cls_adm_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
 	mid_adm_Dialog_onSizeChanged = getMethodID(env, cls_adm_Dialog, "onSizeChanged", "(IIZ)V");
@@ -700,6 +703,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_adm_TextEditItem = loadClass(env, "com/scriptographer/adm/TextEditItem");
 	fid_adm_TextEditItem_setSelectionTimer = getFieldID(env, cls_adm_TextEditItem, "setSelectionTimer", "I");
 #endif
+#else
+	//TODO: swt classes?
 
 #endif //#ifndef ADM_FREE
 }
@@ -1015,9 +1020,9 @@ void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 		y = env->GetDoubleField(point, fid_ai_Point_y);
 	}
 #ifndef ADM_FREE	
-	else if (env->IsInstanceOf(point, cls_adm_Point)) {
-		x = env->GetIntField(point, fid_adm_Point_x);
-		y = env->GetIntField(point, fid_adm_Point_y);
+	else if (env->IsInstanceOf(point, cls_ui_Point)) {
+		x = env->GetIntField(point, fid_ui_Point_x);
+		y = env->GetIntField(point, fid_ui_Point_y);
 	}
 #endif //#ifndef ADM_FREE
 	convertPoint(env, system, x, y, res);
@@ -1249,10 +1254,10 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 		ADMPoint *point, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Point, cid_adm_Point,
+		return newObject(env, cls_ui_Point, cid_ui_Point,
 				(jint) point->h, (jint) point->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Point_set,
+		callVoidMethod(env, res, mid_ui_Point_set,
 				(jint) point->h, (jint) point->v);
 		return res;
 	}
@@ -1262,9 +1267,9 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 // com.scriptographer.ai.Point
 void ScriptographerEngine::convertPoint(JNIEnv *env,
 		jobject point, ADMPoint *res) {
-	if (env->IsInstanceOf(point, cls_adm_Point)) {
-		res->h = env->GetIntField(point, fid_adm_Point_x);
-		res->v = env->GetIntField(point, fid_adm_Point_y);
+	if (env->IsInstanceOf(point, cls_ui_Point)) {
+		res->h = env->GetIntField(point, fid_ui_Point_x);
+		res->v = env->GetIntField(point, fid_ui_Point_y);
 	} else if (env->IsInstanceOf(point, cls_ai_Point)) {
 		res->h = (short) env->GetDoubleField(point, fid_ai_Point_x);
 		res->v = (short) env->GetDoubleField(point, fid_ai_Point_y);
@@ -1276,12 +1281,12 @@ void ScriptographerEngine::convertPoint(JNIEnv *env,
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 		ADMRect *rect, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle,
+		return newObject(env, cls_ui_Rectangle, cid_ui_Rectangle,
 				(jint) rect->left, (jint) rect->top,
 				(jint) (rect->right - rect->left),
 				(jint) (rect->bottom - rect->top));
 	} else {
-		callVoidMethod(env, res, mid_adm_Rectangle_set,
+		callVoidMethod(env, res, mid_ui_Rectangle_set,
 				(jint) rect->left, (jint) rect->top,
 				(jint) (rect->right - rect->left),
 				(jint) (rect->bottom - rect->top));
@@ -1291,10 +1296,10 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 
 void ScriptographerEngine::convertRectangle(JNIEnv *env,
 		jobject rect, ADMRect *res) {
-	res->left = env->GetIntField(rect, fid_adm_Rectangle_x);
-	res->top = env->GetIntField(rect, fid_adm_Rectangle_y);
-	res->right = res->left + env->GetIntField(rect, fid_adm_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rect, fid_adm_Rectangle_height);
+	res->left = env->GetIntField(rect, fid_ui_Rectangle_x);
+	res->top = env->GetIntField(rect, fid_ui_Rectangle_y);
+	res->right = res->left + env->GetIntField(rect, fid_ui_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rect, fid_ui_Rectangle_height);
 	EXCEPTION_CHECK(env);
 }
 
@@ -1302,10 +1307,10 @@ void ScriptographerEngine::convertRectangle(JNIEnv *env,
 jobject ScriptographerEngine::convertSize(JNIEnv *env,
 		ADMPoint *size, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Size, cid_adm_Size,
+		return newObject(env, cls_ui_Size, cid_ui_Size,
 				(jint) size->h, (jint) size->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Size_set,
+		callVoidMethod(env, res, mid_ui_Size_set,
 				(jint) size->h, (jint) size->v);
 		return res;
 	}
@@ -1313,8 +1318,8 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env,
 
 void ScriptographerEngine::convertSize(JNIEnv *env,
 		jobject size, ADMPoint *res) {
-	res->h = env->GetIntField(size, fid_adm_Size_width);
-	res->v = env->GetIntField(size, fid_adm_Size_height);
+	res->h = env->GetIntField(size, fid_ui_Size_width);
+	res->v = env->GetIntField(size, fid_ui_Size_height);
 	EXCEPTION_CHECK(env);
 }
 

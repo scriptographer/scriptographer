@@ -314,27 +314,30 @@ public:
 	jmethodID mid_ui_MenuItem_wrapHandle;
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
+
+//moved out of ADM
+	jclass cls_ui_Rectangle;
+	jmethodID cid_ui_Rectangle;
+	jfieldID fid_ui_Rectangle_x;
+	jfieldID fid_ui_Rectangle_y;
+	jfieldID fid_ui_Rectangle_width;
+	jfieldID fid_ui_Rectangle_height;
+	jmethodID mid_ui_Rectangle_set;
+	
+	jclass cls_ui_Point;
+	jmethodID cid_ui_Point;
+	jfieldID fid_ui_Point_x;
+	jfieldID fid_ui_Point_y;
+	jmethodID mid_ui_Point_set;
+	
+	jclass cls_ui_Size;
+	jmethodID cid_ui_Size;
+	jfieldID fid_ui_Size_width;
+	jfieldID fid_ui_Size_height;
+	jmethodID mid_ui_Size_set;
 #ifndef ADM_FREE
 // ADM:
-	jclass cls_adm_Rectangle;
-	jmethodID cid_adm_Rectangle;
-	jfieldID fid_adm_Rectangle_x;
-	jfieldID fid_adm_Rectangle_y;
-	jfieldID fid_adm_Rectangle_width;
-	jfieldID fid_adm_Rectangle_height;
-	jmethodID mid_adm_Rectangle_set;
 	
-	jclass cls_adm_Point;
-	jmethodID cid_adm_Point;
-	jfieldID fid_adm_Point_x;
-	jfieldID fid_adm_Point_y;
-	jmethodID mid_adm_Point_set;
-	
-	jclass cls_adm_Size;
-	jmethodID cid_adm_Size;
-	jfieldID fid_adm_Size_width;
-	jfieldID fid_adm_Size_height;
-	jmethodID mid_adm_Size_set;
 
 	jclass cls_adm_Dialog;
 	jmethodID mid_adm_Dialog_onSizeChanged;

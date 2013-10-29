@@ -27,231 +27,22 @@ import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
-
-/*
-import com.scriptographer.adm.Border;
-import com.scriptographer.adm.Button;
-import com.scriptographer.adm.ChasingArrows;
-import com.scriptographer.adm.CheckBox;
-import com.scriptographer.adm.Dial;
-import com.scriptographer.adm.DialogColor;
-import com.scriptographer.adm.DialogGroupInfo;
-import com.scriptographer.adm.Drawer;
-import com.scriptographer.adm.FloatingDialog;
-import com.scriptographer.adm.FontInfo;
-import com.scriptographer.adm.Frame;
-import com.scriptographer.adm.HierarchyListBox;
-import com.scriptographer.adm.HierarchyListEntry;
-import com.scriptographer.adm.Image;
-import com.scriptographer.adm.ImageButton;
-import com.scriptographer.adm.ImageCheckBox;
-import com.scriptographer.adm.ImagePane;
-import com.scriptographer.adm.ImageRadioButton;
-import com.scriptographer.adm.ItemGroup;
-import com.scriptographer.adm.ListBox;
-import com.scriptographer.adm.ListEntry;
-import com.scriptographer.adm.ListItem;
-import com.scriptographer.adm.ModalDialog;
-import com.scriptographer.adm.PopupDialog;
-import com.scriptographer.adm.PopupList;
-import com.scriptographer.adm.PopupMenu;
-import com.scriptographer.adm.ProgressBar;
-import com.scriptographer.adm.RadioButton;
-import com.scriptographer.adm.ScrollBar;
-import com.scriptographer.adm.Slider;
-import com.scriptographer.adm.Spacer;
-import com.scriptographer.adm.SpinEdit;
-import com.scriptographer.adm.TextEdit;
-import com.scriptographer.adm.TextPane;
-import com.scriptographer.adm.TextValueItem;
-import com.scriptographer.adm.ToggleItem;
-import com.scriptographer.adm.Tracker;
-*/
-
-import com.scriptographer.ai.Annotator;
-import com.scriptographer.ai.AreaText;
-import com.scriptographer.ai.Artboard;
-import com.scriptographer.ai.CMYKColor;
-import com.scriptographer.ai.CharacterStyle;
-import com.scriptographer.ai.Color;
-import com.scriptographer.ai.CompoundPath;
-import com.scriptographer.ai.Curve;
-import com.scriptographer.ai.Dictionary;
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.DocumentList;
-import com.scriptographer.ai.DocumentView;
-import com.scriptographer.ai.FileFormat;
-import com.scriptographer.ai.FillStyle;
-import com.scriptographer.ai.FontFamily;
 import com.scriptographer.ai.FontList;
-import com.scriptographer.ai.FontWeight;
-import com.scriptographer.ai.Gradient;
-import com.scriptographer.ai.GradientColor;
-import com.scriptographer.ai.GradientStop;
-import com.scriptographer.ai.GrayColor;
-import com.scriptographer.ai.Group;
-import com.scriptographer.ai.HitResult;
-import com.scriptographer.ai.Layer;
-import com.scriptographer.ai.Line;
-import com.scriptographer.ai.LiveEffect;
-import com.scriptographer.ai.LiveEffectParameters;
-import com.scriptographer.ai.Matrix;
-import com.scriptographer.ai.ParagraphStyle;
-import com.scriptographer.ai.Path;
-import com.scriptographer.ai.PathItem;
-import com.scriptographer.ai.PathStyle;
-import com.scriptographer.ai.PathText;
-import com.scriptographer.ai.Pathfinder;
-import com.scriptographer.ai.Pattern;
-import com.scriptographer.ai.PatternColor;
-import com.scriptographer.ai.PlacedFile;
-import com.scriptographer.ai.PlacedSymbol;
-import com.scriptographer.ai.PointText;
-import com.scriptographer.ai.RGBColor;
-import com.scriptographer.ai.Raster;
-import com.scriptographer.ai.Segment;
-import com.scriptographer.ai.StrokeStyle;
-import com.scriptographer.ai.Swatch;
-import com.scriptographer.ai.Symbol;
-import com.scriptographer.ai.TextRange;
-import com.scriptographer.ai.TextStory;
-import com.scriptographer.ai.Timer;
-import com.scriptographer.ai.Tool;
-import com.scriptographer.ai.ToolHandler;
-import com.scriptographer.ai.Tracing;
 import com.scriptographer.sg.Illustrator;
 import com.scriptographer.sg.Scriptographer;
-import com.scriptographer.ui.Dialog;
-import com.scriptographer.ui.Key;
-import com.scriptographer.ui.MenuGroup;
-import com.scriptographer.ui.MenuItem;
-import com.scriptographer.ui.Palette;
 
 
-//tmp - add swt unconditionally
-import com.scriptographer.swt.FloatingDialog;
-import com.scriptographer.swt.ModalDialog;
-import com.scriptographer.swt.PopupDialog;
 
 /**
  * @author lehni
  */
 public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
-	final static Class classes[] = {
-		// AI, alphabetically
-		Annotator.class,
-		AreaText.class,
-		Artboard.class,
-		CharacterStyle.class,
-		Color.class,
-		CMYKColor.class,
-
-		CompoundPath.class,
-		Curve.class,
-		Dictionary.class,
-		Document.class,
-		DocumentView.class,
-		FileFormat.class,
-		FillStyle.class,
-		FontFamily.class,
-		FontWeight.class,
-		Gradient.class,
-		GradientColor.class,
-		GradientStop.class,
-		GrayColor.class,
-		Group.class,
-		HitResult.class,
-		com.scriptographer.ai.Item.class,
-		Layer.class,
-		Line.class,
-		LiveEffect.class,
-		LiveEffectParameters.class,
-		Matrix.class,
-		ParagraphStyle.class,
-		Path.class,
-		Pathfinder.class,
-		PathItem.class,
-		PathStyle.class,
-		PathText.class,
-		Pattern.class,
-		PatternColor.class,
-		PlacedFile.class,
-		com.scriptographer.ai.Point.class,
-		PointText.class,
-		Raster.class,
-		com.scriptographer.ai.Rectangle.class,
-		RGBColor.class,
-		Segment.class,
-		com.scriptographer.ai.Size.class,
-		StrokeStyle.class,
-		Swatch.class,
-		Symbol.class,
-		PlacedSymbol.class,
-		com.scriptographer.ai.TextItem.class,
-		TextRange.class,
-		TextStory.class,
-		Tool.class,
-		ToolHandler.class,
-		Tracing.class,
-		Timer.class,
-		
-		// UI, alphabetically
-		Dialog.class,
-		Key.class,
-		MenuGroup.class,
-		MenuItem.class,
-		Palette.class,
-		
-		//not adm, but swt - unconditional to begin with!
-	 	FloatingDialog.class,
-	 	ModalDialog.class,
-	 	PopupDialog.class,
-		
-		
-/*		
-		// ADM, alphabetically
-		Border.class,
-		Button.class,
-		ChasingArrows.class,
-		Dial.class,
-		CheckBox.class,
-		DialogColor.class, 
-		DialogGroupInfo.class,
-		Drawer.class,
-		FloatingDialog.class,
-		FontInfo.class,
-		Frame.class,
-		HierarchyListBox.class,
-		HierarchyListEntry.class,
-		Image.class,
-		ImageButton.class,
-		ImageCheckBox.class,
-		ImageRadioButton.class,
-		ImagePane.class,
-		ItemGroup.class,
-		ListBox.class,
-		ListEntry.class,
-		ListItem.class,
-		ModalDialog.class,
-		PopupDialog.class,
-		PopupList.class,
-		PopupMenu.class,
-		ProgressBar.class,
-		RadioButton.class,
-		ScrollBar.class,
-		Slider.class,
-		Spacer.class,
-		SpinEdit.class,
-		TextPane.class,
-		TextEdit.class,
-		TextValueItem.class,
 	
-		ToggleItem.class,
-		Tracker.class
-		*/
-	};
-
+	
 	public TopLevel(Context context) {
 		super(context);
 
@@ -259,7 +50,12 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		// the classes' constructors can now whether an object
 		// is created as prototype or as real object through
 		// isCreatingPrototypes()
-
+		Class[] classes;
+		if (ScriptographerEngine.getIllustratorVersion() < 16)
+			classes = AdmClasses.classes;
+		else
+			classes = SwtClasses.classes;
+		
 		for (int i = 0; i < classes.length; i++) {
 			ExtendedJavaClass cls = new ExtendedJavaClass(this, classes[i], true);
 			// Put it in the global scope:

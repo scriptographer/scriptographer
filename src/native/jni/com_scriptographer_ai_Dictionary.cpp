@@ -300,9 +300,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(
 								env, value));
 						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point)
-#ifndef ADM_FREE							
-						|| env->IsInstanceOf(value, gEngine->cls_adm_Point)
-#endif //#ifndef ADM_FREE							
+								|| env->IsInstanceOf(value, gEngine->cls_ui_Point)
 							) {
 						AIRealPoint point;
 						gEngine->convertPoint(env, kArtboardCoordinates, value,
