@@ -213,7 +213,7 @@ function registerNatives(srcDir, output, uiClassFilter) {
 	// First the method lists:
 	for (var cls in classes) {
 	
-		if (excludeFromRegisterNatives(cls, uiClassFilter)) // exclude swt or
+		if (excludeFromRegisterNatives(cls, uiClassFilter)) // exclude widget or
 															// adm
 			continue;
 				
@@ -258,7 +258,7 @@ function registerNatives(srcDir, output, uiClassFilter) {
 	out.println('void ScriptographerEngine::registerNatives(JNIEnv *env) {');
 	for (var cls in classes) {
 		
-		if (excludeFromRegisterNatives(cls, uiClassFilter)) // exclude swt or
+		if (excludeFromRegisterNatives(cls, uiClassFilter)) // exclude widget or
 															// adm
 			continue;
 					
@@ -269,11 +269,11 @@ function registerNatives(srcDir, output, uiClassFilter) {
 	out.println('}');
 }
 
-function excludeFromRegisterNatives(clsName, uiClassFilter)// exclude swt or
+function excludeFromRegisterNatives(clsName, uiClassFilter)// exclude widget or
 															// adm
 {
 	if (typeof uiClassFilter === 'undefined' || uiClassFilter == 'adm')
-		uiExcludeFilter = 'swt';
+		uiExcludeFilter = 'widget';
 	else
 		uiExcludeFilter = 'adm';
 	write(clsName);

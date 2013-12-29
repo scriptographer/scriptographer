@@ -815,6 +815,8 @@
       <TargetMachine>MachineX64</TargetMachine>
       <AssemblyDebug>
       </AssemblyDebug>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);UxTheme.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
@@ -904,6 +906,57 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_Dialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS2 Debug|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS2 Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS2 Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS2 Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS2 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS2 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS3 Debug|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS3 Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS3 Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS3 Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS3 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS3 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS4 Debug|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS4 Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS4 Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS4 Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS4 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS4 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS5 Debug|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">true</ExcludedFromBuild>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS5 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">
+      </PrecompiledHeader>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">
+      </PrecompiledHeader>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS6 Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">
+      </PrecompiledHeader>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CSC Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CCx64 Debug|x64'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">
+      </PrecompiledHeader>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\native\jni\registerNatives.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -941,7 +994,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CC Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\native\jni\registerSwtNatives.cpp">
+    <ClCompile Include="..\..\src\native\jni\registerWidgetNatives.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">true</ExcludedFromBuild>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='CS Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>

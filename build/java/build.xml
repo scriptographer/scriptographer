@@ -459,6 +459,9 @@ Scriptographer build instructions
 		   	<class name="com.scriptographer.adm.Drawer" />
 		   	<class name="com.scriptographer.adm.Image" />
 		   	<class name="com.scriptographer.adm.Tracker" />
+		   	
+		   	<!--widget-->
+		   	<class name="com.scriptographer.widget.Dialog" />
 
 		</javah>
 		<echo id="echo" level="info" />
@@ -469,7 +472,7 @@ Scriptographer build instructions
 			registerNatives(project.getProperty("src.jni"),
 				project.getProperty("src.jni") + "/registerNatives.cpp", "adm" );
 			registerNatives(project.getProperty("src.jni"),
-				project.getProperty("src.jni") + "/registerSwtNatives.cpp", "swt");
+				project.getProperty("src.jni") + "/registerWidgetNatives.cpp", "swt");
 		]]>
 		</script>
 	</target>

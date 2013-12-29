@@ -43,6 +43,9 @@
     <Filter Include="Native\Plugin\CC">
       <UniqueIdentifier>{20af3f50-2fe9-4b97-bc51-e04d03fe21ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Native\JNI\Widget">
+      <UniqueIdentifier>{d5f8930b-953f-4c4f-b6bf-355ba3e3eb02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\native\jni\admGlobals.h">
@@ -393,7 +396,10 @@
       <Filter>Native\Plugin\CS6</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\native\jni\registerNatives.cpp" />
-    <ClCompile Include="..\..\src\native\jni\registerSwtNatives.cpp" />
+    <ClCompile Include="..\..\src\native\jni\registerWidgetNatives.cpp" />
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_Dialog.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\icon.ico">

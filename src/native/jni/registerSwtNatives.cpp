@@ -69,6 +69,7 @@
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ui_MenuGroup.h"
 #include "com_scriptographer_ui_MenuItem.h"
+#include "com_scriptographer_widget_Dialog.h"
 
 /* Native methods for class com_scriptographer_ai_Annotator */
 static const JNINativeMethod com_scriptographer_ai_Annotator_methods[] = {
@@ -830,6 +831,32 @@ static const JNINativeMethod com_scriptographer_ui_MenuItem_methods[] = {
 	{ "setCommand", "(Ljava/lang/String;I)Z", (void *) &Java_com_scriptographer_ui_MenuItem_setCommand }
 };
 
+/* Native methods for class com_scriptographer_widget_Dialog */
+static const JNINativeMethod com_scriptographer_widget_Dialog_methods[] = {
+	{ "getParentWindow", "(J)I", (void *) &Java_com_scriptographer_widget_Dialog_getParentWindow },
+	{ "nativeCreate", "(Ljava/lang/String;II)I", (void *) &Java_com_scriptographer_widget_Dialog_nativeCreate },
+	{ "nativeDestroy", "(I)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeDestroy },
+	{ "nativeIsVisible", "()Z", (void *) &Java_com_scriptographer_widget_Dialog_nativeIsVisible },
+	{ "nativeSetVisible", "(Z)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetVisible },
+	{ "nativeSetActive", "(Z)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetActive },
+	{ "nativeGetSize", "()Lcom/scriptographer/ui/Size;", (void *) &Java_com_scriptographer_widget_Dialog_nativeGetSize },
+	{ "nativeSetSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetSize },
+	{ "nativeGetBounds", "()Lcom/scriptographer/ui/Rectangle;", (void *) &Java_com_scriptographer_widget_Dialog_nativeGetBounds },
+	{ "nativeSetBounds", "(IIII)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetBounds },
+	{ "getPosition", "()Lcom/scriptographer/ui/Point;", (void *) &Java_com_scriptographer_widget_Dialog_getPosition },
+	{ "setPosition", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_setPosition },
+	{ "invalidate", "()V", (void *) &Java_com_scriptographer_widget_Dialog_invalidate__ },
+	{ "invalidate", "(IIII)V", (void *) &Java_com_scriptographer_widget_Dialog_invalidate__IIII },
+	{ "update", "()V", (void *) &Java_com_scriptographer_widget_Dialog_update },
+	{ "nativeGetFont", "()I", (void *) &Java_com_scriptographer_widget_Dialog_nativeGetFont },
+	{ "nativeSetFont", "(I)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetFont },
+	{ "nativeSetName", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetName },
+	{ "nativeSetMinimumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMinimumSize },
+	{ "nativeSetMaximumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMaximumSize },
+	{ "getIncrement", "()Lcom/scriptographer/ui/Size;", (void *) &Java_com_scriptographer_widget_Dialog_getIncrement },
+	{ "setIncrement", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_setIncrement }
+};
+
 /* Registers native methods for a given class */
 void ScriptographerEngine::registerClassNatives(JNIEnv *env, const char *className, const JNINativeMethod *methods, int count) {
 	jclass cls = findClass(env, className);
@@ -986,5 +1013,8 @@ void ScriptographerEngine::registerNatives(JNIEnv *env) {
 
 	registerClassNatives(env, "com/scriptographer/ui/MenuItem", com_scriptographer_ui_MenuItem_methods,
 		sizeof(com_scriptographer_ui_MenuItem_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/Dialog", com_scriptographer_widget_Dialog_methods,
+		sizeof(com_scriptographer_widget_Dialog_methods) / sizeof(JNINativeMethod));
 
 }

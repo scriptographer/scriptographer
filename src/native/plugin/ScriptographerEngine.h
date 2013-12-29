@@ -471,7 +471,13 @@ public:
 	jobject convertSize(JNIEnv *env, AIRealPoint *size, jobject res = NULL) {
 		return convertSize(env, size->h, size->v, res);
 	}
+	
+	jobject convertSize(JNIEnv *env, AISize *size, jobject res = NULL) {
+		return convertSize(env, size->width, size->height, res);
+	}
 	void convertSize(JNIEnv *env, jobject size, AIRealPoint *res);
+	void convertSize(JNIEnv *env, jobject size, AISize *res);
+
 
 	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, AIRealMatrix *mt, jobject res = NULL);
@@ -484,6 +490,11 @@ public:
 	// com.scriptographer.adm.Rectangle <-> ADMRect
 	jobject convertRectangle(JNIEnv *env, ADMRect *rect, jobject res = NULL);
 	void convertRectangle(JNIEnv *env, jobject rect, ADMRect *res);	
+
+	// com.scriptographer.adm.Rectangle <-> Rect //todo: mac?
+	jobject ScriptographerEngine::convertRectangle(JNIEnv *env, RECT *rect, jobject res = NULL);
+	void convertRectangle(JNIEnv *env, jobject rect, RECT *res);
+
 
 	// com.scriptographer.adm.Size <-> ADMPoint
 	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL);
@@ -698,6 +709,14 @@ public:
 	jobject getListObject(ADMHierarchyListRef list);
 	jobject getListEntryObject(ADMEntryRef list);
 	jobject getListEntryObject(ADMListEntryRef list);
+#else //non ADM
+
+	int getControlObjectHandle(JNIEnv *env, jobject obj, const char *name);
+	
+	inline AIPanelRef  getAIPanelRef (JNIEnv *env, jobject obj) {
+		return (AIPanelRef ) getControlObjectHandle(env, obj, "AiPanelRef");
+	}
+
 #endif //#ifndef ADM_FREE
 
 	//former getADMObjectHandle but for Menu

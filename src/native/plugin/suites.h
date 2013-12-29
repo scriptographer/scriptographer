@@ -151,6 +151,12 @@
 #include "IAIArtboards.hpp"
 #endif // kPluginInterfaceVersion >= kAI15
 
+#if kPluginInterfaceVersion >= kAI16
+#include "AIPanel.h"
+
+#endif // kPluginInterfaceVersion >= kAI15
+
+
 #if kPluginInterfaceVersion <= kAI11
 #define kTabletTypeCount 1
 #endif // kPluginInterfaceVersion <= kAI11
@@ -433,3 +439,8 @@ extern "C" AICropAreaSuite					*sAICropArea;
 #if kPluginInterfaceVersion >= kAI15
 extern "C" AIArtboardSuite					* sAIArtboard;
 #endif // kPluginInterfaceVersion >= kAI15
+
+#if kPluginInterfaceVersion >= kAI16
+extern "C" AIPanelSuite				*sAIPanel;
+extern "C" AIPanelFlyoutMenuSuite	*sAIPanelFlyoutMenu;
+#endif // kPluginInterfaceVersion >= kAI16

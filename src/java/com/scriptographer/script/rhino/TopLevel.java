@@ -54,7 +54,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		if (ScriptographerEngine.getIllustratorVersion() < 16)
 			classes = AdmClasses.classes;
 		else
-			classes = SwtClasses.classes;
+			classes = WidgetClasses.classes;
 		
 		for (int i = 0; i < classes.length; i++) {
 			ExtendedJavaClass cls = new ExtendedJavaClass(this, classes[i], true);

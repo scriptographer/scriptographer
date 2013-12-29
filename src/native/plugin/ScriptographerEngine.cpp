@@ -20,6 +20,9 @@
 #include "uiGlobals.h"
 #include "aiGlobals.h"
 
+//temp
+#include "com_scriptographer_widget_Dialog.h"
+
 #ifdef WIN_ENV
 #include "loadJava.h"
 #endif
@@ -1159,7 +1162,7 @@ void ScriptographerEngine::convertRectangle(JNIEnv *env,
 	EXCEPTION_CHECK(env);
 }
 
-// com.scriptographer.ai.Size <-> AIRealPoint
+// com.scriptographer.ai.Size <-> AIRealPoint, AISize
 jobject ScriptographerEngine::convertSize(JNIEnv *env, float width,
 		float height, jobject res) {
 	if (res == NULL) {
@@ -1173,13 +1176,23 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env, float width,
 }
 
 void ScriptographerEngine::convertSize(JNIEnv *env, jobject size,
-		AIRealPoint *res) {
+		AIRealPoint *res){
 	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
 	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
 	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
 		THROW_INVALID_COORDINATES(env, size);
 	res->h = width;
 	res->v = height;
+	EXCEPTION_CHECK(env);
+}
+
+void  ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AISize *res){
+	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
+	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
+	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
+		THROW_INVALID_COORDINATES(env, size);
+	res->width = width;
+	res->height = height;
 	EXCEPTION_CHECK(env);
 }
 
@@ -1322,6 +1335,34 @@ void ScriptographerEngine::convertSize(JNIEnv *env,
 	res->v = env->GetIntField(size, fid_ui_Size_height);
 	EXCEPTION_CHECK(env);
 }
+#else //ADM_FREE
+
+// com.scriptographer.adm.Rectangle <-> ADMRect
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
+		RECT *rect, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_ui_Rectangle, cid_ui_Rectangle,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+	} else {
+		callVoidMethod(env, res, mid_ui_Rectangle_set,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+		return res;
+	}
+}
+
+void ScriptographerEngine::convertRectangle(JNIEnv *env,
+		jobject rect, RECT *res) {
+	res->left = env->GetIntField(rect, fid_ui_Rectangle_x);
+	res->top = env->GetIntField(rect, fid_ui_Rectangle_y);
+	res->right = res->left + env->GetIntField(rect, fid_ui_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rect, fid_ui_Rectangle_height);
+	EXCEPTION_CHECK(env);
+}
+
 
 #endif //#ifndef ADM_FREE
 
@@ -2409,6 +2450,12 @@ ASErr ScriptographerEngine::LiveEffect_onGetInputType(
 ASErr ScriptographerEngine::MenuItem_onSelect(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
+
+
+		////temp - debug
+		//if (!checkMenu(message->menuItem))
+
+
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onSelect,
 				(jint) message->menuItem);
 		return kNoErr;
@@ -2599,6 +2646,27 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 	}
 	return obj;
 }
+#else // for !ADM_FREE
+
+int ScriptographerEngine::getControlObjectHandle(JNIEnv *env, jobject obj, const char *name) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
+	if (!handle) {
+		//// For HierarchyListBoxes it could be that the user wants to call item
+		//// functions on a child list. report that this can only be called on the
+		//// root list:
+		//if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
+		//	throw new StringException("This function can only be called on the root hierarchy list.");
+		//} else {
+			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
+		//}
+	}
+	return handle;
+}
+
+
 #endif //#ifndef ADM_FREE
 
 ASErr ScriptographerEngine::callOnHandleEvent(int event) {

@@ -34,7 +34,6 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.ConversionUtils;
-import com.scriptographer.adm.Dialog;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
@@ -43,8 +42,8 @@ import com.scriptographer.ai.Timer;
 import com.scriptographer.sg.AngleUnits;
 import com.scriptographer.sg.CoordinateSystem;
 import com.scriptographer.sg.Script;
-import com.scriptographer.ui.KeyIdentifier;
 import com.scriptographer.ui.KeyEvent;
+import com.scriptographer.ui.KeyIdentifier;
 import com.scriptographer.ui.MenuItem;
 
 /**
@@ -421,7 +420,7 @@ public class ScriptographerEngine {
 			// ConsoleOutputStream.enableOutput(false);
 		}
 		if (file != null) {
-			Dialog.destroyAll(false, false);
+			destroyAllDialogs(false, false);
 			Timer.abortAll(false, false);
 			// Put a script object in the scope to offer the user
 			// access to information about it.
@@ -445,6 +444,16 @@ public class ScriptographerEngine {
 		scriptStack.push(script);
 	}
 
+	public static void destroyAllDialogs(boolean ignoreKeepAlive, boolean force)
+	{
+		if (getIllustratorVersion() < 16)
+			com.scriptographer.adm.Dialog.destroyAll(false, false);
+		else
+			com.scriptographer.widget.Dialog.destroyAll(false, false);
+		
+		
+	}
+	
 	public static void beginExecution() {
 		beginExecution(null, null);
 	}
@@ -678,7 +687,7 @@ public class ScriptographerEngine {
 	public static void stopAll(boolean ignoreKeepAlive, boolean force) {
 		Timer.abortAll(ignoreKeepAlive, force);
 		callCallbacks("onStop");
-		Dialog.destroyAll(ignoreKeepAlive, force);
+		destroyAllDialogs(ignoreKeepAlive, force);
 		removeCallbacks(ignoreKeepAlive);
 	}
 
@@ -693,9 +702,17 @@ public class ScriptographerEngine {
 		// funny things will happen on CS3 and above. See comment in
 		// initializeAll
 		if (type == EVENT_APP_STARTUP)
-			Dialog.initializeAll();
+			initializeAllDialogs();
 	}
 
+	private static void initializeAllDialogs()
+	{
+		if (getIllustratorVersion() < 16)
+			com.scriptographer.adm.Dialog.initializeAll();
+		else
+			com.scriptographer.widget.Dialog.initializeAll();
+	}
+	
 	/**
 	 * To be called from the native environment.
 	 */

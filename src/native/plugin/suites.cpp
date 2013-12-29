@@ -111,6 +111,8 @@ extern "C" {
 #ifdef WIN_ENV
 	ADMWinHostSuite					*sADMWinHost;
 #endif // WIN_ENV
+#else //ADM_FREE
+
 #endif //#ifndef ADM_FREE
 
 #if kPluginInterfaceVersion >= kAI11
@@ -142,6 +144,12 @@ extern "C" {
 #if kPluginInterfaceVersion >= kAI15
 	AIArtboardSuite					*sAIArtboard;
 #endif // kPluginInterfaceVersion >= kAI15
+
+#if kPluginInterfaceVersion >= kAI16
+	AIPanelSuite				*sAIPanel;
+	AIPanelFlyoutMenuSuite		*sAIPanelFlyoutMenu;
+
+#endif //kPluginInterfaceVersion >= kAI16
 }
 
 // The startup and postStartup array contains all the suites which
@@ -183,7 +191,10 @@ ImportSuite startup[] = {
 	// Needed for string conversion by various underlying method calls
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 #endif
-
+#if kPluginInterfaceVersion >= kAI16
+	kAIPanelSuite, kAIPanelSuiteVersion, &sAIPanel, sizeof(sAIPanel),
+	kAIPanelFlyoutMenuSuite, kAIPanelFlyoutMenuSuiteVersion, &sAIPanelFlyoutMenu,sizeof(sAIPanelFlyoutMenu),
+#endif
 #ifndef ADM_FREE
 	// ADM
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
@@ -206,9 +217,9 @@ ImportSuite startup[] = {
 	#ifdef WIN_ENV
 	kADMWinHostSuite, kADMWinHostSuiteVersion, &sADMWinHost, sizeof(ADMWinHostSuite),
 	#endif
-
+#endif //#ifndef ADM_FREE
 	NULL, 0, NULL, 0
-	#endif //#ifndef ADM_FREE
+	
 };
 
 // postStartup: all suites that are needed after startup (onPostStartupPlugin)
