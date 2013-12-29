@@ -853,9 +853,7 @@ static const JNINativeMethod com_scriptographer_widget_Dialog_methods[] = {
 	{ "nativeSetFont", "(I)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetFont },
 	{ "nativeSetName", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetName },
 	{ "nativeSetMinimumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMinimumSize },
-	{ "nativeSetMaximumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMaximumSize },
-	{ "getIncrement", "()Lcom/scriptographer/ui/Size;", (void *) &Java_com_scriptographer_widget_Dialog_getIncrement },
-	{ "setIncrement", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_setIncrement }
+	{ "nativeSetMaximumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMaximumSize }
 };
 
 /* Registers native methods for a given class */

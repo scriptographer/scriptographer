@@ -8,9 +8,66 @@
  * com.scriptographer.widget.Dialog
  */
 
-/*
- * int getParentWindow(long arg1)
- */
+void PanelClosedNotifyProc(AIPanelRef inPanel)
+{
+	if (gEngine != NULL) {
+		
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			AIPanelUserData uData;
+			
+			AIErr err = sAIPanel->GetUserData(inPanel, uData);
+
+			jobject obj = (jobject) uData;
+			gEngine->callOnDestroy(obj);
+			// Clear the handle:
+			gEngine->setIntField(env, obj,
+					gEngine->fid_ui_NativeObject_handle, 0);
+			env->DeleteGlobalRef(obj);
+
+
+		} EXCEPTION_CATCH_REPORT(env);
+	}
+}
+
+#ifdef WIN_ENV
+
+// Set up a data structure and a hash map that keeps track of dialog references
+// and default window procs per hWnd of native dialog windows.
+// This is needed on Windows < CS3 to capture dialog activation and internally
+// fire the required events again.
+
+#include <hash_map>
+
+using namespace stdext;
+
+typedef struct {
+	AIPanelRef panel;
+	WNDPROC defaultProc;
+} DialogData;
+
+typedef hash_map<HWND, DialogData> DialogDataMap;
+
+DialogDataMap dialogDataMap;
+
+LRESULT CALLBACK Dialog_windowProc(HWND hWnd, UINT uMsg,
+		WPARAM wParam, LPARAM lParam) {
+	DialogDataMap::iterator it = dialogDataMap.find(hWnd);
+	if (it != dialogDataMap.end()) {
+		// Consider this window activated if we either receive a WM_NCACTIVATE
+		// message or if a WM_PARENTNOTIFY with a mouse message is received
+		// (see ScriptographerPlugin::appWindowProc for more information).
+		if (uMsg == WM_NCACTIVATE || uMsg == WM_PARENTNOTIFY && wParam > 0x200) {
+			//jobject obj = gEngine->getDialogObject(it->second.panel);
+			//TODOgEngine->callOnNotify(obj, kADMWindowActivateNotifier);
+		}
+		return ::CallWindowProc(it->second.defaultProc, hWnd, uMsg, wParam,
+				lParam);
+	}
+	return 0;
+}
+
+#endif // WIN_ENV_INSTALL_WNDPROC
 
 
 /*
@@ -90,10 +147,90 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeCreate(
 	//if (error)
 	//	return error;
 
+	error = sAIPanel->SetClosedNotifyProc(fPanel, PanelClosedNotifyProc);
+
+	//::SetPropA(hDlg, "TPNL", this);
+	//fDefaultWindProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(hDlg, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(EmptyPanelPlugin::NewWindowProc)));
+
+#ifdef WIN_ENV
+	AIPanelPlatformWindow hDlg = NULL;
+	error = sAIPanel->GetPlatformWindow(fPanel, hDlg);
+
+	HWND hWnd = (HWND) hDlg;
+	WNDPROC defaultProc = (WNDPROC) ::SetWindowLong(hWnd, GWLP_WNDPROC,
+			(LONG) Dialog_windowProc);
+	DialogData data = { fPanel, defaultProc };
+	dialogDataMap[hWnd] = data;
+
+#endif // WIN_ENV
+
+
 	return (jint) fPanel;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
+
+
+#ifdef test
+LRESULT CALLBACK EmptyPanelPlugin::NewWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	EmptyPanelPlugin* panel = (EmptyPanelPlugin*)GetPropA(hWnd, "TPNL");
+	LRESULT result = 0;
+	bool handled = panel->PanelWindowProc(result, hWnd, msg, wParam, lParam);
+	if(!handled)
+		result =  panel->CallDefaultWindowProc(hWnd, msg, wParam, lParam);
+	return result;
+}
+
+bool EmptyPanelPlugin::PanelWindowProc(LRESULT& result, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	bool handled = false;
+	switch (msg) 
+	{
+	case WM_COMMAND: 
+		{
+			if(wParam == ID_ButtonAdd)
+			{
+				TCHAR XStr[255] ;
+				SendMessage(fHWndXEdit, (UINT) WM_GETTEXT, 255, (LPARAM)XStr); 
+
+				TCHAR YStr[255];
+				SendMessage(fHwndYEdit, (UINT) WM_GETTEXT, 255, (LPARAM)YStr); 
+				
+				ai::NumberFormat numFormat;
+				ASInt32 x = 0;
+				sAIStringFormatUtils->StringToInteger(numFormat, ai::UnicodeString(XStr), x);
+				ASInt32 y = 0;
+				sAIStringFormatUtils->StringToInteger(numFormat, ai::UnicodeString(YStr), y);
+
+				ASInt32 result = x + y;
+				ai::UnicodeString strResult;
+				sAIStringFormatUtils->IntegerToString(numFormat, result, strResult);
+				SendMessage(fHwndResultEdit, (UINT) WM_SETTEXT, 0, (LPARAM)strResult.as_ASUnicode().c_str());
+
+				handled = true;
+			}
+			else if(wParam == ID_ButtonShow)
+			{
+				sAIUser->MessageAlert(ai::UnicodeString("This is a Dialog"));
+				handled = true;
+			}
+		}
+	}
+	return handled;
+}
+
+LRESULT CALLBACK EmptyPanelPlugin::CallDefaultWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	if(fDefaultWindProc)
+		return ::CallWindowProc(fDefaultWindProc, hWnd, msg, wParam, lParam);
+	else
+	{
+		return 0; 
+	}
+}
+
+#endif
 
 /*
  * void nativeDestroy(int arg1)
@@ -101,9 +238,34 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeCreate(
 JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_nativeDestroy(
 		JNIEnv *env, jobject obj, jint arg1) {
 	try {
-		// TODO: define nativeDestroy
+	
+		AIPanelRef fPanel = gEngine->getAIPanelRef(env, obj);
+		AIErr error = kNoErr;
+		if(fPanel)
+		{
+
+			AIPanelFlyoutMenuRef fPanelFlyoutMenu;
+
+			sAIPanel->GetFlyoutMenu(fPanel, fPanelFlyoutMenu);
+
+			error = sAIPanel->Destroy(fPanel);
+			fPanel = NULL;
+
+			
+			error = sAIPanelFlyoutMenu->Destroy(fPanelFlyoutMenu);
+			fPanelFlyoutMenu = NULL;
+
+		}
+
+		//TODO call back call on destoy - from win proc notifier!?!
+
+		error = sAIPanel->SetClosedNotifyProc(fPanel, PanelClosedNotifyProc);
+		
+	
 	} EXCEPTION_CONVERT(env);
 }
+
+
 
 /*
  * boolean nativeIsVisible()
@@ -249,7 +411,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_invalidate__(
 JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_invalidate__IIII(
 		JNIEnv *env, jobject obj, jint arg1, jint arg2, jint arg3, jint arg4) {
 	try {
-		// TODO: define invalidate
+			//todo: adm ADMFont enum implementation?
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -269,7 +431,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_update(
 JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeGetFont(
 		JNIEnv *env, jobject obj) {
 	try {
-		// TODO: define nativeGetFont
+		//todo: adm ADMFont enum implementation?
+		return 0;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -311,27 +474,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_nativeSetMaximumSiz
 		JNIEnv *env, jobject obj, jint arg1, jint arg2) {
 	try {
 		// TODO: define nativeSetMaximumSize
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * com.scriptographer.ui.Size getIncrement()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_widget_Dialog_getIncrement(
-		JNIEnv *env, jobject obj) {
-	try {
-		// TODO: define getIncrement
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * void setIncrement(int arg1, int arg2)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_setIncrement(
-		JNIEnv *env, jobject obj, jint arg1, jint arg2) {
-	try {
-		// TODO: define setIncrement
 	} EXCEPTION_CONVERT(env);
 }
 

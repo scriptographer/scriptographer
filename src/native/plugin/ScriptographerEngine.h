@@ -381,6 +381,12 @@ public:
 	jclass cls_adm_TextEditItem;
 	jfieldID fid_adm_TextEditItem_setSelectionTimer;
 #endif
+#else // for non ADM
+
+
+	jclass cls_widget_NotificationHandler;
+	jmethodID mid_widget_NotificationHandler_onNotify;
+
 #endif //	#ifndef ADM_FREE
 public:
 	ScriptographerEngine(const char *pluginPath);
@@ -649,8 +655,7 @@ public:
 #ifndef ADM_FREE
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
-	void callOnNotify(jobject handler, char *notifier); 
-	void callOnDestroy(jobject handler); 
+
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
@@ -718,6 +723,9 @@ public:
 	}
 
 #endif //#ifndef ADM_FREE
+	//common notifiers
+	void callOnNotify(jobject handler, char *notifier); 
+	void callOnDestroy(jobject handler); 
 
 	//former getADMObjectHandle but for Menu
 	int getMenuObjectHandle(JNIEnv *env, jobject obj, const char *name);

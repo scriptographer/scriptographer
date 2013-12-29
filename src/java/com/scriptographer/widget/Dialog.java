@@ -1100,19 +1100,19 @@ public abstract class Dialog extends Component {
 			setMaximumSize(size.width, size.height);
 	}
 
-	public native Size getIncrement();
-	
-	public native void setIncrement(int hor, int ver);
-
-	public void setIncrement(Size increment) {
-		if (increment != null)
-			setIncrement(increment.width, increment.height);
-	}
-
-	public void setIncrement(Point increment) {
-		if (increment != null)
-			setIncrement(increment.x, increment.y);
-	}
+//	public native Size getIncrement();
+//	
+//	public native void setIncrement(int hor, int ver);
+//
+//	public void setIncrement(Size increment) {
+//		if (increment != null)
+//			setIncrement(increment.width, increment.height);
+//	}
+//
+//	public void setIncrement(Point increment) {
+//		if (increment != null)
+//			setIncrement(increment.x, increment.y);
+//	}
 
 	public Size getPreferredSize() {
 		if (container != null) {

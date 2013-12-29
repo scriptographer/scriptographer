@@ -56,4 +56,11 @@ void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer)
 	RT.right =  (short) (X + WIDTH); \
 	RT.bottom = (short) (Y + HEIGHT);
 
+#else !ADM
+
+// Pseudo notifiers: 
+#define kWidgetInitializeNotifier "Widget Initialize Notifier"
+#define kWidgetDestroyNotifier "Widget Destroy Notifier"
+
+
 #endif //#ifndef ADM_FREE

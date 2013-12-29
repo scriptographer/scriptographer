@@ -707,7 +707,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_adm_TextEditItem_setSelectionTimer = getFieldID(env, cls_adm_TextEditItem, "setSelectionTimer", "I");
 #endif
 #else
-	//TODO: swt classes?
+	//TODO: widget classes...
+	cls_widget_NotificationHandler = loadClass(env, "com/scriptographer/widget/NotificationHandler");
+	mid_widget_NotificationHandler_onNotify = getMethodID(env, cls_widget_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
 
 #endif //#ifndef ADM_FREE
 }
@@ -2666,8 +2668,20 @@ int ScriptographerEngine::getControlObjectHandle(JNIEnv *env, jobject obj, const
 	return handle;
 }
 
+void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
+	JNIEnv *env = getEnv();
+	AppContext context;
+	callVoidMethodReport(env, handler, mid_widget_NotificationHandler_onNotify,
+			env->NewStringUTF(notifier));
+}
+
+void ScriptographerEngine::callOnDestroy(jobject handler) {
+	callOnNotify(handler, kWidgetDestroyNotifier);
+}
 
 #endif //#ifndef ADM_FREE
+
+
 
 ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 	AppContext context;
