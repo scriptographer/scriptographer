@@ -72,9 +72,9 @@ public abstract class Item extends Component {
 		// notifications seem to be triggered by item creation, confusing 
 		// dialog.initialize() calls.
 		dialog.ignoreNotifications = true;
-/*	todo	
+
 		int handle = nativeCreate(dialog, type.name, options);
-*/		
+		
 		dialog.ignoreNotifications = false;
 		init(dialog, handle, type);
 		setFont(dialog.getFont());
@@ -105,7 +105,7 @@ public abstract class Item extends Component {
 		// depends on it to be set.
 		setMargin(0, 0, 0, 0);
 		dialog.items.add(this);
-	//	nativeBounds = nativeGetBounds();
+	 	nativeBounds = nativeGetBounds();
 		// nativeSize and nativeBounds are set by the native environment
 		// size and bounds need to be updated depending on margins and
 		// internalInsets
@@ -118,11 +118,11 @@ public abstract class Item extends Component {
 		// This is used to fix ADM bugs on CS4 where an item does not update its
 		// native bounds in certain situations (hidden window?) even if it was
 		// asked to do so.
-	/*	todo Rectangle bounds = nativeGetBounds();
+		Rectangle bounds = nativeGetBounds();
 		if (!bounds.equals(nativeBounds))
 			setNativeBounds(nativeBounds.x, nativeBounds.y,
 						nativeBounds.width, nativeBounds.height);
-						*/
+						 
 	}
 
 	public void destroy() {

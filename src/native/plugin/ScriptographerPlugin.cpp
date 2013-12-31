@@ -621,13 +621,22 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC,
 			(LONG) appWindowProc);
+#else
+
+	AIWindowRef  windowRefParent;
+	error = sAIAppContext->GetPlatformAppWindow(&windowRefParent);
+	HWND hWnd = (HWND) windowRefParent;
+	s_defaultAppWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(windowRefParent, GWLP_WNDPROC,
+		reinterpret_cast<LONG_PTR>(appWindowProc)));
+
+#endif //#ifndef ADM_FREE
 	// If the app is active (focus on splasher), send WA_ACTIVE message again,
 	// since it was received before installing the WindowProc.
 	// CAUTION: Installing WindowProc in onStartupPlugin does not seem to work
 	// on Windows, something seems to override it again after.
 	if (hWnd == ::GetParent(::GetForegroundWindow()))
 		appWindowProc(hWnd, WM_ACTIVATEAPP, WA_ACTIVE, 0);
-#endif //#ifndef ADM_FREE
+
 #endif
 	return error;
 }
@@ -641,6 +650,12 @@ ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 #ifndef ADM_FREE
 		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
+#else
+		AIWindowRef  windowRefParent;
+		AIErr  error = sAIAppContext->GetPlatformAppWindow(&windowRefParent);
+		
+		SetWindowLongPtr(windowRefParent, GWLP_WNDPROC,reinterpret_cast<LONG_PTR>(s_defaultAppWindowProc));
+
 #endif //#ifndef ADM_FREE
 	}
 	UnhookWindowsHookEx(s_defaultGetMessageProc);

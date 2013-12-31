@@ -347,7 +347,7 @@ Scriptographer build instructions
 			<arg value="&quot;${target} Debug|${winplatform}&quot;"/><!--todo: !release! &  in .bat -->
 			<arg value="/project"/>
 			<arg value="scriptographer"/>
-		</exec>
+		</exec>	
 		<echo> ${build.win}/zipPackage.bat "${target} ${version}.${build.number} in ${target.packages}  </echo>
 		<!-- Make the packages -->
 			<exec executable="cmd.exe" dir="${target.packages}">
@@ -462,6 +462,13 @@ Scriptographer build instructions
 		   	
 		   	<!--widget-->
 		   	<class name="com.scriptographer.widget.Dialog" />
+			<class name="com.scriptographer.widget.Notifier" />
+			<class name="com.scriptographer.widget.Item" />
+		   	<class name="com.scriptographer.widget.ValueItem" />
+		   	<class name="com.scriptographer.widget.TextValueItem" />
+		   	<class name="com.scriptographer.widget.TextItem" />
+		   	<class name="com.scriptographer.widget.Button" />
+			<class name="com.scriptographer.widget.TextEditItem" />
 
 		</javah>
 		<echo id="echo" level="info" />

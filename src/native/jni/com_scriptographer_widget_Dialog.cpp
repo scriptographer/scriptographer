@@ -118,8 +118,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeCreate(
  	*/
 
 			error = sAIPanel->Create(gPlugin->getPluginRef(), 
-				ai::UnicodeString(str), 
-				ai::UnicodeString(str), 3,
+				ai::UnicodeString("kEmptyDialogID"), 
+				ai::UnicodeString("qq"), 3,
 				pnSize,
 				true, 
 				NULL, //fPanelFlyoutMenu, 
@@ -139,7 +139,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeCreate(
 
 	error = sAIPanel->SetSizes(fPanel, minSize, prefUnconstSize, prefConstSize, maxSize);
 	*/
-	error = sAIPanel->Show(fPanel, false);
+	error = sAIPanel->Show(fPanel, true);
 
 	//AIPanelPlatformWindow hDlg = NULL;
 	//error = sAIPanel->GetPlatformWindow(fPanel, hDlg);
@@ -157,8 +157,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_widget_Dialog_nativeCreate(
 	error = sAIPanel->GetPlatformWindow(fPanel, hDlg);
 
 	HWND hWnd = (HWND) hDlg;
-	WNDPROC defaultProc = (WNDPROC) ::SetWindowLong(hWnd, GWLP_WNDPROC,
+	/*WNDPROC defaultProc = (WNDPROC) ::SetWindowLong(hWnd, GWLP_WNDPROC,
 			(LONG) Dialog_windowProc);
+*/
+	WNDPROC defaultProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(hDlg, GWLP_WNDPROC,
+		reinterpret_cast<LONG_PTR>(Dialog_windowProc)));
+
 	DialogData data = { fPanel, defaultProc };
 	dialogDataMap[hWnd] = data;
 
@@ -495,5 +499,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_setEnabled(
 		JNIEnv *env, jobject obj, jboolean arg1) {
 	try {
 		// TODO: define setEnabled
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void nativeSetTitle(java.lang.String arg1)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_widget_Dialog_nativeSetTitle(
+		JNIEnv *env, jobject obj, jstring arg1) {
+	try {
+		// TODO: define nativeSetTitle
 	} EXCEPTION_CONVERT(env);
 }

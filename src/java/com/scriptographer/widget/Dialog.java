@@ -1002,11 +1002,11 @@ public abstract class Dialog extends Component {
 		return title;
 	}
 
-//	private native void nativeSetTitle(String title);
+	private native void nativeSetTitle(String title);
 
 	public void setTitle(String title) {
 		this.title = title != null ? title : "";
-		//nativeSetTitle(title);
+		 nativeSetTitle(title);
 		// If the dialog name is not set yet, use the title
 		if (name.equals("")) {
 			// Append script path to name

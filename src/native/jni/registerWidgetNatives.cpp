@@ -69,7 +69,13 @@
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ui_MenuGroup.h"
 #include "com_scriptographer_ui_MenuItem.h"
+#include "com_scriptographer_widget_Button.h"
 #include "com_scriptographer_widget_Dialog.h"
+#include "com_scriptographer_widget_Item.h"
+#include "com_scriptographer_widget_TextEditItem.h"
+#include "com_scriptographer_widget_TextItem.h"
+#include "com_scriptographer_widget_TextValueItem.h"
+#include "com_scriptographer_widget_ValueItem.h"
 
 /* Native methods for class com_scriptographer_ai_Annotator */
 static const JNINativeMethod com_scriptographer_ai_Annotator_methods[] = {
@@ -831,6 +837,14 @@ static const JNINativeMethod com_scriptographer_ui_MenuItem_methods[] = {
 	{ "setCommand", "(Ljava/lang/String;I)Z", (void *) &Java_com_scriptographer_ui_MenuItem_setCommand }
 };
 
+/* Native methods for class com_scriptographer_widget_Button */
+static const JNINativeMethod com_scriptographer_widget_Button_methods[] = {
+	{ "nativeSetImage", "(I)V", (void *) &Java_com_scriptographer_widget_Button_nativeSetImage },
+	{ "nativeSetRolloverImage", "(I)V", (void *) &Java_com_scriptographer_widget_Button_nativeSetRolloverImage },
+	{ "nativeSetSelectedImage", "(I)V", (void *) &Java_com_scriptographer_widget_Button_nativeSetSelectedImage },
+	{ "nativeSetDisabledImage", "(I)V", (void *) &Java_com_scriptographer_widget_Button_nativeSetDisabledImage }
+};
+
 /* Native methods for class com_scriptographer_widget_Dialog */
 static const JNINativeMethod com_scriptographer_widget_Dialog_methods[] = {
 	{ "nativeCreate", "(Ljava/lang/String;II)I", (void *) &Java_com_scriptographer_widget_Dialog_nativeCreate },
@@ -851,9 +865,97 @@ static const JNINativeMethod com_scriptographer_widget_Dialog_methods[] = {
 	{ "update", "()V", (void *) &Java_com_scriptographer_widget_Dialog_update },
 	{ "nativeGetFont", "()I", (void *) &Java_com_scriptographer_widget_Dialog_nativeGetFont },
 	{ "nativeSetFont", "(I)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetFont },
+	{ "nativeSetTitle", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetTitle },
 	{ "nativeSetName", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetName },
 	{ "nativeSetMinimumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMinimumSize },
 	{ "nativeSetMaximumSize", "(II)V", (void *) &Java_com_scriptographer_widget_Dialog_nativeSetMaximumSize }
+};
+
+/* Native methods for class com_scriptographer_widget_Item */
+static const JNINativeMethod com_scriptographer_widget_Item_methods[] = {
+	{ "nativeCreate", "(Lcom/scriptographer/widget/Dialog;Ljava/lang/String;I)I", (void *) &Java_com_scriptographer_widget_Item_nativeCreate },
+	{ "nativeInit", "(IZ)Ljava/lang/String;", (void *) &Java_com_scriptographer_widget_Item_nativeInit },
+	{ "nativeDestroy", "(I)V", (void *) &Java_com_scriptographer_widget_Item_nativeDestroy },
+	{ "nativeSetTrackCallback", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetTrackCallback },
+	{ "nativeSetDrawCallback", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetDrawCallback },
+	{ "getTrackMask", "()I", (void *) &Java_com_scriptographer_widget_Item_getTrackMask },
+	{ "setTrackMask", "(I)V", (void *) &Java_com_scriptographer_widget_Item_setTrackMask },
+	{ "nativeSetStyle", "(I)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetStyle },
+	{ "nativeGetStyle", "()I", (void *) &Java_com_scriptographer_widget_Item_nativeGetStyle },
+	{ "getChildItemHandle", "(I)I", (void *) &Java_com_scriptographer_widget_Item_getChildItemHandle },
+	{ "isVisible", "()Z", (void *) &Java_com_scriptographer_widget_Item_isVisible },
+	{ "setVisible", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setVisible },
+	{ "isEnabled", "()Z", (void *) &Java_com_scriptographer_widget_Item_isEnabled },
+	{ "setEnabled", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setEnabled },
+	{ "isActive", "()Z", (void *) &Java_com_scriptographer_widget_Item_isActive },
+	{ "setActive", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setActive },
+	{ "isKnown", "()Z", (void *) &Java_com_scriptographer_widget_Item_isKnown },
+	{ "setKnown", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setKnown },
+	{ "wantsFocus", "()Z", (void *) &Java_com_scriptographer_widget_Item_wantsFocus },
+	{ "setWantsFocus", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setWantsFocus },
+	{ "nativeGetBounds", "()Lcom/scriptographer/ui/Rectangle;", (void *) &Java_com_scriptographer_widget_Item_nativeGetBounds },
+	{ "nativeSetBounds", "(IIII)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetBounds },
+	{ "nativeSetSize", "(II)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetSize },
+	{ "localToScreen", "(II)Lcom/scriptographer/ui/Point;", (void *) &Java_com_scriptographer_widget_Item_localToScreen__II },
+	{ "screenToLocal", "(II)Lcom/scriptographer/ui/Point;", (void *) &Java_com_scriptographer_widget_Item_screenToLocal__II },
+	{ "localToScreen", "(IIII)Lcom/scriptographer/ui/Rectangle;", (void *) &Java_com_scriptographer_widget_Item_localToScreen__IIII },
+	{ "screenToLocal", "(IIII)Lcom/scriptographer/ui/Rectangle;", (void *) &Java_com_scriptographer_widget_Item_screenToLocal__IIII },
+	{ "invalidate", "()V", (void *) &Java_com_scriptographer_widget_Item_invalidate__ },
+	{ "invalidate", "(IIII)V", (void *) &Java_com_scriptographer_widget_Item_invalidate__IIII },
+	{ "update", "()V", (void *) &Java_com_scriptographer_widget_Item_update },
+	{ "nativeGetFont", "()I", (void *) &Java_com_scriptographer_widget_Item_nativeGetFont },
+	{ "nativeSetFont", "(I)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetFont },
+	{ "nativeSetBackgroundColor", "(I)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetBackgroundColor },
+	{ "nativeGetBackgroundColor", "()I", (void *) &Java_com_scriptographer_widget_Item_nativeGetBackgroundColor },
+	{ "nativeGetCursor", "()I", (void *) &Java_com_scriptographer_widget_Item_nativeGetCursor },
+	{ "nativeSetCursor", "(I)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetCursor },
+	{ "nativeSetTooltip", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_Item_nativeSetTooltip },
+	{ "isToolTipEnabled", "()Z", (void *) &Java_com_scriptographer_widget_Item_isToolTipEnabled },
+	{ "setToolTipEnabled", "(Z)V", (void *) &Java_com_scriptographer_widget_Item_setToolTipEnabled },
+	{ "showToolTip", "(II)V", (void *) &Java_com_scriptographer_widget_Item_showToolTip },
+	{ "hideToolTip", "()V", (void *) &Java_com_scriptographer_widget_Item_hideToolTip }
+};
+
+/* Native methods for class com_scriptographer_widget_TextEditItem */
+static const JNINativeMethod com_scriptographer_widget_TextEditItem_methods[] = {
+	{ "getFractionDigits", "()I", (void *) &Java_com_scriptographer_widget_TextEditItem_getFractionDigits },
+	{ "setFractionDigits", "(I)V", (void *) &Java_com_scriptographer_widget_TextEditItem_setFractionDigits },
+	{ "setMaxLength", "(I)V", (void *) &Java_com_scriptographer_widget_TextEditItem_setMaxLength },
+	{ "getMaxLength", "()I", (void *) &Java_com_scriptographer_widget_TextEditItem_getMaxLength },
+	{ "setSelection", "(II)V", (void *) &Java_com_scriptographer_widget_TextEditItem_setSelection },
+	{ "getSelection", "()[I", (void *) &Java_com_scriptographer_widget_TextEditItem_getSelection },
+	{ "selectAll", "()V", (void *) &Java_com_scriptographer_widget_TextEditItem_selectAll },
+	{ "setAllowMath", "(Z)V", (void *) &Java_com_scriptographer_widget_TextEditItem_setAllowMath },
+	{ "getAllowMath", "()Z", (void *) &Java_com_scriptographer_widget_TextEditItem_getAllowMath },
+	{ "setAllowUnits", "(Z)V", (void *) &Java_com_scriptographer_widget_TextEditItem_setAllowUnits },
+	{ "getAllowUnits", "()Z", (void *) &Java_com_scriptographer_widget_TextEditItem_getAllowUnits }
+};
+
+/* Native methods for class com_scriptographer_widget_TextItem */
+static const JNINativeMethod com_scriptographer_widget_TextItem_methods[] = {
+	{ "nativeSetText", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_TextItem_nativeSetText }
+};
+
+/* Native methods for class com_scriptographer_widget_TextValueItem */
+static const JNINativeMethod com_scriptographer_widget_TextValueItem_methods[] = {
+	{ "setText", "(Ljava/lang/String;)V", (void *) &Java_com_scriptographer_widget_TextValueItem_setText },
+	{ "getText", "()Ljava/lang/String;", (void *) &Java_com_scriptographer_widget_TextValueItem_getText },
+	{ "nativeSetJustification", "(I)V", (void *) &Java_com_scriptographer_widget_TextValueItem_nativeSetJustification },
+	{ "nativeGetJustification", "()I", (void *) &Java_com_scriptographer_widget_TextValueItem_nativeGetJustification },
+	{ "nativeSetUnits", "(I)V", (void *) &Java_com_scriptographer_widget_TextValueItem_nativeSetUnits },
+	{ "nativeGetUnits", "()I", (void *) &Java_com_scriptographer_widget_TextValueItem_nativeGetUnits },
+	{ "setShowUnits", "(Z)V", (void *) &Java_com_scriptographer_widget_TextValueItem_setShowUnits },
+	{ "getShowUnits", "()Z", (void *) &Java_com_scriptographer_widget_TextValueItem_getShowUnits }
+};
+
+/* Native methods for class com_scriptographer_widget_ValueItem */
+static const JNINativeMethod com_scriptographer_widget_ValueItem_methods[] = {
+	{ "getRange", "()[F", (void *) &Java_com_scriptographer_widget_ValueItem_getRange },
+	{ "setRange", "(FF)V", (void *) &Java_com_scriptographer_widget_ValueItem_setRange },
+	{ "getIncrements", "()[F", (void *) &Java_com_scriptographer_widget_ValueItem_getIncrements },
+	{ "setIncrements", "(FF)V", (void *) &Java_com_scriptographer_widget_ValueItem_setIncrements },
+	{ "getValue", "()F", (void *) &Java_com_scriptographer_widget_ValueItem_getValue },
+	{ "setValue", "(F)V", (void *) &Java_com_scriptographer_widget_ValueItem_setValue }
 };
 
 /* Registers native methods for a given class */
@@ -1013,7 +1115,25 @@ void ScriptographerEngine::registerNatives(JNIEnv *env) {
 	registerClassNatives(env, "com/scriptographer/ui/MenuItem", com_scriptographer_ui_MenuItem_methods,
 		sizeof(com_scriptographer_ui_MenuItem_methods) / sizeof(JNINativeMethod));
 
+	registerClassNatives(env, "com/scriptographer/widget/Button", com_scriptographer_widget_Button_methods,
+		sizeof(com_scriptographer_widget_Button_methods) / sizeof(JNINativeMethod));
+
 	registerClassNatives(env, "com/scriptographer/widget/Dialog", com_scriptographer_widget_Dialog_methods,
 		sizeof(com_scriptographer_widget_Dialog_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/Item", com_scriptographer_widget_Item_methods,
+		sizeof(com_scriptographer_widget_Item_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/TextEditItem", com_scriptographer_widget_TextEditItem_methods,
+		sizeof(com_scriptographer_widget_TextEditItem_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/TextItem", com_scriptographer_widget_TextItem_methods,
+		sizeof(com_scriptographer_widget_TextItem_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/TextValueItem", com_scriptographer_widget_TextValueItem_methods,
+		sizeof(com_scriptographer_widget_TextValueItem_methods) / sizeof(JNINativeMethod));
+
+	registerClassNatives(env, "com/scriptographer/widget/ValueItem", com_scriptographer_widget_ValueItem_methods,
+		sizeof(com_scriptographer_widget_ValueItem_methods) / sizeof(JNINativeMethod));
 
 }

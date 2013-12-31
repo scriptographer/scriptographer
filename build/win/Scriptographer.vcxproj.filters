@@ -400,6 +400,24 @@
     <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_Dialog.cpp">
       <Filter>Native\JNI\Widget</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_Button.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_ValueItem.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_Item.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_TextItem.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_TextValueItem.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\native\jni\com_scriptographer_widget_TextEditItem.cpp">
+      <Filter>Native\JNI\Widget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\icon.ico">

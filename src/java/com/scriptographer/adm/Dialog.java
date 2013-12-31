@@ -1087,7 +1087,7 @@ public abstract class Dialog extends Component {
 			// Make sure preferred size does not go bellow minSize
 			if (minSize != null) {
 				if (preferred.width < minSize.width)
-					preferre`d.width = minSize.width;
+					preferred.width = minSize.width;
 				if (preferred.height < minSize.height)
 					preferred.height = minSize.height;
 			}
