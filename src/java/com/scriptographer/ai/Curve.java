@@ -267,7 +267,9 @@ public class Curve implements ChangeReceiver {
 	public Curve getNext() {
 		if (segments != null) {
 			if (index1 + 1 < segments.size()) {
-				return segments.get(index1 + 1).getCurve();
+				Curve next = segments.get(index1 + 1).getCurve();
+				if (next != this)
+					return next;
 			} else {
 				return segments.path != null && segments.path.isClosed()
 						? segments.getFirst().getCurve() : null;
@@ -282,7 +284,9 @@ public class Curve implements ChangeReceiver {
 	public Curve getPrevious() {
 		if (segments != null) {
 			if (index1 > 0) {
-				return segments.get(index1 - 1).getCurve();
+				Curve prev = segments.get(index1 - 1).getCurve();
+				if (prev != this)
+					return prev;
 			} else {
 				return segments.path != null && segments.path.isClosed()
 						? segments.getLast().getCurve() : null;
