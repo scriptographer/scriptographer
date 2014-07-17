@@ -184,6 +184,13 @@ public class CurveLocation {
 				: null;
 	}
 
+	public double getCurvature() {
+		Double parameter = getParameter();
+		return parameter != null && curve != null
+				? curve.getCurvature(parameter)
+				: null;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(32);
 		Point point = getPoint();

@@ -339,6 +339,80 @@ public class Curve implements ChangeReceiver {
 		return getControlBounds(getCurveValues());
 	}
 
+	// Ported back from Paper.js in 2014
+	private Point evaluate(double t, int type) {
+		updateSegments();
+		Point point1 = segment1.point;
+		Point handle1 = segment1.handleOut;
+		Point handle2 = segment2.handleIn;
+		Point point2 = segment2.point;
+		double p1x = point1.x,
+			p1y = point1.y,
+			c1x = p1x + handle1.x,
+			c1y = p1y + handle1.y,
+			p2x = point2.x,
+			p2y = point2.y,
+			c2x = p2x + handle2.x,
+			c2y = p2y + handle2.y,
+			tolerance = 10e-6,
+			x, y;
+
+		// Handle special case at beginning / end of curve
+		if (type == 0 && (t < tolerance || t > 1 - tolerance)) {
+			boolean isZero = t < tolerance;
+			x = isZero ? p1x : p2x;
+			y = isZero ? p1y : p2y;
+		} else {
+			// Calculate the polynomial coefficients.
+			double cx = 3.0 * (c1x - p1x),
+				bx = 3.0 * (c2x - c1x) - cx,
+				ax = p2x - p1x - cx - bx,
+
+				cy = 3.0 * (c1y - p1y),
+				by = 3.0 * (c2y - c1y) - cy,
+				ay = p2y - p1y - cy - by;
+			if (type == 0) {
+				// Calculate the curve point at parameter value t
+				x = ((ax * t + bx) * t + cx) * t + p1x;
+				y = ((ay * t + by) * t + cy) * t + p1y;
+			} else {
+				// 1: tangent, 1st derivative
+				// 2: normal, 1st derivative
+				// 3: curvature, 1st derivative & 2nd derivative
+				// Prevent tangents and normals of length 0:
+				// http://stackoverflow.com/questions/10506868/
+				if (t < tolerance && c1x == p1x && c1y == p1y
+						|| t > 1 - tolerance && c2x == p2x && c2y == p2y) {
+					x = p2x - p1x;
+					y = p2y - p1y;
+				} else if (t < tolerance) {
+					x = cx;
+					y = cy;
+				} else if (t > 1 - tolerance) {
+					x = 3.0 * (p2x - c2x);
+					y = 3.0* (p2y - c2y);
+				} else {
+					// Simply use the derivation of the bezier function for both
+					// the x and y coordinates:
+					x = (3.0 * ax * t + 2.0 * bx) * t + cx;
+					y = (3.0 * ay * t + 2.0 * by) * t + cy;
+				}
+				if (type == 3) {
+					// Calculate 2nd derivative, and curvature from there:
+					// http://cagd.cs.byu.edu/~557/text/ch2.pdf page#31
+					// k = |dx * d2y - dy * d2x| / (( dx^2 + dy^2 )^(3/2))
+					double x2 = 6.0 * ax * t + 2.0 * bx,
+						y2 = 6.0 * ay * t + 2.0 * by;
+					// Return curvature as point with x value = curvature...
+					return new Point((x * y2 - y * x2)
+							/ Math.pow(x * x + y * y, 3.0 / 2.0), 0);
+				}
+			}
+		}
+		// The normal is simply the rotated tangent:
+		return type == 2 ? new Point(y, -x) : new Point(x, y);
+	}
+
 	/*
 	 * Instead of using the underlying AI functions and loose time for calling
 	 * natives, let's do the dirty work ourselves:
@@ -350,94 +424,19 @@ public class Curve implements ChangeReceiver {
 	 *        between 0 and 1.
 	 */
 	public Point getPoint(double parameter) {
-		updateSegments();
-		Point point1 = segment1.point;
-		Point handle1 = segment1.handleOut;
-		Point handle2 = segment2.handleIn;
-		Point point2 = segment2.point;
-		// calculate the polynomial coefficients. caution: handles are relative
-		// to points
-		double dx = point2.x - point1.x;
-		double cx = 3.0 * handle1.x;
-		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
-		double ax = dx - cx - bx;
-
-		double dy = point2.y - point1.y;
-		double cy = 3.0 * handle1.y;
-		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
-		double ay = dy - cy - by;
-		
-		return new Point(
-				((ax * parameter + bx) * parameter + cx) * parameter + point1.x,
-				((ay * parameter + by) * parameter + cy) * parameter + point1.y
-		);
+		return evaluate(parameter, 0);
 	}
-
+	
 	public Point getTangent(double parameter) {
-		updateSegments();
-		Point point1 = segment1.point;
-		Point handle1 = segment1.handleOut;
-		Point handle2 = segment2.handleIn;
-		Point point2 = segment2.point;
-
-		double t = parameter;
-		// prevent normals of length 0:
-		if (t == 0 && handle1.x == 0 && handle1.y == 0)
-			t = 0.000000000001;
-		else if (t == 1 && handle2.x == 0 && handle2.y == 0)
-			t = 0.999999999999;
-
-		// calculate the polynomial coefficients. caution: handles are relative
-		// to points
-		double dx = point2.x - point1.x;
-		double cx = 3.0 * handle1.x;
-		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
-		double ax = dx - cx - bx;
-
-		double dy = point2.y - point1.y;
-		double cy = 3.0 * handle1.y;
-		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
-		double ay = dy - cy - by;
-
-		// simply use the derivation of the bezier function
-		// for both the x and y coordinates:
-		return new Point(
-				(3.0 * ax * t + 2.0 * bx) * t + cx,
-				(3.0 * ay * t + 2.0 * by) * t + cy
-		);
+		return evaluate(parameter, 1);
 	}
 
 	public Point getNormal(double parameter) {
-		updateSegments();
-		Point point1 = segment1.point;
-		Point handle1 = segment1.handleOut;
-		Point handle2 = segment2.handleIn;
-		Point point2 = segment2.point;
+		return evaluate(parameter, 2);
+	}
 
-		double t = parameter;
-		// prevent normals of length 0:
-		if (t == 0 && handle1.x == 0 && handle1.y == 0)
-			t = 0.000000000001;
-		else if (t == 1 && handle2.x == 0 && handle2.y == 0)
-			t = 0.999999999999;
-
-		// calculate the polynomial coefficients. caution: handles are relative
-		// to points
-		double dx = point2.x - point1.x;
-		double cx = 3.0 * handle1.x;
-		double bx = 3.0 * (dx + handle2.x - handle1.x) - cx;
-		double ax = dx - cx - bx;
-
-		double dy = point2.y - point1.y;
-		double cy = 3.0 * handle1.y;
-		double by = 3.0 * (dy + handle2.y - handle1.y) - cy;
-		double ay = dy - cy - by;
-
-		// the normal is simply the rotated tangent:
-		return new Point(
-				(-3.0 * ay * t - 2.0 * by) * t - cy,
-				( 3.0 * ax * t + 2.0 * bx) * t + cx
-		);
+	public double getCurvature(double parameter) {
+		return evaluate(parameter, 3).x;
 	}
 
 	public double getParameter(Point point, double precision) {
@@ -764,7 +763,7 @@ public class Curve implements ChangeReceiver {
 		Rectangle bounds1 = getControlBounds(curve1);
 		Rectangle bounds2 = getControlBounds(curve2);
 		// We are not using Rectangle#intersects() here, since in order to
-		// detect intersections that ly on curve bounds, we need to consider
+		// detect intersections that lie on curve bounds, we need to consider
 		// touching on one side of the tested rectangles as intersection as well
 		// If touch is condired at both sides, solutions lying on the border of
 		// bounds would turn up twice.
