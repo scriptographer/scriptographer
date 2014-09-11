@@ -487,7 +487,7 @@ public class Point implements ChangeEmitter {
 	}
 
 	public Point transform(Matrix matrix) {
-		return matrix.transform(this);
+		return matrix != null ? matrix.transform(this) : new Point(this);
 	}
 	
 	/**
@@ -677,7 +677,8 @@ public class Point implements ChangeEmitter {
 		double div = getLength() * point.getLength();
 		if (div == 0) return Double.NaN;
 		else {
-			double angle = Math.acos(this.dot(point) / div);
+            double a = this.dot(point) / div;
+			double angle = Math.acos(a < -1.0 ? -1.0 : a > 1.0 ? 1.0 : a);
 			return ScriptographerEngine.anglesInDegrees
 					? angle * 180.0 / Math.PI
 					: angle;
