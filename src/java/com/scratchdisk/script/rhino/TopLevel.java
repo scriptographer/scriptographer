@@ -67,12 +67,12 @@ public class TopLevel extends ImporterTopLevel {
 		// define some global functions and objects:
 		String[] names = { "print", "evaluate" };
 		defineFunctionProperties(names, TopLevel.class,
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+			ScriptableObject.DONTENUM);
 
 		ScriptableObject objProto = (ScriptableObject) getObjectPrototype(this);
 		objProto.defineFunctionProperties(new String[] {
 				"dontEnum", "toJava", "print", "evaluate"
-				}, TopLevel.class, DONTENUM | READONLY | PERMANENT);
+				}, TopLevel.class, DONTENUM);
 	}
 
 	public static void defineProperty(ScriptableObject obj, String name,
