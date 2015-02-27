@@ -512,7 +512,8 @@ File = Base.extend(new function() {
 		readLines: function() {
 			if (!this._file.isFile())
 				throw new Error("File does not exist or is not a regular file");
-			var reader = new java.io.BufferedReader(new java.io.FileReader(this._file));
+			var reader = this._reader
+				|| new java.io.BufferedReader(new java.io.FileReader(this._file));
 			// Read content line by line to setup proper eol
 			var lines = [];
 			while (true) {
