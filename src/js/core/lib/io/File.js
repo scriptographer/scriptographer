@@ -219,7 +219,7 @@ File = Base.extend(new function() {
 		 */
 		list: function(iter, recursive) {
 			var files = [];
-			if (!this.isOpened() && this._file.isDirectory()) {
+			if (!this.isOpened() && this.isDirectory()) {
 				var regexp = Base.type(iter) == 'regexp';
 				// Always use filter version, even if we're not filtering, so accept
 				// can produce the File objects directly
@@ -228,8 +228,12 @@ File = Base.extend(new function() {
 						var file = null;
 					 	if (!iter || regexp && iter.test(name) || !regexp && iter(file = new File(dir, name))) {
 							files.push(file || (file = new File(dir, name)));
-							if (recursive && file._file.isDirectory())
-								files = files.concat(file.list(iter, recursive));
+						}
+						if (recursive) {
+							if (!file)
+								file = new File(dir, name);
+							if (file.isDirectory())
+								files = files.concat(file.list(iter, true));
 						}
 						// Always return false so we're not producing a java list as well
 						return false;
@@ -247,7 +251,7 @@ File = Base.extend(new function() {
 		 * @type Boolean
 		 */
 		remove: function(recursive) {
-			if (recursive && this._file.isDirectory())
+			if (recursive && this.isDirectory())
 				for each (var file in this.list())
 					file.remove(recursive);
 			return this._file['delete']();
@@ -441,7 +445,7 @@ File = Base.extend(new function() {
 		 */
 		makeDirectory: function() {
 			// Don't do anything if file exists or use multi directory version
-			return !this.isOpened() && (this._file.isDirectory() || this._file.mkdirs());
+			return !this.isOpened() && (this.isDirectory() || this._file.mkdirs());
 		},
 
 		/**
