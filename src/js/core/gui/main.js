@@ -509,13 +509,13 @@ var mainDialog = new FloatingDialog(
 		} else if (item instanceof Path) {
 			var curve = item.curves.first;
 			if (curve) {
-				handler.onHandleEvent('mouse-down', curve.point1);
+				handler.onHandleEvent('mousedown', curve.point1);
 				var length = item.length;
 				if (true)
 					speed = length / Math.round(length / speed);
 				for (var pos = speed; pos < length; pos += speed)
-					handler.onHandleEvent('mouse-drag', item.getPoint(pos));
-				handler.onHandleEvent('mouse-up', item.curves.last.point2);
+					handler.onHandleEvent('mousedrag', item.getPoint(pos));
+				handler.onHandleEvent('mouseup', item.curves.last.point2);
 			}
 		}
 	}
