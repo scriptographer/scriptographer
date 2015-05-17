@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.ChangeReceiver;
+import com.scriptographer.CommitManager;
 
 /**
  * @author lehni
@@ -546,22 +547,18 @@ public class Curve implements ChangeReceiver {
 			
 			double left[][] = getCurveValues();
 			double right[][] = new double[4][];
-			// Use faster special algorithm for subdividing in the middle
-			if (parameter == 0.5)
-				subdivide(left, left, right);
-			else
-				subdivide(left, parameter, left, right);
+			subdivide(left, parameter, left, right);
 	
 			// Write back the results:
-			segment1.handleOut.set(left[1][0] - segment1.point.x,
-					left[1][1] - segment1.point.y);
+			segment1.handleOut.set(left[1][0] - left[0][0],
+					left[1][1] - left[0][1]);
 			
 			// segment2 is the end segment. By inserting newSegment
 			// between segment1 and 2, 2 becomes the end segment.
 			// absolute->relative
-			segment2.handleIn.set(right[2][0] - segment2.point.x,
-					right[2][1] - segment2.point.y);
-
+			segment2.handleIn.set(right[2][0] - right[3][0],
+					right[2][1] - right[3][1]);
+			
 			// Create the new segment, absolute -> relative:
 			double x = left[3][0];
 			double y = left[3][1];
@@ -580,10 +577,10 @@ public class Curve implements ChangeReceiver {
 					segments.add(index2, newSegment);
 				}
 				updateSegments();
-				// if this curve is linked to a path, get the new curve there
 			}
-			// We need a path to be able to access curves
+			// if this curve is linked to a path, get the new curve there
 			if (segments != null && segments.path != null) {
+				CommitManager.commit(segments.path);
 				result = getNext();
 				// If it's the last one in a closed path, return the first curve
 				// instead
@@ -654,91 +651,43 @@ public class Curve implements ChangeReceiver {
 	}
 
 	/**
-	 * Curve subdivision at t = 0.5.
-	 */
-	protected static void subdivide(double[][] curve, double[][] left,
-			double[][] right) {
-		double b0_x = curve[0][0];
-		double b0_y = curve[0][1];
-		double b1_x = curve[1][0];
-		double b1_y = curve[1][1];
-		double b2_x = curve[2][0];
-		double b2_y = curve[2][1];
-		double b3_x = curve[3][0];
-		double b3_y = curve[3][1];
-		double c_x = (b1_x + b2_x) / 2.0;
-		double c_y = (b1_y + b2_y) / 2.0;
-		b1_x = (b0_x + b1_x) / 2.0;
-		b1_y = (b0_y + b1_y) / 2.0;
-		b2_x = (b3_x + b2_x) / 2.0;
-		b2_y = (b3_y + b2_y) / 2.0;
-		double mb1c_x = (b1_x + c_x) / 2.0;
-		double mb1c_y = (b1_y + c_y) / 2.0;
-		double mb2c_x = (b2_x + c_x) / 2.0;
-		double mb2c_y = (b2_y + c_y) / 2.0;
-		c_x = (mb1c_x + mb2c_x) / 2.0;
-		c_y = (mb1c_y + mb2c_y) / 2.0;
-		if (left != null) {
-			left[0] = new double[] { b0_x, b0_y };
-			left[1] = new double[] { b1_x, b1_y };
-			left[2] = new double[] { mb1c_x, mb1c_y };
-			left[3] = new double[] { c_x, c_y };
-		}
-		if (right != null) {
-			right[0] = new double[] { c_x, c_y };
-			right[1] = new double[] { mb2c_x, mb2c_y };
-			right[2] = new double[] { b2_x, b2_y };
-			right[3] = new double[] { b3_x, b3_y };
-		}
-	}
-
-	/**
 	 * Curve subdivision at an arbitrary value for t.
 	 */
 	protected static void subdivide(double[][] curve, double t, double[][] left,
 			double[][] right) {
-		double temp[][][] = new double[4][][];
-
-		// Copy control points
-		temp[0] = curve;
-
-		for (int i = 1; i < 4; i++) {
-			temp[i] = new double[][] {
-				{0, 0}, {0, 0}, {0, 0}, {0, 0}
-			};
-		}
-
-		// Triangle computation
-		double u = 1f - t;
-		for (int i = 1; i < 4; i++) {
-			double[][] row1 = temp[i];
-			double[][] row2 = temp[i - 1];
-			for (int j = 0 ; j < 4 - i; j++) {
-				double[] pt1 = row1[j];
-				double[] pt2 = row2[j];
-				double[] pt3 = row2[j + 1];
-				pt1[0] = u * pt2[0] + t * pt3[0];
-				pt1[1] = u * pt2[1] + t * pt3[1];
-			}
-		}
+		double p1x = curve[0][0];
+		double p1y = curve[0][1];
+		double c1x = curve[1][0];
+		double c1y = curve[1][1];
+		double c2x = curve[2][0];
+		double c2y = curve[2][1];
+		double p2x = curve[3][0];
+		double p2y = curve[3][1];
 		
-		// Only write back left curve if it's not overwritten by right
-		// afterwards
-		if (left != null) {
-			left[0] = temp[0][0];
-			left[1] = temp[1][0];
-			left[2] = temp[2][0];
-			left[3] = temp[3][0];
-		}
-
-		// Curve automatically contains left result, through temp[0],
-		// write right result into right:
-		if (right != null) {
-			right[0] = temp[3][0];
-			right[1] = temp[2][1];
-			right[2] = temp[1][2];
-			right[3] = temp[0][3];
-		}
+        // Triangle computation, with loops unrolled.
+        double u = 1 - t,
+            // Interpolate from 4 to 3 points
+            p3x = u * p1x + t * c1x, p3y = u * p1y + t * c1y,
+            p4x = u * c1x + t * c2x, p4y = u * c1y + t * c2y,
+            p5x = u * c2x + t * p2x, p5y = u * c2y + t * p2y,
+            // Interpolate from 3 to 2 points
+            p6x = u * p3x + t * p4x, p6y = u * p3y + t * p4y,
+            p7x = u * p4x + t * p5x, p7y = u * p4y + t * p5y,
+            // Interpolate from 2 points to 1 point
+            p8x = u * p6x + t * p7x, p8y = u * p6y + t * p7y;
+        // We now have all the values we need to build the sub-curves:
+        if (left != null) {
+            left[0] = new double[] { p1x, p1y };
+            left[1] = new double[] { p3x, p3y };
+            left[2] = new double[] { p6x, p6y };
+            left[3] = new double[] { p8x, p8y };
+        }
+        if (right != null) {
+            right[0] = new double[] { p8x, p8y };
+            right[1] = new double[] { p7x, p7y };
+            right[2] = new double[] { p5x, p5y };
+            right[3] = new double[] { p2x, p2y };
+        }
 	}
 
 	protected static double getLength(double curve[][]) {
@@ -811,8 +760,8 @@ public class Curve implements ChangeReceiver {
 				double curve1Right[][] = new double[4][];
 				double curve2Left[][] = new double[4][];
 				double curve2Right[][] = new double[4][];
-				subdivide(curve1, curve1Left, curve1Right);
-				subdivide(curve2, curve2Left, curve2Right);
+				subdivide(curve1, 0.5, curve1Left, curve1Right);
+				subdivide(curve2, 0.5, curve2Left, curve2Right);
 				getIntersections(curve, curve1Left, curve2Left, intersections);
 				getIntersections(curve, curve1Left, curve2Right, intersections);
 				getIntersections(curve, curve1Right, curve2Left, intersections);
