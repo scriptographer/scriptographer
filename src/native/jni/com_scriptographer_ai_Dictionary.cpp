@@ -119,7 +119,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(
 						 GraphicObjectType
 						 */
 					case BinaryType: {
-						ASInt32 size;
+						sizet size;
 						void *value;
 						// So far, only NULL values are supported for binary
 						// types. See nativePut()
@@ -142,7 +142,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(
 							res = gEngine->convertBoolean(env, value);
 					} break;
 					case RealType: {
-						ASReal value;
+						AIReal value;
 						if (converted = !sAIEntry->ToReal(entry, &value))
 							res = gEngine->convertFloat(env, value);
 					} break;
@@ -300,7 +300,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(
 								env, value));
 						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point)
-							|| env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
+								|| env->IsInstanceOf(value, gEngine->cls_ui_Point)
+							) {
 						AIRealPoint point;
 						gEngine->convertPoint(env, kArtboardCoordinates, value,
 								&point);

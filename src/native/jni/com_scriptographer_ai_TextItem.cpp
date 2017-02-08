@@ -112,7 +112,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getStoryIndex(JNIEnv 
 	try {
 		// TextFrames need document be active for getting story related states too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
-		long index;
+		ai::int32 index;
 		if (!sAITextFrame->GetStoryIndex(text, &index))
 			return index;
 	} EXCEPTION_CONVERT(env);
@@ -140,7 +140,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getIndex(JNIEnv *env,
 	try {
 		// TextFrames need document be active for getting too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
-		long index;
+		ai::int32 index;
 		if (!sAITextFrame->GetFrameIndex(text, &index))
 			return index;
 	} EXCEPTION_CONVERT(env);

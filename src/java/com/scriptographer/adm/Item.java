@@ -20,6 +20,13 @@ import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
+import com.scriptographer.adm.ComponentWrapper;
+import com.scriptographer.ui.DialogColor;
+import com.scriptographer.ui.Point;
+import com.scriptographer.ui.Size;
+import com.scriptographer.ui.Rectangle;
+import com.scriptographer.ui.Border;
+
 
 /**
  * @author lehni
@@ -663,7 +670,7 @@ public abstract class Item extends Component {
 
 	public void setBackgroundColor(DialogColor color) {
 		if (color != null)
-			nativeSetBackgroundColor(color.value);
+			nativeSetBackgroundColor(color.value());
 	}
 
 	public DialogColor getBackgroundColor() {

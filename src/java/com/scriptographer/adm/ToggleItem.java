@@ -13,6 +13,7 @@
  */
 
 package com.scriptographer.adm;
+import com.scriptographer.ui.Border;
 
 /**
  * @author lehni

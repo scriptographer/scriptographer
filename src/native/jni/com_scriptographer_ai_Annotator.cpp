@@ -40,7 +40,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Annotator_nativeCreate(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeGetAnnotators(JNIEnv *env, jclass cls) {
 	try {
 		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
-		long count;
+		ai::int32 count;
 		sAIAnnotator->CountAnnotators(&count);
 		SPPluginRef plugin = gPlugin->getPluginRef();
 		for (int i = 0; i < count; i++) {
@@ -71,8 +71,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Annotator_nativeSetActive(
  * void nativeInvalidate(int viewHandle, int x, int y, int width, int height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Annotator_nativeInvalidate(JNIEnv *env, jobject obj, jint viewHandle, jint x, jint y, jint width, jint height) {
+#ifndef ADM_FREE
 	DEFINE_ADM_RECT(rect, x, y, width, height);
 	sAIAnnotator->InvalAnnotationRect((AIDocumentViewHandle) viewHandle, &rect);
+#endif //#ifndef ADM_FREE
 }
 
 /*
@@ -83,6 +85,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		// This is a nice trick: (Ab)use the ADMDrawer for drawing into
 		// the current view's viewport, as the ports are compatible!
 		// use a rect that is big enough
+#ifndef ADM_FREE
 		ADMRect rect;
 		rect.left = 0;
 		rect.top = 0;
@@ -99,6 +102,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont);
 #endif
 		return gEngine->newObject(env, gEngine->cls_adm_Drawer, gEngine->cid_adm_Drawer, (jint) drawer);
+#endif //#ifndef ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

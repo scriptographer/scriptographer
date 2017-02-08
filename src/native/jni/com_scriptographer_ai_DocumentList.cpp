@@ -24,7 +24,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_size(JNIEnv *env, jobject obj) {
 	try {
-		long count;
+		ai::int32 count;
 		sAIDocumentList->Count(&count);
 		return count;
 	} EXCEPTION_CONVERT(env);

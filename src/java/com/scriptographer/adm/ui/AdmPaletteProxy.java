@@ -18,13 +18,13 @@ import java.util.LinkedHashMap;
 
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.Dialog;
-import com.scriptographer.adm.DialogFont;
-import com.scriptographer.adm.DialogOption;
+import com.scriptographer.ui.DialogOption;
 import com.scriptographer.adm.FloatingDialog;
 import com.scriptographer.adm.ImagePane;
-import com.scriptographer.adm.Size;
+import com.scriptographer.ui.Size;
 import com.scriptographer.adm.layout.TableLayout;
 import com.scriptographer.ui.Component;
+import com.scriptographer.ui.DialogFont;
 import com.scriptographer.ui.Palette;
 import com.scriptographer.ui.PaletteProxy;
 

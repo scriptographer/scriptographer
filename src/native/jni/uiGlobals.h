@@ -9,7 +9,7 @@
  *
  * All rights reserved. See LICENSE file for details.
  */
-
+#ifndef ADM_FREE
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog);
 void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier); 
@@ -55,3 +55,12 @@ void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer)
 	RT.top  = (short) Y; \
 	RT.right =  (short) (X + WIDTH); \
 	RT.bottom = (short) (Y + HEIGHT);
+
+#else !ADM
+
+// Pseudo notifiers: 
+#define kWidgetInitializeNotifier "Widget Initialize Notifier"
+#define kWidgetDestroyNotifier "Widget Destroy Notifier"
+
+
+#endif //#ifndef ADM_FREE

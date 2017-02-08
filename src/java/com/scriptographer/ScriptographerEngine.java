@@ -34,7 +34,6 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.ConversionUtils;
-import com.scriptographer.adm.Dialog;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
@@ -43,8 +42,8 @@ import com.scriptographer.ai.Timer;
 import com.scriptographer.sg.AngleUnits;
 import com.scriptographer.sg.CoordinateSystem;
 import com.scriptographer.sg.Script;
-import com.scriptographer.ui.KeyIdentifier;
 import com.scriptographer.ui.KeyEvent;
+import com.scriptographer.ui.KeyIdentifier;
 import com.scriptographer.ui.MenuItem;
 
 /**
@@ -74,25 +73,18 @@ public class ScriptographerEngine {
 		numberFormatSymbols.setNaN("NaN");
 	}
 
-	public static final NumberFormat numberFormat =
-			new DecimalFormat("0.#####", numberFormatSymbols);
+	public static final NumberFormat numberFormat = new DecimalFormat(
+			"0.#####", numberFormatSymbols);
 
 	// All callback functions to be found and collected in the compiled scopes.
-	private static String[] callbackNames = {
-		"onStartup",
-		"onShutdown",
-		"onActivate",
-		"onDeactivate",
-		"onAbout",
+	private static String[] callbackNames = { "onStartup", "onShutdown",
+			"onActivate", "onDeactivate", "onAbout",
 
-		"onOwlDragBegin",
-		"onOwlDragEnd",
+			"onOwlDragBegin", "onOwlDragEnd",
 
-		"onKeyDown",
-		"onKeyUp",
+			"onKeyDown", "onKeyUp",
 
-		"onStop"
-	};
+			"onStop" };
 
 	// Flags to be used by the AI package, for coordinate systems and angle
 	// units.
@@ -122,7 +114,7 @@ public class ScriptographerEngine {
 		mainThread = Thread.currentThread();
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
-
+		
 		pluginDir = new File(pluginPath);
 
 		errorLogger = getLogger("java.log");
@@ -202,7 +194,7 @@ public class ScriptographerEngine {
 					}
 				}
 			}
-					
+
 		}
 		return parts.toArray(new String[parts.size()]);
 	}
@@ -215,7 +207,7 @@ public class ScriptographerEngine {
 	 * @throws ScriptException
 	 */
 	protected static void compileInitScripts(File dir) {
-		File []files = dir.listFiles();
+		File[] files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
@@ -266,12 +258,13 @@ public class ScriptographerEngine {
 		// The base preferences for Scriptographer are:
 		// com.scriptographer.preferences on Mac, three nodes seem
 		// to be necessary, otherwise things get mixed up...
-		Preferences prefs = Preferences.userNodeForPackage(
-				ScriptographerEngine.class).node("preferences");
+		Preferences prefs =
+				Preferences.userNodeForPackage(ScriptographerEngine.class)
+						.node("preferences");
 		if (script == null)
 			return prefs;
 		// Determine preferences for the current executing script
-		// by walking up the file path to the script directory and 
+		// by walking up the file path to the script directory and
 		// using each folder as a preference node.
 		File file = script.getFile();
 		// Core script preferences are placed in the "core" node, all others
@@ -304,7 +297,7 @@ public class ScriptographerEngine {
 			errorLogger.flush();
 		}
 	}
-	
+
 	public static void logError(String str) {
 		if (errorLogger != null) {
 			errorLogger.println(new Date());
@@ -340,19 +333,19 @@ public class ScriptographerEngine {
 				error = "Unsupported Operation: " + error;
 			// Shorten file names by removing the script directory form it
 			/*
-			// TODO:
-			if (scriptsDir != null)
-				error = StringUtils.replace(error, scriptsDir.getAbsolutePath()
-						+ System.getProperty("file.separator"), "");
-			*/
+			 * // TODO: if (scriptsDir != null) error =
+			 * StringUtils.replace(error, scriptsDir.getAbsolutePath() +
+			 * System.getProperty("file.separator"), "");
+			 */
 			// Add a line break at the end if the error does
 			// not contain one already.
 			// TODO: find out why this regular expression does not work and make
 			// it work instead:
-			// if (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
+			// if
+			// (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
 			String lineBreak = System.getProperty("line.separator");
 			if (!error.endsWith(lineBreak))
-				error +=  lineBreak;
+				error += lineBreak;
 			System.err.print(error);
 			logError(t);
 		} catch (Throwable e) {
@@ -379,7 +372,7 @@ public class ScriptographerEngine {
 	public static void setCallback(ScriptographerCallback cb) {
 		ConsoleOutputStream.setCallback(cb);
 	}
-	
+
 	private static Stack<Script> scriptStack = new Stack<Script>();
 	private static boolean allowScriptCancelation = true;
 	private static Throwable lastError;
@@ -411,29 +404,30 @@ public class ScriptographerEngine {
 		if (scriptStack.empty()) {
 			// Set script coordinate system and angle units on each execution,
 			// at the beginning of the script stack.
-			anglesInDegrees = AngleUnits.DEGREES == (script != null
-					? script.getAngleUnits()
-					: AngleUnits.DEFAULT);
-			topDownCoordinates = CoordinateSystem.TOP_DOWN == (script != null 
-					? script.getCoordinateSystem()
-					: CoordinateSystem.DEFAULT);
+			anglesInDegrees =
+					AngleUnits.DEGREES == (script != null ? script
+							.getAngleUnits() : AngleUnits.DEFAULT);
+			topDownCoordinates =
+					CoordinateSystem.TOP_DOWN == (script != null ? script
+							.getCoordinateSystem() : CoordinateSystem.DEFAULT);
 			// Pass topDownCoordinates value to the client side as well
 			Document.beginExecution(topDownCoordinates,
-					// Do not update coordinate systems for tool scripts,
-					// as this has already happened in Tool.onHandleEvent()
+			// Do not update coordinate systems for tool scripts,
+			// as this has already happened in Tool.onHandleEvent()
 					script == null || !script.isToolScript());
 			// Disable output to the console while the script is executed as it
 			// won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 		}
 		if (file != null) {
-			Dialog.destroyAll(false, false);
+			destroyAllDialogs(false, false);
 			Timer.abortAll(false, false);
 			// Put a script object in the scope to offer the user
 			// access to information about it.
 			if (script == null) {
-				script = new Script(file, file.getPath().startsWith(
-						coreDir.getPath()));
+				script =
+						new Script(file, file.getPath().startsWith(
+								coreDir.getPath()));
 				scope.put("script", script, true);
 			}
 		}
@@ -450,6 +444,16 @@ public class ScriptographerEngine {
 		scriptStack.push(script);
 	}
 
+	public static void destroyAllDialogs(boolean ignoreKeepAlive, boolean force)
+	{
+		if (getIllustratorVersion() < 16)
+			com.scriptographer.adm.Dialog.destroyAll(false, false);
+		else
+			com.scriptographer.widget.Dialog.destroyAll(false, false);
+		
+		
+	}
+	
 	public static void beginExecution() {
 		beginExecution(null, null);
 	}
@@ -465,7 +469,7 @@ public class ScriptographerEngine {
 		if (scriptStack.empty()) {
 			try {
 				CommitManager.commit();
-			} catch(Throwable t) {
+			} catch (Throwable t) {
 				ScriptographerEngine.reportError(t);
 			}
 			Dictionary.releaseInvalid();
@@ -544,7 +548,8 @@ public class ScriptographerEngine {
 			throws ScriptException, IOException {
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		if (engine == null)
-			throw new ScriptException("Unable to find script engine for " + file);
+			throw new ScriptException("Unable to find script engine for "
+					+ file);
 		com.scratchdisk.script.Script script = engine.compile(file);
 		if (script == null)
 			throw new ScriptException("Unable to compile script " + file);
@@ -553,10 +558,10 @@ public class ScriptographerEngine {
 
 	/**
 	 * Executes the specified script file.
-	 *
+	 * 
 	 * @param file
-	 * @throws ScriptException 
-	 * @throws IOException 
+	 * @throws ScriptException
+	 * @throws IOException
 	 */
 	public static Object execute(File file, Scope scope)
 			throws ScriptException, IOException {
@@ -659,7 +664,7 @@ public class ScriptographerEngine {
 		for (String name : callbackScopes.keySet())
 			removeCallbacks(name, ignoreKeepAlive);
 	}
-	
+
 	private static boolean callCallbacks(String name, Object[] args) {
 		ArrayList<Scope> list = callbackScopes.get(name);
 		// The first callback handler that returns true stops the others
@@ -682,7 +687,7 @@ public class ScriptographerEngine {
 	public static void stopAll(boolean ignoreKeepAlive, boolean force) {
 		Timer.abortAll(ignoreKeepAlive, force);
 		callCallbacks("onStop");
-		Dialog.destroyAll(ignoreKeepAlive, force);
+		destroyAllDialogs(ignoreKeepAlive, force);
 		removeCallbacks(ignoreKeepAlive);
 	}
 
@@ -694,11 +699,20 @@ public class ScriptographerEngine {
 		// use of the API. Find one?
 		callCallbacks(callbackNames[type]);
 		// Explicitly initialize all dialogs after startup, as otherwise
-		// funny things will happen on CS3 and above. See comment in initializeAll
+		// funny things will happen on CS3 and above. See comment in
+		// initializeAll
 		if (type == EVENT_APP_STARTUP)
-			Dialog.initializeAll();
+			initializeAllDialogs();
 	}
 
+	private static void initializeAllDialogs()
+	{
+		if (getIllustratorVersion() < 16)
+			com.scriptographer.adm.Dialog.initializeAll();
+		else
+			com.scriptographer.widget.Dialog.initializeAll();
+	}
+	
 	/**
 	 * To be called from the native environment.
 	 */
@@ -706,11 +720,10 @@ public class ScriptographerEngine {
 			char character, int modifiers) {
 		// TODO: There is currently no way to use these callbacks in a Java-only
 		// use of the API. Find one?
-		return callCallbacks(callbackNames[type], new Object[] {
-				new KeyEvent(type, identifier, character, modifiers)
-		});
+		return callCallbacks(callbackNames[type], new Object[] { new KeyEvent(
+				type, identifier, character, modifiers) });
 	}
-	
+
 	/**
 	 * Launches the filename with the default associated editor.
 	 * 
@@ -723,8 +736,9 @@ public class ScriptographerEngine {
 	}
 
 	/**
-	 * Returns the current system time in nano seconds.
-	 * This is very useful for high resolution time measurements.
+	 * Returns the current system time in nano seconds. This is very useful for
+	 * high resolution time measurements.
+	 * 
 	 * @return the current system time.
 	 */
 	public static native long getNanoTime();
@@ -754,11 +768,11 @@ public class ScriptographerEngine {
 		showProgress();
 		nativeSetProgressText(text);
 	}
-	
+
 	private static native boolean nativeUpdateProgress(long current, long max,
 			boolean visible);
 
-	public static  boolean updateProgress(long current, long max) {
+	public static boolean updateProgress(long current, long max) {
 		if (progressVisible) {
 			progressCurrent = current;
 			progressMax = max;
@@ -785,7 +799,7 @@ public class ScriptographerEngine {
 	private static native void nativeCloseProgress();
 
 	public static void closeProgress() {
-		progressVisible  = false;
+		progressVisible = false;
 		nativeCloseProgress();
 	}
 
@@ -801,7 +815,7 @@ public class ScriptographerEngine {
 			} else {
 				closeProgress();
 			}
-			
+
 		}
 	}
 
@@ -849,8 +863,8 @@ public class ScriptographerEngine {
 	}
 
 	private static void readVersion() {
-		String[] lines = ClassUtils.getServiceInformation(
-				ScriptographerEngine.class);
+		String[] lines =
+				ClassUtils.getServiceInformation(ScriptographerEngine.class);
 		if (lines != null) {
 			version = Double.parseDouble(lines[0]);
 			revision = Integer.parseInt(lines[1]);

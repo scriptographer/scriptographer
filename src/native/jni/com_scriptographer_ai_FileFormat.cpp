@@ -32,7 +32,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_FileFormat_getFileFormats(J
 					char *name;
 					char title[256];
 					char extension[256];
-					long options;
+					ai::int32 options;
 					if (!sAIFileFormat->GetFileFormatName(format, &name) &&
 						!sAIFileFormat->GetFileFormatTitle(format, title) &&
 						!sAIFileFormat->GetFileFormatExtension(format, extension) &&

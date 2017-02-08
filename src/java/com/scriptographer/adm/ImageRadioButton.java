@@ -15,6 +15,7 @@
 package com.scriptographer.adm;
 
 import java.io.IOException;
+import com.scriptographer.ui.Border;
 
 /**
  * @author lehni

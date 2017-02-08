@@ -92,7 +92,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *en
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle res = NULL;
 		AIArtSet set = Item_getSelected(false);
-		long values;
+		ai::int32 values;
 		bool selected = !sAIArt->GetArtUserAttr(art, kArtSelected, &values) && values;
 		sAIPlaced->MakePlacedObjectNative(art, &res, askParams);
 		Item_deselectAll();
@@ -136,10 +136,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getFile(JNIEnv *
 		char path[kMaxPathLength];
 		if (!sAIPlaced->GetPlacedFilePathFromArt(art, path, kMaxPathLength) &&
 			!sAIUser->Path2SPPlatformFileSpecification(path, &fileSpec)) {
-#else
+#elif kPluginInterfaceVersion < kAI16
 		ai::UnicodeString path;
 		if (!sAIPlaced->GetPlacedFilePathFromArt(art, path)) {
 			ai::FilePath(path).GetAsSPPlatformFileSpec(fileSpec);
+#else
+		{ //todo
 #endif
 			return gEngine->convertFile(env, &fileSpec);
 		}

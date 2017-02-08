@@ -25,7 +25,7 @@
 // Use inline functions outside the macros because #if is not possible within macros
 
 inline AIDictionaryRef Tracing_getOptions(AIArtHandle art) {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 &&  kPluginInterfaceVersion <= kAI15
 	AIDictionaryRef dict = NULL;
 	sAITracing->AcquireTracingOptions(art, &dict);
 	return dict;
@@ -35,7 +35,7 @@ inline AIDictionaryRef Tracing_getOptions(AIArtHandle art) {
 }
 
 inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 &&  kPluginInterfaceVersion <= kAI15
 	AIDictionaryRef dict = NULL;
 	sAITracing->AcquireTracingOptions(art, &dict);
 	return dict;
@@ -62,7 +62,7 @@ inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint artHandle) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		AIArtHandle tracing = NULL;
 		Document_activate((AIDocumentHandle) docHandle);
 		// we just pass the image itself for prep. TODO: find out what we're supposed to pass here!
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_update(JNIEnv *env, jobject obj) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITracing->Update(art);
 #else
@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_update(JNIEnv *env, jo
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getResample(JNIEnv *env, jobject obj) {
 	ASBoolean value = false;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingResampleKey, Boolean, &value);
 #else
 		TRACING_EXCEPTION
@@ -109,7 +109,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getResample(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResample(JNIEnv *env, jobject obj, jboolean resample) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingResampleKey, Boolean, resample);
 #else
 		TRACING_EXCEPTION
@@ -123,7 +123,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResample(JNIEnv *en
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getResampleResolution(JNIEnv *env, jobject obj) {
 	ASReal resolution = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingResampleResolutionKey, Real, &resolution);
 #else
 		TRACING_EXCEPTION
@@ -137,7 +137,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getResampleResolutio
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResampleResolution(JNIEnv *env, jobject obj, jfloat resolution) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingResampleResolutionKey, Real, resolution);
 #else
 		TRACING_EXCEPTION
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResampleResolution(
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetMode(JNIEnv *env, jobject obj) {
 	ASInt32 mode = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingModeKey, Integer, &mode);
 #else
 		TRACING_EXCEPTION
@@ -165,7 +165,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetMode(JNIEnv *
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingModeKey, Integer, mode);
 #else
 		TRACING_EXCEPTION
@@ -179,7 +179,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetMode(JNIEnv *
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getBlur(JNIEnv *env, jobject obj) {
 	ASReal blur = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingBlurKey, Real, &blur);
 #else
 		TRACING_EXCEPTION
@@ -193,7 +193,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getBlur(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setBlur(JNIEnv *env, jobject obj, jfloat blur) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingBlurKey, Real, blur);
 #else
 		TRACING_EXCEPTION
@@ -207,7 +207,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setBlur(JNIEnv *env, j
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getThreshold(JNIEnv *env, jobject obj) {
 	ASInt32 threshold = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingThresholdKey, Integer, &threshold);
 #else
 		TRACING_EXCEPTION
@@ -221,7 +221,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getThreshold(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setThreshold(JNIEnv *env, jobject obj, jint threshold) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15 
 		TRACING_SET_OPTION(kTracingThresholdKey, Integer, threshold);
 #else
 		TRACING_EXCEPTION
@@ -235,7 +235,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setThreshold(JNIEnv *e
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMaxColors(JNIEnv *env, jobject obj) {
 	ASInt32 maxColors = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingMaxColorsKey, Integer, &maxColors);
 #else
 		TRACING_EXCEPTION
@@ -249,7 +249,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMaxColors(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxColors(JNIEnv *env, jobject obj, jint maxColors) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingMaxColorsKey, Integer, maxColors);
 #else
 		TRACING_EXCEPTION
@@ -263,7 +263,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxColors(JNIEnv *e
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getFills(JNIEnv *env, jobject obj) {
 	ASBoolean fills = false;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingFillsKey, Boolean, &fills);
 #else
 		TRACING_EXCEPTION
@@ -277,7 +277,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getFills(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setFills(JNIEnv *env, jobject obj, jboolean fills) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingFillsKey, Boolean, fills);
 #else
 		TRACING_EXCEPTION
@@ -291,7 +291,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setFills(JNIEnv *env, 
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getStrokes(JNIEnv *env, jobject obj) {
 	ASBoolean strokes = false;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingStrokesKey, Boolean, &strokes);
 #else
 		TRACING_EXCEPTION
@@ -305,7 +305,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getStrokes(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setStrokes(JNIEnv *env, jobject obj, jboolean strokes) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingStrokesKey, Boolean, strokes);
 #else
 		TRACING_EXCEPTION
@@ -319,7 +319,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setStrokes(JNIEnv *env
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMaxStrokeWeight(JNIEnv *env, jobject obj) {
 	ASReal maxWeight = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingMaxStrokeWeightKey, Real, &maxWeight);
 #else
 		TRACING_EXCEPTION
@@ -333,7 +333,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMaxStrokeWeight(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxStrokeWeight(JNIEnv *env, jobject obj, jfloat maxWeight) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingMaxStrokeWeightKey, Real, maxWeight);
 #else
 		TRACING_EXCEPTION
@@ -347,7 +347,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxStrokeWeight(JNI
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMinStrokeLength(JNIEnv *env, jobject obj) {
 	ASReal minLength = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingMinStrokeLengthKey, Real, &minLength);
 #else
 		TRACING_EXCEPTION
@@ -361,7 +361,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMinStrokeLength(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinStrokeLength(JNIEnv *env, jobject obj, jfloat minLength) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingMinStrokeLengthKey, Real, minLength);
 #else
 		TRACING_EXCEPTION
@@ -375,7 +375,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinStrokeLength(JNI
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getPathTightness(JNIEnv *env, jobject obj) {
 	ASReal tightness = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingPathTightnessKey, Real, &tightness);
 #else
 		TRACING_EXCEPTION
@@ -389,7 +389,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getPathTightness(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setPathTightness(JNIEnv *env, jobject obj, jfloat tightness) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingPathTightnessKey, Real, tightness);
 #else
 		TRACING_EXCEPTION
@@ -403,7 +403,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setPathTightness(JNIEn
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getCornerAngle(JNIEnv *env, jobject obj) {
 	ASReal angle = 0.0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingCornerAngleKey, Real, &angle);
 #else
 		TRACING_EXCEPTION
@@ -417,7 +417,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getCornerAngle(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setCornerAngle(JNIEnv *env, jobject obj, jfloat angle) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingCornerAngleKey, Real, angle);
 #else
 		TRACING_EXCEPTION
@@ -431,7 +431,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setCornerAngle(JNIEnv 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMinArea(JNIEnv *env, jobject obj) {
 	ASInt32 minArea = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingMinimumAreaKey, Integer, &minArea);
 #else
 		TRACING_EXCEPTION
@@ -445,7 +445,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMinArea(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinArea(JNIEnv *env, jobject obj, jint minArea) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingMinimumAreaKey, Integer, minArea);
 #else
 		TRACING_EXCEPTION
@@ -459,7 +459,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinArea(JNIEnv *env
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetVectorDisplay(JNIEnv *env, jobject obj) {
 	ASInt32 display = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingVisualizeVectorKey, Integer, &display);
 #else
 		TRACING_EXCEPTION
@@ -473,7 +473,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetVectorDisplay
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetVectorDisplay(JNIEnv *env, jobject obj, jint display) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingVisualizeVectorKey, Integer, display);
 #else
 		TRACING_EXCEPTION
@@ -487,7 +487,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetVectorDisplay
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetRasterDisplay(JNIEnv *env, jobject obj) {
 	ASInt32 display = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingVisualizeRasterKey, Integer, &display);
 #else
 		TRACING_EXCEPTION
@@ -501,7 +501,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetRasterDisplay
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetRasterDisplay(JNIEnv *env, jobject obj, jint display) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingVisualizeRasterKey, Integer, display);
 #else
 		TRACING_EXCEPTION
@@ -515,7 +515,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetRasterDisplay
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getLivePaint(JNIEnv *env, jobject obj) {
 	ASBoolean livePaint = 0;
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_GET_OPTION(kTracingLivePaintKey, Boolean, &livePaint);
 #else
 		TRACING_EXCEPTION
@@ -529,7 +529,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getLivePaint(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setLivePaint(JNIEnv *env, jobject obj, jboolean livePaint) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 		TRACING_SET_OPTION(kTracingLivePaintKey, Boolean, livePaint);
 #else
 		TRACING_EXCEPTION

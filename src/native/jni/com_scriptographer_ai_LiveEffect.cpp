@@ -92,7 +92,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 				// collect all the settings:
 				const char *realname = &name[prefixLen];
 				const char *title;
-				long major, minor, inputPreference, styleFilterFlags;
+				ai::int32 major, minor, inputPreference, styleFilterFlags;
 				sAILiveEffect->GetLiveEffectTitle(effect, &title);
 				sAILiveEffect->GetStyleFilterFlags(effect, &styleFilterFlags);
 				sAILiveEffect->GetInputPreference(effect, &inputPreference);

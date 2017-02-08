@@ -13,7 +13,7 @@
  */
 
 package com.scriptographer.adm;
-
+import com.scriptographer.ui.Rectangle;
 
 /**
  * A container that groups items logically, so that they can be

@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ui.Border;
 
 /**
  * A Button is by default text based.

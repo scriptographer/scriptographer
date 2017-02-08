@@ -20,6 +20,7 @@ import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.ui.AdmUiFactory;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ui.Component;
+import com.scriptographer.widget.ui.WidgetUiFactory;
 
 /**
  * @author lehni
@@ -31,11 +32,11 @@ public abstract class UiFactory {
 
 	public static UiFactory getInstance() {
 		if (factory == null) {
-			factory = ScriptographerEngine.getIllustratorVersion() < 16
-					? new AdmUiFactory()
-					// TODO: Implement SwtUiFactory
-					// new SwtUiFactory();
-					: null;
+			factory =
+					ScriptographerEngine.getIllustratorVersion() < 16 ? new AdmUiFactory()
+							// TODO: Implement SwtUiFactory
+							// new SwtUiFactory();
+							: new WidgetUiFactory();
 		}
 		return factory;
 	}

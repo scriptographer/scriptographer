@@ -531,11 +531,18 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
+#if kPluginInterfaceVersion < kAI16
 	SPPlatformFileSpecification fileSpec;
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
 	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
+#else 
+	SPPlatformFileReference fileSpec;
+	sSPPlugins->GetPluginFileReference(m_pluginRef, &fileSpec);
 	
+	if (!fileSpecToPath(&fileSpec, pluginPath))
+		return kCantHappenErr;
+#endif
 	// Now find the last occurence of PATH_SEP_CHR and determine the string
 	// there:
 	*(strrchr(pluginPath, PATH_SEP_CHR) + 1) = '\0';
@@ -543,8 +550,8 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 #ifdef LOGFILE
 		// Create logfile:
 		char path[512];
-		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log",
-				pluginPath);
+		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log",pluginPath);
+		//sprintf(path, "c:\\temp\\native.log");
 		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
 #endif
@@ -610,15 +617,26 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 #ifdef WIN_ENV
 	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,
 			::GetModuleHandle(NULL), ::GetCurrentThreadId());
+#ifndef ADM_FREE
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC,
 			(LONG) appWindowProc);
+#else
+
+	AIWindowRef  windowRefParent;
+	error = sAIAppContext->GetPlatformAppWindow(&windowRefParent);
+	HWND hWnd = (HWND) windowRefParent;
+	s_defaultAppWindowProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(windowRefParent, GWLP_WNDPROC,
+		reinterpret_cast<LONG_PTR>(appWindowProc)));
+
+#endif //#ifndef ADM_FREE
 	// If the app is active (focus on splasher), send WA_ACTIVE message again,
 	// since it was received before installing the WindowProc.
 	// CAUTION: Installing WindowProc in onStartupPlugin does not seem to work
 	// on Windows, something seems to override it again after.
 	if (hWnd == ::GetParent(::GetForegroundWindow()))
 		appWindowProc(hWnd, WM_ACTIVATEAPP, WA_ACTIVE, 0);
+
 #endif
 	return error;
 }
@@ -629,8 +647,16 @@ ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 	// If we have overridden the default WindowProc, set it back now, since ours
 	// wont exist anymore after unloading and that will lead to a crash.
 	if (s_defaultAppWindowProc != NULL) {
+#ifndef ADM_FREE
 		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
+#else
+		AIWindowRef  windowRefParent;
+		AIErr  error = sAIAppContext->GetPlatformAppWindow(&windowRefParent);
+		
+		SetWindowLongPtr(windowRefParent, GWLP_WNDPROC,reinterpret_cast<LONG_PTR>(s_defaultAppWindowProc));
+
+#endif //#ifndef ADM_FREE
 	}
 	UnhookWindowsHookEx(s_defaultGetMessageProc);
 #endif
@@ -797,14 +823,21 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path,
 #else
 	// On Windows, things are much easier because we don't have to convert to a
 	// Posix path:
+#if kPluginInterfaceVersion < kAI16
 	if (sAIUser->Path2SPPlatformFileSpecification(path, fileSpec))
 		return false;
+#else
+			//todo
+#endif
+
 #endif
 	return true;
 }
 
 void ScriptographerPlugin::setCursor(int cursorID) {
+#ifndef ADM_FREE
 	sADMBasic->SetPlatformCursor(m_pluginRef, cursorID);
+#endif
 }
 
 ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
@@ -851,7 +884,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector,
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->MenuItem_onSelect((AIMenuMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
-			long inArtwork, isSelected, isTrue;
+			ai::int32 inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
 			error = gEngine->MenuItem_onUpdate((AIMenuMessage *) message,
 					inArtwork, isSelected, isTrue);
@@ -958,6 +991,7 @@ void ScriptographerPlugin::log(const char *str, ...) {
 
 void ScriptographerPlugin::reportError(const char* str, ...) {
 	ASBoolean gotBasic = false;
+#ifndef ADM_FREE
 	if (sADMBasic == NULL && sSPBasic != NULL) {
 		sSPBasic->AcquireSuite(kADMBasicSuite, kADMBasicSuiteVersion,
 				(const void **) &sADMBasic);
@@ -980,6 +1014,7 @@ void ScriptographerPlugin::reportError(const char* str, ...) {
 		sSPBasic->ReleaseSuite(kADMBasicSuite, kADMBasicSuiteVersion);
 		sADMBasic = NULL;
 	}
+#endif
 }
 
 void ScriptographerPlugin::reportError(ASErr error) {
@@ -1022,10 +1057,12 @@ void ScriptographerPlugin::reportError(ASErr error) {
 }
 
 char *ScriptographerPlugin::getMsgString(int n, char *buf, int len) {
+#ifndef ADM_FREE
 	ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, buf, len);
 	if (err || buf[0] == '\0')
 		return NULL;
 	else
+#endif //#ifndef ADM_FREE
 		return buf;
 }
 
@@ -1033,6 +1070,7 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 	int n = 1;
 	while (true) {
 		char code[10];
+#ifndef ADM_FREE
 		ASErr err = sADMBasic->GetIndexString(m_pluginRef, 16050, n, code,
 				sizeof(code));
 		// If we got an error, back off and use the last string, which should be
@@ -1041,6 +1079,7 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 			if (n == 1)
 				return NULL;		// no error strings found
 			else
+
 				return getMsgString(n--, buf, len);
 		}
 
@@ -1062,7 +1101,9 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 				return getMsgString(n++, buf, len);
 		}
 		n += 2;
+#endif //#ifndef ADM_FREE
 	}
+	
 }
 
 ASBoolean ScriptographerPlugin::filterError(ASErr error) {
@@ -1142,11 +1183,13 @@ ASErr ScriptographerPlugin::acquireSuite(ImportSuite *suite) {
 		if (!error)
 			createGluedSuite((void **) suite->suite, suite->size);
 #endif
+#ifndef ADM_FREE
 		if (error && sADMBasic != NULL) {
 			sprintf(message, "Error: %d, suite: %s, version: %d!", error,
 					suite->name, suite->version);
 			sADMBasic->MessageAlert(message);
 		}
+#endif //#ifndef ADM_FREE
 	}
 	return error;
 }

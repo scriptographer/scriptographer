@@ -28,6 +28,7 @@ import java.net.URL;
 
 import com.scriptographer.ai.Raster;
 import com.scriptographer.ui.NativeObject;
+import com.scriptographer.ui.Size;
 
 /**
  * @author lehni

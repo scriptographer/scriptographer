@@ -20,6 +20,9 @@
 #include "uiGlobals.h"
 #include "aiGlobals.h"
 
+//temp
+#include "com_scriptographer_widget_Dialog.h"
+
 #ifdef WIN_ENV
 #include "loadJava.h"
 #endif
@@ -298,6 +301,7 @@ void ScriptographerEngine::init() {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Unable to create Java VM.");
 	}
+
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	if (cls_Loader == NULL)
 		throw new StringException("Unable to load loader.jar. Make sure that the java folder was copied together with the Scriptographer plugin.");
@@ -635,26 +639,30 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 
+	//moved out of adm
+	cls_ui_Rectangle = loadClass(env, "com/scriptographer/ui/Rectangle");
+	cid_ui_Rectangle = getConstructorID(env, cls_ui_Rectangle, "(IIII)V");
+	fid_ui_Rectangle_x = getFieldID(env, cls_ui_Rectangle, "x", "I");
+	fid_ui_Rectangle_y = getFieldID(env, cls_ui_Rectangle, "y", "I");
+	fid_ui_Rectangle_width = getFieldID(env, cls_ui_Rectangle, "width", "I");
+	fid_ui_Rectangle_height = getFieldID(env, cls_ui_Rectangle, "height", "I");
+	mid_ui_Rectangle_set = getMethodID(env, cls_ui_Rectangle, "set", "(IIII)V");
+	
+	cls_ui_Point = loadClass(env, "com/scriptographer/ui/Point");
+	cid_ui_Point = getConstructorID(env, cls_ui_Point, "(II)V");
+	fid_ui_Point_x = getFieldID(env, cls_ui_Point, "x", "I");
+	fid_ui_Point_y = getFieldID(env, cls_ui_Point, "y", "I");
+	mid_ui_Point_set = getMethodID(env, cls_ui_Point, "set", "(II)V");
+	
+	cls_ui_Size = loadClass(env, "com/scriptographer/ui/Size");
+	cid_ui_Size = getConstructorID(env, cls_ui_Size, "(II)V");
+	fid_ui_Size_width = getFieldID(env, cls_ui_Size, "width", "I");
+	fid_ui_Size_height = getFieldID(env, cls_ui_Size, "height", "I");
+	mid_ui_Size_set = getMethodID(env, cls_ui_Size, "set", "(II)V");
+
+#ifndef ADM_FREE
 // ADM:
-	cls_adm_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
-	cid_adm_Rectangle = getConstructorID(env, cls_adm_Rectangle, "(IIII)V");
-	fid_adm_Rectangle_x = getFieldID(env, cls_adm_Rectangle, "x", "I");
-	fid_adm_Rectangle_y = getFieldID(env, cls_adm_Rectangle, "y", "I");
-	fid_adm_Rectangle_width = getFieldID(env, cls_adm_Rectangle, "width", "I");
-	fid_adm_Rectangle_height = getFieldID(env, cls_adm_Rectangle, "height", "I");
-	mid_adm_Rectangle_set = getMethodID(env, cls_adm_Rectangle, "set", "(IIII)V");
 	
-	cls_adm_Point = loadClass(env, "com/scriptographer/adm/Point");
-	cid_adm_Point = getConstructorID(env, cls_adm_Point, "(II)V");
-	fid_adm_Point_x = getFieldID(env, cls_adm_Point, "x", "I");
-	fid_adm_Point_y = getFieldID(env, cls_adm_Point, "y", "I");
-	mid_adm_Point_set = getMethodID(env, cls_adm_Point, "set", "(II)V");
-	
-	cls_adm_Size = loadClass(env, "com/scriptographer/adm/Size");
-	cid_adm_Size = getConstructorID(env, cls_adm_Size, "(II)V");
-	fid_adm_Size_width = getFieldID(env, cls_adm_Size, "width", "I");
-	fid_adm_Size_height = getFieldID(env, cls_adm_Size, "height", "I");
-	mid_adm_Size_set = getMethodID(env, cls_adm_Size, "set", "(II)V");
 
 	cls_adm_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
 	mid_adm_Dialog_onSizeChanged = getMethodID(env, cls_adm_Dialog, "onSizeChanged", "(IIZ)V");
@@ -698,6 +706,12 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_adm_TextEditItem = loadClass(env, "com/scriptographer/adm/TextEditItem");
 	fid_adm_TextEditItem_setSelectionTimer = getFieldID(env, cls_adm_TextEditItem, "setSelectionTimer", "I");
 #endif
+#else
+	//TODO: widget classes...
+	cls_widget_NotificationHandler = loadClass(env, "com/scriptographer/widget/NotificationHandler");
+	mid_widget_NotificationHandler_onNotify = getMethodID(env, cls_widget_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
+
+#endif //#ifndef ADM_FREE
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
@@ -1009,10 +1023,13 @@ void ScriptographerEngine::convertPoint(JNIEnv *env, CoordinateSystem system,
 	if (env->IsInstanceOf(point, cls_ai_Point)) {
 		x = env->GetDoubleField(point, fid_ai_Point_x);
 		y = env->GetDoubleField(point, fid_ai_Point_y);
-	} else if (env->IsInstanceOf(point, cls_adm_Point)) {
-		x = env->GetIntField(point, fid_adm_Point_x);
-		y = env->GetIntField(point, fid_adm_Point_y);
 	}
+#ifndef ADM_FREE	
+	else if (env->IsInstanceOf(point, cls_ui_Point)) {
+		x = env->GetIntField(point, fid_ui_Point_x);
+		y = env->GetIntField(point, fid_ui_Point_y);
+	}
+#endif //#ifndef ADM_FREE
 	convertPoint(env, system, x, y, res);
 }
 
@@ -1029,7 +1046,7 @@ void ScriptographerEngine::convertSegments(JNIEnv *env, AIReal *data, int count,
 	}
 	// Check if a conversion is needed at all?
 	if (xOrigin != 0 || yOrigin != 0 || m_topDownCoordinates) {
-		jfloat *ptr = data;
+		AIReal *ptr = data;
 		if (m_topDownCoordinates) {
 			// We need to flip coordinates both ways. When reading from Ai, we
 			// first subtract the yOrigin from the value and flip after.
@@ -1147,7 +1164,7 @@ void ScriptographerEngine::convertRectangle(JNIEnv *env,
 	EXCEPTION_CHECK(env);
 }
 
-// com.scriptographer.ai.Size <-> AIRealPoint
+// com.scriptographer.ai.Size <-> AIRealPoint, AISize
 jobject ScriptographerEngine::convertSize(JNIEnv *env, float width,
 		float height, jobject res) {
 	if (res == NULL) {
@@ -1161,13 +1178,23 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env, float width,
 }
 
 void ScriptographerEngine::convertSize(JNIEnv *env, jobject size,
-		AIRealPoint *res) {
+		AIRealPoint *res){
 	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
 	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
 	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
 		THROW_INVALID_COORDINATES(env, size);
 	res->h = width;
 	res->v = height;
+	EXCEPTION_CHECK(env);
+}
+
+void  ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AISize *res){
+	jdouble width = env->GetDoubleField(size, fid_ai_Size_width);
+	jdouble height = env->GetDoubleField(size, fid_ai_Size_height);
+	if (!VALID_COORDINATE(width) || !VALID_COORDINATE(height))
+		THROW_INVALID_COORDINATES(env, size);
+	res->width = width;
+	res->height = height;
 	EXCEPTION_CHECK(env);
 }
 
@@ -1236,14 +1263,16 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env,
 	return res;
 }
 
+#ifndef ADM_FREE
+
 // com.scriptographer.adm.Point <-> ADMPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 		ADMPoint *point, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Point, cid_adm_Point,
+		return newObject(env, cls_ui_Point, cid_ui_Point,
 				(jint) point->h, (jint) point->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Point_set,
+		callVoidMethod(env, res, mid_ui_Point_set,
 				(jint) point->h, (jint) point->v);
 		return res;
 	}
@@ -1253,9 +1282,9 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env,
 // com.scriptographer.ai.Point
 void ScriptographerEngine::convertPoint(JNIEnv *env,
 		jobject point, ADMPoint *res) {
-	if (env->IsInstanceOf(point, cls_adm_Point)) {
-		res->h = env->GetIntField(point, fid_adm_Point_x);
-		res->v = env->GetIntField(point, fid_adm_Point_y);
+	if (env->IsInstanceOf(point, cls_ui_Point)) {
+		res->h = env->GetIntField(point, fid_ui_Point_x);
+		res->v = env->GetIntField(point, fid_ui_Point_y);
 	} else if (env->IsInstanceOf(point, cls_ai_Point)) {
 		res->h = (short) env->GetDoubleField(point, fid_ai_Point_x);
 		res->v = (short) env->GetDoubleField(point, fid_ai_Point_y);
@@ -1267,12 +1296,12 @@ void ScriptographerEngine::convertPoint(JNIEnv *env,
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 		ADMRect *rect, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle,
+		return newObject(env, cls_ui_Rectangle, cid_ui_Rectangle,
 				(jint) rect->left, (jint) rect->top,
 				(jint) (rect->right - rect->left),
 				(jint) (rect->bottom - rect->top));
 	} else {
-		callVoidMethod(env, res, mid_adm_Rectangle_set,
+		callVoidMethod(env, res, mid_ui_Rectangle_set,
 				(jint) rect->left, (jint) rect->top,
 				(jint) (rect->right - rect->left),
 				(jint) (rect->bottom - rect->top));
@@ -1282,10 +1311,10 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
 
 void ScriptographerEngine::convertRectangle(JNIEnv *env,
 		jobject rect, ADMRect *res) {
-	res->left = env->GetIntField(rect, fid_adm_Rectangle_x);
-	res->top = env->GetIntField(rect, fid_adm_Rectangle_y);
-	res->right = res->left + env->GetIntField(rect, fid_adm_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rect, fid_adm_Rectangle_height);
+	res->left = env->GetIntField(rect, fid_ui_Rectangle_x);
+	res->top = env->GetIntField(rect, fid_ui_Rectangle_y);
+	res->right = res->left + env->GetIntField(rect, fid_ui_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rect, fid_ui_Rectangle_height);
 	EXCEPTION_CHECK(env);
 }
 
@@ -1293,10 +1322,10 @@ void ScriptographerEngine::convertRectangle(JNIEnv *env,
 jobject ScriptographerEngine::convertSize(JNIEnv *env,
 		ADMPoint *size, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_adm_Size, cid_adm_Size,
+		return newObject(env, cls_ui_Size, cid_ui_Size,
 				(jint) size->h, (jint) size->v);
 	} else {
-		callVoidMethod(env, res, mid_adm_Size_set,
+		callVoidMethod(env, res, mid_ui_Size_set,
 				(jint) size->h, (jint) size->v);
 		return res;
 	}
@@ -1304,10 +1333,40 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env,
 
 void ScriptographerEngine::convertSize(JNIEnv *env,
 		jobject size, ADMPoint *res) {
-	res->h = env->GetIntField(size, fid_adm_Size_width);
-	res->v = env->GetIntField(size, fid_adm_Size_height);
+	res->h = env->GetIntField(size, fid_ui_Size_width);
+	res->v = env->GetIntField(size, fid_ui_Size_height);
 	EXCEPTION_CHECK(env);
 }
+#else //ADM_FREE
+
+// com.scriptographer.adm.Rectangle <-> ADMRect
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env,
+		RECT *rect, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_ui_Rectangle, cid_ui_Rectangle,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+	} else {
+		callVoidMethod(env, res, mid_ui_Rectangle_set,
+				(jint) rect->left, (jint) rect->top,
+				(jint) (rect->right - rect->left),
+				(jint) (rect->bottom - rect->top));
+		return res;
+	}
+}
+
+void ScriptographerEngine::convertRectangle(JNIEnv *env,
+		jobject rect, RECT *res) {
+	res->left = env->GetIntField(rect, fid_ui_Rectangle_x);
+	res->top = env->GetIntField(rect, fid_ui_Rectangle_y);
+	res->right = res->left + env->GetIntField(rect, fid_ui_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rect, fid_ui_Rectangle_height);
+	EXCEPTION_CHECK(env);
+}
+
+
+#endif //#ifndef ADM_FREE
 
 // java.awt.Color <-> ADMRGBColor
 jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
@@ -1538,10 +1597,12 @@ bool ScriptographerEngine::convertColor(AIColor *srcCol,
 #if kPluginInterfaceVersion < kAI12
 		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
 				dst, &inGamut)) {
-#else
+#elif kPluginInterfaceVersion < kAI17
 		AIColorConvertOptions options;
 		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace,
 				dst, options, &inGamut)) {
+#else
+		{ //todo
 #endif
 			// Init the destCol with 0
 			// memset(dstCol, 0, sizeof(AIColor));
@@ -1635,7 +1696,7 @@ void ScriptographerEngine::convertStrokeStyle(JNIEnv *env,
 jobject ScriptographerEngine::convertItemSet(JNIEnv *env,
 		AIArtSet set, bool layerOnly) {
 	Item_filter(set, layerOnly);
-	long count = 0;
+	sizet count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	jobject itemSet = newObject(env, cls_ai_ItemList, cid_ItemList); 
 	for (long i = 0; i < count; i++) {
@@ -1954,7 +2015,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art,
 			sAITextFrame->GetType(art, &textType);
 		} else if (type == kPluginArt) {
 			// TODO: Add handling of special types
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 			if (sAITracing->IsTracing(art))
 				type = com_scriptographer_ai_Item_TYPE_TRACING;
 #endif
@@ -2108,7 +2169,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		ASErr error;
 //		long t = getNanoTime();
 		AIArtHandle **matches;
-		long numMatches;
+		ai::int32 numMatches;
 		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
 		jintArray artHandles;
 		if (numMatches > 0) {
@@ -2166,7 +2227,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		}
 
 		// Pass undoLevel and redoLevel to onSelectionChanged as well.
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2194,7 +2255,7 @@ ASErr ScriptographerEngine::onUndo() {
 	JNIEnv *env = getEnv();
 	try {
 		ASErr error;
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2209,7 +2270,7 @@ ASErr ScriptographerEngine::onRedo() {
 	JNIEnv *env = getEnv();
 	try {
 		ASErr error;
-		long undoLevel, redoLevel;
+		ai::int32 undoLevel, redoLevel;
 		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
 		AIDocumentHandle doc;
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
@@ -2228,7 +2289,7 @@ ASErr ScriptographerEngine::onClear() {
 		RETURN_ERROR(sAIDocument->GetDocument(&doc));
 		if (doc != NULL) {
 			AIArtHandle **matches;
-			long numMatches;
+			ai::int32 numMatches;
 			RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
 			jintArray artHandles;
 			if (numMatches > 0) {
@@ -2276,10 +2337,12 @@ ASErr ScriptographerEngine::onRevert() {
 
 ASErr ScriptographerEngine::deactivateActiveDialog() {
 	JNIEnv *env = getEnv();
+#ifndef ADM_FREE
 	try {
 		callStaticVoidMethod(env, cls_adm_Dialog, mid_adm_Dialog_deactivateActiveDialog);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
+#endif //#ifndef ADM_FREE
 	return kExceptionErr;
 }
 
@@ -2389,6 +2452,12 @@ ASErr ScriptographerEngine::LiveEffect_onGetInputType(
 ASErr ScriptographerEngine::MenuItem_onSelect(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
+
+
+		////temp - debug
+		//if (!checkMenu(message->menuItem))
+
+
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onSelect,
 				(jint) message->menuItem);
 		return kNoErr;
@@ -2435,6 +2504,7 @@ ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) 
 	return kExceptionErr;
 }
 
+#ifndef ADM_FREE
 
 /**
  * ADM CallbackListener
@@ -2489,29 +2559,6 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 				mid_adm_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
-}
-
-ASErr ScriptographerEngine::callOnHandleEvent(int event) {
-	AppContext context;
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_ScriptographerEngine,
-				mid_ScriptographerEngine_onHandleEvent, event);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
-		ASUnicode character, ASUInt32 modifiers) {
-	AppContext context;
-	JNIEnv *env = getEnv();
-	try {
-		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine,
-				mid_ScriptographerEngine_onHandleKeyEvent,
-				type, keyCode, character, modifiers);
-	} EXCEPTION_CATCH_REPORT(env);
-	return false;
 }
 
 int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj,
@@ -2600,6 +2647,85 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 		if (obj == NULL) throw new StringException("The entry is not linked to a scripting object.");
 	}
 	return obj;
+}
+#else // for !ADM_FREE
+
+int ScriptographerEngine::getControlObjectHandle(JNIEnv *env, jobject obj, const char *name) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
+	if (!handle) {
+		//// For HierarchyListBoxes it could be that the user wants to call item
+		//// functions on a child list. report that this can only be called on the
+		//// root list:
+		//if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
+		//	throw new StringException("This function can only be called on the root hierarchy list.");
+		//} else {
+			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
+		//}
+	}
+	return handle;
+}
+
+void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
+	JNIEnv *env = getEnv();
+	AppContext context;
+	callVoidMethodReport(env, handler, mid_widget_NotificationHandler_onNotify,
+			env->NewStringUTF(notifier));
+}
+
+void ScriptographerEngine::callOnDestroy(jobject handler) {
+	callOnNotify(handler, kWidgetDestroyNotifier);
+}
+
+#endif //#ifndef ADM_FREE
+
+
+
+ASErr ScriptographerEngine::callOnHandleEvent(int event) {
+	AppContext context;
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleEvent, event);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode,
+		ASUnicode character, ASUInt32 modifiers) {
+	AppContext context;
+	JNIEnv *env = getEnv();
+	try {
+		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine,
+				mid_ScriptographerEngine_onHandleKeyEvent,
+				type, keyCode, character, modifiers);
+	} EXCEPTION_CATCH_REPORT(env);
+	return false;
+}
+
+int ScriptographerEngine::getMenuObjectHandle(JNIEnv *env, jobject obj,
+		const char *name) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ui_NativeObject_handle);
+	if (!handle) {
+		// For HierarchyListBoxes it could be that the user wants to call item
+		// functions on a child list. report that this can only be called on the
+		// root list:
+#ifndef ADM_FREE
+		if (env->IsInstanceOf(obj, cls_adm_HierarchyListBox)) {
+			throw new StringException("This function can only be called on the root hierarchy list.");
+		} else 
+#endif //#ifndef ADM_FREE		
+		{
+			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
+		}
+	}
+	return handle;
 }
 
 /*

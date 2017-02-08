@@ -5,8 +5,8 @@
 	<!-- =================================================================== -->
 	<target name="init">
 		<property name="Name" value="Scriptographer"/>
-		<property name="version.major" value ="2" />
-		<property name="version.minor" value="9" />
+		<property name="version.major" value ="3" />
+		<property name="version.minor" value="0" />
 		<property name="version" value="${version.major}.${version.minor}"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
@@ -21,13 +21,12 @@
 		<property name="jar.name" value="${project}"/>
 		<property name="package.name" value="${project}-${version}"/>
 
-		<property name="build.debug" value="off"/>
-		<property name="build.optimize" value="on"/>
+		<property name="build.debug" value="on"/>
+		<property name="build.optimize" value="off"/>
 		<property name="build.version" value="1.5"/>
 		<property name="build.deprecation" value="off"/>
 
 		<property name="project.dir" location="../.."/>
-
 		<!-- Sources -->
 		<property name="src.java" location="${project.dir}/src/java"/>
 		<property name="src.jni" location="${project.dir}/src/native/jni"/>
@@ -271,6 +270,16 @@ Scriptographer build instructions
 
 		<!-- Packages -->
 		<antcall target="packages.platform">
+			<param name="target" value="CCx64"/> <!-- no spaces! --> 
+			<param name="build64" value="1" />
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CC"/>
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CS6"/>
+		</antcall>
+		<antcall target="packages.platform">
 			<param name="target" value="CS5"/>
 		</antcall>
 		<antcall target="packages.platform">
@@ -286,7 +295,7 @@ Scriptographer build instructions
 			<param name="target" value="CS"/>
 		</antcall>
 
-		<antcall target="packages.cleanup" />
+	<antcall target="packages.cleanup" /> 
 	</target>
 
 	<target name="packages.cleanup" depends="init">
@@ -324,19 +333,24 @@ Scriptographer build instructions
 		</exec>
 	</target>
 
+	
 	<target name="packages.platform.win" depends="init" if="build.platform.win">
-		<echo>Executing Windows specific tasks</echo>
-
+		<echo>Executing Windows specific tasks for ${target}  </echo>
 		<!-- Build the targets -->
-		<exec executable="cmd.exe" dir="${env.VS80COMNTOOLS}..\IDE">
-			<arg line="/C devenv.com"/>
+		<condition property="winplatform" value="x64" else="Win32">
+	    	 <isset property="build64"/>
+		</condition>
+		<exec executable="cmd.exe" dir="${env.VS100COMNTOOLS}..\IDE" failonerror="false">
+			<arg line="/C devenv.exe"/>
 			<arg value="${build.win}\Scriptographer.sln"/>
 			<arg value="/build"/>
-			<arg value="${target} Release"/>
-		</exec>
-
+			<arg value="&quot;${target} Debug|${winplatform}&quot;"/><!--todo: !release! &  in .bat -->
+			<arg value="/project"/>
+			<arg value="scriptographer"/>
+		</exec>	
+		<echo> ${build.win}/zipPackage.bat "${target} ${version}.${build.number} in ${target.packages}  </echo>
 		<!-- Make the packages -->
-		<exec executable="cmd.exe" dir="${target.packages}">
+			<exec executable="cmd.exe" dir="${target.packages}">
 			<arg value="/C"/>
 			<arg path="${build.win}/zipPackage.bat"/>
 			<arg path="${build.win}"/>
@@ -445,6 +459,17 @@ Scriptographer build instructions
 		   	<class name="com.scriptographer.adm.Drawer" />
 		   	<class name="com.scriptographer.adm.Image" />
 		   	<class name="com.scriptographer.adm.Tracker" />
+		   	
+		   	<!--widget-->
+		   	<class name="com.scriptographer.widget.Dialog" />
+			<class name="com.scriptographer.widget.Notifier" />
+			<class name="com.scriptographer.widget.Item" />
+		   	<class name="com.scriptographer.widget.ValueItem" />
+		   	<class name="com.scriptographer.widget.TextValueItem" />
+		   	<class name="com.scriptographer.widget.TextItem" />
+		   	<class name="com.scriptographer.widget.Button" />
+			<class name="com.scriptographer.widget.TextEditItem" />
+
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="${src.js}/jni/jni.js">
@@ -452,7 +477,9 @@ Scriptographer build instructions
 			// create registerNatives.cpp by parsing the generated files by
 			// javah, see jni.js:
 			registerNatives(project.getProperty("src.jni"),
-				project.getProperty("src.jni") + "/registerNatives.cpp");
+				project.getProperty("src.jni") + "/registerNatives.cpp", "adm" );
+			registerNatives(project.getProperty("src.jni"),
+				project.getProperty("src.jni") + "/registerWidgetNatives.cpp", "swt");
 		]]>
 		</script>
 	</target>

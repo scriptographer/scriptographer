@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.StringIndexList;
+import com.scriptographer.adm.Component;
 import com.scriptographer.adm.Component.AWTContainer;
 
 /**

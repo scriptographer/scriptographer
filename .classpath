@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="build/java/build/lib/jython.jar" sourcepath="/jython"/>
 	<classpathentry kind="lib" path="build/java/build/lib/js.jar" sourcepath="/rhino"/>
 	<classpathentry kind="lib" path="build/java/build/lib/debugger.jar" sourcepath="/debugger"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.7.0_40/lib/tools.jar"/>
+	<classpathentry kind="lib" path="C:/_testprojects/aiplugins/scriptographer/build/java/build/lib/swt.jar" sourcepath="C:/_testprojects/swt-4.3-win32-win32-x86_64/src.zip"/>
 	<classpathentry kind="output" path="build/java/build/classes"/>
 </classpath>

@@ -15,6 +15,8 @@
 package com.scriptographer.adm;
 
 import com.scriptographer.ai.Rectangle;
+import com.scriptographer.ui.DialogColor;
+import com.scriptographer.ui.DialogFont;
 
 /**
  * @author lehni
@@ -143,7 +145,7 @@ public class HierarchyListEntry extends ListEntry {
 	public void setTextColor(DialogColor color) {
 		if (color != null) {
 			textColor = color;
-			nativeSetTextColor(color.value);
+			nativeSetTextColor(color.value());
 		}
 	}
 	
@@ -154,7 +156,7 @@ public class HierarchyListEntry extends ListEntry {
 	public void setBackgroundColor(DialogColor color) {
 		if (color != null) {
 			bgColor = color;
-			nativeSetBackgroundColor(color.value);
+			nativeSetBackgroundColor(color.value());
 		}
 	}
 	
@@ -165,7 +167,7 @@ public class HierarchyListEntry extends ListEntry {
 	public void setDividerColor(DialogColor color) {
 		if (color != null) {
 			dividerColor = color;
-			nativeSetDividerColor(color.value);
+			nativeSetDividerColor(color.value());
 		}
 	}
 	

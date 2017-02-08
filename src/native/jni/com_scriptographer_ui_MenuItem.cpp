@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setOptions(JNIEnv *en
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_MenuItem_getOptions(JNIEnv *env, jobject obj) {
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
-		long options = 0;
+		ai::int32 options = 0;
 		sAIMenu->GetMenuItemOptions(item, &options);
 		return options;
 	} EXCEPTION_CONVERT(env);
@@ -148,6 +148,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_setChecked(JNIEnv *en
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->CheckItem(item, checked);
+
 	} EXCEPTION_CONVERT(env);
 }
 

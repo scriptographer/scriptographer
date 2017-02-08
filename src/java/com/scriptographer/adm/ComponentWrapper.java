@@ -14,6 +14,8 @@
 
 package com.scriptographer.adm;
 
+import com.scriptographer.adm.Component;
+
 /**
  * An interface to allow the various component wrappers to return
  * their component in a standardized way.

@@ -15,6 +15,7 @@
 package com.scriptographer.adm;
 
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ui.Border;
 
 /**
  * @author lehni

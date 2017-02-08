@@ -14,6 +14,8 @@
 
 package com.scriptographer.adm;
 
+import com.scriptographer.ui.Size;
+import com.scriptographer.ui.Rectangle;
 /**
  * @author lehni
  */

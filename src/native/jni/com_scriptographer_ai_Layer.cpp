@@ -114,9 +114,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setColor(JNIEnv *env, jo
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		AIColor aiColor;
 		gEngine->convertColor(env, color, &aiColor);
+#ifndef ADM_FREE
 		AIRGBColor rgbColor;
 		gEngine->convertColor(&aiColor, &rgbColor);
 		sAILayer->SetLayerColor(layer, rgbColor);
+#endif //#ifndef _ADM_FREE
+
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -125,6 +128,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setColor(JNIEnv *env, jo
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env, jobject obj) {
 	try {
+#ifndef ADM_FREE
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
 		AIRGBColor rgbColor;
 		if (!sAILayer->GetLayerColor(layer, &rgbColor)) {
@@ -132,6 +136,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 			gEngine->convertColor(&rgbColor, &aiColor);
 			return gEngine->convertColor(env, &aiColor);
 		}
+#endif //#ifndef _ADM_FREE
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

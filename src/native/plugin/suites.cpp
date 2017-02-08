@@ -89,7 +89,7 @@ extern "C" {
 	AIUserSuite						*sAIUser;
 	AIUndoSuite						*sAIUndo;
 	AIURLSuite						*sAIURL;
-
+#ifndef ADM_FREE
 	_ADMBasicSuite					*sADMBasic;
 	_ADMDialogSuite 				*sADMDialog;
 	_ADMItemSuite					*sADMItem;
@@ -111,6 +111,9 @@ extern "C" {
 #ifdef WIN_ENV
 	ADMWinHostSuite					*sADMWinHost;
 #endif // WIN_ENV
+#else //ADM_FREE
+
+#endif //#ifndef ADM_FREE
 
 #if kPluginInterfaceVersion >= kAI11
 	AITextFrameSuite				*sAITextFrame;
@@ -141,6 +144,12 @@ extern "C" {
 #if kPluginInterfaceVersion >= kAI15
 	AIArtboardSuite					*sAIArtboard;
 #endif // kPluginInterfaceVersion >= kAI15
+
+#if kPluginInterfaceVersion >= kAI16
+	AIPanelSuite				*sAIPanel;
+	AIPanelFlyoutMenuSuite		*sAIPanelFlyoutMenu;
+
+#endif //kPluginInterfaceVersion >= kAI16
 }
 
 // The startup and postStartup array contains all the suites which
@@ -153,8 +162,10 @@ extern "C" {
 
 // startup: all suites that are needed immediatelly (onStartupPlugin)
 ImportSuite startup[] = {
-	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 
+#ifndef ADM_FREE
+	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
+#endif //#ifndef ADM_FREE
 	kSPBlocksSuite, kSPBlocksSuiteVersion, &sSPBlocks, sizeof(SPBlocksSuite),
 	kAIMdMemorySuite, kAIMdMemorySuiteVersion, &sAIMDMemory, sizeof(AIMdMemorySuite),
 	kSPAccessSuite, kSPAccessSuiteVersion, &sSPAccess, sizeof(SPAccessSuite),
@@ -180,7 +191,11 @@ ImportSuite startup[] = {
 	// Needed for string conversion by various underlying method calls
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 #endif
-
+#if kPluginInterfaceVersion >= kAI16
+	kAIPanelSuite, kAIPanelSuiteVersion, &sAIPanel, sizeof(sAIPanel),
+	kAIPanelFlyoutMenuSuite, kAIPanelFlyoutMenuSuiteVersion, &sAIPanelFlyoutMenu,sizeof(sAIPanelFlyoutMenu),
+#endif
+#ifndef ADM_FREE
 	// ADM
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 	kADMDialogSuite, _kADMDialogSuiteVersion, &sADMDialog, sizeof(_ADMDialogSuite),
@@ -202,8 +217,9 @@ ImportSuite startup[] = {
 	#ifdef WIN_ENV
 	kADMWinHostSuite, kADMWinHostSuiteVersion, &sADMWinHost, sizeof(ADMWinHostSuite),
 	#endif
-
+#endif //#ifndef ADM_FREE
 	NULL, 0, NULL, 0
+	
 };
 
 // postStartup: all suites that are needed after startup (onPostStartupPlugin)
@@ -358,12 +374,12 @@ ImportSuite postStartup[] = {
 	kAIFilePathSuite, kAIFilePathSuiteVersion, &sAIFilePath, sizeof(AIFilePathSuite),
 #endif
 
-#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI16
+#if kPluginInterfaceVersion >= kAI12 && kPluginInterfaceVersion <= kAI15
 	kAITracingSuite, kAITracingSuiteVersion, &sAITracing, sizeof(AITracingSuite),
 	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif
 	
-#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI16
+#if kPluginInterfaceVersion >= kAI13 && kPluginInterfaceVersion <= kAI15
 	kAICropAreaSuite, kAICropAreaSuiteVersion, &sAICropArea, sizeof(AICropAreaSuite),
 #endif
 

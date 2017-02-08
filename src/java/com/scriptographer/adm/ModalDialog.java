@@ -18,6 +18,7 @@ import java.util.EnumSet;
 
 import com.scratchdisk.util.EnumUtils;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ui.DialogOption;
 
 /**
  * @author lehni

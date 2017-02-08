@@ -17,6 +17,7 @@ package com.scriptographer.adm;
 import java.util.EnumSet;
 
 import com.scratchdisk.util.EnumUtils;
+import com.scriptographer.ui.DialogOption;
 
 /**
  * @author lehni

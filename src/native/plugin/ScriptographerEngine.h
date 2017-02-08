@@ -315,26 +315,29 @@ public:
 	jmethodID mid_ui_MenuItem_onSelect;
 	jmethodID mid_ui_MenuItem_onUpdate;
 
+//moved out of ADM
+	jclass cls_ui_Rectangle;
+	jmethodID cid_ui_Rectangle;
+	jfieldID fid_ui_Rectangle_x;
+	jfieldID fid_ui_Rectangle_y;
+	jfieldID fid_ui_Rectangle_width;
+	jfieldID fid_ui_Rectangle_height;
+	jmethodID mid_ui_Rectangle_set;
+	
+	jclass cls_ui_Point;
+	jmethodID cid_ui_Point;
+	jfieldID fid_ui_Point_x;
+	jfieldID fid_ui_Point_y;
+	jmethodID mid_ui_Point_set;
+	
+	jclass cls_ui_Size;
+	jmethodID cid_ui_Size;
+	jfieldID fid_ui_Size_width;
+	jfieldID fid_ui_Size_height;
+	jmethodID mid_ui_Size_set;
+#ifndef ADM_FREE
 // ADM:
-	jclass cls_adm_Rectangle;
-	jmethodID cid_adm_Rectangle;
-	jfieldID fid_adm_Rectangle_x;
-	jfieldID fid_adm_Rectangle_y;
-	jfieldID fid_adm_Rectangle_width;
-	jfieldID fid_adm_Rectangle_height;
-	jmethodID mid_adm_Rectangle_set;
 	
-	jclass cls_adm_Point;
-	jmethodID cid_adm_Point;
-	jfieldID fid_adm_Point_x;
-	jfieldID fid_adm_Point_y;
-	jmethodID mid_adm_Point_set;
-	
-	jclass cls_adm_Size;
-	jmethodID cid_adm_Size;
-	jfieldID fid_adm_Size_width;
-	jfieldID fid_adm_Size_height;
-	jmethodID mid_adm_Size_set;
 
 	jclass cls_adm_Dialog;
 	jmethodID mid_adm_Dialog_onSizeChanged;
@@ -378,7 +381,13 @@ public:
 	jclass cls_adm_TextEditItem;
 	jfieldID fid_adm_TextEditItem_setSelectionTimer;
 #endif
+#else // for non ADM
 
+
+	jclass cls_widget_NotificationHandler;
+	jmethodID mid_widget_NotificationHandler_onNotify;
+
+#endif //	#ifndef ADM_FREE
 public:
 	ScriptographerEngine(const char *pluginPath);
 	~ScriptographerEngine();
@@ -468,7 +477,13 @@ public:
 	jobject convertSize(JNIEnv *env, AIRealPoint *size, jobject res = NULL) {
 		return convertSize(env, size->h, size->v, res);
 	}
+	
+	jobject convertSize(JNIEnv *env, AISize *size, jobject res = NULL) {
+		return convertSize(env, size->width, size->height, res);
+	}
 	void convertSize(JNIEnv *env, jobject size, AIRealPoint *res);
+	void convertSize(JNIEnv *env, jobject size, AISize *res);
+
 
 	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, CoordinateSystem from, CoordinateSystem to, AIRealMatrix *mt, jobject res = NULL);
@@ -481,6 +496,11 @@ public:
 	// com.scriptographer.adm.Rectangle <-> ADMRect
 	jobject convertRectangle(JNIEnv *env, ADMRect *rect, jobject res = NULL);
 	void convertRectangle(JNIEnv *env, jobject rect, ADMRect *res);	
+
+	// com.scriptographer.adm.Rectangle <-> Rect //todo: mac?
+	jobject ScriptographerEngine::convertRectangle(JNIEnv *env, RECT *rect, jobject res = NULL);
+	void convertRectangle(JNIEnv *env, jobject rect, RECT *res);
+
 
 	// com.scriptographer.adm.Size <-> ADMPoint
 	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL);
@@ -629,28 +649,23 @@ public:
 	ASErr Annotator_onDraw(AIAnnotatorMessage *message);
 	ASErr Annotator_onInvalidate(AIAnnotatorMessage *message);
 	
+	bool callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
+	ASErr callOnHandleEvent(int type);
+
+#ifndef ADM_FREE
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
-	void callOnNotify(jobject handler, char *notifier); 
-	void callOnDestroy(jobject handler); 
+
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	bool callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
-	ASErr callOnHandleEvent(int type);
+	
 
 	// ADM Handles
 	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);
 	int getADMListHandle(JNIEnv *env, jobject obj, const char *name);
 
-	// Menu items are in the ADM package in Scriptographer, although natively they belong to AI
-	inline AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj) {
-		return (AIMenuItemHandle) getADMObjectHandle(env, obj, "menu item");
-	}
 	
-	inline AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj) {
-		return (AIMenuGroup) getADMObjectHandle(env, obj, "menu group");
-	}
 
 	inline ADMDialogRef getDialogHandle(JNIEnv *env, jobject obj) {
 		return (ADMDialogRef) getADMObjectHandle(env, obj, "dialog");
@@ -699,7 +714,31 @@ public:
 	jobject getListObject(ADMHierarchyListRef list);
 	jobject getListEntryObject(ADMEntryRef list);
 	jobject getListEntryObject(ADMListEntryRef list);
-		
+#else //non ADM
+
+	int getControlObjectHandle(JNIEnv *env, jobject obj, const char *name);
+	
+	inline AIPanelRef  getAIPanelRef (JNIEnv *env, jobject obj) {
+		return (AIPanelRef ) getControlObjectHandle(env, obj, "AiPanelRef");
+	}
+
+#endif //#ifndef ADM_FREE
+	//common notifiers
+	void callOnNotify(jobject handler, char *notifier); 
+	void callOnDestroy(jobject handler); 
+
+	//former getADMObjectHandle but for Menu
+	int getMenuObjectHandle(JNIEnv *env, jobject obj, const char *name);
+
+	// Menu items are in the ADM package in Scriptographer, although natively they belong to AI
+	inline AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuItemHandle) getMenuObjectHandle(env, obj, "menu item");
+	}
+	
+	inline AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuGroup) getMenuObjectHandle(env, obj, "menu group");
+	}
+
 	// JNI stuff:
 	JNIEnv *getEnv();
 	

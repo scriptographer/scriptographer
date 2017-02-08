@@ -16,6 +16,8 @@ package com.scriptographer.adm;
 
 import com.scriptographer.ui.NativeObject;
 
+import com.scriptographer.ui.Point;
+
 /**
  * @author lehni
  */
