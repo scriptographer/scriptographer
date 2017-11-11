@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Stack;
@@ -241,6 +242,9 @@ public class ScriptographerEngine {
 
 	protected static void loadLibraries(File dir) {
 		File[] files = dir.listFiles();
+		// This is required since the HFS -> APFS switch in 2017, see:
+		// https://twitter.com/juerglehni/status/929299657527910400
+		Arrays.sort(files);
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
