@@ -237,11 +237,11 @@ public class Path extends PathItem {
 	}
 
 	public Segment getFirstSegment() {
-		return segments.getFirst();
+		return getSegments().getFirst();
 	}
 
 	public Segment getLastSegment() {
-		return segments.getLast();
+		return getSegments().getLast();
 	}
 
 	public Curve getFirstCurve() {
